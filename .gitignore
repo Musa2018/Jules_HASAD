@@ -1,0 +1,30 @@
+# General
+.DS_Store
+*.log
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+hasad/mobile/ios/Flutter/Generated.xcconfig
+hasad/mobile/ios/Flutter/flutter_export_environment.sh
+hasad/mobile/ios/Flutter/flutter_podhelper.rb
+hasad/mobile/ios/Flutter/App.framework
+hasad/mobile/ios/Flutter/Flutter.framework
+hasad/mobile/ios/Flutter/Flutter.podspec
+hasad/mobile/android/app/src/main/java/io/flutter/plugins/
+hasad/mobile/lib/generated/
+hasad/mobile/lib/**/*.freezed.dart
+hasad/mobile/lib/**/*.g.dart
+
+# .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/

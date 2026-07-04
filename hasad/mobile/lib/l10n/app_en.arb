@@ -1,0 +1,13 @@
+{
+  "appTitle": "HASAD",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "login": "Login",
+  "dashboard": "Dashboard",
+  "farmers": "Farmers",
+  "farms": "Farms",
+  "damageReports": "Damage Reports",
+  "map": "Map",
+  "settings": "Settings"
+}

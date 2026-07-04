@@ -34,7 +34,6 @@ dependencies:
 
   # Utils
   intl: ^0.20.2
-  flutter_secure_storage: ^9.2.4
 
   # GIS & Sensors
   flutter_map: ^7.0.2

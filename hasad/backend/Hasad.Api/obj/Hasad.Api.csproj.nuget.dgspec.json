@@ -52,9 +52,9 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "Swashbuckle.AspNetCore": {
+            "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
-              "version": "[6.5.0, )"
+              "version": "[8.0.0, )"
             }
           },
           "imports": [
@@ -130,16 +130,6 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "FluentValidation.DependencyInjectionExtensions": {
-              "target": "Package",
-              "version": "[12.1.1, )"
-            },
-            "MediatR": {
-              "target": "Package",
-              "version": "[14.2.0, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",

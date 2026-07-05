@@ -1,6 +1,6 @@
 # HASAD - Agricultural Damage Assessment System
 
-## فلسطبين - نظام حصاد لتوثيق الأضرار الزراعية
+## فلسطين - نظام حصاد لتوثيق الأضرار الزراعية
 
 Comprehensive solution for documenting and assessing agricultural damage in Palestine. Built with Flutter and .NET 8.
 

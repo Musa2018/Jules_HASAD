@@ -1,22 +1,25 @@
 # HASAD - Agricultural Damage Assessment System
 
-Bilingual (Arabic/English) Agricultural Damage Assessment System for Palestine.
+## فلسطبين - نظام حصاد لتوثيق الأضرار الزراعية
 
-## Project Structure
-
-- `hasad/mobile`: Flutter mobile application.
-- `hasad/backend`: .NET 8 Web API.
+Comprehensive solution for documenting and assessing agricultural damage in Palestine. Built with Flutter and .NET 8.
 
 ## Getting Started
 
 ### Mobile
-1. Navigate to `hasad/mobile`.
-2. Run `flutter pub get`.
-3. Run `flutter run`.
+1. `cd hasad/mobile`
+2. `flutter pub get`
+3. `dart run build_runner build`
+4. `flutter run`
 
 ### Backend
-1. Navigate to `hasad/backend`.
-2. Open `Hasad.sln` in Visual Studio or run `dotnet build`.
+1. `cd hasad/backend`
+2. `dotnet restore`
+3. `dotnet run --project Hasad.Api`
 
-## CI/CD
-GitHub Actions are configured to run analysis and tests on every push to `main` and `feat/*` branches.
+## Documentation
+- [Architecture](ARCHITECTURE.md)
+- [Authentication](AUTH_DOCS.md)
+- [Domain](DOMAIN_DOCS.md)
+- [Security](SECURITY.md)
+- [Sync](SYNC_DOCS.md)

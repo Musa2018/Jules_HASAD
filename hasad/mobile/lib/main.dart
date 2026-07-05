@@ -6,11 +6,7 @@ import 'package:mobile/core/theme/app_theme.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(
-      child: HasadApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: HasadApp()));
 }
 
 class HasadApp extends StatelessWidget {

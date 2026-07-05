@@ -6,9 +6,8 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const Scaffold(
-        body: Center(child: Text('HASAD Initializing...')),
-      ),
+      builder: (context, state) =>
+          const Scaffold(body: Center(child: Text('HASAD Initializing...'))),
     ),
     // TODO: Add more routes as features are implemented
   ],

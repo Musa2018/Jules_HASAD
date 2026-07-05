@@ -10,6 +10,8 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Restore dependencies
-        run: cd hasad/backend && dotnet restore
+        run: cd hasad/backend && dotnet restore Hasad.sln
       - name: Build
-        run: cd hasad/backend && dotnet build --no-restore
+        run: cd hasad/backend && dotnet build Hasad.sln --no-restore
+      - name: Test
+        run: cd hasad/backend && dotnet test Hasad.sln --no-build

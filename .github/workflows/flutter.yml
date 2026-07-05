@@ -9,5 +9,6 @@ jobs:
         with:
           flutter-version: '3.x'
       - run: cd hasad/mobile && flutter pub get
+      - run: cd hasad/mobile && dart format --set-exit-if-changed .
       - run: cd hasad/mobile && flutter analyze
       - run: cd hasad/mobile && flutter test

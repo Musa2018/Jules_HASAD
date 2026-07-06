@@ -149,11 +149,14 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
         if (context.Database.IsRelational())
         {
+            var pending = (await context.Database.GetPendingMigrationsAsync()).ToList();
             await context.Database.MigrateAsync();
+            Log.Information("Database schema is up to date; applied {Count} pending migration(s).", pending.Count);
         }
         else
         {
             await context.Database.EnsureCreatedAsync();
+            Log.Information("Non-relational provider detected; database created via EnsureCreatedAsync.");
         }
 
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -169,6 +172,15 @@ using (var scope = app.Services.CreateScope())
             {
                 throw new InvalidOperationException(
                     $"Seeding the SuperAdmin failed: {string.Join("; ", result.Errors.Select(e => e.Description))}");
+            }
+
+            if (result is null)
+            {
+                Log.Information("SuperAdmin account already exists; seeding skipped.");
+            }
+            else
+            {
+                Log.Information("SuperAdmin account seeded successfully.");
             }
         }
         else

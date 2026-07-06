@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased] — Sprint 1: Backend Stabilization
+
+### Added
+- FluentValidation wired into the MediatR pipeline via `ValidationBehavior<,>`;
+  malformed requests now short-circuit with `400 Bad Request` before reaching
+  handlers (previously the package was declared but unused).
+- Validators for `LoginCommand`, `RefreshTokenCommand`, and `LogoutCommand`.
+- Explicit logging for database initialization and SuperAdmin seeding outcomes.
+- 11 new unit tests (validation behavior + validators); 25 total.
+
+### Changed
+- MediatR pinned to 12.5.0, the last Apache-2.0 release, per the approved
+  licensing decision (ADR 0008). No code changes were required.
+- EF Core migration history squashed into a single verified `InitialCreate`
+  migration producing an identical schema (9 tables, verified via
+  `dotnet ef migrations script`). No production database exists yet, so no
+  deployed schema is affected; the previous migrations are recoverable by
+  reverting the squash commit.
+- `ExceptionMiddleware` now maps `FluentValidation.ValidationException` to
+  `400` with the individual error messages; unexpected exceptions remain `500`
+  with a generic message.
+
 ## [Unreleased] — Sprint 0: Security Hardening & Complete Authentication Subsystem
 
 ### Security

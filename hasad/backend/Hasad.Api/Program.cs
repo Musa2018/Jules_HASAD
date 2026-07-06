@@ -1,7 +1,9 @@
 using System.Text;
 using System.Threading.RateLimiting;
 using Asp.Versioning;
+using FluentValidation;
 using Hasad.Api.Middleware;
+using Hasad.Application.Common.Behaviors;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Options;
 using Hasad.Domain.Identity;
@@ -121,7 +123,12 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Hasad.Application.Features.Accounts.Commands.Login.LoginCommand).Assembly));
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Hasad.Application.Features.Accounts.Commands.Login.LoginCommand).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+builder.Services.AddValidatorsFromAssembly(typeof(Hasad.Application.Features.Accounts.Commands.Login.LoginCommandValidator).Assembly);
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -142,11 +149,14 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
         if (context.Database.IsRelational())
         {
+            var pending = (await context.Database.GetPendingMigrationsAsync()).ToList();
             await context.Database.MigrateAsync();
+            Log.Information("Database schema is up to date; applied {Count} pending migration(s).", pending.Count);
         }
         else
         {
             await context.Database.EnsureCreatedAsync();
+            Log.Information("Non-relational provider detected; database created via EnsureCreatedAsync.");
         }
 
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -162,6 +172,15 @@ using (var scope = app.Services.CreateScope())
             {
                 throw new InvalidOperationException(
                     $"Seeding the SuperAdmin failed: {string.Join("; ", result.Errors.Select(e => e.Description))}");
+            }
+
+            if (result is null)
+            {
+                Log.Information("SuperAdmin account already exists; seeding skipped.");
+            }
+            else
+            {
+                Log.Information("SuperAdmin account seeded successfully.");
             }
         }
         else

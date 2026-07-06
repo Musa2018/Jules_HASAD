@@ -1,7 +1,9 @@
 using System.Text;
 using System.Threading.RateLimiting;
 using Asp.Versioning;
+using FluentValidation;
 using Hasad.Api.Middleware;
+using Hasad.Application.Common.Behaviors;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Options;
 using Hasad.Domain.Identity;
@@ -121,7 +123,12 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Hasad.Application.Features.Accounts.Commands.Login.LoginCommand).Assembly));
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Hasad.Application.Features.Accounts.Commands.Login.LoginCommand).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+builder.Services.AddValidatorsFromAssembly(typeof(Hasad.Application.Features.Accounts.Commands.Login.LoginCommandValidator).Assembly);
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ITokenService, TokenService>();

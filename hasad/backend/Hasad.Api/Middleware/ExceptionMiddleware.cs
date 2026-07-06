@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using FluentValidation;
 using Hasad.Application.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,19 +23,25 @@ public class ExceptionMiddleware
         {
             await _next(context);
         }
+        catch (ValidationException ex)
+        {
+            _logger.LogInformation("Request validation failed: {Errors}",
+                string.Join("; ", ex.Errors.Select(e => e.ErrorMessage)));
+            await WriteResultAsync(context, HttpStatusCode.BadRequest,
+                Result<object>.Failure(ex.Errors.Select(e => e.ErrorMessage).ToArray()));
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An unhandled exception has occurred.");
-            await HandleExceptionAsync(context, ex);
+            await WriteResultAsync(context, HttpStatusCode.InternalServerError,
+                Result<object>.Failure(new[] { "An unexpected error occurred." }));
         }
     }
 
-    private Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static Task WriteResultAsync(HttpContext context, HttpStatusCode statusCode, Result<object> result)
     {
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-        var result = Result<object>.Failure(new[] { "An unexpected error occurred." });
+        context.Response.StatusCode = (int)statusCode;
 
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         return context.Response.WriteAsync(JsonSerializer.Serialize(result, options));

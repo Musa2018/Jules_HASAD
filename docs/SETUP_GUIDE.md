@@ -58,14 +58,27 @@ cp .env.example .env
 # Edit .env with your values
 nano .env  # or your preferred editor
 
-# Required variables:
-# DB_HOST=localhost
-# DB_PORT=5432
-# DB_NAME=hasad_db
-# DB_USER=postgres
-# DB_PASSWORD=your_password
-# JWT_KEY=your_long_secret_key
+# Required variables (ASP.NET Core double-underscore syntax):
+# ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=hasad_db;Username=postgres;Password=your_password
+# JwtSettings__Key=<generate with: openssl rand -base64 48>
 ```
+
+Alternatively, for local development you can keep the JWT key out of any file
+using user secrets:
+
+```bash
+cd hasad/backend/Hasad.Api
+dotnet user-secrets set "JwtSettings:Key" "$(openssl rand -base64 48)"
+```
+
+The application fails fast at startup if `JwtSettings:Key` is missing or
+shorter than 32 characters. The signing key is never committed to the
+repository.
+
+To create an initial administrator account, set both `SeedAdmin__Email` and
+`SeedAdmin__Password` (the password must satisfy the policy: at least 12
+characters with uppercase, lowercase, digit, and symbol). If they are not set,
+no admin account is seeded.
 
 ### 4. Restore and Run Backend
 
@@ -210,9 +223,11 @@ docker run -e DB_HOST=db -e DB_PASSWORD=postgres \
 
 ### Backend Issues
 
-**Issue**: JWT Key is missing in configuration
+**Issue**: JWT signing key is missing or shorter than 32 characters
 ```
-Solution: Add JWT_KEY to .env or appsettings.Development.json
+Solution: Set the JwtSettings__Key environment variable (or use
+`dotnet user-secrets set "JwtSettings:Key" ...`). Never store the key in
+appsettings files.
 ```
 
 **Issue**: Database connection failed

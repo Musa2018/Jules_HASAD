@@ -31,4 +31,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get emailRequired => 'Please enter your email.';
+
+  @override
+  String get emailInvalid => 'Please enter a valid email address.';
+
+  @override
+  String get passwordRequired => 'Please enter your password.';
+
+  @override
+  String get loginFailed =>
+      'Login failed. Please check your credentials and try again.';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String welcome(String name) {
+    return 'Welcome, $name';
+  }
 }

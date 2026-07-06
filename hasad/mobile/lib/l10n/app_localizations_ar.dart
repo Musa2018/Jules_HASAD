@@ -31,4 +31,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settings => 'الإعدادات';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get emailRequired => 'يرجى إدخال البريد الإلكتروني.';
+
+  @override
+  String get emailInvalid => 'يرجى إدخال بريد إلكتروني صالح.';
+
+  @override
+  String get passwordRequired => 'يرجى إدخال كلمة المرور.';
+
+  @override
+  String get loginFailed =>
+      'فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد والمحاولة مرة أخرى.';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String welcome(String name) {
+    return 'مرحباً، $name';
+  }
 }

@@ -3,9 +3,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Hasad.Infrastructure.Persistence.Seed;
 
+/// <summary>
+/// Seeds the role catalogue and, when explicitly configured, an initial administrator.
+/// </summary>
 public static class DbInitializer
 {
-    public static async Task SeedRolesAndUsersAsync(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+    /// <summary>
+    /// Ensures all application roles exist.
+    /// </summary>
+    /// <param name="roleManager">Identity role manager.</param>
+    public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
     {
         string[] roleNames = { "SuperAdmin", "Administrator", "AgriculturalEngineer", "FieldSurveyor", "Farmer", "ReadOnly" };
 
@@ -16,24 +23,39 @@ public static class DbInitializer
                 await roleManager.CreateAsync(new IdentityRole(roleName));
             }
         }
+    }
 
-        // Seed default Super Admin
-        var adminUser = await userManager.FindByEmailAsync("admin@hasad.ps");
-        if (adminUser == null)
+    /// <summary>
+    /// Creates the initial SuperAdmin account using externally supplied credentials.
+    /// Does nothing when the account already exists.
+    /// </summary>
+    /// <param name="userManager">Identity user manager.</param>
+    /// <param name="email">Administrator email address.</param>
+    /// <param name="password">Administrator password; must satisfy the configured password policy.</param>
+    /// <returns>The Identity result of the create operation, or null when the user already existed.</returns>
+    public static async Task<IdentityResult?> SeedSuperAdminAsync(
+        UserManager<ApplicationUser> userManager, string email, string password)
+    {
+        var existing = await userManager.FindByEmailAsync(email);
+        if (existing is not null)
         {
-            var user = new ApplicationUser
-            {
-                UserName = "admin@hasad.ps",
-                Email = "admin@hasad.ps",
-                FullName = "Super Admin",
-                EmailConfirmed = true
-            };
-
-            var result = await userManager.CreateAsync(user, "Admin123!");
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, "SuperAdmin");
-            }
+            return null;
         }
+
+        var user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            FullName = "Super Admin",
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(user, password);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(user, "SuperAdmin");
+        }
+
+        return result;
     }
 }

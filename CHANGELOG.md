@@ -1,8 +1,38 @@
 # Changelog
 
-## [Unreleased] — Sprint 3: Testing & Code Coverage
+## [Unreleased]
 
-### Added
+### Sprint 4 — CI/CD Hardening
+
+#### Changed
+- `.github/workflows/dotnet.yml`: `actions/checkout@v4`, `actions/setup-dotnet@v4`
+  pinned to SDK `8.0.422` with NuGet dependency caching; added a
+  `dotnet format --verify-no-changes` gate; build now passes
+  `-p:ContinuousIntegrationBuild=true` for deterministic output; tests publish
+  TRX results and Cobertura coverage as a build artifact; workflow runs are
+  cancelled on superseding pushes to the same ref (concurrency group).
+- `.github/workflows/flutter.yml`: `actions/checkout@v4`; Flutter pinned to
+  `3.41.2` (matches `.metadata`, Dart `3.11.0`, satisfying the `^3.11.0` SDK
+  constraint) instead of the floating `3.x`; added `flutter-action` cache;
+  tests now run with `--coverage` and the LCOV report is published as a
+  build artifact; concurrency cancellation added.
+- `hasad/backend/global.json`: added, pinning the backend to .NET SDK
+  `8.0.422` (`rollForward: latestPatch`) so local and CI builds resolve the
+  same SDK deterministically.
+- `hasad/backend/docker-compose.yml`: pinned `postgres:alpine` to
+  `postgres:16-alpine`; removed the obsolete top-level `version` key; added a
+  `pg_isready` healthcheck and a named volume for dev data persistence.
+
+#### Notes
+- Infrastructure/config only — no application code, business logic, APIs, or
+  architecture changed. Validated locally (SDK 8.0.422, Flutter 3.41.2):
+  `dotnet format`/`build`/`test` (31/31 passing) and `dart format`/`flutter
+  analyze`/`flutter test --coverage` (38/38 passing) all green.
+- Closes #22, #23.
+
+### Sprint 3 — Testing & Code Coverage
+
+#### Added
 - Backend: `LogoutCommandHandler` tests and `DbInitializer` seeding tests
   (role idempotency, SuperAdmin creation/duplicate-skip, password-policy
   failure) — 31 backend unit tests total.

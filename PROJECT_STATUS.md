@@ -2,10 +2,10 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.2.0-alpha (next: v0.3.0-alpha after Sprint 2, per release strategy)
-- **Current Sprint**: Sprint 2 — Mobile (Flutter) Stabilization (in review)
-- **Current Branch**: `sprint/2-mobile-stabilization`
-- **Last Updated**: 2026-07-07
+- **Current Version**: v0.3.0-alpha (first end-to-end login flow; prerelease published)
+- **Current Sprint**: Sprint 3 — Testing & Code Coverage (in review)
+- **Current Branch**: `sprint/3-testing-and-coverage`
+- **Last Updated**: 2026-07-08
 
 ## Sprint 0 — COMPLETED
 Complete production-ready authentication subsystem delivered and merged
@@ -27,7 +27,7 @@ and on `main` post-merge. Milestone closed (5/5 issues).
 - Tests: 25 backend unit tests (11 added this sprint).
 - Delivered via PR #33, tag `sprint-1`, GitHub Release published.
 
-## Sprint 2 — Mobile (Flutter) Stabilization (this sprint)
+## Sprint 2 — COMPLETED
 - C6 (#16): fail-fast `EnvironmentConfig` initialized in `main()` before
   `runApp()`; login-time crash eliminated.
 - M1 (#24): LoginScreen rewritten — proper controller lifecycle, client-side
@@ -39,9 +39,22 @@ and on `main` post-merge. Milestone closed (5/5 issues).
 - L3 (#30): auth-guarded GoRouter with `/login`, `/home`, splash, and
   auth-state-driven redirects.
 - Tests: 22 mobile unit/widget tests + opt-in live E2E auth lifecycle test.
+- Delivered via PR #34 (tag `sprint-2`, Release published) plus follow-up
+  PR #35 hardening auth error handling against malformed backend payloads
+  (fixes both post-merge review findings). First alpha tagged: `v0.3.0-alpha`.
+
+## Sprint 3 — Testing & Code Coverage (this sprint)
+- #19: expanded `Hasad.Application.Tests` — LogoutCommandHandler tests and
+  DbInitializer seeding tests (roles idempotency, SuperAdmin creation/skip,
+  password-policy failure); 31 backend tests total (6 added this sprint).
+- #29: Flutter widget-test suite expanded — LoginScreen loading state and
+  Arabic/RTL rendering + localized validation, HomeScreen (welcome, logout,
+  RTL), and router auth-guard tests (splash hold, login redirect, session
+  restoration to home, login navigation, logout return); 38 mobile tests
+  total (11 added this sprint).
+- No production code changes; tests only.
 
 ## Open Issues (remediation backlog)
-- Sprint 3 (Testing & Coverage): #19, #29
 - Sprint 4 (CI/CD Hardening): #22, #23
 - Sprint 5 (Repository Cleanup): #21, #28
 - Sprint 6 (Documentation Sync): #27
@@ -49,7 +62,8 @@ and on `main` post-merge. Milestone closed (5/5 issues).
 ## Completed Issues
 - Sprint 0: #11, #12, #13, #14, #15 — closed via PR #31.
 - Sprint 1: #17, #18, #20, #25 — closed via PR #33.
-- Sprint 2: #16, #24, #26, #30 — closing via this sprint's PR.
+- Sprint 2: #16, #24, #26, #30 — closed via PR #34 (+ hardening PR #35).
+- Sprint 3: #19, #29 — closing via this sprint's PR.
 
 ## Current Risks
 - Sessions issued before the JWT key rotation are invalidated (expected; users
@@ -58,13 +72,14 @@ and on `main` post-merge. Milestone closed (5/5 issues).
   distributed limiter (tracked for the production roadmap).
 
 ## Technical Debt
-- No backend integration-test project yet (Sprint 3).
+- No backend integration-test project yet (unit + live E2E coverage only;
+  a dedicated WebApplicationFactory-based suite remains future work).
 - Drift sync-queue (offline persistence) not implemented — post-remediation
   epic per issue #26.
 - Junk files (`Class1.cs`, `build_output.txt`) outstanding (Sprint 5).
 
 ## CI Status
-- Green: .NET CI and Flutter CI on `main` and on the Sprint 2 branch.
+- Green: .NET CI and Flutter CI on `main` and on the Sprint 3 branch.
 
 ## Next Sprint
-- Sprint 3 — Testing & Code Coverage (requires explicit user approval).
+- Sprint 4 — CI/CD Hardening (requires explicit user approval).

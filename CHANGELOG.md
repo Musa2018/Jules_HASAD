@@ -1,6 +1,23 @@
 # Changelog
 
-## [Unreleased] — Sprint 2: Mobile Stabilization
+## [Unreleased] — Sprint 3: Testing & Code Coverage
+
+### Added
+- Backend: `LogoutCommandHandler` tests and `DbInitializer` seeding tests
+  (role idempotency, SuperAdmin creation/duplicate-skip, password-policy
+  failure) — 31 backend unit tests total.
+- Mobile: LoginScreen loading-state and Arabic/RTL widget tests, HomeScreen
+  widget tests (welcome, logout, RTL), and router auth-guard tests (splash
+  hold during restoration, login redirect, session restoration to home,
+  post-login navigation, logout return) — 38 mobile tests total.
+- No production code changes; tests only.
+
+## [v0.3.0-alpha] — Sprint 2: Mobile Stabilization
+
+### Fixed (post-release hardening, PR #35)
+- Malformed backend auth payloads now surface as `AuthException` instead of
+  escaping as raw deserialization errors (stuck login spinner / unhandled
+  Future error at startup).
 
 ### Added
 - `AuthSession` model matching the backend auth contract, with an
@@ -29,7 +46,7 @@
 - Unused `User` model (required an `id` the backend never returns), replaced
   by `AuthSession`.
 
-## [Unreleased] — Sprint 1: Backend Stabilization
+## [v0.3.0-alpha] — Sprint 1: Backend Stabilization
 
 ### Added
 - FluentValidation wired into the MediatR pipeline via `ValidationBehavior<,>`;
@@ -51,7 +68,7 @@
   `400` with the individual error messages; unexpected exceptions remain `500`
   with a generic message.
 
-## [Unreleased] — Sprint 0: Security Hardening & Complete Authentication Subsystem
+## [v0.3.0-alpha] — Sprint 0: Security Hardening & Complete Authentication Subsystem
 
 ### Security
 - Removed the committed JWT signing key from all configuration files; the key

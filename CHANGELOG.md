@@ -1,5 +1,34 @@
 # Changelog
 
+## [Unreleased] — Sprint 2: Mobile Stabilization
+
+### Added
+- `AuthSession` model matching the backend auth contract, with an
+  `AuthRepository` for `/accounts/login`, `/accounts/refresh`, and
+  `/accounts/logout` (rotation-aware, error-envelope parsing).
+- `TokenRefresher`: single-flight refresh-token rotation with secure
+  persistence; concurrent callers share one in-flight refresh.
+- `AuthInterceptor`: attaches the Bearer token to API requests and, on `401`,
+  transparently rotates the token and retries the request once.
+- `AuthNotifier` (Riverpod) auth state machine: login, logout with server-side
+  revocation, and automatic session restoration on app start.
+- Auth-guarded `GoRouter` (splash/login/home) that re-evaluates redirects when
+  the auth state changes; `HomeScreen` with logout.
+- Localized (English/Arabic) login form validation and error reporting.
+- 22 new unit/widget tests plus an opt-in live E2E test covering the full
+  auth lifecycle against a running backend.
+
+### Changed
+- `EnvironmentConfig` now fails fast with a clear `StateError` when accessed
+  before initialization; `main()` initializes it from `--dart-define=ENV`
+  before `runApp()` (fixes the login-time crash).
+- `LoginScreen` rewritten: proper controller lifecycle, client-side
+  validation, loading state, and backend error surfacing.
+
+### Removed
+- Unused `User` model (required an `id` the backend never returns), replaced
+  by `AuthSession`.
+
 ## [Unreleased] — Sprint 1: Backend Stabilization
 
 ### Added

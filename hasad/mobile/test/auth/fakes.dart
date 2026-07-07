@@ -45,12 +45,16 @@ class FakeAuthRepository implements AuthRepository {
   /// Optional delay applied to [refresh] to simulate network latency.
   Duration refreshDelay = Duration.zero;
 
+  /// Optional delay applied to [login] to simulate network latency.
+  Duration loginDelay = Duration.zero;
+
   /// Optional error thrown by [login] and [refresh] to simulate
   /// unexpected (non-[AuthException]) failures.
   Object? unexpectedError;
 
   @override
   Future<AuthSession> login(String email, String password) async {
+    await Future<void>.delayed(loginDelay);
     final error = unexpectedError;
     if (error != null) throw error;
     final current = session;

@@ -1,20 +1,37 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:mobile/core/config/app_config.dart';
+import 'package:mobile/core/network/token_refresher.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/main.dart';
 
-void main() {
-  testWidgets('HASAD smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const HasadApp());
+import 'auth/fakes.dart';
 
-    // Verify that our app starts.
-    expect(find.text('HASAD Initializing...'), findsOneWidget);
+void main() {
+  testWidgets('HASAD smoke test: boots to the login screen', (tester) async {
+    EnvironmentConfig.setEnvironment(AppEnvironment.dev);
+    final repository = FakeAuthRepository();
+    final storage = FakeSecureStorage();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith(
+            (ref) => AuthNotifier(
+              repository,
+              storage,
+              TokenRefresher(repository, storage),
+            ),
+          ),
+        ],
+        child: const HasadApp(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // With no stored session the auth guard must land on the login screen.
+    expect(find.byType(TextFormField), findsNWidgets(2));
+    expect(find.byType(FilledButton), findsOneWidget);
   });
 }

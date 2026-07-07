@@ -9,5 +9,42 @@
   "farms": "Farms",
   "damageReports": "Damage Reports",
   "map": "Map",
-  "settings": "Settings"
+  "settings": "Settings",
+  "email": "Email",
+  "@email": {
+    "description": "Label for the email field on the login screen"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Label for the password field on the login screen"
+  },
+  "emailRequired": "Please enter your email.",
+  "@emailRequired": {
+    "description": "Validation message when the email field is empty"
+  },
+  "emailInvalid": "Please enter a valid email address.",
+  "@emailInvalid": {
+    "description": "Validation message when the email format is invalid"
+  },
+  "passwordRequired": "Please enter your password.",
+  "@passwordRequired": {
+    "description": "Validation message when the password field is empty"
+  },
+  "loginFailed": "Login failed. Please check your credentials and try again.",
+  "@loginFailed": {
+    "description": "Generic error shown when a login attempt is rejected"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Label for the logout action"
+  },
+  "welcome": "Welcome, {name}",
+  "@welcome": {
+    "description": "Greeting shown on the home screen",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

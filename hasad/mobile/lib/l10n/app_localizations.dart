@@ -145,6 +145,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
+
+  /// Label for the email field on the login screen
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// Label for the password field on the login screen
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// Validation message when the email field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email.'**
+  String get emailRequired;
+
+  /// Validation message when the email format is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address.'**
+  String get emailInvalid;
+
+  /// Validation message when the password field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password.'**
+  String get passwordRequired;
+
+  /// Generic error shown when a login attempt is rejected
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed. Please check your credentials and try again.'**
+  String get loginFailed;
+
+  /// Label for the logout action
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// Greeting shown on the home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome, {name}'**
+  String welcome(String name);
 }
 
 class _AppLocalizationsDelegate

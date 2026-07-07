@@ -43,6 +43,10 @@ class TokenRefresher {
     } on AuthException {
       await _storage.clearAll();
       return null;
+    } catch (_) {
+      // Unexpected failure (not a backend rejection): keep the stored
+      // tokens so a later attempt can retry, but report no session.
+      return null;
     }
   }
 }

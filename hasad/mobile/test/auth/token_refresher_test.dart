@@ -64,5 +64,13 @@ void main() {
 
       expect(repository.refreshCalls, 2);
     });
+
+    test('unexpected failure returns null without clearing storage', () async {
+      storage.values['refresh'] = 'old-refresh';
+      repository.unexpectedError = StateError('boom');
+
+      expect(await refresher.refreshSession(), isNull);
+      expect(await storage.getRefreshToken(), 'old-refresh');
+    });
   });
 }

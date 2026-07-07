@@ -124,6 +124,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } on AuthException catch (e) {
       if (!mounted) return;
       state = AuthState(status: AuthStatus.unauthenticated, errors: e.errors);
+    } catch (_) {
+      // Any unexpected failure must still clear the loading state so the
+      // user can retry.
+      if (!mounted) return;
+      state = const AuthState(status: AuthStatus.unauthenticated);
     }
   }
 

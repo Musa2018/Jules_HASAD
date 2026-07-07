@@ -58,6 +58,16 @@ void main() {
       expect(await storage.getToken(), isNull);
     });
 
+    test('unexpected login failure clears the loading state', () async {
+      repository.unexpectedError = StateError('boom');
+      final notifier = createNotifier();
+
+      await notifier.login('admin@hasad.ps', 'password');
+
+      expect(notifier.state.status, AuthStatus.unauthenticated);
+      expect(notifier.state.isLoading, isFalse);
+    });
+
     test('logout revokes the refresh token and clears storage', () async {
       repository.session = sampleSession();
       final notifier = createNotifier();

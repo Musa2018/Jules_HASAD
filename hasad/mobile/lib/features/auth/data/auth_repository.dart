@@ -73,7 +73,13 @@ class AuthRepositoryImpl implements AuthRepository {
       if (envelope?['succeeded'] != true || data is! Map<String, dynamic>) {
         throw AuthException(_errorsFromEnvelope(envelope));
       }
-      return AuthSession.fromJson(data);
+      try {
+        return AuthSession.fromJson(data);
+      } catch (_) {
+        // Malformed payload (missing/mistyped fields): surface as an auth
+        // failure instead of an opaque deserialization error.
+        throw AuthException(const []);
+      }
     } on DioException catch (e) {
       throw AuthException(_errorsFrom(e));
     }

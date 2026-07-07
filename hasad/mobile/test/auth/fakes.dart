@@ -45,8 +45,14 @@ class FakeAuthRepository implements AuthRepository {
   /// Optional delay applied to [refresh] to simulate network latency.
   Duration refreshDelay = Duration.zero;
 
+  /// Optional error thrown by [login] and [refresh] to simulate
+  /// unexpected (non-[AuthException]) failures.
+  Object? unexpectedError;
+
   @override
   Future<AuthSession> login(String email, String password) async {
+    final error = unexpectedError;
+    if (error != null) throw error;
     final current = session;
     if (current == null) throw AuthException(['Invalid email or password.']);
     return current;
@@ -56,6 +62,8 @@ class FakeAuthRepository implements AuthRepository {
   Future<AuthSession> refresh(String refreshToken) async {
     refreshCalls++;
     await Future<void>.delayed(refreshDelay);
+    final error = unexpectedError;
+    if (error != null) throw error;
     final current = session;
     if (current == null) throw AuthException(['Invalid refresh token.']);
     return current;

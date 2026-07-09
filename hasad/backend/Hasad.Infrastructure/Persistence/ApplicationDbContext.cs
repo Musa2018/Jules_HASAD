@@ -20,6 +20,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     /// <summary>Persisted refresh tokens.</summary>
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    /// <summary>Registered farmers.</summary>
+    public DbSet<Farmer> Farmers => Set<Farmer>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -32,6 +35,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(t => t.UserId).IsRequired();
             entity.HasIndex(t => t.TokenHash).IsUnique();
             entity.HasIndex(t => new { t.UserId, t.FamilyId });
+        });
+
+        builder.Entity<Farmer>(entity =>
+        {
+            entity.HasKey(f => f.Id);
+            entity.Property(f => f.Name).IsRequired().HasMaxLength(200);
+            entity.Property(f => f.NationalId).IsRequired().HasMaxLength(20);
+            entity.Property(f => f.PhoneNumber).IsRequired().HasMaxLength(20);
+            entity.Property(f => f.Address).HasMaxLength(500);
+
+            // A national ID uniquely identifies one farmer record.
+            entity.HasIndex(f => f.NationalId).IsUnique();
         });
     }
 }

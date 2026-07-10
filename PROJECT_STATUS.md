@@ -3,8 +3,8 @@
 > Living document — updated at the end of every sprint.
 
 - **Current Version**: v0.3.0-alpha (first end-to-end login flow; prerelease published)
-- **Current Sprint**: Sprint 3 — Testing & Code Coverage (in review)
-- **Current Branch**: `sprint/3-testing-and-coverage`
+- **Current Sprint**: Sprint 4 — CI/CD Hardening (in review)
+- **Current Branch**: `sprint/4-cicd-hardening`
 - **Last Updated**: 2026-07-08
 
 ## Sprint 0 — COMPLETED
@@ -54,8 +54,26 @@ and on `main` post-merge. Milestone closed (5/5 issues).
   total (11 added this sprint).
 - No production code changes; tests only.
 
+## Sprint 4 — CI/CD Hardening (this sprint)
+- #22: CI hardening — `actions/checkout@v4` and `actions/setup-dotnet@v4`/
+  `actions/setup-dotnet` caching; .NET SDK pinned to `8.0.422` (also via new
+  `hasad/backend/global.json`); Flutter pinned to `3.41.2` (matches the
+  project's `.metadata`, replacing the floating `3.x`); concurrency
+  cancellation on both workflows; `dotnet format --verify-no-changes` gate
+  added; coverage published as build artifacts (Cobertura for backend, LCOV
+  for mobile); backend build uses `-p:ContinuousIntegrationBuild=true` for
+  deterministic output.
+- #23: `hasad/backend/docker-compose.yml` — `postgres:alpine` pinned to
+  `postgres:16-alpine`, obsolete `version` key removed, `pg_isready`
+  healthcheck and a named volume added.
+- No application code, business logic, API, or architecture changes.
+- Validated locally end-to-end (SDK 8.0.422 / Flutter 3.41.2, installed
+  fresh in the build sandbox): `dotnet restore/format/build/test` (31/31
+  passing) and `flutter pub get`/`dart format`/`flutter analyze`/
+  `flutter test --coverage` (38/38 passing) and `flutter build web`
+  (informational only, not added to CI) all green.
+
 ## Open Issues (remediation backlog)
-- Sprint 4 (CI/CD Hardening): #22, #23
 - Sprint 5 (Repository Cleanup): #21, #28
 - Sprint 6 (Documentation Sync): #27
 
@@ -64,6 +82,7 @@ and on `main` post-merge. Milestone closed (5/5 issues).
 - Sprint 1: #17, #18, #20, #25 — closed via PR #33.
 - Sprint 2: #16, #24, #26, #30 — closed via PR #34 (+ hardening PR #35).
 - Sprint 3: #19, #29 — closing via this sprint's PR.
+- Sprint 4: #22, #23 — closing via this sprint's PR.
 
 ## Current Risks
 - Sessions issued before the JWT key rotation are invalidated (expected; users
@@ -79,7 +98,7 @@ and on `main` post-merge. Milestone closed (5/5 issues).
 - Junk files (`Class1.cs`, `build_output.txt`) outstanding (Sprint 5).
 
 ## CI Status
-- Green: .NET CI and Flutter CI on `main` and on the Sprint 3 branch.
+- Green: .NET CI and Flutter CI on `main` and on the Sprint 4 branch (hardened workflows: pinned toolchains, format gates, coverage artifacts, concurrency cancellation).
 
 ## Next Sprint
-- Sprint 4 — CI/CD Hardening (requires explicit user approval).
+- Sprint 5 — Repository Cleanup (requires explicit user approval).

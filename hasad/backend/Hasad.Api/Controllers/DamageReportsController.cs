@@ -5,6 +5,7 @@ using Hasad.Application.Features.DamageReports.Commands.DeleteDamageItem;
 using Hasad.Application.Features.DamageReports.Commands.DeleteDamageReport;
 using Hasad.Application.Features.DamageReports.Commands.UpdateDamageItem;
 using Hasad.Application.Features.DamageReports.Commands.UpdateDamageReport;
+using Hasad.Application.Features.DamageReports.Commands.UploadAttachment;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportById;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsByFarm;
 using MediatR;

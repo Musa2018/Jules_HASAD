@@ -80,4 +80,7 @@ bld/
 *.sln.docstates
 
 # Project-specific ignore rules
-# ...
+.kotlin/
+.gradle/
+*.salive
+*.lock

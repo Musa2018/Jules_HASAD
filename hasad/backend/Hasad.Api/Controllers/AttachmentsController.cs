@@ -21,7 +21,7 @@ public class AttachmentsController : ControllerBase
     // DELETE: api/attachments/{id}
     [HttpDelete("{id}")]
     [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer")]
-    public async Task<IActionResult> DeleteAttachment(Guid id)
+    public IActionResult DeleteAttachment(Guid id)
     {
         // Placeholder for DeleteAttachmentCommand
         return Ok();

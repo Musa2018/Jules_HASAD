@@ -9,8 +9,8 @@ part 'database.g.dart';
 
 @DataClassName('FarmerLocal')
 class Farmers extends Table {
-  TextColumn get id => text()(); // local UUID
-  TextColumn get serverId => text().nullable()();
+  TextColumn get id => text()(); // local UUID (ClientId)
+  TextColumn get serverId => text().nullable()(); // Authority ID from server
   TextColumn get name => text().withLength(max: 200)();
   TextColumn get nationalId => text().withLength(max: 20)();
   TextColumn get phoneNumber => text().withLength(max: 20)();
@@ -19,7 +19,7 @@ class Farmers extends Table {
   // Optimistic concurrency token
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
 
-  // Sync Status: pending, syncing, completed, failed
+  // Sync Status: pending, syncing, completed, failed, conflict
   TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
@@ -36,6 +36,7 @@ class SyncQueue extends Table {
   TextColumn get status => text().withDefault(const Constant('pending'))();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
   TextColumn get lastError => text().nullable()();
+  DateTimeColumn get lastAttemptAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -48,14 +49,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
       if (from < 2) {
-        // Add rowVersion column to Farmers table
         await m.addColumn(farmers, farmers.rowVersion);
+      }
+      if (from < 3) {
+        await m.addColumn(syncQueue, syncQueue.lastAttemptAt);
       }
     },
   );

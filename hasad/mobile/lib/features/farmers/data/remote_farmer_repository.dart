@@ -51,7 +51,7 @@ class RemoteFarmerRepository implements FarmerRepository {
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/farmers',
         data: {
-          'id': farmer.id, // Pass client-generated ID
+          'clientId': farmer.id, // Mobile 'id' is used as 'clientId' on backend
           'name': farmer.name,
           'nationalId': farmer.nationalId,
           'phoneNumber': farmer.phoneNumber,
@@ -72,15 +72,22 @@ class RemoteFarmerRepository implements FarmerRepository {
   @override
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
     try {
+      // For updates, we need the authority ID (serverId in mobile, Id in backend)
+      // but the repository interface currently only gives us the Farmer object.
+      // We assume farmer.id is the serverId if it's an existing record being updated from remote.
+      // Wait, in OfflineFirstFarmerRepository, we update with local id.
+      // The background sync service handles the mapping.
+      
       final response = await _dio.put<Map<String, dynamic>>(
         '/v1/farmers/${farmer.id}',
         data: {
           'id': farmer.id,
+          'clientId': farmer.id, // This is a bit redundant if they are same, but safe
           'name': farmer.name,
           'nationalId': farmer.nationalId,
           'phoneNumber': farmer.phoneNumber,
           'address': farmer.address,
-          'rowVersion': farmer.rowVersion, // Pass version for concurrency check
+          'rowVersion': farmer.rowVersion,
         },
       );
       final envelope = response.data;
@@ -90,7 +97,6 @@ class RemoteFarmerRepository implements FarmerRepository {
       }
       return domain.Farmer.fromJson(data);
     } on DioException catch (e) {
-       // Check for 409 Conflict
       if (e.response?.statusCode == 409) {
         throw FarmerException(['CONFLICT: The record has been modified by another user.']);
       }

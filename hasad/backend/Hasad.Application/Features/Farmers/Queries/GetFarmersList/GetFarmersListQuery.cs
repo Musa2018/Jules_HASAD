@@ -29,6 +29,7 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
             .Select(f => new FarmerDto
             {
                 Id = f.Id,
+                ClientId = f.ClientId,
                 Name = f.Name,
                 NationalId = f.NationalId,
                 PhoneNumber = f.PhoneNumber,

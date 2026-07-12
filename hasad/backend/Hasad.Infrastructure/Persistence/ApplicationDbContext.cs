@@ -49,6 +49,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
             // A national ID uniquely identifies one farmer record.
             entity.HasIndex(f => f.NationalId).IsUnique();
+
+            // ClientId is used for idempotency during synchronization.
+            entity.HasIndex(f => f.ClientId).IsUnique();
         });
     }
 }

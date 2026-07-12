@@ -32,19 +32,20 @@ public class FarmerCommandHandlerTests
         Assert.True(result.Succeeded);
         Assert.NotNull(result.Data);
         Assert.Equal("John Doe", result.Data.Name);
+        Assert.Equal(command.ClientId, result.Data.ClientId);
         Assert.Single(context.Farmers);
     }
 
     [Fact]
-    public async Task CreateFarmer_IsIdempotent_WhenIdExists()
+    public async Task CreateFarmer_IsIdempotent_WhenClientIdExists()
     {
         var context = CreateContext();
-        var id = Guid.NewGuid();
-        context.Farmers.Add(new Farmer { Id = id, NationalId = "123", Name = "Existing", RowVersion = new byte[] { 1 } });
+        var clientId = Guid.NewGuid();
+        context.Farmers.Add(new Farmer { Id = Guid.NewGuid(), ClientId = clientId, NationalId = "123", Name = "Existing", RowVersion = new byte[] { 1 } });
         await context.SaveChangesAsync();
 
         var handler = new CreateFarmerCommandHandler(context);
-        var command = new CreateFarmerCommand(id, "Different Name", "123", "059", "Address");
+        var command = new CreateFarmerCommand(clientId, "Different Name", "123", "059", "Address");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -58,12 +59,12 @@ public class FarmerCommandHandlerTests
     {
         var context = CreateContext();
         var version = new byte[] { 1, 2, 3, 4 };
-        var farmer = new Farmer { Id = Guid.NewGuid(), NationalId = "123", Name = "Old Name", RowVersion = version };
+        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "Old Name", RowVersion = version };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
         var handler = new UpdateFarmerCommandHandler(context);
-        var command = new UpdateFarmerCommand(farmer.Id, "New Name", "123", "059", "New Address", Convert.ToBase64String(version));
+        var command = new UpdateFarmerCommand(farmer.Id, farmer.ClientId, "New Name", "123", "059", "New Address", Convert.ToBase64String(version));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -75,12 +76,12 @@ public class FarmerCommandHandlerTests
     public async Task UpdateFarmer_Fails_WhenVersionMismatches()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), NationalId = "123", Name = "Old", RowVersion = new byte[] { 1 } };
+        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "Old", RowVersion = new byte[] { 1 } };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
         var handler = new UpdateFarmerCommandHandler(context);
-        var command = new UpdateFarmerCommand(farmer.Id, "New", "123", "059", "Add", Convert.ToBase64String(new byte[] { 2 }));
+        var command = new UpdateFarmerCommand(farmer.Id, farmer.ClientId, "New", "123", "059", "Add", Convert.ToBase64String(new byte[] { 2 }));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -92,7 +93,7 @@ public class FarmerCommandHandlerTests
     public async Task DeleteFarmer_Succeeds_WhenFarmerExists()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), NationalId = "123", Name = "To Delete", RowVersion = new byte[] { 1 } };
+        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "To Delete", RowVersion = new byte[] { 1 } };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
@@ -109,7 +110,7 @@ public class FarmerCommandHandlerTests
     public async Task GetFarmerById_ReturnsFarmer_WhenExists()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), NationalId = "123", Name = "Target", RowVersion = new byte[] { 1 } };
+        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "Target", RowVersion = new byte[] { 1 } };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
@@ -131,6 +132,7 @@ public class FarmerCommandHandlerTests
         {
             context.Farmers.Add(new Farmer {
                 Id = Guid.NewGuid(),
+                ClientId = Guid.NewGuid(),
                 NationalId = i.ToString(),
                 Name = $"Farmer {i:D2}",
                 RowVersion = new byte[] { (byte)i }

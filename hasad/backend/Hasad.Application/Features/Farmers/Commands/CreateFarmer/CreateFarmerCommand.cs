@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Hasad.Application.Features.Farmers.Commands.CreateFarmer;
 
 public record CreateFarmerCommand(
-    Guid Id,
+    Guid ClientId,
     string Name,
     string NationalId,
     string PhoneNumber,
@@ -26,14 +26,14 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
 
     public async Task<Result<FarmerDto>> Handle(CreateFarmerCommand request, CancellationToken cancellationToken)
     {
-        // Idempotency check: if the client-generated ID already exists, return the existing record.
-        var existingById = await _context.Farmers
+        // Idempotency check: if a farmer with this ClientId already exists, return it.
+        var existingByClientId = await _context.Farmers
             .AsNoTracking()
-            .FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(f => f.ClientId == request.ClientId, cancellationToken);
 
-        if (existingById != null)
+        if (existingByClientId != null)
         {
-            return Result<FarmerDto>.Success(MapToDto(existingById));
+            return Result<FarmerDto>.Success(MapToDto(existingByClientId));
         }
 
         // Business rule: National ID must be unique.
@@ -44,7 +44,8 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
 
         var farmer = new Farmer
         {
-            Id = request.Id,
+            Id = Guid.NewGuid(),
+            ClientId = request.ClientId,
             Name = request.Name,
             NationalId = request.NationalId,
             PhoneNumber = request.PhoneNumber,
@@ -60,6 +61,7 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
     private static FarmerDto MapToDto(Farmer farmer) => new()
     {
         Id = farmer.Id,
+        ClientId = farmer.ClientId,
         Name = farmer.Name,
         NationalId = farmer.NationalId,
         PhoneNumber = farmer.PhoneNumber,
@@ -72,8 +74,8 @@ public class CreateFarmerCommandValidator : AbstractValidator<CreateFarmerComman
 {
     public CreateFarmerCommandValidator()
     {
-        RuleFor(v => v.Id)
-            .NotEmpty().WithMessage("Id is required.");
+        RuleFor(v => v.ClientId)
+            .NotEmpty().WithMessage("ClientId is required.");
 
         RuleFor(v => v.Name)
             .NotEmpty().WithMessage("Name is required.")

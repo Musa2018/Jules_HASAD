@@ -9,6 +9,7 @@ namespace Hasad.Application.Features.Farmers.Commands.UpdateFarmer;
 
 public record UpdateFarmerCommand(
     Guid Id,
+    Guid ClientId,
     string Name,
     string NationalId,
     string PhoneNumber,
@@ -47,6 +48,7 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
              return Result<FarmerDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
+        farmer.ClientId = request.ClientId; // Should ideally not change but we update it to stay consistent.
         farmer.Name = request.Name;
         farmer.NationalId = request.NationalId;
         farmer.PhoneNumber = request.PhoneNumber;
@@ -64,6 +66,7 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
         return Result<FarmerDto>.Success(new FarmerDto
         {
             Id = farmer.Id,
+            ClientId = farmer.ClientId,
             Name = farmer.Name,
             NationalId = farmer.NationalId,
             PhoneNumber = farmer.PhoneNumber,
@@ -79,6 +82,9 @@ public class UpdateFarmerCommandValidator : AbstractValidator<UpdateFarmerComman
     {
         RuleFor(v => v.Id)
             .NotEmpty().WithMessage("Id is required.");
+
+        RuleFor(v => v.ClientId)
+            .NotEmpty().WithMessage("ClientId is required.");
 
         RuleFor(v => v.Name)
             .NotEmpty().WithMessage("Name is required.")

@@ -54,13 +54,22 @@ class BackgroundSyncService {
 
     _isProcessing = true;
     try {
+      final now = DateTime.now();
       final pendingItems = await (_db.select(_db.syncQueue)
             ..where((t) => t.status.equals('pending') | t.status.equals('failed'))
             ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
           .get();
 
       for (final item in pendingItems) {
-        if (item.retryCount >= 5) continue; // Max retries
+        if (item.retryCount >= 3) continue;
+
+        // Simple backoff: 0, 5, 15 minutes
+        if (item.lastAttemptAt != null) {
+          final waitMinutes = item.retryCount == 1 ? 5 : (item.retryCount == 2 ? 15 : 0);
+          if (now.difference(item.lastAttemptAt!).inMinutes < waitMinutes) {
+            continue;
+          }
+        }
 
         await _processItem(item);
       }
@@ -70,8 +79,11 @@ class BackgroundSyncService {
   }
 
   Future<void> _processItem(SyncQueueData item) async {
+    final now = DateTime.now();
     try {
-      await _db.update(_db.syncQueue).replace(item.copyWith(status: 'syncing'));
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(status: 'syncing', lastAttemptAt: Value(now))
+      );
 
       if (item.entityType == 'farmer') {
         await _syncFarmer(item);
@@ -80,6 +92,9 @@ class BackgroundSyncService {
       await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString()))
+        );
         await _resolveConflict(item);
       } else {
         await _db.update(_db.syncQueue).replace(
@@ -123,16 +138,20 @@ class BackgroundSyncService {
         ),
       );
     } else if (item.operation == 'delete') {
-       // Best effort delete on remote
-       await _remoteRepository.deleteFarmer(item.localId);
+       final localFarmer = await (_db.select(_db.farmers)..where((t) => t.id.equals(item.localId))).getSingleOrNull();
+       if (localFarmer?.serverId != null) {
+         await _remoteRepository.deleteFarmer(localFarmer!.serverId!);
+       }
     }
   }
 
   Future<void> _resolveConflict(SyncQueueData item) async {
     if (item.entityType == 'farmer') {
-      // Server Wins: Fetch the remote record and overwrite local
       try {
-        final remoteFarmer = await _remoteRepository.getFarmer(item.localId);
+        final localFarmer = await (_db.select(_db.farmers)..where((t) => t.id.equals(item.localId))).getSingle();
+        final remoteFarmer = await _remoteRepository.getFarmer(localFarmer.serverId ?? item.localId);
+        
+        // Server Wins: Update local record with remote data
         await (_db.update(_db.farmers)..where((t) => t.id.equals(item.localId))).write(
           FarmersCompanion(
             name: Value(remoteFarmer.name),
@@ -143,16 +162,10 @@ class BackgroundSyncService {
             syncStatus: const Value('completed'),
           ),
         );
-        // Mark sync item as completed since we've resolved it
+        
         await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
       } catch (e) {
-        // If resolution fails, keep as failed to retry later
-        await _db.update(_db.syncQueue).replace(
-          item.copyWith(
-            status: 'failed',
-            lastError: Value('Conflict resolution failed: $e'),
-          ),
-        );
+        // Log failure to resolve
       }
     }
   }

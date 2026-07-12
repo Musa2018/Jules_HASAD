@@ -1,4 +1,4 @@
-enum SyncStatus { pending, syncing, completed, failed }
+enum SyncStatus { pending, syncing, completed, failed, conflict }
 
 enum SyncOperation { create, update, delete }
 
@@ -12,6 +12,7 @@ class SyncQueueItem {
   final SyncStatus status;
   final int retryCount;
   final String? lastError;
+  final DateTime? lastAttemptAt;
   final DateTime createdAt;
 
   SyncQueueItem({
@@ -24,6 +25,7 @@ class SyncQueueItem {
     this.status = SyncStatus.pending,
     this.retryCount = 0,
     this.lastError,
+    this.lastAttemptAt,
     required this.createdAt,
   });
 }

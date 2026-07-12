@@ -31,6 +31,7 @@ public class GetFarmerByIdQueryHandler : IRequestHandler<GetFarmerByIdQuery, Res
         return Result<FarmerDto>.Success(new FarmerDto
         {
             Id = farmer.Id,
+            ClientId = farmer.ClientId,
             Name = farmer.Name,
             NationalId = farmer.NationalId,
             PhoneNumber = farmer.PhoneNumber,

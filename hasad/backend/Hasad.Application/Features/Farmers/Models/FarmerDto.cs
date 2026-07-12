@@ -3,6 +3,7 @@ namespace Hasad.Application.Features.Farmers.Models;
 public class FarmerDto
 {
     public Guid Id { get; set; }
+    public Guid ClientId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string NationalId { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;

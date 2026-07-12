@@ -2,12 +2,27 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.3.0-alpha (first end-to-end login flow; prerelease published)
-- **Current Sprint**: Sprint 4 — CI/CD Hardening (in review)
-- **Current Branch**: `sprint/4-cicd-hardening`
-- **Last Updated**: 2026-07-08
+- **Current Version**: v0.4.0-alpha (Farmer module + Hardened Sync)
+- **Current Sprint**: Sprint 6 — Farm Management (planned)
+- **Current Branch**: `main`
+- **Last Updated**: 2026-07-09
 
-## Sprint 0 — COMPLETED
+## Sprint 5 — COMPLETED
+Complete synchronization robustness and infrastructure hardening:
+- **Backend Idempotency**: `Farmer` entity updated with `ClientId` (unique index);
+  `CreateFarmerCommand` implements check-and-create logic to prevent duplicates.
+- **Optimistic Concurrency**: `RowVersion` added to `Farmer` for conflict
+  detection; `UpdateFarmerCommand` returns `409 Conflict` on version mismatch.
+- **Drift Migrations**: Mobile schema upgraded to v3; implemented `onUpgrade`
+  strategy for `rowVersion` and `lastAttemptAt` columns.
+- **Sync Engine**: `BackgroundSyncService` enhanced with retry backoff policy
+  (1, 5, 15 min), detailed status tracking (Pending, Syncing, Completed,
+  Failed, Conflict), and "Server Wins" resolution for 409 errors.
+- Tests: Added backend tests for idempotency/concurrency and mobile unit
+  tests for conflict resolution.
+- Delivered via direct implementation and verification.
+
+## Sprint 4 — COMPLETED
 Complete production-ready authentication subsystem delivered and merged
 (PR #31, tag `sprint-0`, GitHub Release published): secure configuration,
 JWT hardening (issuer/audience, 1h tokens, externalized key), persisted
@@ -93,8 +108,7 @@ and on `main` post-merge. Milestone closed (5/5 issues).
 ## Technical Debt
 - No backend integration-test project yet (unit + live E2E coverage only;
   a dedicated WebApplicationFactory-based suite remains future work).
-- Drift sync-queue (offline persistence) not implemented — post-remediation
-  epic per issue #26.
+- Drift sync-queue (offline persistence) implemented with v3 schema and background sync service.
 - Junk files (`Class1.cs`, `build_output.txt`) outstanding (Sprint 5).
 
 ## CI Status

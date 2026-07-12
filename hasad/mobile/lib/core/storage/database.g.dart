@@ -570,6 +570,875 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   }
 }
 
+class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FarmsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _farmerIdMeta = const VerificationMeta(
+    'farmerId',
+  );
+  @override
+  late final GeneratedColumn<String> farmerId = GeneratedColumn<String>(
+    'farmer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 200),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _governorateIdMeta = const VerificationMeta(
+    'governorateId',
+  );
+  @override
+  late final GeneratedColumn<String> governorateId = GeneratedColumn<String>(
+    'governorate_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<String> localityId = GeneratedColumn<String>(
+    'locality_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _landAreaMeta = const VerificationMeta(
+    'landArea',
+  );
+  @override
+  late final GeneratedColumn<double> landArea = GeneratedColumn<double>(
+    'land_area',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _landAreaUnitMeta = const VerificationMeta(
+    'landAreaUnit',
+  );
+  @override
+  late final GeneratedColumn<String> landAreaUnit = GeneratedColumn<String>(
+    'land_area_unit',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 20),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _ownershipTypeIdMeta = const VerificationMeta(
+    'ownershipTypeId',
+  );
+  @override
+  late final GeneratedColumn<String> ownershipTypeId = GeneratedColumn<String>(
+    'ownership_type_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<String> rowVersion = GeneratedColumn<String>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('completed'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    serverId,
+    farmerId,
+    name,
+    governorateId,
+    localityId,
+    landArea,
+    landAreaUnit,
+    latitude,
+    longitude,
+    ownershipTypeId,
+    rowVersion,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'farms';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FarmLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('farmer_id')) {
+      context.handle(
+        _farmerIdMeta,
+        farmerId.isAcceptableOrUnknown(data['farmer_id']!, _farmerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmerIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('governorate_id')) {
+      context.handle(
+        _governorateIdMeta,
+        governorateId.isAcceptableOrUnknown(
+          data['governorate_id']!,
+          _governorateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_governorateIdMeta);
+    }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localityIdMeta);
+    }
+    if (data.containsKey('land_area')) {
+      context.handle(
+        _landAreaMeta,
+        landArea.isAcceptableOrUnknown(data['land_area']!, _landAreaMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_landAreaMeta);
+    }
+    if (data.containsKey('land_area_unit')) {
+      context.handle(
+        _landAreaUnitMeta,
+        landAreaUnit.isAcceptableOrUnknown(
+          data['land_area_unit']!,
+          _landAreaUnitMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_landAreaUnitMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
+    if (data.containsKey('ownership_type_id')) {
+      context.handle(
+        _ownershipTypeIdMeta,
+        ownershipTypeId.isAcceptableOrUnknown(
+          data['ownership_type_id']!,
+          _ownershipTypeIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_ownershipTypeIdMeta);
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FarmLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FarmLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      farmerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farmer_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      governorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}governorate_id'],
+      )!,
+      localityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locality_id'],
+      )!,
+      landArea: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}land_area'],
+      )!,
+      landAreaUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}land_area_unit'],
+      )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
+      ownershipTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ownership_type_id'],
+      )!,
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_version'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+    );
+  }
+
+  @override
+  $FarmsTable createAlias(String alias) {
+    return $FarmsTable(attachedDatabase, alias);
+  }
+}
+
+class FarmLocal extends DataClass implements Insertable<FarmLocal> {
+  final String id;
+  final String? serverId;
+  final String farmerId;
+  final String name;
+  final String governorateId;
+  final String localityId;
+  final double landArea;
+  final String landAreaUnit;
+  final double? latitude;
+  final double? longitude;
+  final String ownershipTypeId;
+  final String rowVersion;
+  final String syncStatus;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  const FarmLocal({
+    required this.id,
+    this.serverId,
+    required this.farmerId,
+    required this.name,
+    required this.governorateId,
+    required this.localityId,
+    required this.landArea,
+    required this.landAreaUnit,
+    this.latitude,
+    this.longitude,
+    required this.ownershipTypeId,
+    required this.rowVersion,
+    required this.syncStatus,
+    required this.createdAt,
+    this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    map['farmer_id'] = Variable<String>(farmerId);
+    map['name'] = Variable<String>(name);
+    map['governorate_id'] = Variable<String>(governorateId);
+    map['locality_id'] = Variable<String>(localityId);
+    map['land_area'] = Variable<double>(landArea);
+    map['land_area_unit'] = Variable<String>(landAreaUnit);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    map['ownership_type_id'] = Variable<String>(ownershipTypeId);
+    map['row_version'] = Variable<String>(rowVersion);
+    map['sync_status'] = Variable<String>(syncStatus);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    return map;
+  }
+
+  FarmsCompanion toCompanion(bool nullToAbsent) {
+    return FarmsCompanion(
+      id: Value(id),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      farmerId: Value(farmerId),
+      name: Value(name),
+      governorateId: Value(governorateId),
+      localityId: Value(localityId),
+      landArea: Value(landArea),
+      landAreaUnit: Value(landAreaUnit),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
+      ownershipTypeId: Value(ownershipTypeId),
+      rowVersion: Value(rowVersion),
+      syncStatus: Value(syncStatus),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory FarmLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FarmLocal(
+      id: serializer.fromJson<String>(json['id']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      farmerId: serializer.fromJson<String>(json['farmerId']),
+      name: serializer.fromJson<String>(json['name']),
+      governorateId: serializer.fromJson<String>(json['governorateId']),
+      localityId: serializer.fromJson<String>(json['localityId']),
+      landArea: serializer.fromJson<double>(json['landArea']),
+      landAreaUnit: serializer.fromJson<String>(json['landAreaUnit']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+      ownershipTypeId: serializer.fromJson<String>(json['ownershipTypeId']),
+      rowVersion: serializer.fromJson<String>(json['rowVersion']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'serverId': serializer.toJson<String?>(serverId),
+      'farmerId': serializer.toJson<String>(farmerId),
+      'name': serializer.toJson<String>(name),
+      'governorateId': serializer.toJson<String>(governorateId),
+      'localityId': serializer.toJson<String>(localityId),
+      'landArea': serializer.toJson<double>(landArea),
+      'landAreaUnit': serializer.toJson<String>(landAreaUnit),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+      'ownershipTypeId': serializer.toJson<String>(ownershipTypeId),
+      'rowVersion': serializer.toJson<String>(rowVersion),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+    };
+  }
+
+  FarmLocal copyWith({
+    String? id,
+    Value<String?> serverId = const Value.absent(),
+    String? farmerId,
+    String? name,
+    String? governorateId,
+    String? localityId,
+    double? landArea,
+    String? landAreaUnit,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+    String? ownershipTypeId,
+    String? rowVersion,
+    String? syncStatus,
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+  }) => FarmLocal(
+    id: id ?? this.id,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    farmerId: farmerId ?? this.farmerId,
+    name: name ?? this.name,
+    governorateId: governorateId ?? this.governorateId,
+    localityId: localityId ?? this.localityId,
+    landArea: landArea ?? this.landArea,
+    landAreaUnit: landAreaUnit ?? this.landAreaUnit,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+    ownershipTypeId: ownershipTypeId ?? this.ownershipTypeId,
+    rowVersion: rowVersion ?? this.rowVersion,
+    syncStatus: syncStatus ?? this.syncStatus,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
+  FarmLocal copyWithCompanion(FarmsCompanion data) {
+    return FarmLocal(
+      id: data.id.present ? data.id.value : this.id,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      farmerId: data.farmerId.present ? data.farmerId.value : this.farmerId,
+      name: data.name.present ? data.name.value : this.name,
+      governorateId: data.governorateId.present
+          ? data.governorateId.value
+          : this.governorateId,
+      localityId: data.localityId.present
+          ? data.localityId.value
+          : this.localityId,
+      landArea: data.landArea.present ? data.landArea.value : this.landArea,
+      landAreaUnit: data.landAreaUnit.present
+          ? data.landAreaUnit.value
+          : this.landAreaUnit,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      ownershipTypeId: data.ownershipTypeId.present
+          ? data.ownershipTypeId.value
+          : this.ownershipTypeId,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FarmLocal(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('farmerId: $farmerId, ')
+          ..write('name: $name, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('localityId: $localityId, ')
+          ..write('landArea: $landArea, ')
+          ..write('landAreaUnit: $landAreaUnit, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('ownershipTypeId: $ownershipTypeId, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    serverId,
+    farmerId,
+    name,
+    governorateId,
+    localityId,
+    landArea,
+    landAreaUnit,
+    latitude,
+    longitude,
+    ownershipTypeId,
+    rowVersion,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FarmLocal &&
+          other.id == this.id &&
+          other.serverId == this.serverId &&
+          other.farmerId == this.farmerId &&
+          other.name == this.name &&
+          other.governorateId == this.governorateId &&
+          other.localityId == this.localityId &&
+          other.landArea == this.landArea &&
+          other.landAreaUnit == this.landAreaUnit &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.ownershipTypeId == this.ownershipTypeId &&
+          other.rowVersion == this.rowVersion &&
+          other.syncStatus == this.syncStatus &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class FarmsCompanion extends UpdateCompanion<FarmLocal> {
+  final Value<String> id;
+  final Value<String?> serverId;
+  final Value<String> farmerId;
+  final Value<String> name;
+  final Value<String> governorateId;
+  final Value<String> localityId;
+  final Value<double> landArea;
+  final Value<String> landAreaUnit;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  final Value<String> ownershipTypeId;
+  final Value<String> rowVersion;
+  final Value<String> syncStatus;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<int> rowid;
+  const FarmsCompanion({
+    this.id = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.farmerId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.governorateId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.landArea = const Value.absent(),
+    this.landAreaUnit = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.ownershipTypeId = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FarmsCompanion.insert({
+    required String id,
+    this.serverId = const Value.absent(),
+    required String farmerId,
+    required String name,
+    required String governorateId,
+    required String localityId,
+    required double landArea,
+    required String landAreaUnit,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    required String ownershipTypeId,
+    this.rowVersion = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       farmerId = Value(farmerId),
+       name = Value(name),
+       governorateId = Value(governorateId),
+       localityId = Value(localityId),
+       landArea = Value(landArea),
+       landAreaUnit = Value(landAreaUnit),
+       ownershipTypeId = Value(ownershipTypeId);
+  static Insertable<FarmLocal> custom({
+    Expression<String>? id,
+    Expression<String>? serverId,
+    Expression<String>? farmerId,
+    Expression<String>? name,
+    Expression<String>? governorateId,
+    Expression<String>? localityId,
+    Expression<double>? landArea,
+    Expression<String>? landAreaUnit,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<String>? ownershipTypeId,
+    Expression<String>? rowVersion,
+    Expression<String>? syncStatus,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (serverId != null) 'server_id': serverId,
+      if (farmerId != null) 'farmer_id': farmerId,
+      if (name != null) 'name': name,
+      if (governorateId != null) 'governorate_id': governorateId,
+      if (localityId != null) 'locality_id': localityId,
+      if (landArea != null) 'land_area': landArea,
+      if (landAreaUnit != null) 'land_area_unit': landAreaUnit,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (ownershipTypeId != null) 'ownership_type_id': ownershipTypeId,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FarmsCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? serverId,
+    Value<String>? farmerId,
+    Value<String>? name,
+    Value<String>? governorateId,
+    Value<String>? localityId,
+    Value<double>? landArea,
+    Value<String>? landAreaUnit,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+    Value<String>? ownershipTypeId,
+    Value<String>? rowVersion,
+    Value<String>? syncStatus,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return FarmsCompanion(
+      id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      farmerId: farmerId ?? this.farmerId,
+      name: name ?? this.name,
+      governorateId: governorateId ?? this.governorateId,
+      localityId: localityId ?? this.localityId,
+      landArea: landArea ?? this.landArea,
+      landAreaUnit: landAreaUnit ?? this.landAreaUnit,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      ownershipTypeId: ownershipTypeId ?? this.ownershipTypeId,
+      rowVersion: rowVersion ?? this.rowVersion,
+      syncStatus: syncStatus ?? this.syncStatus,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (farmerId.present) {
+      map['farmer_id'] = Variable<String>(farmerId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (governorateId.present) {
+      map['governorate_id'] = Variable<String>(governorateId.value);
+    }
+    if (localityId.present) {
+      map['locality_id'] = Variable<String>(localityId.value);
+    }
+    if (landArea.present) {
+      map['land_area'] = Variable<double>(landArea.value);
+    }
+    if (landAreaUnit.present) {
+      map['land_area_unit'] = Variable<String>(landAreaUnit.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (ownershipTypeId.present) {
+      map['ownership_type_id'] = Variable<String>(ownershipTypeId.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<String>(rowVersion.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FarmsCompanion(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('farmerId: $farmerId, ')
+          ..write('name: $name, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('localityId: $localityId, ')
+          ..write('landArea: $landArea, ')
+          ..write('landAreaUnit: $landAreaUnit, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('ownershipTypeId: $ownershipTypeId, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncQueueTable extends SyncQueue
     with TableInfo<$SyncQueueTable, SyncQueueData> {
   @override
@@ -1186,12 +2055,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $FarmersTable farmers = $FarmersTable(this);
+  late final $FarmsTable farms = $FarmsTable(this);
   late final $SyncQueueTable syncQueue = $SyncQueueTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [farmers, syncQueue];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    farmers,
+    farms,
+    syncQueue,
+  ];
 }
 
 typedef $$FarmersTableCreateCompanionBuilder =
@@ -1473,6 +2347,401 @@ typedef $$FarmersTableProcessedTableManager =
       $$FarmersTableUpdateCompanionBuilder,
       (FarmerLocal, BaseReferences<_$AppDatabase, $FarmersTable, FarmerLocal>),
       FarmerLocal,
+      PrefetchHooks Function()
+    >;
+typedef $$FarmsTableCreateCompanionBuilder =
+    FarmsCompanion Function({
+      required String id,
+      Value<String?> serverId,
+      required String farmerId,
+      required String name,
+      required String governorateId,
+      required String localityId,
+      required double landArea,
+      required String landAreaUnit,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      required String ownershipTypeId,
+      Value<String> rowVersion,
+      Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$FarmsTableUpdateCompanionBuilder =
+    FarmsCompanion Function({
+      Value<String> id,
+      Value<String?> serverId,
+      Value<String> farmerId,
+      Value<String> name,
+      Value<String> governorateId,
+      Value<String> localityId,
+      Value<double> landArea,
+      Value<String> landAreaUnit,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<String> ownershipTypeId,
+      Value<String> rowVersion,
+      Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$FarmsTableFilterComposer extends Composer<_$AppDatabase, $FarmsTable> {
+  $$FarmsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmerId => $composableBuilder(
+    column: $table.farmerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get landArea => $composableBuilder(
+    column: $table.landArea,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get landAreaUnit => $composableBuilder(
+    column: $table.landAreaUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownershipTypeId => $composableBuilder(
+    column: $table.ownershipTypeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FarmsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FarmsTable> {
+  $$FarmsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmerId => $composableBuilder(
+    column: $table.farmerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get landArea => $composableBuilder(
+    column: $table.landArea,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get landAreaUnit => $composableBuilder(
+    column: $table.landAreaUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownershipTypeId => $composableBuilder(
+    column: $table.ownershipTypeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FarmsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FarmsTable> {
+  $$FarmsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get farmerId =>
+      $composableBuilder(column: $table.farmerId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get landArea =>
+      $composableBuilder(column: $table.landArea, builder: (column) => column);
+
+  GeneratedColumn<String> get landAreaUnit => $composableBuilder(
+    column: $table.landAreaUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<String> get ownershipTypeId => $composableBuilder(
+    column: $table.ownershipTypeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$FarmsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FarmsTable,
+          FarmLocal,
+          $$FarmsTableFilterComposer,
+          $$FarmsTableOrderingComposer,
+          $$FarmsTableAnnotationComposer,
+          $$FarmsTableCreateCompanionBuilder,
+          $$FarmsTableUpdateCompanionBuilder,
+          (FarmLocal, BaseReferences<_$AppDatabase, $FarmsTable, FarmLocal>),
+          FarmLocal,
+          PrefetchHooks Function()
+        > {
+  $$FarmsTableTableManager(_$AppDatabase db, $FarmsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FarmsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FarmsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FarmsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
+                Value<String> farmerId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> governorateId = const Value.absent(),
+                Value<String> localityId = const Value.absent(),
+                Value<double> landArea = const Value.absent(),
+                Value<String> landAreaUnit = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<String> ownershipTypeId = const Value.absent(),
+                Value<String> rowVersion = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FarmsCompanion(
+                id: id,
+                serverId: serverId,
+                farmerId: farmerId,
+                name: name,
+                governorateId: governorateId,
+                localityId: localityId,
+                landArea: landArea,
+                landAreaUnit: landAreaUnit,
+                latitude: latitude,
+                longitude: longitude,
+                ownershipTypeId: ownershipTypeId,
+                rowVersion: rowVersion,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> serverId = const Value.absent(),
+                required String farmerId,
+                required String name,
+                required String governorateId,
+                required String localityId,
+                required double landArea,
+                required String landAreaUnit,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                required String ownershipTypeId,
+                Value<String> rowVersion = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FarmsCompanion.insert(
+                id: id,
+                serverId: serverId,
+                farmerId: farmerId,
+                name: name,
+                governorateId: governorateId,
+                localityId: localityId,
+                landArea: landArea,
+                landAreaUnit: landAreaUnit,
+                latitude: latitude,
+                longitude: longitude,
+                ownershipTypeId: ownershipTypeId,
+                rowVersion: rowVersion,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FarmsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FarmsTable,
+      FarmLocal,
+      $$FarmsTableFilterComposer,
+      $$FarmsTableOrderingComposer,
+      $$FarmsTableAnnotationComposer,
+      $$FarmsTableCreateCompanionBuilder,
+      $$FarmsTableUpdateCompanionBuilder,
+      (FarmLocal, BaseReferences<_$AppDatabase, $FarmsTable, FarmLocal>),
+      FarmLocal,
       PrefetchHooks Function()
     >;
 typedef $$SyncQueueTableCreateCompanionBuilder =
@@ -1782,6 +3051,8 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$FarmersTableTableManager get farmers =>
       $$FarmersTableTableManager(_db, _db.farmers);
+  $$FarmsTableTableManager get farms =>
+      $$FarmsTableTableManager(_db, _db.farms);
   $$SyncQueueTableTableManager get syncQueue =>
       $$SyncQueueTableTableManager(_db, _db.syncQueue);
 }

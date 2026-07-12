@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
+import 'package:mobile/features/farmers/data/remote_farm_repository.dart';
 import 'package:mobile/features/farmers/data/remote_farmer_repository.dart';
 
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -17,6 +18,7 @@ final syncServiceProvider = Provider<BackgroundSyncService>((ref) {
   final service = BackgroundSyncService(
     ref.watch(databaseProvider),
     RemoteFarmerRepository(ref.watch(apiDioProvider)),
+    RemoteFarmRepository(ref.watch(apiDioProvider)),
     ref.watch(connectivityProvider),
   );
   ref.onDispose(() => service.dispose());

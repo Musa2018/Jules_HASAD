@@ -100,4 +100,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get requiredField => 'هذا الحقل مطلوب.';
+
+  @override
+  String get addFarm => 'إضافة مزرعة';
+
+  @override
+  String get editFarm => 'تعديل مزرعة';
+
+  @override
+  String get farmName => 'اسم المزرعة';
+
+  @override
+  String get governorate => 'المحافظة';
+
+  @override
+  String get locality => 'التجمع السكاني';
+
+  @override
+  String get landArea => 'مساحة الأرض';
+
+  @override
+  String get unit => 'الوحدة';
+
+  @override
+  String get ownershipType => 'نوع الملكية';
+
+  @override
+  String get noFarms => 'لا يوجد مزارع.';
+
+  @override
+  String get errorLoadingFarms => 'فشل تحميل المزارع.';
 }

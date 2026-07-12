@@ -277,6 +277,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This field is required.'**
   String get requiredField;
+
+  /// No description provided for @addFarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Farm'**
+  String get addFarm;
+
+  /// No description provided for @editFarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Farm'**
+  String get editFarm;
+
+  /// No description provided for @farmName.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm Name'**
+  String get farmName;
+
+  /// No description provided for @governorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Governorate'**
+  String get governorate;
+
+  /// No description provided for @locality.
+  ///
+  /// In en, this message translates to:
+  /// **'Locality'**
+  String get locality;
+
+  /// No description provided for @landArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Land Area'**
+  String get landArea;
+
+  /// No description provided for @unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unit;
+
+  /// No description provided for @ownershipType.
+  ///
+  /// In en, this message translates to:
+  /// **'Ownership Type'**
+  String get ownershipType;
+
+  /// No description provided for @noFarms.
+  ///
+  /// In en, this message translates to:
+  /// **'No farms found.'**
+  String get noFarms;
+
+  /// No description provided for @errorLoadingFarms.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load farms.'**
+  String get errorLoadingFarms;
 }
 
 class _AppLocalizationsDelegate

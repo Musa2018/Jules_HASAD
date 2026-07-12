@@ -24,6 +24,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Registered farmers.</summary>
     public DbSet<Farmer> Farmers => Set<Farmer>();
 
+    /// <summary>Registered farms.</summary>
+    public DbSet<Farm> Farms => Set<Farm>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -52,6 +55,26 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
             // ClientId is used for idempotency during synchronization.
             entity.HasIndex(f => f.ClientId).IsUnique();
+        });
+
+        builder.Entity<Farm>(entity =>
+        {
+            entity.HasKey(f => f.Id);
+            entity.Property(f => f.Name).IsRequired().HasMaxLength(200);
+            entity.Property(f => f.GovernorateId).IsRequired().HasMaxLength(50);
+            entity.Property(f => f.LocalityId).IsRequired().HasMaxLength(50);
+            entity.Property(f => f.LandArea).HasPrecision(18, 2);
+            entity.Property(f => f.LandAreaUnit).IsRequired().HasMaxLength(20);
+            entity.Property(f => f.OwnershipTypeId).IsRequired().HasMaxLength(50);
+            entity.Property(f => f.RowVersion).IsRowVersion();
+
+            entity.HasIndex(f => f.ClientId).IsUnique();
+            entity.HasIndex(f => f.FarmerId);
+
+            entity.HasOne(f => f.Farmer)
+                .WithMany()
+                .HasForeignKey(f => f.FarmerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

@@ -27,10 +27,33 @@ class Farmers extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('FarmLocal')
+class Farms extends Table {
+  TextColumn get id => text()(); // ClientId
+  TextColumn get serverId => text().nullable()(); // Server Id
+  TextColumn get farmerId => text()(); // Farmer ClientId
+  TextColumn get name => text().withLength(max: 200)();
+  TextColumn get governorateId => text().withLength(max: 50)();
+  TextColumn get localityId => text().withLength(max: 50)();
+  RealColumn get landArea => real()();
+  TextColumn get landAreaUnit => text().withLength(max: 20)();
+  RealColumn get latitude => real().nullable()();
+  RealColumn get longitude => real().nullable()();
+  TextColumn get ownershipTypeId => text().withLength(max: 50)();
+
+  TextColumn get rowVersion => text().withDefault(const Constant(''))();
+  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class SyncQueue extends Table {
   TextColumn get id => text()();
   TextColumn get localId => text()();
-  TextColumn get entityType => text()(); // 'farmer'
+  TextColumn get entityType => text()(); // 'farmer', 'farm'
   TextColumn get operation => text()(); // 'create', 'update', 'delete'
   TextColumn get data => text()(); // JSON payload
   TextColumn get status => text().withDefault(const Constant('pending'))();
@@ -43,13 +66,13 @@ class SyncQueue extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Farmers, SyncQueue])
+@DriftDatabase(tables: [Farmers, Farms, SyncQueue])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,6 +83,12 @@ class AppDatabase extends _$AppDatabase {
       if (from < 3) {
         await m.addColumn(syncQueue, syncQueue.lastAttemptAt);
       }
+      if (from < 4) {
+        await m.createTable(farms);
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
     },
   );
 }

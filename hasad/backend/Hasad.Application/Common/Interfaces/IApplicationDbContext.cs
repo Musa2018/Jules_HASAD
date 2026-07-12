@@ -7,5 +7,6 @@ public interface IApplicationDbContext
 {
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Farmer> Farmers { get; }
+    DbSet<Farm> Farms { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

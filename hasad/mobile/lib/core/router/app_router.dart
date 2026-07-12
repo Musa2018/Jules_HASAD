@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
+import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
+import 'package:mobile/features/farmers/presentation/farms_list_screen.dart';
 import 'package:mobile/features/home/presentation/home_screen.dart';
 
 /// Route paths used across the application.
@@ -27,6 +30,15 @@ abstract final class AppRoutes {
 
   /// Edit farmer.
   static const editFarmer = '/farmers/edit';
+
+  /// Farms list.
+  static const farms = '/farms';
+
+  /// Add farm.
+  static const addFarm = '/farms/add';
+
+  /// Edit farm.
+  static const editFarm = '/farms/edit';
 }
 
 /// Bridges a Riverpod provider into a [Listenable] so GoRouter re-evaluates
@@ -91,6 +103,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.editFarmer,
         builder: (context, state) => FarmerFormScreen(farmer: state.extra as Farmer?),
+      ),
+      GoRoute(
+        path: AppRoutes.farms,
+        builder: (context, state) => FarmsListScreen(farmer: state.extra as Farmer),
+      ),
+      GoRoute(
+        path: AppRoutes.addFarm,
+        builder: (context, state) => FarmFormScreen(farmer: state.extra as Farmer),
+      ),
+      GoRoute(
+        path: AppRoutes.editFarm,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return FarmFormScreen(
+            farmer: extra['farmer'] as Farmer,
+            farm: extra['farm'] as Farm,
+          );
+        },
       ),
     ],
   );

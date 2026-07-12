@@ -100,4 +100,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requiredField => 'This field is required.';
+
+  @override
+  String get addFarm => 'Add Farm';
+
+  @override
+  String get editFarm => 'Edit Farm';
+
+  @override
+  String get farmName => 'Farm Name';
+
+  @override
+  String get governorate => 'Governorate';
+
+  @override
+  String get locality => 'Locality';
+
+  @override
+  String get landArea => 'Land Area';
+
+  @override
+  String get unit => 'Unit';
+
+  @override
+  String get ownershipType => 'Ownership Type';
+
+  @override
+  String get noFarms => 'No farms found.';
+
+  @override
+  String get errorLoadingFarms => 'Failed to load farms.';
 }

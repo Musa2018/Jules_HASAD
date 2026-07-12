@@ -60,5 +60,15 @@
   "noFarmers": "No farmers found.",
   "errorLoadingFarmers": "Failed to load farmers.",
   "retry": "Retry",
-  "requiredField": "This field is required."
+  "requiredField": "This field is required.",
+  "addFarm": "Add Farm",
+  "editFarm": "Edit Farm",
+  "farmName": "Farm Name",
+  "governorate": "Governorate",
+  "locality": "Locality",
+  "landArea": "Land Area",
+  "unit": "Unit",
+  "ownershipType": "Ownership Type",
+  "noFarms": "No farms found.",
+  "errorLoadingFarms": "Failed to load farms."
 }

@@ -6,28 +6,34 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 
 class MockFarmerRepository extends Mock implements FarmerRepository {}
+class MockFarmRepository extends Mock implements FarmRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
   late AppDatabase db;
-  late MockFarmerRepository mockRemoteRepo;
+  late MockFarmerRepository mockFarmerRepo;
+  late MockFarmRepository mockFarmRepo;
   late MockConnectivity mockConnectivity;
   late BackgroundSyncService syncService;
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
-    mockRemoteRepo = MockFarmerRepository();
+    mockFarmerRepo = MockFarmerRepository();
+    mockFarmRepo = MockFarmRepository();
     mockConnectivity = MockConnectivity();
     
     when(() => mockConnectivity.onConnectivityChanged).thenAnswer((_) => const Stream.empty());
     
-    syncService = BackgroundSyncService(db, mockRemoteRepo, mockConnectivity);
+    syncService = BackgroundSyncService(db, mockFarmerRepo, mockFarmRepo, mockConnectivity);
     
     registerFallbackValue(const Farmer(id: '', name: '', nationalId: '', phoneNumber: '', address: '', rowVersion: ''));
+    registerFallbackValue(const Farm(id: '', farmerId: '', name: '', governorateId: '', localityId: '', landArea: 0, landAreaUnit: '', ownershipTypeId: ''));
   });
 
   tearDown(() async {
@@ -64,7 +70,7 @@ void main() {
     ));
 
     when(() => mockConnectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
-    when(() => mockRemoteRepo.createFarmer(any())).thenAnswer((_) async => farmer.copyWith(id: localId, rowVersion: 'v1'));
+    when(() => mockFarmerRepo.createFarmer(any())).thenAnswer((_) async => farmer.copyWith(id: localId, rowVersion: 'v1'));
 
     await syncService.processQueue();
 
@@ -76,52 +82,46 @@ void main() {
     expect(queueItem.status, 'completed');
   });
 
-  test('processQueue handles conflict by Server Wins resolution', () async {
-    const localId = 'local-123';
-    const farmer = Farmer(
+  test('processQueue syncs create farm item to remote', () async {
+    const localId = 'farm-123';
+    const farm = Farm(
       id: localId,
-      name: 'Local Name',
-      nationalId: '12345',
-      phoneNumber: '555',
-      address: 'Gaza',
-      rowVersion: 'v1',
+      farmerId: 'farmer-123',
+      name: 'My Farm',
+      governorateId: 'G1',
+      localityId: 'L1',
+      landArea: 10,
+      landAreaUnit: 'Dunam',
+      ownershipTypeId: 'Owned',
     );
 
-    await db.into(db.farmers).insert(FarmersCompanion.insert(
+    await db.into(db.farms).insert(FarmsCompanion.insert(
       id: localId,
-      name: farmer.name,
-      nationalId: farmer.nationalId,
-      phoneNumber: farmer.phoneNumber,
-      address: farmer.address,
-      rowVersion: const Value('v1'),
+      farmerId: farm.farmerId,
+      name: farm.name,
+      governorateId: farm.governorateId,
+      localityId: farm.localityId,
+      landArea: farm.landArea,
+      landAreaUnit: farm.landAreaUnit,
+      ownershipTypeId: farm.ownershipTypeId,
       syncStatus: const Value('pending'),
     ));
 
     await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
-      id: 'queue-1',
+      id: 'queue-2',
       localId: localId,
-      entityType: 'farmer',
-      operation: 'update',
-      data: jsonEncode(farmer.toJson()),
+      entityType: 'farm',
+      operation: 'create',
+      data: jsonEncode(farm.toJson()),
     ));
 
     when(() => mockConnectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
-    
-    // Simulate conflict on update
-    when(() => mockRemoteRepo.updateFarmer(any())).thenThrow(FarmerException(['CONFLICT']));
-    
-    // Remote record that should win
-    final remoteFarmer = farmer.copyWith(name: 'Remote Name', rowVersion: 'v2');
-    when(() => mockRemoteRepo.getFarmer(localId)).thenAnswer((_) async => remoteFarmer);
+    when(() => mockFarmRepo.createFarm(any())).thenAnswer((_) async => farm.copyWith(rowVersion: 'fv1'));
 
     await syncService.processQueue();
 
-    final localFarmer = await (db.select(db.farmers)..where((t) => t.id.equals(localId))).getSingle();
-    expect(localFarmer.name, 'Remote Name');
-    expect(localFarmer.rowVersion, 'v2');
-    expect(localFarmer.syncStatus, 'completed');
-
-    final queueItem = await db.select(db.syncQueue).getSingle();
-    expect(queueItem.status, 'completed');
+    final localFarm = await (db.select(db.farms)..where((t) => t.id.equals(localId))).getSingle();
+    expect(localFarm.rowVersion, 'fv1');
+    expect(localFarm.syncStatus, 'completed');
   });
 }

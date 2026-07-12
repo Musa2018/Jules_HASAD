@@ -28,7 +28,11 @@ class FarmersListScreen extends ConsumerWidget {
               return ListTile(
                 title: Text(farmer.name),
                 subtitle: Text(farmer.nationalId),
-                onTap: () => context.push('/farmers/edit', extra: farmer),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () => context.push('/farmers/edit', extra: farmer),
+                ),
+                onTap: () => context.push('/farms', extra: farmer),
               );
             },
           );

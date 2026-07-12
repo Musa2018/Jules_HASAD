@@ -3,19 +3,27 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/domain/farm.dart' as farm_domain;
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
 import 'package:uuid/uuid.dart';
 
 class BackgroundSyncService {
   final AppDatabase _db;
-  final FarmerRepository _remoteRepository;
+  final FarmerRepository _remoteFarmerRepository;
+  final FarmRepository _remoteFarmRepository;
   final Connectivity _connectivity;
   
   StreamSubscription? _connectivitySubscription;
   bool _isProcessing = false;
 
-  BackgroundSyncService(this._db, this._remoteRepository, this._connectivity) {
+  BackgroundSyncService(
+    this._db, 
+    this._remoteFarmerRepository, 
+    this._remoteFarmRepository,
+    this._connectivity
+  ) {
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen((results) {
       if (results.any((result) => result != ConnectivityResult.none)) {
         processQueue();
@@ -87,10 +95,27 @@ class BackgroundSyncService {
 
       if (item.entityType == 'farmer') {
         await _syncFarmer(item);
+      } else if (item.entityType == 'farm') {
+        await _syncFarm(item);
       }
 
       await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
     } on FarmerException catch (e) {
+      if (e.errors.any((err) => err.contains('CONFLICT'))) {
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString()))
+        );
+        await _resolveConflict(item);
+      } else {
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+      }
+    } on FarmException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString()))
@@ -121,7 +146,7 @@ class BackgroundSyncService {
     final farmer = domain.Farmer.fromJson(data);
 
     if (item.operation == 'create') {
-      final result = await _remoteRepository.createFarmer(farmer);
+      final result = await _remoteFarmerRepository.createFarmer(farmer);
       await (_db.update(_db.farmers)..where((t) => t.id.equals(item.localId))).write(
         FarmersCompanion(
           serverId: Value(result.id),
@@ -130,7 +155,7 @@ class BackgroundSyncService {
         ),
       );
     } else if (item.operation == 'update') {
-      final result = await _remoteRepository.updateFarmer(farmer);
+      final result = await _remoteFarmerRepository.updateFarmer(farmer);
       await (_db.update(_db.farmers)..where((t) => t.id.equals(item.localId))).write(
         FarmersCompanion(
           rowVersion: Value(result.rowVersion),
@@ -140,7 +165,36 @@ class BackgroundSyncService {
     } else if (item.operation == 'delete') {
        final localFarmer = await (_db.select(_db.farmers)..where((t) => t.id.equals(item.localId))).getSingleOrNull();
        if (localFarmer?.serverId != null) {
-         await _remoteRepository.deleteFarmer(localFarmer!.serverId!);
+         await _remoteFarmerRepository.deleteFarmer(localFarmer!.serverId!);
+       }
+    }
+  }
+
+  Future<void> _syncFarm(SyncQueueData item) async {
+    final data = jsonDecode(item.data) as Map<String, dynamic>;
+    final farm = farm_domain.Farm.fromJson(data);
+
+    if (item.operation == 'create') {
+      final result = await _remoteFarmRepository.createFarm(farm);
+      await (_db.update(_db.farms)..where((t) => t.id.equals(item.localId))).write(
+        FarmsCompanion(
+          serverId: Value(result.id),
+          rowVersion: Value(result.rowVersion),
+          syncStatus: const Value('completed'),
+        ),
+      );
+    } else if (item.operation == 'update') {
+      final result = await _remoteFarmRepository.updateFarm(farm);
+      await (_db.update(_db.farms)..where((t) => t.id.equals(item.localId))).write(
+        FarmsCompanion(
+          rowVersion: Value(result.rowVersion),
+          syncStatus: const Value('completed'),
+        ),
+      );
+    } else if (item.operation == 'delete') {
+       final localFarm = await (_db.select(_db.farms)..where((t) => t.id.equals(item.localId))).getSingleOrNull();
+       if (localFarm?.serverId != null) {
+         await _remoteFarmRepository.deleteFarm(localFarm!.serverId!);
        }
     }
   }
@@ -149,7 +203,7 @@ class BackgroundSyncService {
     if (item.entityType == 'farmer') {
       try {
         final localFarmer = await (_db.select(_db.farmers)..where((t) => t.id.equals(item.localId))).getSingle();
-        final remoteFarmer = await _remoteRepository.getFarmer(localFarmer.serverId ?? item.localId);
+        final remoteFarmer = await _remoteFarmerRepository.getFarmer(localFarmer.serverId ?? item.localId);
         
         // Server Wins: Update local record with remote data
         await (_db.update(_db.farmers)..where((t) => t.id.equals(item.localId))).write(
@@ -166,6 +220,30 @@ class BackgroundSyncService {
         await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
       } catch (e) {
         // Log failure to resolve
+      }
+    } else if (item.entityType == 'farm') {
+      try {
+        final localFarm = await (_db.select(_db.farms)..where((t) => t.id.equals(item.localId))).getSingle();
+        final remoteFarm = await _remoteFarmRepository.getFarm(localFarm.serverId ?? item.localId);
+        
+        await (_db.update(_db.farms)..where((t) => t.id.equals(item.localId))).write(
+          FarmsCompanion(
+            name: Value(remoteFarm.name),
+            governorateId: Value(remoteFarm.governorateId),
+            localityId: Value(remoteFarm.localityId),
+            landArea: Value(remoteFarm.landArea),
+            landAreaUnit: Value(remoteFarm.landAreaUnit),
+            latitude: Value(remoteFarm.latitude),
+            longitude: Value(remoteFarm.longitude),
+            ownershipTypeId: Value(remoteFarm.ownershipTypeId),
+            rowVersion: Value(remoteFarm.rowVersion),
+            syncStatus: const Value('completed'),
+          ),
+        );
+        
+        await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
+      } catch (e) {
+        // Log
       }
     }
   }

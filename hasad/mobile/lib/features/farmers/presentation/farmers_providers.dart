@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/data/offline_first_farm_repository.dart';
+import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 
 final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
@@ -10,8 +13,19 @@ final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
   );
 });
 
+final farmRepositoryProvider = Provider<FarmRepository>((ref) {
+  return OfflineFirstFarmRepository(
+    ref.watch(databaseProvider),
+    ref.watch(syncServiceProvider),
+  );
+});
+
 final farmersListProvider = FutureProvider.autoDispose<List<Farmer>>((ref) async {
   return ref.watch(farmerRepositoryProvider).getFarmers();
+});
+
+final farmsListByFarmerProvider = FutureProvider.autoDispose.family<List<Farm>, String>((ref, farmerId) async {
+  return ref.watch(farmRepositoryProvider).getFarmsByFarmer(farmerId);
 });
 
 class FarmerFormState {
@@ -70,4 +84,62 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
 
 final farmerFormProvider = StateNotifierProvider.autoDispose<FarmerFormNotifier, FarmerFormState>((ref) {
   return FarmerFormNotifier(ref.watch(farmerRepositoryProvider));
+});
+
+class FarmFormState {
+  final bool isLoading;
+  final List<String> errors;
+  final bool success;
+
+  const FarmFormState({
+    this.isLoading = false,
+    this.errors = const [],
+    this.success = false,
+  });
+}
+
+class FarmFormNotifier extends StateNotifier<FarmFormState> {
+  final FarmRepository _repository;
+
+  FarmFormNotifier(this._repository) : super(const FarmFormState());
+
+  Future<void> createFarm(Farm farm) async {
+    state = const FarmFormState(isLoading: true);
+    try {
+      await _repository.createFarm(farm);
+      state = const FarmFormState(success: true);
+    } on FarmException catch (e) {
+      state = FarmFormState(errors: e.errors);
+    } catch (_) {
+      state = const FarmFormState(errors: ['An unexpected error occurred.']);
+    }
+  }
+
+  Future<void> updateFarm(Farm farm) async {
+    state = const FarmFormState(isLoading: true);
+    try {
+      await _repository.updateFarm(farm);
+      state = const FarmFormState(success: true);
+    } on FarmException catch (e) {
+      state = FarmFormState(errors: e.errors);
+    } catch (_) {
+      state = const FarmFormState(errors: ['An unexpected error occurred.']);
+    }
+  }
+
+  Future<void> deleteFarm(String id) async {
+    state = const FarmFormState(isLoading: true);
+    try {
+      await _repository.deleteFarm(id);
+      state = const FarmFormState(success: true);
+    } on FarmException catch (e) {
+      state = FarmFormState(errors: e.errors);
+    } catch (_) {
+      state = const FarmFormState(errors: ['An unexpected error occurred.']);
+    }
+  }
+}
+
+final farmFormProvider = StateNotifierProvider.autoDispose<FarmFormNotifier, FarmFormState>((ref) {
+  return FarmFormNotifier(ref.watch(farmRepositoryProvider));
 });

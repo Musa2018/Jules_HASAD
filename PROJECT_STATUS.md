@@ -2,10 +2,24 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.4.0-alpha (Farmer module + Hardened Sync)
-- **Current Sprint**: Sprint 6 — Farm Management (planned)
+- **Current Version**: v0.5.0-alpha (Farm module + Sync Hardening)
+- **Current Sprint**: Sprint 7 — Damage Report Module (planned)
 - **Current Branch**: `main`
-- **Last Updated**: 2026-07-09
+- **Last Updated**: 2026-07-10
+
+## Sprint 6 — COMPLETED
+Implemented Farm Management module with offline-first support:
+- **Farm Domain**: New `Farm` entity with `ClientId`, `FarmerId`, and optimistic
+  concurrency (`RowVersion`).
+- **Backend API**: Full CRUD support with `FarmsController` and RBAC.
+  Idempotent creation and versioned updates.
+- **Mobile Persistence**: Drift schema v4 adding `Farms` table with migration
+  strategy.
+- **Sync Integration**: `BackgroundSyncService` updated to support `Farm`
+  entity with automatic background synchronization and conflict resolution.
+- **UI/UX**: `FarmsListScreen` and `FarmFormScreen` with RTL (Arabic) support,
+  localized validation, and integration into existing navigation flow.
+- Tests: Added backend unit tests and mobile widget tests for Farm features.
 
 ## Sprint 5 — COMPLETED
 Complete synchronization robustness and infrastructure hardening:

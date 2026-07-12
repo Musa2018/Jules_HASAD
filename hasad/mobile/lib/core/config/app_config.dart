@@ -24,7 +24,7 @@ class AppConfig {
     environment: AppEnvironment.dev,
     apiBaseUrl: const String.fromEnvironment(
       'API_BASE_URL',
-      defaultValue: 'https://dev-api.hasad.ps/api',
+      defaultValue: 'http://10.0.2.2:5271/api',
     ),
   );
 

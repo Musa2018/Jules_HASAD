@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/router/app_router.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/core/theme/app_theme.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -20,6 +21,8 @@ class HasadApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    // Initialize background sync
+    ref.watch(syncServiceProvider);
 
     return MaterialApp.router(
       title: 'HASAD',

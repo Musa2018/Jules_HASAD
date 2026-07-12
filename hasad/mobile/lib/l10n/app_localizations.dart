@@ -193,6 +193,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome, {name}'**
   String welcome(String name);
+
+  /// No description provided for @addFarmer.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Farmer'**
+  String get addFarmer;
+
+  /// No description provided for @editFarmer.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Farmer'**
+  String get editFarmer;
+
+  /// No description provided for @farmerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmer Name'**
+  String get farmerName;
+
+  /// No description provided for @nationalId.
+  ///
+  /// In en, this message translates to:
+  /// **'National ID'**
+  String get nationalId;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// No description provided for @address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this farmer?'**
+  String get confirmDelete;
+
+  /// No description provided for @noFarmers.
+  ///
+  /// In en, this message translates to:
+  /// **'No farmers found.'**
+  String get noFarmers;
+
+  /// No description provided for @errorLoadingFarmers.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load farmers.'**
+  String get errorLoadingFarmers;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required.'**
+  String get requiredField;
 }
 
 class _AppLocalizationsDelegate

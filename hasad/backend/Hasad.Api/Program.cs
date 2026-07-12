@@ -42,6 +42,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
+builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+
 // Add Identity with lockout and password policy
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {

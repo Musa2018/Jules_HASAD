@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -24,11 +26,61 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          l10n.welcome(session?.fullName ?? session?.email ?? ''),
-          style: Theme.of(context).textTheme.titleLarge,
-          textAlign: TextAlign.center,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              l10n.welcome(session?.fullName ?? session?.email ?? ''),
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              padding: const EdgeInsets.all(16.0),
+              mainAxisSpacing: 16.0,
+              crossAxisSpacing: 16.0,
+              children: [
+                _FeatureCard(
+                  title: l10n.farmers,
+                  icon: Icons.people,
+                  onTap: () => context.push(AppRoutes.farmers),
+                ),
+                // Other features can be added here
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FeatureCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _FeatureCard({
+    required this.title,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 48, color: Theme.of(context).primaryColor),
+            const SizedBox(height: 8),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+          ],
         ),
       ),
     );

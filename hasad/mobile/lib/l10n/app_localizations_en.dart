@@ -58,4 +58,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String welcome(String name) {
     return 'Welcome, $name';
   }
+
+  @override
+  String get addFarmer => 'Add Farmer';
+
+  @override
+  String get editFarmer => 'Edit Farmer';
+
+  @override
+  String get farmerName => 'Farmer Name';
+
+  @override
+  String get nationalId => 'National ID';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirmDelete => 'Are you sure you want to delete this farmer?';
+
+  @override
+  String get noFarmers => 'No farmers found.';
+
+  @override
+  String get errorLoadingFarmers => 'Failed to load farmers.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get requiredField => 'This field is required.';
 }

@@ -1,0 +1,24 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/storage/background_sync_service.dart';
+import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
+import 'package:mobile/features/farmers/data/remote_farmer_repository.dart';
+
+final databaseProvider = Provider<AppDatabase>((ref) {
+  final db = AppDatabase();
+  ref.onDispose(() => db.close());
+  return db;
+});
+
+final connectivityProvider = Provider<Connectivity>((ref) => Connectivity());
+
+final syncServiceProvider = Provider<BackgroundSyncService>((ref) {
+  final service = BackgroundSyncService(
+    ref.watch(databaseProvider),
+    RemoteFarmerRepository(ref.watch(apiDioProvider)),
+    ref.watch(connectivityProvider),
+  );
+  ref.onDispose(() => service.dispose());
+  return service;
+});

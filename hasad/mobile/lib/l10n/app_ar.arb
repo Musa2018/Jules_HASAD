@@ -14,5 +14,19 @@
   "passwordRequired": "يرجى إدخال كلمة المرور.",
   "loginFailed": "فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد والمحاولة مرة أخرى.",
   "logout": "تسجيل الخروج",
-  "welcome": "مرحباً، {name}"
+  "welcome": "مرحباً، {name}",
+  "addFarmer": "إضافة مزارع",
+  "editFarmer": "تعديل مزارع",
+  "farmerName": "اسم المزارع",
+  "nationalId": "رقم الهوية",
+  "phoneNumber": "رقم الهاتف",
+  "address": "العنوان",
+  "save": "حفظ",
+  "delete": "حذف",
+  "cancel": "إلغاء",
+  "confirmDelete": "هل أنت متأكد من حذف هذا المزارع؟",
+  "noFarmers": "لا يوجد مزارعون.",
+  "errorLoadingFarmers": "فشل تحميل المزارعين.",
+  "retry": "إعادة المحاولة",
+  "requiredField": "هذا الحقل مطلوب."
 }

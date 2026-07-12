@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
+import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
+import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
 import 'package:mobile/features/home/presentation/home_screen.dart';
 
 /// Route paths used across the application.
@@ -15,6 +18,15 @@ abstract final class AppRoutes {
 
   /// Authenticated home screen.
   static const home = '/home';
+
+  /// Farmers list.
+  static const farmers = '/farmers';
+
+  /// Add farmer.
+  static const addFarmer = '/farmers/add';
+
+  /// Edit farmer.
+  static const editFarmer = '/farmers/edit';
 }
 
 /// Bridges a Riverpod provider into a [Listenable] so GoRouter re-evaluates
@@ -67,6 +79,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.farmers,
+        builder: (context, state) => const FarmersListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.addFarmer,
+        builder: (context, state) => const FarmerFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editFarmer,
+        builder: (context, state) => FarmerFormScreen(farmer: state.extra as Farmer?),
       ),
     ],
   );

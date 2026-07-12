@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Domain.Entities;
 using Hasad.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace Hasad.Infrastructure.Persistence;
 /// EF Core database context bridging the domain model, ASP.NET Core Identity,
 /// and the PostgreSQL (or in-memory development) database.
 /// </summary>
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
     /// <summary>Initializes the context.</summary>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -44,6 +45,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(f => f.NationalId).IsRequired().HasMaxLength(20);
             entity.Property(f => f.PhoneNumber).IsRequired().HasMaxLength(20);
             entity.Property(f => f.Address).HasMaxLength(500);
+            entity.Property(f => f.RowVersion).IsRowVersion();
 
             // A national ID uniquely identifies one farmer record.
             entity.HasIndex(f => f.NationalId).IsUnique();

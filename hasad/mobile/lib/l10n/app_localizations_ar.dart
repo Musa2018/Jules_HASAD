@@ -58,4 +58,46 @@ class AppLocalizationsAr extends AppLocalizations {
   String welcome(String name) {
     return 'مرحباً، $name';
   }
+
+  @override
+  String get addFarmer => 'إضافة مزارع';
+
+  @override
+  String get editFarmer => 'تعديل مزارع';
+
+  @override
+  String get farmerName => 'اسم المزارع';
+
+  @override
+  String get nationalId => 'رقم الهوية';
+
+  @override
+  String get phoneNumber => 'رقم الهاتف';
+
+  @override
+  String get address => 'العنوان';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get confirmDelete => 'هل أنت متأكد من حذف هذا المزارع؟';
+
+  @override
+  String get noFarmers => 'لا يوجد مزارعون.';
+
+  @override
+  String get errorLoadingFarmers => 'فشل تحميل المزارعين.';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get requiredField => 'هذا الحقل مطلوب.';
 }

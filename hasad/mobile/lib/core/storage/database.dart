@@ -105,12 +105,18 @@ class DamageItems extends Table {
 
 @DataClassName('DamageReportAttachmentLocal')
 class DamageReportAttachments extends Table {
-  TextColumn get id => text()();
+  TextColumn get id => text()(); // ClientId
+  TextColumn get serverId => text().nullable()();
   TextColumn get damageReportId => text()();
+  
   TextColumn get localPath => text()();
-  TextColumn get remoteUrl => text().nullable()();
-  TextColumn get fileType => text()();
+  TextColumn get remotePath => text().nullable()();
+  
+  TextColumn get uploadStatus => text().withDefault(const Constant('pending'))(); // pending, uploading, completed, failed
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -119,8 +125,8 @@ class DamageReportAttachments extends Table {
 class SyncQueue extends Table {
   TextColumn get id => text()();
   TextColumn get localId => text()();
-  TextColumn get entityType => text()(); // 'farmer', 'farm', 'damage_report', 'damage_item'
-  TextColumn get operation => text()(); // 'create', 'update', 'delete'
+  TextColumn get entityType => text()(); // 'farmer', 'farm', 'damage_report', 'damage_item', 'attachment'
+  TextColumn get operation => text()(); // 'create', 'update', 'delete', 'upload'
   TextColumn get data => text()(); // JSON payload
   TextColumn get status => text().withDefault(const Constant('pending'))();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
@@ -138,7 +144,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -156,6 +162,13 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(damageReports);
         await m.createTable(damageItems);
         await m.createTable(damageReportAttachments);
+      }
+      if (from < 6) {
+        // Upgrade DamageReportAttachments table
+        await m.addColumn(damageReportAttachments, damageReportAttachments.serverId);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.remotePath);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.uploadStatus);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.updatedAt);
       }
     },
     beforeOpen: (details) async {

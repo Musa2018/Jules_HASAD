@@ -3259,6 +3259,17 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _damageReportIdMeta = const VerificationMeta(
     'damageReportId',
   );
@@ -3281,27 +3292,28 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _remoteUrlMeta = const VerificationMeta(
-    'remoteUrl',
+  static const VerificationMeta _remotePathMeta = const VerificationMeta(
+    'remotePath',
   );
   @override
-  late final GeneratedColumn<String> remoteUrl = GeneratedColumn<String>(
-    'remote_url',
+  late final GeneratedColumn<String> remotePath = GeneratedColumn<String>(
+    'remote_path',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _fileTypeMeta = const VerificationMeta(
-    'fileType',
+  static const VerificationMeta _uploadStatusMeta = const VerificationMeta(
+    'uploadStatus',
   );
   @override
-  late final GeneratedColumn<String> fileType = GeneratedColumn<String>(
-    'file_type',
+  late final GeneratedColumn<String> uploadStatus = GeneratedColumn<String>(
+    'upload_status',
     aliasedName,
     false,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
   );
   static const VerificationMeta _syncStatusMeta = const VerificationMeta(
     'syncStatus',
@@ -3315,14 +3327,40 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     requiredDuringInsert: false,
     defaultValue: const Constant('pending'),
   );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    serverId,
     damageReportId,
     localPath,
-    remoteUrl,
-    fileType,
+    remotePath,
+    uploadStatus,
     syncStatus,
+    createdAt,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3340,6 +3378,12 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
     }
     if (data.containsKey('damage_report_id')) {
       context.handle(
@@ -3360,24 +3404,37 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     } else if (isInserting) {
       context.missing(_localPathMeta);
     }
-    if (data.containsKey('remote_url')) {
+    if (data.containsKey('remote_path')) {
       context.handle(
-        _remoteUrlMeta,
-        remoteUrl.isAcceptableOrUnknown(data['remote_url']!, _remoteUrlMeta),
+        _remotePathMeta,
+        remotePath.isAcceptableOrUnknown(data['remote_path']!, _remotePathMeta),
       );
     }
-    if (data.containsKey('file_type')) {
+    if (data.containsKey('upload_status')) {
       context.handle(
-        _fileTypeMeta,
-        fileType.isAcceptableOrUnknown(data['file_type']!, _fileTypeMeta),
+        _uploadStatusMeta,
+        uploadStatus.isAcceptableOrUnknown(
+          data['upload_status']!,
+          _uploadStatusMeta,
+        ),
       );
-    } else if (isInserting) {
-      context.missing(_fileTypeMeta);
     }
     if (data.containsKey('sync_status')) {
       context.handle(
         _syncStatusMeta,
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
       );
     }
     return context;
@@ -3396,6 +3453,10 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
       damageReportId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}damage_report_id'],
@@ -3404,18 +3465,26 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         DriftSqlType.string,
         data['${effectivePrefix}local_path'],
       )!,
-      remoteUrl: attachedDatabase.typeMapping.read(
+      remotePath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}remote_url'],
+        data['${effectivePrefix}remote_path'],
       ),
-      fileType: attachedDatabase.typeMapping.read(
+      uploadStatus: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}file_type'],
+        data['${effectivePrefix}upload_status'],
       )!,
       syncStatus: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
     );
   }
 
@@ -3428,43 +3497,63 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
 class DamageReportAttachmentLocal extends DataClass
     implements Insertable<DamageReportAttachmentLocal> {
   final String id;
+  final String? serverId;
   final String damageReportId;
   final String localPath;
-  final String? remoteUrl;
-  final String fileType;
+  final String? remotePath;
+  final String uploadStatus;
   final String syncStatus;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
   const DamageReportAttachmentLocal({
     required this.id,
+    this.serverId,
     required this.damageReportId,
     required this.localPath,
-    this.remoteUrl,
-    required this.fileType,
+    this.remotePath,
+    required this.uploadStatus,
     required this.syncStatus,
+    required this.createdAt,
+    this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
     map['damage_report_id'] = Variable<String>(damageReportId);
     map['local_path'] = Variable<String>(localPath);
-    if (!nullToAbsent || remoteUrl != null) {
-      map['remote_url'] = Variable<String>(remoteUrl);
+    if (!nullToAbsent || remotePath != null) {
+      map['remote_path'] = Variable<String>(remotePath);
     }
-    map['file_type'] = Variable<String>(fileType);
+    map['upload_status'] = Variable<String>(uploadStatus);
     map['sync_status'] = Variable<String>(syncStatus);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
     return map;
   }
 
   DamageReportAttachmentsCompanion toCompanion(bool nullToAbsent) {
     return DamageReportAttachmentsCompanion(
       id: Value(id),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
       damageReportId: Value(damageReportId),
       localPath: Value(localPath),
-      remoteUrl: remoteUrl == null && nullToAbsent
+      remotePath: remotePath == null && nullToAbsent
           ? const Value.absent()
-          : Value(remoteUrl),
-      fileType: Value(fileType),
+          : Value(remotePath),
+      uploadStatus: Value(uploadStatus),
       syncStatus: Value(syncStatus),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
     );
   }
 
@@ -3475,11 +3564,14 @@ class DamageReportAttachmentLocal extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DamageReportAttachmentLocal(
       id: serializer.fromJson<String>(json['id']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
       damageReportId: serializer.fromJson<String>(json['damageReportId']),
       localPath: serializer.fromJson<String>(json['localPath']),
-      remoteUrl: serializer.fromJson<String?>(json['remoteUrl']),
-      fileType: serializer.fromJson<String>(json['fileType']),
+      remotePath: serializer.fromJson<String?>(json['remotePath']),
+      uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
   }
   @override
@@ -3487,43 +3579,59 @@ class DamageReportAttachmentLocal extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'serverId': serializer.toJson<String?>(serverId),
       'damageReportId': serializer.toJson<String>(damageReportId),
       'localPath': serializer.toJson<String>(localPath),
-      'remoteUrl': serializer.toJson<String?>(remoteUrl),
-      'fileType': serializer.toJson<String>(fileType),
+      'remotePath': serializer.toJson<String?>(remotePath),
+      'uploadStatus': serializer.toJson<String>(uploadStatus),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
   }
 
   DamageReportAttachmentLocal copyWith({
     String? id,
+    Value<String?> serverId = const Value.absent(),
     String? damageReportId,
     String? localPath,
-    Value<String?> remoteUrl = const Value.absent(),
-    String? fileType,
+    Value<String?> remotePath = const Value.absent(),
+    String? uploadStatus,
     String? syncStatus,
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageReportAttachmentLocal(
     id: id ?? this.id,
+    serverId: serverId.present ? serverId.value : this.serverId,
     damageReportId: damageReportId ?? this.damageReportId,
     localPath: localPath ?? this.localPath,
-    remoteUrl: remoteUrl.present ? remoteUrl.value : this.remoteUrl,
-    fileType: fileType ?? this.fileType,
+    remotePath: remotePath.present ? remotePath.value : this.remotePath,
+    uploadStatus: uploadStatus ?? this.uploadStatus,
     syncStatus: syncStatus ?? this.syncStatus,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
   DamageReportAttachmentLocal copyWithCompanion(
     DamageReportAttachmentsCompanion data,
   ) {
     return DamageReportAttachmentLocal(
       id: data.id.present ? data.id.value : this.id,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
       damageReportId: data.damageReportId.present
           ? data.damageReportId.value
           : this.damageReportId,
       localPath: data.localPath.present ? data.localPath.value : this.localPath,
-      remoteUrl: data.remoteUrl.present ? data.remoteUrl.value : this.remoteUrl,
-      fileType: data.fileType.present ? data.fileType.value : this.fileType,
+      remotePath: data.remotePath.present
+          ? data.remotePath.value
+          : this.remotePath,
+      uploadStatus: data.uploadStatus.present
+          ? data.uploadStatus.value
+          : this.uploadStatus,
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -3531,11 +3639,14 @@ class DamageReportAttachmentLocal extends DataClass
   String toString() {
     return (StringBuffer('DamageReportAttachmentLocal(')
           ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
           ..write('damageReportId: $damageReportId, ')
           ..write('localPath: $localPath, ')
-          ..write('remoteUrl: $remoteUrl, ')
-          ..write('fileType: $fileType, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('remotePath: $remotePath, ')
+          ..write('uploadStatus: $uploadStatus, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -3543,90 +3654,116 @@ class DamageReportAttachmentLocal extends DataClass
   @override
   int get hashCode => Object.hash(
     id,
+    serverId,
     damageReportId,
     localPath,
-    remoteUrl,
-    fileType,
+    remotePath,
+    uploadStatus,
     syncStatus,
+    createdAt,
+    updatedAt,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DamageReportAttachmentLocal &&
           other.id == this.id &&
+          other.serverId == this.serverId &&
           other.damageReportId == this.damageReportId &&
           other.localPath == this.localPath &&
-          other.remoteUrl == this.remoteUrl &&
-          other.fileType == this.fileType &&
-          other.syncStatus == this.syncStatus);
+          other.remotePath == this.remotePath &&
+          other.uploadStatus == this.uploadStatus &&
+          other.syncStatus == this.syncStatus &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class DamageReportAttachmentsCompanion
     extends UpdateCompanion<DamageReportAttachmentLocal> {
   final Value<String> id;
+  final Value<String?> serverId;
   final Value<String> damageReportId;
   final Value<String> localPath;
-  final Value<String?> remoteUrl;
-  final Value<String> fileType;
+  final Value<String?> remotePath;
+  final Value<String> uploadStatus;
   final Value<String> syncStatus;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
   final Value<int> rowid;
   const DamageReportAttachmentsCompanion({
     this.id = const Value.absent(),
+    this.serverId = const Value.absent(),
     this.damageReportId = const Value.absent(),
     this.localPath = const Value.absent(),
-    this.remoteUrl = const Value.absent(),
-    this.fileType = const Value.absent(),
+    this.remotePath = const Value.absent(),
+    this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DamageReportAttachmentsCompanion.insert({
     required String id,
+    this.serverId = const Value.absent(),
     required String damageReportId,
     required String localPath,
-    this.remoteUrl = const Value.absent(),
-    required String fileType,
+    this.remotePath = const Value.absent(),
+    this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        damageReportId = Value(damageReportId),
-       localPath = Value(localPath),
-       fileType = Value(fileType);
+       localPath = Value(localPath);
   static Insertable<DamageReportAttachmentLocal> custom({
     Expression<String>? id,
+    Expression<String>? serverId,
     Expression<String>? damageReportId,
     Expression<String>? localPath,
-    Expression<String>? remoteUrl,
-    Expression<String>? fileType,
+    Expression<String>? remotePath,
+    Expression<String>? uploadStatus,
     Expression<String>? syncStatus,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (serverId != null) 'server_id': serverId,
       if (damageReportId != null) 'damage_report_id': damageReportId,
       if (localPath != null) 'local_path': localPath,
-      if (remoteUrl != null) 'remote_url': remoteUrl,
-      if (fileType != null) 'file_type': fileType,
+      if (remotePath != null) 'remote_path': remotePath,
+      if (uploadStatus != null) 'upload_status': uploadStatus,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
   DamageReportAttachmentsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? serverId,
     Value<String>? damageReportId,
     Value<String>? localPath,
-    Value<String?>? remoteUrl,
-    Value<String>? fileType,
+    Value<String?>? remotePath,
+    Value<String>? uploadStatus,
     Value<String>? syncStatus,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
     Value<int>? rowid,
   }) {
     return DamageReportAttachmentsCompanion(
       id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
       damageReportId: damageReportId ?? this.damageReportId,
       localPath: localPath ?? this.localPath,
-      remoteUrl: remoteUrl ?? this.remoteUrl,
-      fileType: fileType ?? this.fileType,
+      remotePath: remotePath ?? this.remotePath,
+      uploadStatus: uploadStatus ?? this.uploadStatus,
       syncStatus: syncStatus ?? this.syncStatus,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3637,20 +3774,29 @@ class DamageReportAttachmentsCompanion
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
     if (damageReportId.present) {
       map['damage_report_id'] = Variable<String>(damageReportId.value);
     }
     if (localPath.present) {
       map['local_path'] = Variable<String>(localPath.value);
     }
-    if (remoteUrl.present) {
-      map['remote_url'] = Variable<String>(remoteUrl.value);
+    if (remotePath.present) {
+      map['remote_path'] = Variable<String>(remotePath.value);
     }
-    if (fileType.present) {
-      map['file_type'] = Variable<String>(fileType.value);
+    if (uploadStatus.present) {
+      map['upload_status'] = Variable<String>(uploadStatus.value);
     }
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -3662,11 +3808,14 @@ class DamageReportAttachmentsCompanion
   String toString() {
     return (StringBuffer('DamageReportAttachmentsCompanion(')
           ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
           ..write('damageReportId: $damageReportId, ')
           ..write('localPath: $localPath, ')
-          ..write('remoteUrl: $remoteUrl, ')
-          ..write('fileType: $fileType, ')
+          ..write('remotePath: $remotePath, ')
+          ..write('uploadStatus: $uploadStatus, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5821,21 +5970,27 @@ typedef $$DamageItemsTableProcessedTableManager =
 typedef $$DamageReportAttachmentsTableCreateCompanionBuilder =
     DamageReportAttachmentsCompanion Function({
       required String id,
+      Value<String?> serverId,
       required String damageReportId,
       required String localPath,
-      Value<String?> remoteUrl,
-      required String fileType,
+      Value<String?> remotePath,
+      Value<String> uploadStatus,
       Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
       Value<int> rowid,
     });
 typedef $$DamageReportAttachmentsTableUpdateCompanionBuilder =
     DamageReportAttachmentsCompanion Function({
       Value<String> id,
+      Value<String?> serverId,
       Value<String> damageReportId,
       Value<String> localPath,
-      Value<String?> remoteUrl,
-      Value<String> fileType,
+      Value<String?> remotePath,
+      Value<String> uploadStatus,
       Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
       Value<int> rowid,
     });
 
@@ -5853,6 +6008,11 @@ class $$DamageReportAttachmentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get damageReportId => $composableBuilder(
     column: $table.damageReportId,
     builder: (column) => ColumnFilters(column),
@@ -5863,18 +6023,28 @@ class $$DamageReportAttachmentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get remoteUrl => $composableBuilder(
-    column: $table.remoteUrl,
+  ColumnFilters<String> get remotePath => $composableBuilder(
+    column: $table.remotePath,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get fileType => $composableBuilder(
-    column: $table.fileType,
+  ColumnFilters<String> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
     builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -5893,6 +6063,11 @@ class $$DamageReportAttachmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get damageReportId => $composableBuilder(
     column: $table.damageReportId,
     builder: (column) => ColumnOrderings(column),
@@ -5903,18 +6078,28 @@ class $$DamageReportAttachmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get remoteUrl => $composableBuilder(
-    column: $table.remoteUrl,
+  ColumnOrderings<String> get remotePath => $composableBuilder(
+    column: $table.remotePath,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get fileType => $composableBuilder(
-    column: $table.fileType,
+  ColumnOrderings<String> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
     builder: (column) => ColumnOrderings(column),
   );
 
   ColumnOrderings<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -5931,6 +6116,9 @@ class $$DamageReportAttachmentsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
   GeneratedColumn<String> get damageReportId => $composableBuilder(
     column: $table.damageReportId,
     builder: (column) => column,
@@ -5939,16 +6127,26 @@ class $$DamageReportAttachmentsTableAnnotationComposer
   GeneratedColumn<String> get localPath =>
       $composableBuilder(column: $table.localPath, builder: (column) => column);
 
-  GeneratedColumn<String> get remoteUrl =>
-      $composableBuilder(column: $table.remoteUrl, builder: (column) => column);
+  GeneratedColumn<String> get remotePath => $composableBuilder(
+    column: $table.remotePath,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get fileType =>
-      $composableBuilder(column: $table.fileType, builder: (column) => column);
+  GeneratedColumn<String> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
 class $$DamageReportAttachmentsTableTableManager
@@ -5998,37 +6196,49 @@ class $$DamageReportAttachmentsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
                 Value<String> damageReportId = const Value.absent(),
                 Value<String> localPath = const Value.absent(),
-                Value<String?> remoteUrl = const Value.absent(),
-                Value<String> fileType = const Value.absent(),
+                Value<String?> remotePath = const Value.absent(),
+                Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DamageReportAttachmentsCompanion(
                 id: id,
+                serverId: serverId,
                 damageReportId: damageReportId,
                 localPath: localPath,
-                remoteUrl: remoteUrl,
-                fileType: fileType,
+                remotePath: remotePath,
+                uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
+                Value<String?> serverId = const Value.absent(),
                 required String damageReportId,
                 required String localPath,
-                Value<String?> remoteUrl = const Value.absent(),
-                required String fileType,
+                Value<String?> remotePath = const Value.absent(),
+                Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DamageReportAttachmentsCompanion.insert(
                 id: id,
+                serverId: serverId,
                 damageReportId: damageReportId,
                 localPath: localPath,
-                remoteUrl: remoteUrl,
-                fileType: fileType,
+                remotePath: remotePath,
+                uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

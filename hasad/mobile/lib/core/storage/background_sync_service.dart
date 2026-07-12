@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart' as item_domain;
 import 'package:mobile/features/farmers/domain/damage_report.dart' as report_domain;
+import 'package:mobile/features/farmers/domain/damage_report_attachment.dart' as attachment_domain;
 import 'package:mobile/features/farmers/domain/farm.dart' as farm_domain;
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
 import 'package:uuid/uuid.dart';
@@ -17,6 +19,7 @@ class BackgroundSyncService {
   final FarmerRepository _remoteFarmerRepository;
   final FarmRepository _remoteFarmRepository;
   final DamageReportRepository _remoteDamageReportRepository;
+  final DamageReportAttachmentRepository _remoteAttachmentRepository;
   final Connectivity _connectivity;
   
   StreamSubscription? _connectivitySubscription;
@@ -27,6 +30,7 @@ class BackgroundSyncService {
     this._remoteFarmerRepository, 
     this._remoteFarmRepository,
     this._remoteDamageReportRepository,
+    this._remoteAttachmentRepository,
     this._connectivity
   ) {
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen((results) {
@@ -106,6 +110,8 @@ class BackgroundSyncService {
         await _syncDamageReport(item);
       } else if (item.entityType == 'damage_item') {
         await _syncDamageItem(item);
+      } else if (item.entityType == 'attachment') {
+        await _syncAttachment(item);
       }
 
       await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
@@ -162,6 +168,25 @@ class BackgroundSyncService {
           lastError: Value(e.toString()),
         ),
       );
+    }
+  }
+
+  Future<void> _syncAttachment(SyncQueueData item) async {
+    final data = jsonDecode(item.data) as Map<String, dynamic>;
+    final attachment = attachment_domain.DamageReportAttachment.fromJson(data);
+
+    if (item.operation == 'upload') {
+      final result = await _remoteAttachmentRepository.uploadAttachment(attachment);
+      await (_db.update(_db.damageReportAttachments)..where((t) => t.id.equals(item.localId))).write(
+        DamageReportAttachmentsCompanion(
+          serverId: Value(result.id), // In this case clientId is Id on backend
+          remotePath: Value(result.remotePath),
+          uploadStatus: const Value('completed'),
+          syncStatus: const Value('completed'),
+        ),
+      );
+    } else if (item.operation == 'delete') {
+       await _remoteAttachmentRepository.deleteAttachment(item.localId);
     }
   }
 

@@ -2,12 +2,28 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.5.0-alpha (Farm module + Sync Hardening)
-- **Current Sprint**: Sprint 7 — Damage Report Module (planned)
+- **Current Version**: v0.6.0-alpha (Evidence module + Storage abstraction)
+- **Current Sprint**: Sprint 9 — Compensation Workflow (planned)
 - **Current Branch**: `main`
-- **Last Updated**: 2026-07-10
+- **Last Updated**: 2026-07-11
 
-## Sprint 6 — COMPLETED
+## Sprint 8 — COMPLETED
+Implemented Evidence & Attachment Management module:
+- **Attachment Domain**: New `DamageReportAttachment` entity with support for
+  local/remote paths, file metadata, and upload status.
+- **Storage Abstraction**: `IFileStorageService` implemented with local disk
+  storage as a default, ready for Azure/S3 transition.
+- **Backend API**: `UploadAttachmentCommand` (idempotent) and endpoints for
+  managing multi-part file uploads within damage reports.
+- **Mobile Persistence**: Drift schema upgraded to **v6** to support attachment
+  metadata and background upload status.
+- **Upload Engine**: Extended `BackgroundSyncService` to handle binary file
+  uploads with existing retry and backoff logic.
+- **UI/UX**: `AttachmentGalleryScreen` for capturing (camera) and managing
+  damage evidence photos.
+- Tests: Verified with 45 backend and 44 mobile tests.
+
+## Sprint 7 — COMPLETED
 Implemented Farm Management module with offline-first support:
 - **Farm Domain**: New `Farm` entity with `ClientId`, `FarmerId`, and optimistic
   concurrency (`RowVersion`).

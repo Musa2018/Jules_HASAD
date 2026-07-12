@@ -134,10 +134,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReportAttachment>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.FileName).IsRequired().HasMaxLength(250);
+            entity.Property(e => e.OriginalFileName).IsRequired().HasMaxLength(250);
+            entity.Property(e => e.FileType).IsRequired().HasMaxLength(100);
             entity.Property(e => e.LocalPath).HasMaxLength(500);
-            entity.Property(e => e.RemoteUrl).HasMaxLength(500);
-            entity.Property(e => e.FileType).HasMaxLength(100);
-            entity.Property(e => e.SyncStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.RemotePath).HasMaxLength(500);
+            entity.Property(e => e.UploadStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.RowVersion).IsRowVersion();
+
+            entity.HasIndex(e => e.ClientId).IsUnique();
 
             entity.HasOne(e => e.DamageReport)
                 .WithMany(r => r.Attachments)

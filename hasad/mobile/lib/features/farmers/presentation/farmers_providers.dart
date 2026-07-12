@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/data/offline_first_damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/offline_first_damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/offline_first_farm_repository.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
+import 'package:mobile/features/farmers/domain/damage_report_attachment.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 
@@ -30,6 +33,13 @@ final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   );
 });
 
+final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>((ref) {
+  return OfflineFirstDamageReportAttachmentRepository(
+    ref.watch(databaseProvider),
+    ref.watch(syncServiceProvider),
+  );
+});
+
 final farmersListProvider = FutureProvider.autoDispose<List<Farmer>>((ref) async {
   return ref.watch(farmerRepositoryProvider).getFarmers();
 });
@@ -40,6 +50,10 @@ final farmsListByFarmerProvider = FutureProvider.autoDispose.family<List<Farm>, 
 
 final damageReportsListByFarmProvider = FutureProvider.autoDispose.family<List<DamageReport>, String>((ref, farmId) async {
   return ref.watch(damageReportRepositoryProvider).getDamageReportsByFarm(farmId);
+});
+
+final attachmentsByReportProvider = FutureProvider.autoDispose.family<List<DamageReportAttachment>, String>((ref, reportId) async {
+  return ref.watch(attachmentRepositoryProvider).getAttachmentsByReport(reportId);
 });
 
 class DamageReportFormState {

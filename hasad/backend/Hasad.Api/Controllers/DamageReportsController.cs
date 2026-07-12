@@ -113,4 +113,27 @@ public class DamageReportsController : ControllerBase
         var result = await _mediator.Send(new DeleteDamageItemCommand(itemId));
         return result.Succeeded ? Ok(result) : BadRequest(result);
     }
+
+    [HttpPost("{id}/attachments")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor")]
+    public async Task<IActionResult> UploadAttachment(Guid id, [FromForm] IFormFile file, [FromForm] Guid clientId)
+    {
+        if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
+
+        using var stream = file.OpenReadStream();
+        var command = new UploadAttachmentCommand(
+            id,
+            clientId,
+            stream,
+            file.FileName,
+            file.ContentType,
+            file.Length,
+            null, // Could get from form if needed
+            null,
+            null
+        );
+
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
 }

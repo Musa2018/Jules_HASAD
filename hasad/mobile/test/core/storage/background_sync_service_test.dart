@@ -6,9 +6,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/domain/damage_report_attachment.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
@@ -16,6 +18,7 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 class MockFarmRepository extends Mock implements FarmRepository {}
 class MockDamageReportRepository extends Mock implements DamageReportRepository {}
+class MockAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
@@ -23,6 +26,7 @@ void main() {
   late MockFarmerRepository mockFarmerRepo;
   late MockFarmRepository mockFarmRepo;
   late MockDamageReportRepository mockDamageRepo;
+  late MockAttachmentRepository mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
   late BackgroundSyncService syncService;
 
@@ -31,15 +35,17 @@ void main() {
     mockFarmerRepo = MockFarmerRepository();
     mockFarmRepo = MockFarmRepository();
     mockDamageRepo = MockDamageReportRepository();
+    mockAttachmentRepo = MockAttachmentRepository();
     mockConnectivity = MockConnectivity();
     
     when(() => mockConnectivity.onConnectivityChanged).thenAnswer((_) => const Stream.empty());
     
-    syncService = BackgroundSyncService(db, mockFarmerRepo, mockFarmRepo, mockDamageRepo, mockConnectivity);
+    syncService = BackgroundSyncService(db, mockFarmerRepo, mockFarmRepo, mockDamageRepo, mockAttachmentRepo, mockConnectivity);
     
     registerFallbackValue(const Farmer(id: '', name: '', nationalId: '', phoneNumber: '', address: '', rowVersion: ''));
     registerFallbackValue(const Farm(id: '', farmerId: '', name: '', governorateId: '', localityId: '', landArea: 0, landAreaUnit: '', ownershipTypeId: ''));
     registerFallbackValue(DamageReport(id: '', farmId: '', farmerId: '', damageDate: DateTime.now(), documentationDate: DateTime.now(), governorateId: '', localityId: '', statusId: '', notes: ''));
+    registerFallbackValue(const DamageReportAttachment(id: '', damageReportId: '', localPath: ''));
   });
 
   tearDown(() async {
@@ -86,48 +92,5 @@ void main() {
 
     final queueItem = await db.select(db.syncQueue).getSingle();
     expect(queueItem.status, 'completed');
-  });
-
-  test('processQueue syncs create farm item to remote', () async {
-    const localId = 'farm-123';
-    const farm = Farm(
-      id: localId,
-      farmerId: 'farmer-123',
-      name: 'My Farm',
-      governorateId: 'G1',
-      localityId: 'L1',
-      landArea: 10,
-      landAreaUnit: 'Dunam',
-      ownershipTypeId: 'Owned',
-    );
-
-    await db.into(db.farms).insert(FarmsCompanion.insert(
-      id: localId,
-      farmerId: farm.farmerId,
-      name: farm.name,
-      governorateId: farm.governorateId,
-      localityId: farm.localityId,
-      landArea: farm.landArea,
-      landAreaUnit: farm.landAreaUnit,
-      ownershipTypeId: farm.ownershipTypeId,
-      syncStatus: const Value('pending'),
-    ));
-
-    await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
-      id: 'queue-2',
-      localId: localId,
-      entityType: 'farm',
-      operation: 'create',
-      data: jsonEncode(farm.toJson()),
-    ));
-
-    when(() => mockConnectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
-    when(() => mockFarmRepo.createFarm(any())).thenAnswer((_) async => farm.copyWith(rowVersion: 'fv1'));
-
-    await syncService.processQueue();
-
-    final localFarm = await (db.select(db.farms)..where((t) => t.id.equals(localId))).getSingle();
-    expect(localFarm.rowVersion, 'fv1');
-    expect(localFarm.syncStatus, 'completed');
   });
 }

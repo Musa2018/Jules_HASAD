@@ -1439,6 +1439,2240 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
   }
 }
 
+class $DamageReportsTable extends DamageReports
+    with TableInfo<$DamageReportsTable, DamageReportLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageReportsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _farmIdMeta = const VerificationMeta('farmId');
+  @override
+  late final GeneratedColumn<String> farmId = GeneratedColumn<String>(
+    'farm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _farmerIdMeta = const VerificationMeta(
+    'farmerId',
+  );
+  @override
+  late final GeneratedColumn<String> farmerId = GeneratedColumn<String>(
+    'farmer_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _damageDateMeta = const VerificationMeta(
+    'damageDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> damageDate = GeneratedColumn<DateTime>(
+    'damage_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _documentationDateMeta = const VerificationMeta(
+    'documentationDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> documentationDate =
+      GeneratedColumn<DateTime>(
+        'documentation_date',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _governorateIdMeta = const VerificationMeta(
+    'governorateId',
+  );
+  @override
+  late final GeneratedColumn<String> governorateId = GeneratedColumn<String>(
+    'governorate_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<String> localityId = GeneratedColumn<String>(
+    'locality_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusIdMeta = const VerificationMeta(
+    'statusId',
+  );
+  @override
+  late final GeneratedColumn<String> statusId = GeneratedColumn<String>(
+    'status_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<String> rowVersion = GeneratedColumn<String>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('completed'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    serverId,
+    farmId,
+    farmerId,
+    damageDate,
+    documentationDate,
+    governorateId,
+    localityId,
+    latitude,
+    longitude,
+    statusId,
+    notes,
+    rowVersion,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_reports';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageReportLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('farm_id')) {
+      context.handle(
+        _farmIdMeta,
+        farmId.isAcceptableOrUnknown(data['farm_id']!, _farmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmIdMeta);
+    }
+    if (data.containsKey('farmer_id')) {
+      context.handle(
+        _farmerIdMeta,
+        farmerId.isAcceptableOrUnknown(data['farmer_id']!, _farmerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_farmerIdMeta);
+    }
+    if (data.containsKey('damage_date')) {
+      context.handle(
+        _damageDateMeta,
+        damageDate.isAcceptableOrUnknown(data['damage_date']!, _damageDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_damageDateMeta);
+    }
+    if (data.containsKey('documentation_date')) {
+      context.handle(
+        _documentationDateMeta,
+        documentationDate.isAcceptableOrUnknown(
+          data['documentation_date']!,
+          _documentationDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_documentationDateMeta);
+    }
+    if (data.containsKey('governorate_id')) {
+      context.handle(
+        _governorateIdMeta,
+        governorateId.isAcceptableOrUnknown(
+          data['governorate_id']!,
+          _governorateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_governorateIdMeta);
+    }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localityIdMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
+    if (data.containsKey('status_id')) {
+      context.handle(
+        _statusIdMeta,
+        statusId.isAcceptableOrUnknown(data['status_id']!, _statusIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusIdMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_notesMeta);
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageReportLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageReportLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      farmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farm_id'],
+      )!,
+      farmerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}farmer_id'],
+      )!,
+      damageDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}damage_date'],
+      )!,
+      documentationDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}documentation_date'],
+      )!,
+      governorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}governorate_id'],
+      )!,
+      localityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locality_id'],
+      )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
+      statusId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status_id'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      )!,
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_version'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+    );
+  }
+
+  @override
+  $DamageReportsTable createAlias(String alias) {
+    return $DamageReportsTable(attachedDatabase, alias);
+  }
+}
+
+class DamageReportLocal extends DataClass
+    implements Insertable<DamageReportLocal> {
+  final String id;
+  final String? serverId;
+  final String farmId;
+  final String farmerId;
+  final DateTime damageDate;
+  final DateTime documentationDate;
+  final String governorateId;
+  final String localityId;
+  final double? latitude;
+  final double? longitude;
+  final String statusId;
+  final String notes;
+  final String rowVersion;
+  final String syncStatus;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  const DamageReportLocal({
+    required this.id,
+    this.serverId,
+    required this.farmId,
+    required this.farmerId,
+    required this.damageDate,
+    required this.documentationDate,
+    required this.governorateId,
+    required this.localityId,
+    this.latitude,
+    this.longitude,
+    required this.statusId,
+    required this.notes,
+    required this.rowVersion,
+    required this.syncStatus,
+    required this.createdAt,
+    this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    map['farm_id'] = Variable<String>(farmId);
+    map['farmer_id'] = Variable<String>(farmerId);
+    map['damage_date'] = Variable<DateTime>(damageDate);
+    map['documentation_date'] = Variable<DateTime>(documentationDate);
+    map['governorate_id'] = Variable<String>(governorateId);
+    map['locality_id'] = Variable<String>(localityId);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    map['status_id'] = Variable<String>(statusId);
+    map['notes'] = Variable<String>(notes);
+    map['row_version'] = Variable<String>(rowVersion);
+    map['sync_status'] = Variable<String>(syncStatus);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    return map;
+  }
+
+  DamageReportsCompanion toCompanion(bool nullToAbsent) {
+    return DamageReportsCompanion(
+      id: Value(id),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      farmId: Value(farmId),
+      farmerId: Value(farmerId),
+      damageDate: Value(damageDate),
+      documentationDate: Value(documentationDate),
+      governorateId: Value(governorateId),
+      localityId: Value(localityId),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
+      statusId: Value(statusId),
+      notes: Value(notes),
+      rowVersion: Value(rowVersion),
+      syncStatus: Value(syncStatus),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory DamageReportLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageReportLocal(
+      id: serializer.fromJson<String>(json['id']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      farmId: serializer.fromJson<String>(json['farmId']),
+      farmerId: serializer.fromJson<String>(json['farmerId']),
+      damageDate: serializer.fromJson<DateTime>(json['damageDate']),
+      documentationDate: serializer.fromJson<DateTime>(
+        json['documentationDate'],
+      ),
+      governorateId: serializer.fromJson<String>(json['governorateId']),
+      localityId: serializer.fromJson<String>(json['localityId']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+      statusId: serializer.fromJson<String>(json['statusId']),
+      notes: serializer.fromJson<String>(json['notes']),
+      rowVersion: serializer.fromJson<String>(json['rowVersion']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'serverId': serializer.toJson<String?>(serverId),
+      'farmId': serializer.toJson<String>(farmId),
+      'farmerId': serializer.toJson<String>(farmerId),
+      'damageDate': serializer.toJson<DateTime>(damageDate),
+      'documentationDate': serializer.toJson<DateTime>(documentationDate),
+      'governorateId': serializer.toJson<String>(governorateId),
+      'localityId': serializer.toJson<String>(localityId),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+      'statusId': serializer.toJson<String>(statusId),
+      'notes': serializer.toJson<String>(notes),
+      'rowVersion': serializer.toJson<String>(rowVersion),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+    };
+  }
+
+  DamageReportLocal copyWith({
+    String? id,
+    Value<String?> serverId = const Value.absent(),
+    String? farmId,
+    String? farmerId,
+    DateTime? damageDate,
+    DateTime? documentationDate,
+    String? governorateId,
+    String? localityId,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+    String? statusId,
+    String? notes,
+    String? rowVersion,
+    String? syncStatus,
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+  }) => DamageReportLocal(
+    id: id ?? this.id,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    farmId: farmId ?? this.farmId,
+    farmerId: farmerId ?? this.farmerId,
+    damageDate: damageDate ?? this.damageDate,
+    documentationDate: documentationDate ?? this.documentationDate,
+    governorateId: governorateId ?? this.governorateId,
+    localityId: localityId ?? this.localityId,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+    statusId: statusId ?? this.statusId,
+    notes: notes ?? this.notes,
+    rowVersion: rowVersion ?? this.rowVersion,
+    syncStatus: syncStatus ?? this.syncStatus,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
+  DamageReportLocal copyWithCompanion(DamageReportsCompanion data) {
+    return DamageReportLocal(
+      id: data.id.present ? data.id.value : this.id,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      farmId: data.farmId.present ? data.farmId.value : this.farmId,
+      farmerId: data.farmerId.present ? data.farmerId.value : this.farmerId,
+      damageDate: data.damageDate.present
+          ? data.damageDate.value
+          : this.damageDate,
+      documentationDate: data.documentationDate.present
+          ? data.documentationDate.value
+          : this.documentationDate,
+      governorateId: data.governorateId.present
+          ? data.governorateId.value
+          : this.governorateId,
+      localityId: data.localityId.present
+          ? data.localityId.value
+          : this.localityId,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      statusId: data.statusId.present ? data.statusId.value : this.statusId,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageReportLocal(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmerId: $farmerId, ')
+          ..write('damageDate: $damageDate, ')
+          ..write('documentationDate: $documentationDate, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('localityId: $localityId, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('statusId: $statusId, ')
+          ..write('notes: $notes, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    serverId,
+    farmId,
+    farmerId,
+    damageDate,
+    documentationDate,
+    governorateId,
+    localityId,
+    latitude,
+    longitude,
+    statusId,
+    notes,
+    rowVersion,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageReportLocal &&
+          other.id == this.id &&
+          other.serverId == this.serverId &&
+          other.farmId == this.farmId &&
+          other.farmerId == this.farmerId &&
+          other.damageDate == this.damageDate &&
+          other.documentationDate == this.documentationDate &&
+          other.governorateId == this.governorateId &&
+          other.localityId == this.localityId &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.statusId == this.statusId &&
+          other.notes == this.notes &&
+          other.rowVersion == this.rowVersion &&
+          other.syncStatus == this.syncStatus &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
+  final Value<String> id;
+  final Value<String?> serverId;
+  final Value<String> farmId;
+  final Value<String> farmerId;
+  final Value<DateTime> damageDate;
+  final Value<DateTime> documentationDate;
+  final Value<String> governorateId;
+  final Value<String> localityId;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  final Value<String> statusId;
+  final Value<String> notes;
+  final Value<String> rowVersion;
+  final Value<String> syncStatus;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<int> rowid;
+  const DamageReportsCompanion({
+    this.id = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.farmId = const Value.absent(),
+    this.farmerId = const Value.absent(),
+    this.damageDate = const Value.absent(),
+    this.documentationDate = const Value.absent(),
+    this.governorateId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.statusId = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DamageReportsCompanion.insert({
+    required String id,
+    this.serverId = const Value.absent(),
+    required String farmId,
+    required String farmerId,
+    required DateTime damageDate,
+    required DateTime documentationDate,
+    required String governorateId,
+    required String localityId,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    required String statusId,
+    required String notes,
+    this.rowVersion = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       farmId = Value(farmId),
+       farmerId = Value(farmerId),
+       damageDate = Value(damageDate),
+       documentationDate = Value(documentationDate),
+       governorateId = Value(governorateId),
+       localityId = Value(localityId),
+       statusId = Value(statusId),
+       notes = Value(notes);
+  static Insertable<DamageReportLocal> custom({
+    Expression<String>? id,
+    Expression<String>? serverId,
+    Expression<String>? farmId,
+    Expression<String>? farmerId,
+    Expression<DateTime>? damageDate,
+    Expression<DateTime>? documentationDate,
+    Expression<String>? governorateId,
+    Expression<String>? localityId,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<String>? statusId,
+    Expression<String>? notes,
+    Expression<String>? rowVersion,
+    Expression<String>? syncStatus,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (serverId != null) 'server_id': serverId,
+      if (farmId != null) 'farm_id': farmId,
+      if (farmerId != null) 'farmer_id': farmerId,
+      if (damageDate != null) 'damage_date': damageDate,
+      if (documentationDate != null) 'documentation_date': documentationDate,
+      if (governorateId != null) 'governorate_id': governorateId,
+      if (localityId != null) 'locality_id': localityId,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (statusId != null) 'status_id': statusId,
+      if (notes != null) 'notes': notes,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DamageReportsCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? serverId,
+    Value<String>? farmId,
+    Value<String>? farmerId,
+    Value<DateTime>? damageDate,
+    Value<DateTime>? documentationDate,
+    Value<String>? governorateId,
+    Value<String>? localityId,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+    Value<String>? statusId,
+    Value<String>? notes,
+    Value<String>? rowVersion,
+    Value<String>? syncStatus,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return DamageReportsCompanion(
+      id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      farmId: farmId ?? this.farmId,
+      farmerId: farmerId ?? this.farmerId,
+      damageDate: damageDate ?? this.damageDate,
+      documentationDate: documentationDate ?? this.documentationDate,
+      governorateId: governorateId ?? this.governorateId,
+      localityId: localityId ?? this.localityId,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      statusId: statusId ?? this.statusId,
+      notes: notes ?? this.notes,
+      rowVersion: rowVersion ?? this.rowVersion,
+      syncStatus: syncStatus ?? this.syncStatus,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (farmId.present) {
+      map['farm_id'] = Variable<String>(farmId.value);
+    }
+    if (farmerId.present) {
+      map['farmer_id'] = Variable<String>(farmerId.value);
+    }
+    if (damageDate.present) {
+      map['damage_date'] = Variable<DateTime>(damageDate.value);
+    }
+    if (documentationDate.present) {
+      map['documentation_date'] = Variable<DateTime>(documentationDate.value);
+    }
+    if (governorateId.present) {
+      map['governorate_id'] = Variable<String>(governorateId.value);
+    }
+    if (localityId.present) {
+      map['locality_id'] = Variable<String>(localityId.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (statusId.present) {
+      map['status_id'] = Variable<String>(statusId.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<String>(rowVersion.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageReportsCompanion(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('farmId: $farmId, ')
+          ..write('farmerId: $farmerId, ')
+          ..write('damageDate: $damageDate, ')
+          ..write('documentationDate: $documentationDate, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('localityId: $localityId, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('statusId: $statusId, ')
+          ..write('notes: $notes, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DamageItemsTable extends DamageItems
+    with TableInfo<$DamageItemsTable, DamageItemLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _damageReportIdMeta = const VerificationMeta(
+    'damageReportId',
+  );
+  @override
+  late final GeneratedColumn<String> damageReportId = GeneratedColumn<String>(
+    'damage_report_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _agriculturalSectorIdMeta =
+      const VerificationMeta('agriculturalSectorId');
+  @override
+  late final GeneratedColumn<String> agriculturalSectorId =
+      GeneratedColumn<String>(
+        'agricultural_sector_id',
+        aliasedName,
+        false,
+        additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _subSectorIdMeta = const VerificationMeta(
+    'subSectorId',
+  );
+  @override
+  late final GeneratedColumn<String> subSectorId = GeneratedColumn<String>(
+    'sub_sector_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cropIdMeta = const VerificationMeta('cropId');
+  @override
+  late final GeneratedColumn<String> cropId = GeneratedColumn<String>(
+    'crop_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _damageTypeIdMeta = const VerificationMeta(
+    'damageTypeId',
+  );
+  @override
+  late final GeneratedColumn<String> damageTypeId = GeneratedColumn<String>(
+    'damage_type_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _affectedAreaMeta = const VerificationMeta(
+    'affectedArea',
+  );
+  @override
+  late final GeneratedColumn<double> affectedArea = GeneratedColumn<double>(
+    'affected_area',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _damagePercentageMeta = const VerificationMeta(
+    'damagePercentage',
+  );
+  @override
+  late final GeneratedColumn<double> damagePercentage = GeneratedColumn<double>(
+    'damage_percentage',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantityMeta = const VerificationMeta(
+    'quantity',
+  );
+  @override
+  late final GeneratedColumn<double> quantity = GeneratedColumn<double>(
+    'quantity',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _estimatedLossMeta = const VerificationMeta(
+    'estimatedLoss',
+  );
+  @override
+  late final GeneratedColumn<double> estimatedLoss = GeneratedColumn<double>(
+    'estimated_loss',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<String> rowVersion = GeneratedColumn<String>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('completed'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    serverId,
+    damageReportId,
+    agriculturalSectorId,
+    subSectorId,
+    cropId,
+    damageTypeId,
+    affectedArea,
+    damagePercentage,
+    quantity,
+    estimatedLoss,
+    rowVersion,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageItemLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('damage_report_id')) {
+      context.handle(
+        _damageReportIdMeta,
+        damageReportId.isAcceptableOrUnknown(
+          data['damage_report_id']!,
+          _damageReportIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_damageReportIdMeta);
+    }
+    if (data.containsKey('agricultural_sector_id')) {
+      context.handle(
+        _agriculturalSectorIdMeta,
+        agriculturalSectorId.isAcceptableOrUnknown(
+          data['agricultural_sector_id']!,
+          _agriculturalSectorIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_agriculturalSectorIdMeta);
+    }
+    if (data.containsKey('sub_sector_id')) {
+      context.handle(
+        _subSectorIdMeta,
+        subSectorId.isAcceptableOrUnknown(
+          data['sub_sector_id']!,
+          _subSectorIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_subSectorIdMeta);
+    }
+    if (data.containsKey('crop_id')) {
+      context.handle(
+        _cropIdMeta,
+        cropId.isAcceptableOrUnknown(data['crop_id']!, _cropIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cropIdMeta);
+    }
+    if (data.containsKey('damage_type_id')) {
+      context.handle(
+        _damageTypeIdMeta,
+        damageTypeId.isAcceptableOrUnknown(
+          data['damage_type_id']!,
+          _damageTypeIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_damageTypeIdMeta);
+    }
+    if (data.containsKey('affected_area')) {
+      context.handle(
+        _affectedAreaMeta,
+        affectedArea.isAcceptableOrUnknown(
+          data['affected_area']!,
+          _affectedAreaMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_affectedAreaMeta);
+    }
+    if (data.containsKey('damage_percentage')) {
+      context.handle(
+        _damagePercentageMeta,
+        damagePercentage.isAcceptableOrUnknown(
+          data['damage_percentage']!,
+          _damagePercentageMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_damagePercentageMeta);
+    }
+    if (data.containsKey('quantity')) {
+      context.handle(
+        _quantityMeta,
+        quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_quantityMeta);
+    }
+    if (data.containsKey('estimated_loss')) {
+      context.handle(
+        _estimatedLossMeta,
+        estimatedLoss.isAcceptableOrUnknown(
+          data['estimated_loss']!,
+          _estimatedLossMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_estimatedLossMeta);
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageItemLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageItemLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      damageReportId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}damage_report_id'],
+      )!,
+      agriculturalSectorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}agricultural_sector_id'],
+      )!,
+      subSectorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sub_sector_id'],
+      )!,
+      cropId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}crop_id'],
+      )!,
+      damageTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}damage_type_id'],
+      )!,
+      affectedArea: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}affected_area'],
+      )!,
+      damagePercentage: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}damage_percentage'],
+      )!,
+      quantity: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}quantity'],
+      )!,
+      estimatedLoss: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_loss'],
+      )!,
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_version'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+    );
+  }
+
+  @override
+  $DamageItemsTable createAlias(String alias) {
+    return $DamageItemsTable(attachedDatabase, alias);
+  }
+}
+
+class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
+  final String id;
+  final String? serverId;
+  final String damageReportId;
+  final String agriculturalSectorId;
+  final String subSectorId;
+  final String cropId;
+  final String damageTypeId;
+  final double affectedArea;
+  final double damagePercentage;
+  final double quantity;
+  final double estimatedLoss;
+  final String rowVersion;
+  final String syncStatus;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  const DamageItemLocal({
+    required this.id,
+    this.serverId,
+    required this.damageReportId,
+    required this.agriculturalSectorId,
+    required this.subSectorId,
+    required this.cropId,
+    required this.damageTypeId,
+    required this.affectedArea,
+    required this.damagePercentage,
+    required this.quantity,
+    required this.estimatedLoss,
+    required this.rowVersion,
+    required this.syncStatus,
+    required this.createdAt,
+    this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    map['damage_report_id'] = Variable<String>(damageReportId);
+    map['agricultural_sector_id'] = Variable<String>(agriculturalSectorId);
+    map['sub_sector_id'] = Variable<String>(subSectorId);
+    map['crop_id'] = Variable<String>(cropId);
+    map['damage_type_id'] = Variable<String>(damageTypeId);
+    map['affected_area'] = Variable<double>(affectedArea);
+    map['damage_percentage'] = Variable<double>(damagePercentage);
+    map['quantity'] = Variable<double>(quantity);
+    map['estimated_loss'] = Variable<double>(estimatedLoss);
+    map['row_version'] = Variable<String>(rowVersion);
+    map['sync_status'] = Variable<String>(syncStatus);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    return map;
+  }
+
+  DamageItemsCompanion toCompanion(bool nullToAbsent) {
+    return DamageItemsCompanion(
+      id: Value(id),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      damageReportId: Value(damageReportId),
+      agriculturalSectorId: Value(agriculturalSectorId),
+      subSectorId: Value(subSectorId),
+      cropId: Value(cropId),
+      damageTypeId: Value(damageTypeId),
+      affectedArea: Value(affectedArea),
+      damagePercentage: Value(damagePercentage),
+      quantity: Value(quantity),
+      estimatedLoss: Value(estimatedLoss),
+      rowVersion: Value(rowVersion),
+      syncStatus: Value(syncStatus),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory DamageItemLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageItemLocal(
+      id: serializer.fromJson<String>(json['id']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      damageReportId: serializer.fromJson<String>(json['damageReportId']),
+      agriculturalSectorId: serializer.fromJson<String>(
+        json['agriculturalSectorId'],
+      ),
+      subSectorId: serializer.fromJson<String>(json['subSectorId']),
+      cropId: serializer.fromJson<String>(json['cropId']),
+      damageTypeId: serializer.fromJson<String>(json['damageTypeId']),
+      affectedArea: serializer.fromJson<double>(json['affectedArea']),
+      damagePercentage: serializer.fromJson<double>(json['damagePercentage']),
+      quantity: serializer.fromJson<double>(json['quantity']),
+      estimatedLoss: serializer.fromJson<double>(json['estimatedLoss']),
+      rowVersion: serializer.fromJson<String>(json['rowVersion']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'serverId': serializer.toJson<String?>(serverId),
+      'damageReportId': serializer.toJson<String>(damageReportId),
+      'agriculturalSectorId': serializer.toJson<String>(agriculturalSectorId),
+      'subSectorId': serializer.toJson<String>(subSectorId),
+      'cropId': serializer.toJson<String>(cropId),
+      'damageTypeId': serializer.toJson<String>(damageTypeId),
+      'affectedArea': serializer.toJson<double>(affectedArea),
+      'damagePercentage': serializer.toJson<double>(damagePercentage),
+      'quantity': serializer.toJson<double>(quantity),
+      'estimatedLoss': serializer.toJson<double>(estimatedLoss),
+      'rowVersion': serializer.toJson<String>(rowVersion),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+    };
+  }
+
+  DamageItemLocal copyWith({
+    String? id,
+    Value<String?> serverId = const Value.absent(),
+    String? damageReportId,
+    String? agriculturalSectorId,
+    String? subSectorId,
+    String? cropId,
+    String? damageTypeId,
+    double? affectedArea,
+    double? damagePercentage,
+    double? quantity,
+    double? estimatedLoss,
+    String? rowVersion,
+    String? syncStatus,
+    DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
+  }) => DamageItemLocal(
+    id: id ?? this.id,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    damageReportId: damageReportId ?? this.damageReportId,
+    agriculturalSectorId: agriculturalSectorId ?? this.agriculturalSectorId,
+    subSectorId: subSectorId ?? this.subSectorId,
+    cropId: cropId ?? this.cropId,
+    damageTypeId: damageTypeId ?? this.damageTypeId,
+    affectedArea: affectedArea ?? this.affectedArea,
+    damagePercentage: damagePercentage ?? this.damagePercentage,
+    quantity: quantity ?? this.quantity,
+    estimatedLoss: estimatedLoss ?? this.estimatedLoss,
+    rowVersion: rowVersion ?? this.rowVersion,
+    syncStatus: syncStatus ?? this.syncStatus,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
+  DamageItemLocal copyWithCompanion(DamageItemsCompanion data) {
+    return DamageItemLocal(
+      id: data.id.present ? data.id.value : this.id,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      damageReportId: data.damageReportId.present
+          ? data.damageReportId.value
+          : this.damageReportId,
+      agriculturalSectorId: data.agriculturalSectorId.present
+          ? data.agriculturalSectorId.value
+          : this.agriculturalSectorId,
+      subSectorId: data.subSectorId.present
+          ? data.subSectorId.value
+          : this.subSectorId,
+      cropId: data.cropId.present ? data.cropId.value : this.cropId,
+      damageTypeId: data.damageTypeId.present
+          ? data.damageTypeId.value
+          : this.damageTypeId,
+      affectedArea: data.affectedArea.present
+          ? data.affectedArea.value
+          : this.affectedArea,
+      damagePercentage: data.damagePercentage.present
+          ? data.damagePercentage.value
+          : this.damagePercentage,
+      quantity: data.quantity.present ? data.quantity.value : this.quantity,
+      estimatedLoss: data.estimatedLoss.present
+          ? data.estimatedLoss.value
+          : this.estimatedLoss,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageItemLocal(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('damageReportId: $damageReportId, ')
+          ..write('agriculturalSectorId: $agriculturalSectorId, ')
+          ..write('subSectorId: $subSectorId, ')
+          ..write('cropId: $cropId, ')
+          ..write('damageTypeId: $damageTypeId, ')
+          ..write('affectedArea: $affectedArea, ')
+          ..write('damagePercentage: $damagePercentage, ')
+          ..write('quantity: $quantity, ')
+          ..write('estimatedLoss: $estimatedLoss, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    serverId,
+    damageReportId,
+    agriculturalSectorId,
+    subSectorId,
+    cropId,
+    damageTypeId,
+    affectedArea,
+    damagePercentage,
+    quantity,
+    estimatedLoss,
+    rowVersion,
+    syncStatus,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageItemLocal &&
+          other.id == this.id &&
+          other.serverId == this.serverId &&
+          other.damageReportId == this.damageReportId &&
+          other.agriculturalSectorId == this.agriculturalSectorId &&
+          other.subSectorId == this.subSectorId &&
+          other.cropId == this.cropId &&
+          other.damageTypeId == this.damageTypeId &&
+          other.affectedArea == this.affectedArea &&
+          other.damagePercentage == this.damagePercentage &&
+          other.quantity == this.quantity &&
+          other.estimatedLoss == this.estimatedLoss &&
+          other.rowVersion == this.rowVersion &&
+          other.syncStatus == this.syncStatus &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
+  final Value<String> id;
+  final Value<String?> serverId;
+  final Value<String> damageReportId;
+  final Value<String> agriculturalSectorId;
+  final Value<String> subSectorId;
+  final Value<String> cropId;
+  final Value<String> damageTypeId;
+  final Value<double> affectedArea;
+  final Value<double> damagePercentage;
+  final Value<double> quantity;
+  final Value<double> estimatedLoss;
+  final Value<String> rowVersion;
+  final Value<String> syncStatus;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<int> rowid;
+  const DamageItemsCompanion({
+    this.id = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.damageReportId = const Value.absent(),
+    this.agriculturalSectorId = const Value.absent(),
+    this.subSectorId = const Value.absent(),
+    this.cropId = const Value.absent(),
+    this.damageTypeId = const Value.absent(),
+    this.affectedArea = const Value.absent(),
+    this.damagePercentage = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.estimatedLoss = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DamageItemsCompanion.insert({
+    required String id,
+    this.serverId = const Value.absent(),
+    required String damageReportId,
+    required String agriculturalSectorId,
+    required String subSectorId,
+    required String cropId,
+    required String damageTypeId,
+    required double affectedArea,
+    required double damagePercentage,
+    required double quantity,
+    required double estimatedLoss,
+    this.rowVersion = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       damageReportId = Value(damageReportId),
+       agriculturalSectorId = Value(agriculturalSectorId),
+       subSectorId = Value(subSectorId),
+       cropId = Value(cropId),
+       damageTypeId = Value(damageTypeId),
+       affectedArea = Value(affectedArea),
+       damagePercentage = Value(damagePercentage),
+       quantity = Value(quantity),
+       estimatedLoss = Value(estimatedLoss);
+  static Insertable<DamageItemLocal> custom({
+    Expression<String>? id,
+    Expression<String>? serverId,
+    Expression<String>? damageReportId,
+    Expression<String>? agriculturalSectorId,
+    Expression<String>? subSectorId,
+    Expression<String>? cropId,
+    Expression<String>? damageTypeId,
+    Expression<double>? affectedArea,
+    Expression<double>? damagePercentage,
+    Expression<double>? quantity,
+    Expression<double>? estimatedLoss,
+    Expression<String>? rowVersion,
+    Expression<String>? syncStatus,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (serverId != null) 'server_id': serverId,
+      if (damageReportId != null) 'damage_report_id': damageReportId,
+      if (agriculturalSectorId != null)
+        'agricultural_sector_id': agriculturalSectorId,
+      if (subSectorId != null) 'sub_sector_id': subSectorId,
+      if (cropId != null) 'crop_id': cropId,
+      if (damageTypeId != null) 'damage_type_id': damageTypeId,
+      if (affectedArea != null) 'affected_area': affectedArea,
+      if (damagePercentage != null) 'damage_percentage': damagePercentage,
+      if (quantity != null) 'quantity': quantity,
+      if (estimatedLoss != null) 'estimated_loss': estimatedLoss,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DamageItemsCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? serverId,
+    Value<String>? damageReportId,
+    Value<String>? agriculturalSectorId,
+    Value<String>? subSectorId,
+    Value<String>? cropId,
+    Value<String>? damageTypeId,
+    Value<double>? affectedArea,
+    Value<double>? damagePercentage,
+    Value<double>? quantity,
+    Value<double>? estimatedLoss,
+    Value<String>? rowVersion,
+    Value<String>? syncStatus,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return DamageItemsCompanion(
+      id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      damageReportId: damageReportId ?? this.damageReportId,
+      agriculturalSectorId: agriculturalSectorId ?? this.agriculturalSectorId,
+      subSectorId: subSectorId ?? this.subSectorId,
+      cropId: cropId ?? this.cropId,
+      damageTypeId: damageTypeId ?? this.damageTypeId,
+      affectedArea: affectedArea ?? this.affectedArea,
+      damagePercentage: damagePercentage ?? this.damagePercentage,
+      quantity: quantity ?? this.quantity,
+      estimatedLoss: estimatedLoss ?? this.estimatedLoss,
+      rowVersion: rowVersion ?? this.rowVersion,
+      syncStatus: syncStatus ?? this.syncStatus,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (damageReportId.present) {
+      map['damage_report_id'] = Variable<String>(damageReportId.value);
+    }
+    if (agriculturalSectorId.present) {
+      map['agricultural_sector_id'] = Variable<String>(
+        agriculturalSectorId.value,
+      );
+    }
+    if (subSectorId.present) {
+      map['sub_sector_id'] = Variable<String>(subSectorId.value);
+    }
+    if (cropId.present) {
+      map['crop_id'] = Variable<String>(cropId.value);
+    }
+    if (damageTypeId.present) {
+      map['damage_type_id'] = Variable<String>(damageTypeId.value);
+    }
+    if (affectedArea.present) {
+      map['affected_area'] = Variable<double>(affectedArea.value);
+    }
+    if (damagePercentage.present) {
+      map['damage_percentage'] = Variable<double>(damagePercentage.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<double>(quantity.value);
+    }
+    if (estimatedLoss.present) {
+      map['estimated_loss'] = Variable<double>(estimatedLoss.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<String>(rowVersion.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('damageReportId: $damageReportId, ')
+          ..write('agriculturalSectorId: $agriculturalSectorId, ')
+          ..write('subSectorId: $subSectorId, ')
+          ..write('cropId: $cropId, ')
+          ..write('damageTypeId: $damageTypeId, ')
+          ..write('affectedArea: $affectedArea, ')
+          ..write('damagePercentage: $damagePercentage, ')
+          ..write('quantity: $quantity, ')
+          ..write('estimatedLoss: $estimatedLoss, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DamageReportAttachmentsTable extends DamageReportAttachments
+    with TableInfo<$DamageReportAttachmentsTable, DamageReportAttachmentLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageReportAttachmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _damageReportIdMeta = const VerificationMeta(
+    'damageReportId',
+  );
+  @override
+  late final GeneratedColumn<String> damageReportId = GeneratedColumn<String>(
+    'damage_report_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localPathMeta = const VerificationMeta(
+    'localPath',
+  );
+  @override
+  late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
+    'local_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _remoteUrlMeta = const VerificationMeta(
+    'remoteUrl',
+  );
+  @override
+  late final GeneratedColumn<String> remoteUrl = GeneratedColumn<String>(
+    'remote_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fileTypeMeta = const VerificationMeta(
+    'fileType',
+  );
+  @override
+  late final GeneratedColumn<String> fileType = GeneratedColumn<String>(
+    'file_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    damageReportId,
+    localPath,
+    remoteUrl,
+    fileType,
+    syncStatus,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_report_attachments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageReportAttachmentLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('damage_report_id')) {
+      context.handle(
+        _damageReportIdMeta,
+        damageReportId.isAcceptableOrUnknown(
+          data['damage_report_id']!,
+          _damageReportIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_damageReportIdMeta);
+    }
+    if (data.containsKey('local_path')) {
+      context.handle(
+        _localPathMeta,
+        localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localPathMeta);
+    }
+    if (data.containsKey('remote_url')) {
+      context.handle(
+        _remoteUrlMeta,
+        remoteUrl.isAcceptableOrUnknown(data['remote_url']!, _remoteUrlMeta),
+      );
+    }
+    if (data.containsKey('file_type')) {
+      context.handle(
+        _fileTypeMeta,
+        fileType.isAcceptableOrUnknown(data['file_type']!, _fileTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fileTypeMeta);
+    }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageReportAttachmentLocal map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageReportAttachmentLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      damageReportId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}damage_report_id'],
+      )!,
+      localPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_path'],
+      )!,
+      remoteUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_url'],
+      ),
+      fileType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_type'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageReportAttachmentsTable createAlias(String alias) {
+    return $DamageReportAttachmentsTable(attachedDatabase, alias);
+  }
+}
+
+class DamageReportAttachmentLocal extends DataClass
+    implements Insertable<DamageReportAttachmentLocal> {
+  final String id;
+  final String damageReportId;
+  final String localPath;
+  final String? remoteUrl;
+  final String fileType;
+  final String syncStatus;
+  const DamageReportAttachmentLocal({
+    required this.id,
+    required this.damageReportId,
+    required this.localPath,
+    this.remoteUrl,
+    required this.fileType,
+    required this.syncStatus,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['damage_report_id'] = Variable<String>(damageReportId);
+    map['local_path'] = Variable<String>(localPath);
+    if (!nullToAbsent || remoteUrl != null) {
+      map['remote_url'] = Variable<String>(remoteUrl);
+    }
+    map['file_type'] = Variable<String>(fileType);
+    map['sync_status'] = Variable<String>(syncStatus);
+    return map;
+  }
+
+  DamageReportAttachmentsCompanion toCompanion(bool nullToAbsent) {
+    return DamageReportAttachmentsCompanion(
+      id: Value(id),
+      damageReportId: Value(damageReportId),
+      localPath: Value(localPath),
+      remoteUrl: remoteUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteUrl),
+      fileType: Value(fileType),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory DamageReportAttachmentLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageReportAttachmentLocal(
+      id: serializer.fromJson<String>(json['id']),
+      damageReportId: serializer.fromJson<String>(json['damageReportId']),
+      localPath: serializer.fromJson<String>(json['localPath']),
+      remoteUrl: serializer.fromJson<String?>(json['remoteUrl']),
+      fileType: serializer.fromJson<String>(json['fileType']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'damageReportId': serializer.toJson<String>(damageReportId),
+      'localPath': serializer.toJson<String>(localPath),
+      'remoteUrl': serializer.toJson<String?>(remoteUrl),
+      'fileType': serializer.toJson<String>(fileType),
+      'syncStatus': serializer.toJson<String>(syncStatus),
+    };
+  }
+
+  DamageReportAttachmentLocal copyWith({
+    String? id,
+    String? damageReportId,
+    String? localPath,
+    Value<String?> remoteUrl = const Value.absent(),
+    String? fileType,
+    String? syncStatus,
+  }) => DamageReportAttachmentLocal(
+    id: id ?? this.id,
+    damageReportId: damageReportId ?? this.damageReportId,
+    localPath: localPath ?? this.localPath,
+    remoteUrl: remoteUrl.present ? remoteUrl.value : this.remoteUrl,
+    fileType: fileType ?? this.fileType,
+    syncStatus: syncStatus ?? this.syncStatus,
+  );
+  DamageReportAttachmentLocal copyWithCompanion(
+    DamageReportAttachmentsCompanion data,
+  ) {
+    return DamageReportAttachmentLocal(
+      id: data.id.present ? data.id.value : this.id,
+      damageReportId: data.damageReportId.present
+          ? data.damageReportId.value
+          : this.damageReportId,
+      localPath: data.localPath.present ? data.localPath.value : this.localPath,
+      remoteUrl: data.remoteUrl.present ? data.remoteUrl.value : this.remoteUrl,
+      fileType: data.fileType.present ? data.fileType.value : this.fileType,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageReportAttachmentLocal(')
+          ..write('id: $id, ')
+          ..write('damageReportId: $damageReportId, ')
+          ..write('localPath: $localPath, ')
+          ..write('remoteUrl: $remoteUrl, ')
+          ..write('fileType: $fileType, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    damageReportId,
+    localPath,
+    remoteUrl,
+    fileType,
+    syncStatus,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageReportAttachmentLocal &&
+          other.id == this.id &&
+          other.damageReportId == this.damageReportId &&
+          other.localPath == this.localPath &&
+          other.remoteUrl == this.remoteUrl &&
+          other.fileType == this.fileType &&
+          other.syncStatus == this.syncStatus);
+}
+
+class DamageReportAttachmentsCompanion
+    extends UpdateCompanion<DamageReportAttachmentLocal> {
+  final Value<String> id;
+  final Value<String> damageReportId;
+  final Value<String> localPath;
+  final Value<String?> remoteUrl;
+  final Value<String> fileType;
+  final Value<String> syncStatus;
+  final Value<int> rowid;
+  const DamageReportAttachmentsCompanion({
+    this.id = const Value.absent(),
+    this.damageReportId = const Value.absent(),
+    this.localPath = const Value.absent(),
+    this.remoteUrl = const Value.absent(),
+    this.fileType = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DamageReportAttachmentsCompanion.insert({
+    required String id,
+    required String damageReportId,
+    required String localPath,
+    this.remoteUrl = const Value.absent(),
+    required String fileType,
+    this.syncStatus = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       damageReportId = Value(damageReportId),
+       localPath = Value(localPath),
+       fileType = Value(fileType);
+  static Insertable<DamageReportAttachmentLocal> custom({
+    Expression<String>? id,
+    Expression<String>? damageReportId,
+    Expression<String>? localPath,
+    Expression<String>? remoteUrl,
+    Expression<String>? fileType,
+    Expression<String>? syncStatus,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (damageReportId != null) 'damage_report_id': damageReportId,
+      if (localPath != null) 'local_path': localPath,
+      if (remoteUrl != null) 'remote_url': remoteUrl,
+      if (fileType != null) 'file_type': fileType,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DamageReportAttachmentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? damageReportId,
+    Value<String>? localPath,
+    Value<String?>? remoteUrl,
+    Value<String>? fileType,
+    Value<String>? syncStatus,
+    Value<int>? rowid,
+  }) {
+    return DamageReportAttachmentsCompanion(
+      id: id ?? this.id,
+      damageReportId: damageReportId ?? this.damageReportId,
+      localPath: localPath ?? this.localPath,
+      remoteUrl: remoteUrl ?? this.remoteUrl,
+      fileType: fileType ?? this.fileType,
+      syncStatus: syncStatus ?? this.syncStatus,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (damageReportId.present) {
+      map['damage_report_id'] = Variable<String>(damageReportId.value);
+    }
+    if (localPath.present) {
+      map['local_path'] = Variable<String>(localPath.value);
+    }
+    if (remoteUrl.present) {
+      map['remote_url'] = Variable<String>(remoteUrl.value);
+    }
+    if (fileType.present) {
+      map['file_type'] = Variable<String>(fileType.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(syncStatus.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageReportAttachmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('damageReportId: $damageReportId, ')
+          ..write('localPath: $localPath, ')
+          ..write('remoteUrl: $remoteUrl, ')
+          ..write('fileType: $fileType, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncQueueTable extends SyncQueue
     with TableInfo<$SyncQueueTable, SyncQueueData> {
   @override
@@ -2056,6 +4290,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $FarmersTable farmers = $FarmersTable(this);
   late final $FarmsTable farms = $FarmsTable(this);
+  late final $DamageReportsTable damageReports = $DamageReportsTable(this);
+  late final $DamageItemsTable damageItems = $DamageItemsTable(this);
+  late final $DamageReportAttachmentsTable damageReportAttachments =
+      $DamageReportAttachmentsTable(this);
   late final $SyncQueueTable syncQueue = $SyncQueueTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -2064,6 +4302,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     farmers,
     farms,
+    damageReports,
+    damageItems,
+    damageReportAttachments,
     syncQueue,
   ];
 }
@@ -2744,6 +4985,1081 @@ typedef $$FarmsTableProcessedTableManager =
       FarmLocal,
       PrefetchHooks Function()
     >;
+typedef $$DamageReportsTableCreateCompanionBuilder =
+    DamageReportsCompanion Function({
+      required String id,
+      Value<String?> serverId,
+      required String farmId,
+      required String farmerId,
+      required DateTime damageDate,
+      required DateTime documentationDate,
+      required String governorateId,
+      required String localityId,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      required String statusId,
+      required String notes,
+      Value<String> rowVersion,
+      Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$DamageReportsTableUpdateCompanionBuilder =
+    DamageReportsCompanion Function({
+      Value<String> id,
+      Value<String?> serverId,
+      Value<String> farmId,
+      Value<String> farmerId,
+      Value<DateTime> damageDate,
+      Value<DateTime> documentationDate,
+      Value<String> governorateId,
+      Value<String> localityId,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<String> statusId,
+      Value<String> notes,
+      Value<String> rowVersion,
+      Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$DamageReportsTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageReportsTable> {
+  $$DamageReportsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get farmerId => $composableBuilder(
+    column: $table.farmerId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get damageDate => $composableBuilder(
+    column: $table.damageDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get documentationDate => $composableBuilder(
+    column: $table.documentationDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get statusId => $composableBuilder(
+    column: $table.statusId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageReportsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageReportsTable> {
+  $$DamageReportsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmId => $composableBuilder(
+    column: $table.farmId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get farmerId => $composableBuilder(
+    column: $table.farmerId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get damageDate => $composableBuilder(
+    column: $table.damageDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get documentationDate => $composableBuilder(
+    column: $table.documentationDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get statusId => $composableBuilder(
+    column: $table.statusId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageReportsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageReportsTable> {
+  $$DamageReportsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get farmId =>
+      $composableBuilder(column: $table.farmId, builder: (column) => column);
+
+  GeneratedColumn<String> get farmerId =>
+      $composableBuilder(column: $table.farmerId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get damageDate => $composableBuilder(
+    column: $table.damageDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get documentationDate => $composableBuilder(
+    column: $table.documentationDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<String> get statusId =>
+      $composableBuilder(column: $table.statusId, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$DamageReportsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageReportsTable,
+          DamageReportLocal,
+          $$DamageReportsTableFilterComposer,
+          $$DamageReportsTableOrderingComposer,
+          $$DamageReportsTableAnnotationComposer,
+          $$DamageReportsTableCreateCompanionBuilder,
+          $$DamageReportsTableUpdateCompanionBuilder,
+          (
+            DamageReportLocal,
+            BaseReferences<
+              _$AppDatabase,
+              $DamageReportsTable,
+              DamageReportLocal
+            >,
+          ),
+          DamageReportLocal,
+          PrefetchHooks Function()
+        > {
+  $$DamageReportsTableTableManager(_$AppDatabase db, $DamageReportsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageReportsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DamageReportsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DamageReportsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
+                Value<String> farmId = const Value.absent(),
+                Value<String> farmerId = const Value.absent(),
+                Value<DateTime> damageDate = const Value.absent(),
+                Value<DateTime> documentationDate = const Value.absent(),
+                Value<String> governorateId = const Value.absent(),
+                Value<String> localityId = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<String> statusId = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<String> rowVersion = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageReportsCompanion(
+                id: id,
+                serverId: serverId,
+                farmId: farmId,
+                farmerId: farmerId,
+                damageDate: damageDate,
+                documentationDate: documentationDate,
+                governorateId: governorateId,
+                localityId: localityId,
+                latitude: latitude,
+                longitude: longitude,
+                statusId: statusId,
+                notes: notes,
+                rowVersion: rowVersion,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> serverId = const Value.absent(),
+                required String farmId,
+                required String farmerId,
+                required DateTime damageDate,
+                required DateTime documentationDate,
+                required String governorateId,
+                required String localityId,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                required String statusId,
+                required String notes,
+                Value<String> rowVersion = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageReportsCompanion.insert(
+                id: id,
+                serverId: serverId,
+                farmId: farmId,
+                farmerId: farmerId,
+                damageDate: damageDate,
+                documentationDate: documentationDate,
+                governorateId: governorateId,
+                localityId: localityId,
+                latitude: latitude,
+                longitude: longitude,
+                statusId: statusId,
+                notes: notes,
+                rowVersion: rowVersion,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageReportsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageReportsTable,
+      DamageReportLocal,
+      $$DamageReportsTableFilterComposer,
+      $$DamageReportsTableOrderingComposer,
+      $$DamageReportsTableAnnotationComposer,
+      $$DamageReportsTableCreateCompanionBuilder,
+      $$DamageReportsTableUpdateCompanionBuilder,
+      (
+        DamageReportLocal,
+        BaseReferences<_$AppDatabase, $DamageReportsTable, DamageReportLocal>,
+      ),
+      DamageReportLocal,
+      PrefetchHooks Function()
+    >;
+typedef $$DamageItemsTableCreateCompanionBuilder =
+    DamageItemsCompanion Function({
+      required String id,
+      Value<String?> serverId,
+      required String damageReportId,
+      required String agriculturalSectorId,
+      required String subSectorId,
+      required String cropId,
+      required String damageTypeId,
+      required double affectedArea,
+      required double damagePercentage,
+      required double quantity,
+      required double estimatedLoss,
+      Value<String> rowVersion,
+      Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$DamageItemsTableUpdateCompanionBuilder =
+    DamageItemsCompanion Function({
+      Value<String> id,
+      Value<String?> serverId,
+      Value<String> damageReportId,
+      Value<String> agriculturalSectorId,
+      Value<String> subSectorId,
+      Value<String> cropId,
+      Value<String> damageTypeId,
+      Value<double> affectedArea,
+      Value<double> damagePercentage,
+      Value<double> quantity,
+      Value<double> estimatedLoss,
+      Value<String> rowVersion,
+      Value<String> syncStatus,
+      Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$DamageItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageItemsTable> {
+  $$DamageItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get agriculturalSectorId => $composableBuilder(
+    column: $table.agriculturalSectorId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get subSectorId => $composableBuilder(
+    column: $table.subSectorId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cropId => $composableBuilder(
+    column: $table.cropId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get damageTypeId => $composableBuilder(
+    column: $table.damageTypeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get affectedArea => $composableBuilder(
+    column: $table.affectedArea,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get damagePercentage => $composableBuilder(
+    column: $table.damagePercentage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedLoss => $composableBuilder(
+    column: $table.estimatedLoss,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageItemsTable> {
+  $$DamageItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get agriculturalSectorId => $composableBuilder(
+    column: $table.agriculturalSectorId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get subSectorId => $composableBuilder(
+    column: $table.subSectorId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cropId => $composableBuilder(
+    column: $table.cropId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get damageTypeId => $composableBuilder(
+    column: $table.damageTypeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get affectedArea => $composableBuilder(
+    column: $table.affectedArea,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get damagePercentage => $composableBuilder(
+    column: $table.damagePercentage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedLoss => $composableBuilder(
+    column: $table.estimatedLoss,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageItemsTable> {
+  $$DamageItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get agriculturalSectorId => $composableBuilder(
+    column: $table.agriculturalSectorId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get subSectorId => $composableBuilder(
+    column: $table.subSectorId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cropId =>
+      $composableBuilder(column: $table.cropId, builder: (column) => column);
+
+  GeneratedColumn<String> get damageTypeId => $composableBuilder(
+    column: $table.damageTypeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get affectedArea => $composableBuilder(
+    column: $table.affectedArea,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get damagePercentage => $composableBuilder(
+    column: $table.damagePercentage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get quantity =>
+      $composableBuilder(column: $table.quantity, builder: (column) => column);
+
+  GeneratedColumn<double> get estimatedLoss => $composableBuilder(
+    column: $table.estimatedLoss,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$DamageItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageItemsTable,
+          DamageItemLocal,
+          $$DamageItemsTableFilterComposer,
+          $$DamageItemsTableOrderingComposer,
+          $$DamageItemsTableAnnotationComposer,
+          $$DamageItemsTableCreateCompanionBuilder,
+          $$DamageItemsTableUpdateCompanionBuilder,
+          (
+            DamageItemLocal,
+            BaseReferences<_$AppDatabase, $DamageItemsTable, DamageItemLocal>,
+          ),
+          DamageItemLocal,
+          PrefetchHooks Function()
+        > {
+  $$DamageItemsTableTableManager(_$AppDatabase db, $DamageItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DamageItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DamageItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
+                Value<String> damageReportId = const Value.absent(),
+                Value<String> agriculturalSectorId = const Value.absent(),
+                Value<String> subSectorId = const Value.absent(),
+                Value<String> cropId = const Value.absent(),
+                Value<String> damageTypeId = const Value.absent(),
+                Value<double> affectedArea = const Value.absent(),
+                Value<double> damagePercentage = const Value.absent(),
+                Value<double> quantity = const Value.absent(),
+                Value<double> estimatedLoss = const Value.absent(),
+                Value<String> rowVersion = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageItemsCompanion(
+                id: id,
+                serverId: serverId,
+                damageReportId: damageReportId,
+                agriculturalSectorId: agriculturalSectorId,
+                subSectorId: subSectorId,
+                cropId: cropId,
+                damageTypeId: damageTypeId,
+                affectedArea: affectedArea,
+                damagePercentage: damagePercentage,
+                quantity: quantity,
+                estimatedLoss: estimatedLoss,
+                rowVersion: rowVersion,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> serverId = const Value.absent(),
+                required String damageReportId,
+                required String agriculturalSectorId,
+                required String subSectorId,
+                required String cropId,
+                required String damageTypeId,
+                required double affectedArea,
+                required double damagePercentage,
+                required double quantity,
+                required double estimatedLoss,
+                Value<String> rowVersion = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageItemsCompanion.insert(
+                id: id,
+                serverId: serverId,
+                damageReportId: damageReportId,
+                agriculturalSectorId: agriculturalSectorId,
+                subSectorId: subSectorId,
+                cropId: cropId,
+                damageTypeId: damageTypeId,
+                affectedArea: affectedArea,
+                damagePercentage: damagePercentage,
+                quantity: quantity,
+                estimatedLoss: estimatedLoss,
+                rowVersion: rowVersion,
+                syncStatus: syncStatus,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageItemsTable,
+      DamageItemLocal,
+      $$DamageItemsTableFilterComposer,
+      $$DamageItemsTableOrderingComposer,
+      $$DamageItemsTableAnnotationComposer,
+      $$DamageItemsTableCreateCompanionBuilder,
+      $$DamageItemsTableUpdateCompanionBuilder,
+      (
+        DamageItemLocal,
+        BaseReferences<_$AppDatabase, $DamageItemsTable, DamageItemLocal>,
+      ),
+      DamageItemLocal,
+      PrefetchHooks Function()
+    >;
+typedef $$DamageReportAttachmentsTableCreateCompanionBuilder =
+    DamageReportAttachmentsCompanion Function({
+      required String id,
+      required String damageReportId,
+      required String localPath,
+      Value<String?> remoteUrl,
+      required String fileType,
+      Value<String> syncStatus,
+      Value<int> rowid,
+    });
+typedef $$DamageReportAttachmentsTableUpdateCompanionBuilder =
+    DamageReportAttachmentsCompanion Function({
+      Value<String> id,
+      Value<String> damageReportId,
+      Value<String> localPath,
+      Value<String?> remoteUrl,
+      Value<String> fileType,
+      Value<String> syncStatus,
+      Value<int> rowid,
+    });
+
+class $$DamageReportAttachmentsTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageReportAttachmentsTable> {
+  $$DamageReportAttachmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteUrl => $composableBuilder(
+    column: $table.remoteUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fileType => $composableBuilder(
+    column: $table.fileType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageReportAttachmentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageReportAttachmentsTable> {
+  $$DamageReportAttachmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteUrl => $composableBuilder(
+    column: $table.remoteUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fileType => $composableBuilder(
+    column: $table.fileType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageReportAttachmentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageReportAttachmentsTable> {
+  $$DamageReportAttachmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localPath =>
+      $composableBuilder(column: $table.localPath, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteUrl =>
+      $composableBuilder(column: $table.remoteUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get fileType =>
+      $composableBuilder(column: $table.fileType, builder: (column) => column);
+
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+}
+
+class $$DamageReportAttachmentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageReportAttachmentsTable,
+          DamageReportAttachmentLocal,
+          $$DamageReportAttachmentsTableFilterComposer,
+          $$DamageReportAttachmentsTableOrderingComposer,
+          $$DamageReportAttachmentsTableAnnotationComposer,
+          $$DamageReportAttachmentsTableCreateCompanionBuilder,
+          $$DamageReportAttachmentsTableUpdateCompanionBuilder,
+          (
+            DamageReportAttachmentLocal,
+            BaseReferences<
+              _$AppDatabase,
+              $DamageReportAttachmentsTable,
+              DamageReportAttachmentLocal
+            >,
+          ),
+          DamageReportAttachmentLocal,
+          PrefetchHooks Function()
+        > {
+  $$DamageReportAttachmentsTableTableManager(
+    _$AppDatabase db,
+    $DamageReportAttachmentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageReportAttachmentsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$DamageReportAttachmentsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DamageReportAttachmentsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> damageReportId = const Value.absent(),
+                Value<String> localPath = const Value.absent(),
+                Value<String?> remoteUrl = const Value.absent(),
+                Value<String> fileType = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageReportAttachmentsCompanion(
+                id: id,
+                damageReportId: damageReportId,
+                localPath: localPath,
+                remoteUrl: remoteUrl,
+                fileType: fileType,
+                syncStatus: syncStatus,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String damageReportId,
+                required String localPath,
+                Value<String?> remoteUrl = const Value.absent(),
+                required String fileType,
+                Value<String> syncStatus = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageReportAttachmentsCompanion.insert(
+                id: id,
+                damageReportId: damageReportId,
+                localPath: localPath,
+                remoteUrl: remoteUrl,
+                fileType: fileType,
+                syncStatus: syncStatus,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageReportAttachmentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageReportAttachmentsTable,
+      DamageReportAttachmentLocal,
+      $$DamageReportAttachmentsTableFilterComposer,
+      $$DamageReportAttachmentsTableOrderingComposer,
+      $$DamageReportAttachmentsTableAnnotationComposer,
+      $$DamageReportAttachmentsTableCreateCompanionBuilder,
+      $$DamageReportAttachmentsTableUpdateCompanionBuilder,
+      (
+        DamageReportAttachmentLocal,
+        BaseReferences<
+          _$AppDatabase,
+          $DamageReportAttachmentsTable,
+          DamageReportAttachmentLocal
+        >,
+      ),
+      DamageReportAttachmentLocal,
+      PrefetchHooks Function()
+    >;
 typedef $$SyncQueueTableCreateCompanionBuilder =
     SyncQueueCompanion Function({
       required String id,
@@ -3053,6 +6369,15 @@ class $AppDatabaseManager {
       $$FarmersTableTableManager(_db, _db.farmers);
   $$FarmsTableTableManager get farms =>
       $$FarmsTableTableManager(_db, _db.farms);
+  $$DamageReportsTableTableManager get damageReports =>
+      $$DamageReportsTableTableManager(_db, _db.damageReports);
+  $$DamageItemsTableTableManager get damageItems =>
+      $$DamageItemsTableTableManager(_db, _db.damageItems);
+  $$DamageReportAttachmentsTableTableManager get damageReportAttachments =>
+      $$DamageReportAttachmentsTableTableManager(
+        _db,
+        _db.damageReportAttachments,
+      );
   $$SyncQueueTableTableManager get syncQueue =>
       $$SyncQueueTableTableManager(_db, _db.syncQueue);
 }

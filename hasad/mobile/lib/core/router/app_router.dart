@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
+import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/presentation/damage_report/damage_report_form_screen.dart';
+import 'package:mobile/features/farmers/presentation/damage_report/damage_reports_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
@@ -39,6 +42,15 @@ abstract final class AppRoutes {
 
   /// Edit farm.
   static const editFarm = '/farms/edit';
+
+  /// Damage reports list.
+  static const damageReports = '/damage-reports';
+
+  /// Add damage report.
+  static const addDamageReport = '/damage-reports/add';
+
+  /// Edit damage report.
+  static const editDamageReport = '/damage-reports/edit';
 }
 
 /// Bridges a Riverpod provider into a [Listenable] so GoRouter re-evaluates
@@ -119,6 +131,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return FarmFormScreen(
             farmer: extra['farmer'] as Farmer,
             farm: extra['farm'] as Farm,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.damageReports,
+        builder: (context, state) => DamageReportsListScreen(farm: state.extra as Farm),
+      ),
+      GoRoute(
+        path: AppRoutes.addDamageReport,
+        builder: (context, state) => DamageReportFormScreen(farm: state.extra as Farm),
+      ),
+      GoRoute(
+        path: AppRoutes.editDamageReport,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return DamageReportFormScreen(
+            farm: extra['farm'] as Farm,
+            report: extra['report'] as DamageReport,
           );
         },
       ),

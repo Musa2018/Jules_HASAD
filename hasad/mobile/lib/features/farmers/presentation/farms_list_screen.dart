@@ -31,8 +31,11 @@ class FarmsListScreen extends ConsumerWidget {
               return ListTile(
                 title: Text(farm.name),
                 subtitle: Text('${farm.landArea} ${farm.landAreaUnit}'),
-                trailing: Text(farm.governorateId),
-                onTap: () => context.push('/farms/edit', extra: {'farmer': farmer, 'farm': farm}),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () => context.push('/farms/edit', extra: {'farmer': farmer, 'farm': farm}),
+                ),
+                onTap: () => context.push('/damage-reports', extra: farm),
               );
             },
           );

@@ -6,19 +6,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 class MockFarmRepository extends Mock implements FarmRepository {}
+class MockDamageReportRepository extends Mock implements DamageReportRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
   late AppDatabase db;
   late MockFarmerRepository mockFarmerRepo;
   late MockFarmRepository mockFarmRepo;
+  late MockDamageReportRepository mockDamageRepo;
   late MockConnectivity mockConnectivity;
   late BackgroundSyncService syncService;
 
@@ -26,14 +30,16 @@ void main() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockFarmerRepo = MockFarmerRepository();
     mockFarmRepo = MockFarmRepository();
+    mockDamageRepo = MockDamageReportRepository();
     mockConnectivity = MockConnectivity();
     
     when(() => mockConnectivity.onConnectivityChanged).thenAnswer((_) => const Stream.empty());
     
-    syncService = BackgroundSyncService(db, mockFarmerRepo, mockFarmRepo, mockConnectivity);
+    syncService = BackgroundSyncService(db, mockFarmerRepo, mockFarmRepo, mockDamageRepo, mockConnectivity);
     
     registerFallbackValue(const Farmer(id: '', name: '', nationalId: '', phoneNumber: '', address: '', rowVersion: ''));
     registerFallbackValue(const Farm(id: '', farmerId: '', name: '', governorateId: '', localityId: '', landArea: 0, landAreaUnit: '', ownershipTypeId: ''));
+    registerFallbackValue(DamageReport(id: '', farmId: '', farmerId: '', damageDate: DateTime.now(), documentationDate: DateTime.now(), governorateId: '', localityId: '', statusId: '', notes: ''));
   });
 
   tearDown(() async {

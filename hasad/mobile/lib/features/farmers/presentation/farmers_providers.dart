@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/data/offline_first_damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/offline_first_farm_repository.dart';
+import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 
@@ -20,12 +23,81 @@ final farmRepositoryProvider = Provider<FarmRepository>((ref) {
   );
 });
 
+final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
+  return OfflineFirstDamageReportRepository(
+    ref.watch(databaseProvider),
+    ref.watch(syncServiceProvider),
+  );
+});
+
 final farmersListProvider = FutureProvider.autoDispose<List<Farmer>>((ref) async {
   return ref.watch(farmerRepositoryProvider).getFarmers();
 });
 
 final farmsListByFarmerProvider = FutureProvider.autoDispose.family<List<Farm>, String>((ref, farmerId) async {
   return ref.watch(farmRepositoryProvider).getFarmsByFarmer(farmerId);
+});
+
+final damageReportsListByFarmProvider = FutureProvider.autoDispose.family<List<DamageReport>, String>((ref, farmId) async {
+  return ref.watch(damageReportRepositoryProvider).getDamageReportsByFarm(farmId);
+});
+
+class DamageReportFormState {
+  final bool isLoading;
+  final List<String> errors;
+  final bool success;
+
+  const DamageReportFormState({
+    this.isLoading = false,
+    this.errors = const [],
+    this.success = false,
+  });
+}
+
+class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
+  final DamageReportRepository _repository;
+
+  DamageReportFormNotifier(this._repository) : super(const DamageReportFormState());
+
+  Future<void> createDamageReport(DamageReport report) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.createDamageReport(report);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['An unexpected error occurred.']);
+    }
+  }
+
+  Future<void> updateDamageReport(DamageReport report) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.updateDamageReport(report);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['An unexpected error occurred.']);
+    }
+  }
+
+  Future<void> deleteDamageReport(String id) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.deleteDamageReport(id);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['An unexpected error occurred.']);
+    }
+  }
+}
+
+final damageReportFormProvider = StateNotifierProvider.autoDispose<DamageReportFormNotifier, DamageReportFormState>((ref) {
+  return DamageReportFormNotifier(ref.watch(damageReportRepositoryProvider));
 });
 
 class FarmerFormState {

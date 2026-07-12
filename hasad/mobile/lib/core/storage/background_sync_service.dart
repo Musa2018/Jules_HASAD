@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/domain/damage_item.dart' as item_domain;
+import 'package:mobile/features/farmers/domain/damage_report.dart' as report_domain;
 import 'package:mobile/features/farmers/domain/farm.dart' as farm_domain;
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
 import 'package:uuid/uuid.dart';
@@ -13,6 +16,7 @@ class BackgroundSyncService {
   final AppDatabase _db;
   final FarmerRepository _remoteFarmerRepository;
   final FarmRepository _remoteFarmRepository;
+  final DamageReportRepository _remoteDamageReportRepository;
   final Connectivity _connectivity;
   
   StreamSubscription? _connectivitySubscription;
@@ -22,6 +26,7 @@ class BackgroundSyncService {
     this._db, 
     this._remoteFarmerRepository, 
     this._remoteFarmRepository,
+    this._remoteDamageReportRepository,
     this._connectivity
   ) {
     _connectivitySubscription = _connectivity.onConnectivityChanged.listen((results) {
@@ -97,6 +102,10 @@ class BackgroundSyncService {
         await _syncFarmer(item);
       } else if (item.entityType == 'farm') {
         await _syncFarm(item);
+      } else if (item.entityType == 'damage_report') {
+        await _syncDamageReport(item);
+      } else if (item.entityType == 'damage_item') {
+        await _syncDamageItem(item);
       }
 
       await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
@@ -116,6 +125,21 @@ class BackgroundSyncService {
         );
       }
     } on FarmException catch (e) {
+      if (e.errors.any((err) => err.contains('CONFLICT'))) {
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString()))
+        );
+        await _resolveConflict(item);
+      } else {
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+      }
+    } on DamageReportException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString()))
@@ -199,6 +223,75 @@ class BackgroundSyncService {
     }
   }
 
+  Future<void> _syncDamageReport(SyncQueueData item) async {
+    final data = jsonDecode(item.data) as Map<String, dynamic>;
+    final report = report_domain.DamageReport.fromJson(data);
+
+    if (item.operation == 'create') {
+      final result = await _remoteDamageReportRepository.createDamageReport(report);
+      await _db.transaction(() async {
+        await (_db.update(_db.damageReports)..where((t) => t.id.equals(item.localId))).write(
+          DamageReportsCompanion(
+            serverId: Value(result.id),
+            rowVersion: Value(result.rowVersion),
+            syncStatus: const Value('completed'),
+          ),
+        );
+        for (var i in result.items) {
+          await (_db.update(_db.damageItems)..where((t) => t.id.equals(i.id))).write(
+            DamageItemsCompanion(
+              serverId: Value(i.id),
+              rowVersion: Value(i.rowVersion),
+              syncStatus: const Value('completed'),
+            ),
+          );
+        }
+      });
+    } else if (item.operation == 'update') {
+      final result = await _remoteDamageReportRepository.updateDamageReport(report);
+      await (_db.update(_db.damageReports)..where((t) => t.id.equals(item.localId))).write(
+        DamageReportsCompanion(
+          rowVersion: Value(result.rowVersion),
+          syncStatus: const Value('completed'),
+        ),
+      );
+    } else if (item.operation == 'delete') {
+       final localReport = await (_db.select(_db.damageReports)..where((t) => t.id.equals(item.localId))).getSingleOrNull();
+       if (localReport?.serverId != null) {
+         await _remoteDamageReportRepository.deleteDamageReport(localReport!.serverId!);
+       }
+    }
+  }
+
+  Future<void> _syncDamageItem(SyncQueueData item) async {
+    final data = jsonDecode(item.data) as Map<String, dynamic>;
+    final damageItem = item_domain.DamageItem.fromJson(data);
+
+    if (item.operation == 'create') {
+      final result = await _remoteDamageReportRepository.addDamageItem(damageItem);
+      await (_db.update(_db.damageItems)..where((t) => t.id.equals(item.localId))).write(
+        DamageItemsCompanion(
+          serverId: Value(result.id),
+          rowVersion: Value(result.rowVersion),
+          syncStatus: const Value('completed'),
+        ),
+      );
+    } else if (item.operation == 'update') {
+      final result = await _remoteDamageReportRepository.updateDamageItem(damageItem);
+      await (_db.update(_db.damageItems)..where((t) => t.id.equals(item.localId))).write(
+        DamageItemsCompanion(
+          rowVersion: Value(result.rowVersion),
+          syncStatus: const Value('completed'),
+        ),
+      );
+    } else if (item.operation == 'delete') {
+       final localItem = await (_db.select(_db.damageItems)..where((t) => t.id.equals(item.localId))).getSingleOrNull();
+       if (localItem?.serverId != null) {
+         await _remoteDamageReportRepository.deleteDamageItem(localItem!.serverId!);
+       }
+    }
+  }
+
   Future<void> _resolveConflict(SyncQueueData item) async {
     if (item.entityType == 'farmer') {
       try {
@@ -241,6 +334,74 @@ class BackgroundSyncService {
           ),
         );
         
+        await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
+      } catch (e) {
+        // Log
+      }
+    } else if (item.entityType == 'damage_report') {
+      try {
+        final localReport = await (_db.select(_db.damageReports)..where((t) => t.id.equals(item.localId))).getSingle();
+        final remoteReport = await _remoteDamageReportRepository.getDamageReport(localReport.serverId ?? item.localId);
+        
+        await _db.transaction(() async {
+          await (_db.update(_db.damageReports)..where((t) => t.id.equals(item.localId))).write(
+            DamageReportsCompanion(
+              damageDate: Value(remoteReport.damageDate),
+              governorateId: Value(remoteReport.governorateId),
+              localityId: Value(remoteReport.localityId),
+              latitude: Value(remoteReport.latitude),
+              longitude: Value(remoteReport.longitude),
+              statusId: Value(remoteReport.statusId),
+              notes: Value(remoteReport.notes),
+              rowVersion: Value(remoteReport.rowVersion),
+              syncStatus: const Value('completed'),
+            ),
+          );
+          // Items might be complex to merge, overwrite local items with remote for "Server Wins"
+          await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(item.localId))).go();
+          for (var ri in remoteReport.items) {
+            await _db.into(_db.damageItems).insert(DamageItemsCompanion.insert(
+              id: ri.id,
+              damageReportId: item.localId,
+              agriculturalSectorId: ri.agriculturalSectorId,
+              subSectorId: ri.subSectorId,
+              cropId: ri.cropId,
+              damageTypeId: ri.damageTypeId,
+              affectedArea: ri.affectedArea,
+              damagePercentage: ri.damagePercentage,
+              quantity: ri.quantity,
+              estimatedLoss: ri.estimatedLoss,
+              rowVersion: Value(ri.rowVersion),
+              syncStatus: const Value('completed'),
+            ));
+          }
+        });
+        await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
+      } catch (e) {
+        // Log
+      }
+    } else if (item.entityType == 'damage_item') {
+      try {
+        final localItem = await (_db.select(_db.damageItems)..where((t) => t.id.equals(item.localId))).getSingle();
+        // Item get remote might need authority ID
+        // Simplified: Fetch report and find item
+        final remoteReport = await _remoteDamageReportRepository.getDamageReport(localItem.damageReportId);
+        final remoteItem = remoteReport.items.firstWhere((i) => i.id == localItem.serverId || i.id == localItem.id);
+        
+        await (_db.update(_db.damageItems)..where((t) => t.id.equals(item.localId))).write(
+          DamageItemsCompanion(
+            agriculturalSectorId: Value(remoteItem.agriculturalSectorId),
+            subSectorId: Value(remoteItem.subSectorId),
+            cropId: Value(remoteItem.cropId),
+            damageTypeId: Value(remoteItem.damageTypeId),
+            affectedArea: Value(remoteItem.affectedArea),
+            damagePercentage: Value(remoteItem.damagePercentage),
+            quantity: Value(remoteItem.quantity),
+            estimatedLoss: Value(remoteItem.estimatedLoss),
+            rowVersion: Value(remoteItem.rowVersion),
+            syncStatus: const Value('completed'),
+          ),
+        );
         await _db.update(_db.syncQueue).replace(item.copyWith(status: 'completed'));
       } catch (e) {
         // Log

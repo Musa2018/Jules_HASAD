@@ -50,10 +50,76 @@ class Farms extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('DamageReportLocal')
+class DamageReports extends Table {
+  TextColumn get id => text()(); // ClientId
+  TextColumn get serverId => text().nullable()();
+  TextColumn get farmId => text()();
+  TextColumn get farmerId => text()();
+  
+  DateTimeColumn get damageDate => dateTime()();
+  DateTimeColumn get documentationDate => dateTime()();
+  
+  TextColumn get governorateId => text().withLength(max: 50)();
+  TextColumn get localityId => text().withLength(max: 50)();
+  
+  RealColumn get latitude => real().nullable()();
+  RealColumn get longitude => real().nullable()();
+  
+  TextColumn get statusId => text().withLength(max: 50)();
+  TextColumn get notes => text()();
+
+  TextColumn get rowVersion => text().withDefault(const Constant(''))();
+  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('DamageItemLocal')
+class DamageItems extends Table {
+  TextColumn get id => text()(); // ClientId
+  TextColumn get serverId => text().nullable()();
+  TextColumn get damageReportId => text()();
+  
+  TextColumn get agriculturalSectorId => text().withLength(max: 50)();
+  TextColumn get subSectorId => text().withLength(max: 50)();
+  TextColumn get cropId => text().withLength(max: 50)();
+  TextColumn get damageTypeId => text().withLength(max: 50)();
+  
+  RealColumn get affectedArea => real()();
+  RealColumn get damagePercentage => real()();
+  RealColumn get quantity => real()();
+  RealColumn get estimatedLoss => real()();
+
+  TextColumn get rowVersion => text().withDefault(const Constant(''))();
+  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('DamageReportAttachmentLocal')
+class DamageReportAttachments extends Table {
+  TextColumn get id => text()();
+  TextColumn get damageReportId => text()();
+  TextColumn get localPath => text()();
+  TextColumn get remoteUrl => text().nullable()();
+  TextColumn get fileType => text()();
+  TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class SyncQueue extends Table {
   TextColumn get id => text()();
   TextColumn get localId => text()();
-  TextColumn get entityType => text()(); // 'farmer', 'farm'
+  TextColumn get entityType => text()(); // 'farmer', 'farm', 'damage_report', 'damage_item'
   TextColumn get operation => text()(); // 'create', 'update', 'delete'
   TextColumn get data => text()(); // JSON payload
   TextColumn get status => text().withDefault(const Constant('pending'))();
@@ -66,13 +132,13 @@ class SyncQueue extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Farmers, Farms, SyncQueue])
+@DriftDatabase(tables: [Farmers, Farms, DamageReports, DamageItems, DamageReportAttachments, SyncQueue])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -85,6 +151,11 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 4) {
         await m.createTable(farms);
+      }
+      if (from < 5) {
+        await m.createTable(damageReports);
+        await m.createTable(damageItems);
+        await m.createTable(damageReportAttachments);
       }
     },
     beforeOpen: (details) async {

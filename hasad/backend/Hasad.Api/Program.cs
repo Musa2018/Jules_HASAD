@@ -31,15 +31,8 @@ builder.Host.UseSerilog();
 // Add Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    if (builder.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("UseInMemoryDatabase"))
-    {
-        options.UseInMemoryDatabase("HasadDb");
-    }
-    else
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-            b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
-    }
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
 });
 
 builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());

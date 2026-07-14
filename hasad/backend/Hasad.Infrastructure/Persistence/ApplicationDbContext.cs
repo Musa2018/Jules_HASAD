@@ -21,6 +21,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Persisted refresh tokens.</summary>
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    /// <summary>Governorates for geographic assignment.</summary>
+    public DbSet<Governorate> Governorates => Set<Governorate>();
+
+    /// <summary>Directorates for geographic assignment.</summary>
+    public DbSet<Directorate> Directorates => Set<Directorate>();
+
     /// <summary>Registered farmers.</summary>
     public DbSet<Farmer> Farmers => Set<Farmer>();
 
@@ -57,6 +63,40 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.Property(t => t.UserId).IsRequired();
             entity.HasIndex(t => t.TokenHash).IsUnique();
             entity.HasIndex(t => new { t.UserId, t.FamilyId });
+        });
+
+        builder.Entity<Governorate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
+            entity.HasIndex(e => e.Code).IsUnique();
+        });
+
+        builder.Entity<Directorate>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+
+            entity.HasOne(e => e.Governorate)
+                .WithMany(g => g.Directorates)
+                .HasForeignKey(e => e.GovernorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<ApplicationUser>(entity =>
+        {
+            entity.HasOne(u => u.Governorate)
+                .WithMany()
+                .HasForeignKey(u => u.GovernorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(u => u.Directorate)
+                .WithMany()
+                .HasForeignKey(u => u.DirectorateId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<Farmer>(entity =>

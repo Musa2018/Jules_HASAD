@@ -16,7 +16,7 @@ public static class DbInitializer
     /// <param name="roleManager">Identity role manager.</param>
     public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
     {
-        string[] roleNames = { "SuperAdmin", "Administrator", "AgriculturalEngineer", "FieldSurveyor", "Farmer", "ReadOnly" };
+        string[] roleNames = { "SuperAdmin", "Administrator", "AgriculturalEngineer", "FieldSurveyor", "Farmer", "ReadOnly", "Director", "Finance" };
 
         foreach (var roleName in roleNames)
         {

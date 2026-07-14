@@ -29,9 +29,12 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // Add Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Log.Information("Connecting to database: {ConnectionString}", connectionString);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(connectionString,
         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
 });
 
@@ -186,6 +189,8 @@ using (var scope = app.Services.CreateScope())
 
         var seedAdminEmail = app.Configuration["SeedAdmin:Email"];
         var seedAdminPassword = app.Configuration["SeedAdmin:Password"];
+        Log.Information("Attempting to seed SuperAdmin: {Email}", seedAdminEmail ?? "MISSING");
+
         if (!string.IsNullOrWhiteSpace(seedAdminEmail) && !string.IsNullOrWhiteSpace(seedAdminPassword))
         {
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();

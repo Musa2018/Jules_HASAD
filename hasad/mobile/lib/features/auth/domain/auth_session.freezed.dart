@@ -25,6 +25,7 @@ mixin _$AuthSession {
   String get refreshToken => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get fullName => throw _privateConstructorUsedError;
+  List<String> get roles => throw _privateConstructorUsedError;
 
   /// Serializes this AuthSession to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -43,7 +44,13 @@ abstract class $AuthSessionCopyWith<$Res> {
     $Res Function(AuthSession) then,
   ) = _$AuthSessionCopyWithImpl<$Res, AuthSession>;
   @useResult
-  $Res call({String token, String refreshToken, String email, String fullName});
+  $Res call({
+    String token,
+    String refreshToken,
+    String email,
+    String fullName,
+    List<String> roles,
+  });
 }
 
 /// @nodoc
@@ -65,6 +72,7 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
     Object? refreshToken = null,
     Object? email = null,
     Object? fullName = null,
+    Object? roles = null,
   }) {
     return _then(
       _value.copyWith(
@@ -84,6 +92,10 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
                 ? _value.fullName
                 : fullName // ignore: cast_nullable_to_non_nullable
                       as String,
+            roles: null == roles
+                ? _value.roles
+                : roles // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
           )
           as $Val,
     );
@@ -99,7 +111,13 @@ abstract class _$$AuthSessionImplCopyWith<$Res>
   ) = __$$AuthSessionImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String token, String refreshToken, String email, String fullName});
+  $Res call({
+    String token,
+    String refreshToken,
+    String email,
+    String fullName,
+    List<String> roles,
+  });
 }
 
 /// @nodoc
@@ -120,6 +138,7 @@ class __$$AuthSessionImplCopyWithImpl<$Res>
     Object? refreshToken = null,
     Object? email = null,
     Object? fullName = null,
+    Object? roles = null,
   }) {
     return _then(
       _$AuthSessionImpl(
@@ -139,6 +158,10 @@ class __$$AuthSessionImplCopyWithImpl<$Res>
             ? _value.fullName
             : fullName // ignore: cast_nullable_to_non_nullable
                   as String,
+        roles: null == roles
+            ? _value._roles
+            : roles // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
       ),
     );
   }
@@ -152,7 +175,8 @@ class _$AuthSessionImpl implements _AuthSession {
     required this.refreshToken,
     required this.email,
     required this.fullName,
-  });
+    final List<String> roles = const [],
+  }) : _roles = roles;
 
   factory _$AuthSessionImpl.fromJson(Map<String, dynamic> json) =>
       _$$AuthSessionImplFromJson(json);
@@ -165,10 +189,18 @@ class _$AuthSessionImpl implements _AuthSession {
   final String email;
   @override
   final String fullName;
+  final List<String> _roles;
+  @override
+  @JsonKey()
+  List<String> get roles {
+    if (_roles is EqualUnmodifiableListView) return _roles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_roles);
+  }
 
   @override
   String toString() {
-    return 'AuthSession(token: $token, refreshToken: $refreshToken, email: $email, fullName: $fullName)';
+    return 'AuthSession(token: $token, refreshToken: $refreshToken, email: $email, fullName: $fullName, roles: $roles)';
   }
 
   @override
@@ -181,13 +213,20 @@ class _$AuthSessionImpl implements _AuthSession {
                 other.refreshToken == refreshToken) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.fullName, fullName) ||
-                other.fullName == fullName));
+                other.fullName == fullName) &&
+            const DeepCollectionEquality().equals(other._roles, _roles));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, token, refreshToken, email, fullName);
+  int get hashCode => Object.hash(
+    runtimeType,
+    token,
+    refreshToken,
+    email,
+    fullName,
+    const DeepCollectionEquality().hash(_roles),
+  );
 
   /// Create a copy of AuthSession
   /// with the given fields replaced by the non-null parameter values.
@@ -209,6 +248,7 @@ abstract class _AuthSession implements AuthSession {
     required final String refreshToken,
     required final String email,
     required final String fullName,
+    final List<String> roles,
   }) = _$AuthSessionImpl;
 
   factory _AuthSession.fromJson(Map<String, dynamic> json) =
@@ -222,6 +262,8 @@ abstract class _AuthSession implements AuthSession {
   String get email;
   @override
   String get fullName;
+  @override
+  List<String> get roles;
 
   /// Create a copy of AuthSession
   /// with the given fields replaced by the non-null parameter values.

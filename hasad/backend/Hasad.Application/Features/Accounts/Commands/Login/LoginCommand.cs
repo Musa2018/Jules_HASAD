@@ -68,7 +68,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthResp
             Token = accessToken,
             RefreshToken = refreshToken,
             Email = user.Email!,
-            FullName = user.FullName
+            FullName = user.FullName,
+            Roles = roles
         });
     }
 }

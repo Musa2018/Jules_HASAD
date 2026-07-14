@@ -21,9 +21,29 @@ class CompensationNotifier extends StateNotifier<AsyncValue<void>> {
     state = await AsyncValue.guard(() => _repository.create(reportId, remarks));
   }
 
-  Future<void> update(Compensation compensation) async {
+  Future<void> recalculate(Compensation compensation) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _repository.update(compensation));
+    state = await AsyncValue.guard(() => _repository.recalculate(compensation.id, compensation.rowVersion));
+  }
+
+  Future<void> submit(Compensation compensation) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _repository.submit(compensation.id, compensation.rowVersion));
+  }
+
+  Future<void> approve(Compensation compensation, double amount, String remarks) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _repository.approve(compensation.id, amount, remarks, compensation.rowVersion));
+  }
+
+  Future<void> reject(Compensation compensation, String remarks) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _repository.reject(compensation.id, remarks, compensation.rowVersion));
+  }
+
+  Future<void> pay(Compensation compensation, String remarks) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _repository.markAsPaid(compensation.id, remarks, compensation.rowVersion));
   }
 }
 

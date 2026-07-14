@@ -1,6 +1,11 @@
 using Asp.Versioning;
 using Hasad.Application.Features.Compensations.Commands.CreateCompensation;
 using Hasad.Application.Features.Compensations.Commands.UpdateCompensation;
+using Hasad.Application.Features.Compensations.Commands.ApproveCompensation;
+using Hasad.Application.Features.Compensations.Commands.RejectCompensation;
+using Hasad.Application.Features.Compensations.Commands.MarkAsPaidCompensation;
+using Hasad.Application.Features.Compensations.Commands.RecalculateCompensation;
+using Hasad.Application.Features.Compensations.Commands.SubmitCompensation;
 using Hasad.Application.Features.Compensations.Queries.GetCompensationByReportId;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -37,23 +42,48 @@ public class CompensationsController : ControllerBase
         return result.Succeeded ? Ok(result) : BadRequest(result);
     }
 
-    [HttpPut("{id}")]
-    [Authorize(Roles = "SuperAdmin,Administrator")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCompensationCommand command)
+    [HttpPost("{id}/recalculate")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer")]
+    public async Task<IActionResult> Recalculate(Guid id, [FromBody] RecalculateCompensationCommand command)
     {
-        if (id != command.Id)
-        {
-            return BadRequest(new { Errors = new[] { "ID in route does not match ID in body." } });
-        }
-
+        if (id != command.Id) return BadRequest(new { Errors = new[] { "ID mismatch." } });
         var result = await _mediator.Send(command);
-        if (result.Succeeded) return Ok(result);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
 
-        if (result.Errors.Any(e => e.Contains("CONFLICT")))
-        {
-            return Conflict(result);
-        }
+    [HttpPost("{id}/submit")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer")]
+    public async Task<IActionResult> Submit(Guid id, [FromBody] SubmitCompensationCommand command)
+    {
+        if (id != command.Id) return BadRequest(new { Errors = new[] { "ID mismatch." } });
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
 
-        return BadRequest(result);
+    [HttpPost("{id}/approve")]
+    [Authorize(Roles = "SuperAdmin,Administrator")]
+    public async Task<IActionResult> Approve(Guid id, [FromBody] ApproveCompensationCommand command)
+    {
+        if (id != command.Id) return BadRequest(new { Errors = new[] { "ID mismatch." } });
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpPost("{id}/reject")]
+    [Authorize(Roles = "SuperAdmin,Administrator")]
+    public async Task<IActionResult> Reject(Guid id, [FromBody] RejectCompensationCommand command)
+    {
+        if (id != command.Id) return BadRequest(new { Errors = new[] { "ID mismatch." } });
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpPost("{id}/pay")]
+    [Authorize(Roles = "SuperAdmin,Administrator")]
+    public async Task<IActionResult> MarkAsPaid(Guid id, [FromBody] MarkAsPaidCompensationCommand command)
+    {
+        if (id != command.Id) return BadRequest(new { Errors = new[] { "ID mismatch." } });
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
     }
 }

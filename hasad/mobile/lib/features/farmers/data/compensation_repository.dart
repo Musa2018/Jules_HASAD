@@ -4,7 +4,11 @@ import 'package:mobile/features/farmers/domain/compensation.dart';
 abstract class CompensationRepository {
   Future<Compensation?> getByReportId(String reportId);
   Future<Compensation> create(String reportId, String remarks);
-  Future<Compensation> update(Compensation compensation);
+  Future<Compensation> recalculate(String id, String rowVersion);
+  Future<Compensation> submit(String id, String rowVersion);
+  Future<Compensation> approve(String id, double amount, String remarks, String rowVersion);
+  Future<Compensation> reject(String id, String remarks, String rowVersion);
+  Future<Compensation> markAsPaid(String id, String remarks, String rowVersion);
 }
 
 class CompensationRepositoryImpl implements CompensationRepository {
@@ -26,7 +30,7 @@ class CompensationRepositoryImpl implements CompensationRepository {
     final response = await _dio.post(
       '/v1/compensations',
       data: {
-        'clientId': DateTime.now().toIso8601String(), // Simple clientId for now
+        'clientId': DateTime.now().toIso8601String(),
         'damageReportId': reportId,
         'remarks': remarks,
       },
@@ -35,15 +39,58 @@ class CompensationRepositoryImpl implements CompensationRepository {
   }
 
   @override
-  Future<Compensation> update(Compensation compensation) async {
-    final response = await _dio.put(
-      '/v1/compensations/${compensation.id}',
+  Future<Compensation> recalculate(String id, String rowVersion) async {
+    final response = await _dio.post(
+      '/v1/compensations/$id/recalculate',
+      data: {'id': id, 'rowVersion': rowVersion},
+    );
+    return Compensation.fromJson(response.data['data']);
+  }
+
+  @override
+  Future<Compensation> submit(String id, String rowVersion) async {
+    final response = await _dio.post(
+      '/v1/compensations/$id/submit',
+      data: {'id': id, 'rowVersion': rowVersion},
+    );
+    return Compensation.fromJson(response.data['data']);
+  }
+
+  @override
+  Future<Compensation> approve(String id, double amount, String remarks, String rowVersion) async {
+    final response = await _dio.post(
+      '/v1/compensations/$id/approve',
       data: {
-        'id': compensation.id,
-        'approvedAmount': compensation.approvedAmount,
-        'status': compensation.status,
-        'remarks': compensation.remarks,
-        'rowVersion': compensation.rowVersion,
+        'id': id,
+        'approvedAmount': amount,
+        'remarks': remarks,
+        'rowVersion': rowVersion,
+      },
+    );
+    return Compensation.fromJson(response.data['data']);
+  }
+
+  @override
+  Future<Compensation> reject(String id, String remarks, String rowVersion) async {
+    final response = await _dio.post(
+      '/v1/compensations/$id/reject',
+      data: {
+        'id': id,
+        'remarks': remarks,
+        'rowVersion': rowVersion,
+      },
+    );
+    return Compensation.fromJson(response.data['data']);
+  }
+
+  @override
+  Future<Compensation> markAsPaid(String id, String remarks, String rowVersion) async {
+    final response = await _dio.post(
+      '/v1/compensations/$id/pay',
+      data: {
+        'id': id,
+        'remarks': remarks,
+        'rowVersion': rowVersion,
       },
     );
     return Compensation.fromJson(response.data['data']);

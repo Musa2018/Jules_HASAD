@@ -12,6 +12,9 @@ _$AuthSessionImpl _$$AuthSessionImplFromJson(Map<String, dynamic> json) =>
       refreshToken: json['refreshToken'] as String,
       email: json['email'] as String,
       fullName: json['fullName'] as String,
+      roles:
+          (json['roles'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$AuthSessionImplToJson(_$AuthSessionImpl instance) =>
@@ -20,4 +23,5 @@ Map<String, dynamic> _$$AuthSessionImplToJson(_$AuthSessionImpl instance) =>
       'refreshToken': instance.refreshToken,
       'email': instance.email,
       'fullName': instance.fullName,
+      'roles': instance.roles,
     };

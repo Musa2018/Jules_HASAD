@@ -1,5 +1,7 @@
+using Hasad.Domain.Entities;
 using Hasad.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hasad.Infrastructure.Persistence.Seed;
 
@@ -57,5 +59,25 @@ public static class DbInitializer
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Seeds initial compensation rules.
+    /// </summary>
+    public static async Task SeedCompensationRulesAsync(ApplicationDbContext context)
+    {
+        if (!await context.CompensationRules.AnyAsync())
+        {
+            context.CompensationRules.Add(new CompensationRule
+            {
+                Id = Guid.NewGuid(),
+                Name = "Default 80% Rule",
+                Description = "Standard compensation rule (80%)",
+                Multiplier = 0.8m,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            });
+            await context.SaveChangesAsync();
+        }
     }
 }

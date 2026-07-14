@@ -33,6 +33,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Compensations linked to reports.</summary>
     public DbSet<Compensation> Compensations => Set<Compensation>();
 
+    /// <summary>Compensation rules for calculation.</summary>
+    public DbSet<CompensationRule> CompensationRules => Set<CompensationRule>();
+
+    /// <summary>Audit logs for compensation status changes.</summary>
+    public DbSet<CompensationAuditLog> CompensationAuditLogs => Set<CompensationAuditLog>();
+
     /// <summary>Damage items within reports.</summary>
     public DbSet<DamageItem> DamageItems => Set<DamageItem>();
 
@@ -167,6 +173,31 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasOne(e => e.DamageReport)
                 .WithOne()
                 .HasForeignKey<Compensation>(e => e.DamageReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Rule)
+                .WithMany()
+                .HasForeignKey(e => e.RuleId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CompensationRule>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Multiplier).HasPrecision(18, 4);
+        });
+
+        builder.Entity<CompensationAuditLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.PreviousStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.NewStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ChangedBy).IsRequired().HasMaxLength(100);
+
+            entity.HasOne(e => e.Compensation)
+                .WithMany(c => c.AuditLogs)
+                .HasForeignKey(e => e.CompensationId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

@@ -13,6 +13,7 @@ class AuthSession with _$AuthSession {
     required String refreshToken,
     required String email,
     required String fullName,
+    @Default([]) List<String> roles,
   }) = _AuthSession;
 
   /// Deserializes an [AuthSession] from the backend `data` payload.

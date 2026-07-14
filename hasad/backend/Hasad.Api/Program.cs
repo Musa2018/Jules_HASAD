@@ -134,6 +134,8 @@ builder.Services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<ICompensationService, CompensationService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -188,6 +190,7 @@ using (var scope = app.Services.CreateScope())
 
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         await DbInitializer.SeedRolesAsync(roleManager);
+        await DbInitializer.SeedCompensationRulesAsync(context);
 
         var seedAdminEmail = app.Configuration["SeedAdmin:Email"];
         var seedAdminPassword = app.Configuration["SeedAdmin:Password"];

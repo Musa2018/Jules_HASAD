@@ -4,5 +4,5 @@ namespace Hasad.Application.Common.Interfaces;
 
 public interface ICompensationService
 {
-    decimal Calculate(DamageReport report);
+    decimal Calculate(DamageReport report, CompensationRule rule);
 }

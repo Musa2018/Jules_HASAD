@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile/core/config/app_config.dart';
+import 'package:mobile/features/auth/domain/auth_session.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farmers/domain/compensation.dart';
 import 'package:mobile/features/farmers/presentation/compensation/compensation_providers.dart';
 import 'package:mobile/features/farmers/presentation/compensation/compensation_screen.dart';
@@ -9,29 +12,38 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/features/farmers/data/compensation_repository.dart';
 
+import 'package:mobile/features/auth/data/auth_repository.dart';
+import 'package:mobile/core/storage/secure_storage_service.dart';
+import 'package:mobile/core/network/token_refresher.dart';
+
 class MockCompensationRepository extends Mock implements CompensationRepository {}
+class MockAuthRepository extends Mock implements AuthRepository {}
+class MockSecureStorageService extends Mock implements SecureStorageService {}
+class MockTokenRefresher extends Mock implements TokenRefresher {}
 
 void main() {
   late MockCompensationRepository repository;
 
   setUp(() {
+    EnvironmentConfig.setEnvironment(AppEnvironment.dev);
     repository = MockCompensationRepository();
   });
 
-  Widget buildTestApp(String reportId) {
+  Widget buildTestApp(String reportId, {List<String> roles = const ['SuperAdmin']}) {
     return ProviderScope(
       overrides: [
         compensationRepositoryProvider.overrideWithValue(repository),
+        authProvider.overrideWith((ref) => _FakeAuthNotifier(roles)),
       ],
-      child: const MaterialApp(
-        localizationsDelegates: [
+      child: MaterialApp(
+        localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: [Locale('en')],
-        home: CompensationScreen(reportId: '123'),
+        supportedLocales: const [Locale('en')],
+        home: CompensationScreen(reportId: reportId),
       ),
     );
   }
@@ -67,4 +79,22 @@ void main() {
     expect(find.text('Calculated'), findsOneWidget);
     expect(find.text('Looks good'), findsOneWidget);
   });
+}
+
+class _FakeAuthNotifier extends AuthNotifier {
+  _FakeAuthNotifier(List<String> roles) : super(MockAuthRepository(), MockSecureStorageService(), MockTokenRefresher()) {
+    state = AuthState(
+      status: AuthStatus.authenticated,
+      session: AuthSession(
+        token: 't',
+        refreshToken: 'r',
+        email: 'a@a.com',
+        fullName: 'Admin',
+        roles: roles,
+      ),
+    );
+  }
+
+  @override
+  Future<void> restoreSession() async {}
 }

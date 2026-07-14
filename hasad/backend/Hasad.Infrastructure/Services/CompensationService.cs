@@ -5,13 +5,13 @@ namespace Hasad.Infrastructure.Services;
 
 public class CompensationService : ICompensationService
 {
-    public decimal Calculate(DamageReport report)
+    public decimal Calculate(DamageReport report, CompensationRule rule)
     {
         if (report.Items == null || !report.Items.Any())
             return 0;
 
-        // Basic calculation logic: 80% of estimated loss
+        // Use the configurable multiplier from the rule
         decimal totalEstimatedLoss = report.Items.Sum(i => i.EstimatedLoss);
-        return totalEstimatedLoss * 0.8m;
+        return totalEstimatedLoss * rule.Multiplier;
     }
 }

@@ -2,6 +2,7 @@ using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.Compensations.Models;
+using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,13 @@ public class CreateCompensationCommandHandler : IRequestHandler<CreateCompensati
 {
     private readonly IApplicationDbContext _context;
     private readonly ICompensationService _compensationService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateCompensationCommandHandler(IApplicationDbContext context, ICompensationService compensationService)
+    public CreateCompensationCommandHandler(IApplicationDbContext context, ICompensationService compensationService, ICurrentUserService currentUserService)
     {
         _context = context;
         _compensationService = compensationService;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Result<CompensationDto>> Handle(CreateCompensationCommand request, CancellationToken cancellationToken)
@@ -52,19 +55,39 @@ public class CreateCompensationCommandHandler : IRequestHandler<CreateCompensati
             return Result<CompensationDto>.Failure(new[] { "Compensation already exists for this damage report." });
         }
 
-        var calculatedAmount = _compensationService.Calculate(report);
+        // Get active rule
+        var rule = await _context.CompensationRules
+            .FirstOrDefaultAsync(r => r.IsActive, cancellationToken);
+
+        if (rule == null)
+        {
+            return Result<CompensationDto>.Failure(new[] { "No active compensation rule found." });
+        }
+
+        var calculatedAmount = _compensationService.Calculate(report, rule);
 
         var compensation = new Compensation
         {
             Id = Guid.NewGuid(),
             ClientId = request.ClientId,
             DamageReportId = request.DamageReportId,
+            RuleId = rule.Id,
             CalculatedAmount = calculatedAmount,
-            ApprovedAmount = calculatedAmount, // Initially same
-            Status = "Calculated",
+            ApprovedAmount = calculatedAmount,
+            Status = CompensationStatus.Calculated,
             Remarks = request.Remarks,
             CreatedAt = DateTime.UtcNow
         };
+
+        compensation.AuditLogs.Add(new CompensationAuditLog
+        {
+            Id = Guid.NewGuid(),
+            PreviousStatus = "None",
+            NewStatus = CompensationStatus.Calculated,
+            ChangedBy = _currentUserService.UserName ?? "System",
+            ChangedAt = DateTime.UtcNow,
+            Reason = "Initial calculation"
+        });
 
         _context.Compensations.Add(compensation);
         await _context.SaveChangesAsync(cancellationToken);

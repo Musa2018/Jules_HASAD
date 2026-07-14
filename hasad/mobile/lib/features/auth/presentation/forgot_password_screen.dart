@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/router/app_router.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -27,14 +29,21 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
     setState(() => _isLoading = true);
     
-    // Simulate API call for now since backend doesn't have it yet
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _isSent = true;
-      });
+    try {
+      await ref.read(authRepositoryProvider).forgotPassword(_emailController.text.trim());
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _isSent = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     }
   }
 
@@ -147,6 +156,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 32),
+        ElevatedButton(
+          onPressed: () => context.push(AppRoutes.resetPassword, extra: _emailController.text),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF689F38),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          ),
+          child: const Text('Enter Reset Token', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
         TextButton(
           onPressed: () => context.pop(),
           child: Text(l10n.backToLogin, style: const TextStyle(color: Color(0xFF1B5E20), fontWeight: FontWeight.bold)),

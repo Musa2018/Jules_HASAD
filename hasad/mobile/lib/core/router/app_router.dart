@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/presentation/forgot_password_screen.dart';
+import 'package:mobile/features/auth/presentation/reset_password_screen.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
@@ -26,6 +27,9 @@ abstract final class AppRoutes {
 
   /// Forgot password.
   static const forgotPassword = '/forgot-password';
+
+  /// Reset password.
+  static const resetPassword = '/reset-password';
 
   /// Authenticated home screen.
   static const home = '/home';
@@ -92,11 +96,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
       
       if (!auth.isAuthenticated) {
-        final isAuthPath = location == AppRoutes.login || location == AppRoutes.forgotPassword;
+        final isAuthPath = location == AppRoutes.login || 
+                          location == AppRoutes.forgotPassword ||
+                          location == AppRoutes.resetPassword;
         return isAuthPath ? null : AppRoutes.login;
       }
       
-      if (location == AppRoutes.splash || location == AppRoutes.login || location == AppRoutes.forgotPassword) {
+      if (location == AppRoutes.splash || 
+          location == AppRoutes.login || 
+          location == AppRoutes.forgotPassword ||
+          location == AppRoutes.resetPassword) {
         return AppRoutes.home;
       }
       return null;
@@ -114,6 +123,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        builder: (context, state) => ResetPasswordScreen(email: state.extra as String),
       ),
       GoRoute(
         path: AppRoutes.home,

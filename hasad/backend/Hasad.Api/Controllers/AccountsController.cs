@@ -1,4 +1,6 @@
 using Asp.Versioning;
+using Hasad.Application.Features.Accounts.Commands.ForgotPassword;
+using Hasad.Application.Features.Accounts.Commands.ResetPassword;
 using Hasad.Application.Features.Accounts.Commands.Login;
 using Hasad.Application.Features.Accounts.Commands.Logout;
 using Hasad.Application.Features.Accounts.Commands.Refresh;
@@ -56,5 +58,25 @@ public class AccountsController : ControllerBase
     {
         var result = await _mediator.Send(command);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Sends a password reset token to the user's email.
+    /// </summary>
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Resets the user's password using the provided token.
+    /// </summary>
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
     }
 }

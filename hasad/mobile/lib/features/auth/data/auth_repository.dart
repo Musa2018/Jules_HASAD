@@ -25,6 +25,12 @@ abstract class AuthRepository {
 
   /// Revokes [refreshToken] and its token family on the server.
   Future<void> logout(String refreshToken);
+
+  /// Requests a password reset for [email].
+  Future<void> forgotPassword(String email);
+
+  /// Resets password using [token] and [newPassword] for [email].
+  Future<void> resetPassword(String email, String token, String newPassword);
 }
 
 /// Dio-backed implementation of [AuthRepository] targeting the HASAD API.
@@ -57,6 +63,37 @@ class AuthRepositoryImpl implements AuthRepository {
         '/v1/accounts/logout',
         data: {'refreshToken': refreshToken},
       );
+    } on DioException catch (e) {
+      throw AuthException(_errorsFrom(e));
+    }
+  }
+
+  @override
+  Future<void> forgotPassword(String email) async {
+    try {
+      await _dio.post<Map<String, dynamic>>(
+        '/v1/accounts/forgot-password',
+        data: {'email': email},
+      );
+    } on DioException catch (e) {
+      throw AuthException(_errorsFrom(e));
+    }
+  }
+
+  @override
+  Future<void> resetPassword(String email, String token, String newPassword) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/v1/accounts/reset-password',
+        data: {
+          'email': email,
+          'token': token,
+          'newPassword': newPassword,
+        },
+      );
+      if (response.data?['succeeded'] != true) {
+        throw AuthException(_errorsFromEnvelope(response.data));
+      }
     } on DioException catch (e) {
       throw AuthException(_errorsFrom(e));
     }

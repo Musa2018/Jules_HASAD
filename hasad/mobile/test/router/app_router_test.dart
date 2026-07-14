@@ -101,7 +101,7 @@ void main() {
         'admin@hasad.ps',
       );
       await tester.enterText(find.byType(TextFormField).last, 'password');
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       expect(find.byType(HomeScreen), findsOneWidget);

@@ -60,6 +60,21 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get welcomeToHasad => 'مرحباً بك في حصاد';
+
+  @override
+  String get pleaseSignIn => 'يرجى تسجيل الدخول';
+
+  @override
+  String get rememberMe => 'تذكرني';
+
+  @override
+  String get forgotPassword => 'نسيت كلمة المرور؟';
+
+  @override
+  String get usernameOrEmail => 'اسم المستخدم أو البريد الإلكتروني';
+
+  @override
   String get addFarmer => 'إضافة مزارع';
 
   @override

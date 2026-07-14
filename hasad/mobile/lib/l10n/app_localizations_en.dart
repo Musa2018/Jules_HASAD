@@ -60,6 +60,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get welcomeToHasad => 'Welcome to HASAD';
+
+  @override
+  String get pleaseSignIn => 'Please Sign In';
+
+  @override
+  String get rememberMe => 'Remember Me';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get usernameOrEmail => 'Username or Email';
+
+  @override
   String get addFarmer => 'Add Farmer';
 
   @override

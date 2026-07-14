@@ -52,7 +52,7 @@ void main() {
       await tester.pumpWidget(buildLoginApp(repository, storage));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter your email.'), findsOneWidget);
@@ -65,7 +65,7 @@ void main() {
 
       await tester.enterText(find.byType(TextFormField).first, 'not-an-email');
       await tester.enterText(find.byType(TextFormField).last, 'secret');
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter a valid email address.'), findsOneWidget);
@@ -81,7 +81,7 @@ void main() {
         'admin@hasad.ps',
       );
       await tester.enterText(find.byType(TextFormField).last, 'wrong');
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       expect(
@@ -102,7 +102,7 @@ void main() {
         'admin@hasad.ps',
       );
       await tester.enterText(find.byType(TextFormField).last, 'password');
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       expect(storage.values['token'], 'access-1');
@@ -122,7 +122,7 @@ void main() {
         'admin@hasad.ps',
       );
       await tester.enterText(find.byType(TextFormField).last, 'password');
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump(const Duration(milliseconds: 50));
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -140,8 +140,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('تسجيل الدخول'), findsWidgets);
-      expect(find.text('البريد الإلكتروني'), findsOneWidget);
+      expect(find.text('تسجيل الدخول'.toUpperCase()), findsWidgets);
+      expect(find.text('اسم المستخدم أو البريد الإلكتروني'), findsOneWidget);
       expect(find.text('كلمة المرور'), findsOneWidget);
       expect(
         Directionality.of(tester.element(find.byType(LoginScreen))),
@@ -155,7 +155,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(FilledButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       expect(find.text('يرجى إدخال البريد الإلكتروني.'), findsOneWidget);

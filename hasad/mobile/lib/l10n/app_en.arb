@@ -47,6 +47,11 @@
       }
     }
   },
+  "welcomeToHasad": "Welcome to HASAD",
+  "pleaseSignIn": "Please Sign In",
+  "rememberMe": "Remember Me",
+  "forgotPassword": "Forgot Password?",
+  "usernameOrEmail": "Username or Email",
   "addFarmer": "Add Farmer",
   "editFarmer": "Edit Farmer",
   "farmerName": "Farmer Name",

@@ -32,6 +32,6 @@ void main() {
 
     // With no stored session the auth guard must land on the login screen.
     expect(find.byType(TextFormField), findsNWidgets(2));
-    expect(find.byType(FilledButton), findsOneWidget);
+    expect(find.byType(ElevatedButton), findsOneWidget);
   });
 }

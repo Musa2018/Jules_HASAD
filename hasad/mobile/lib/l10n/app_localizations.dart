@@ -194,6 +194,36 @@ abstract class AppLocalizations {
   /// **'Welcome, {name}'**
   String welcome(String name);
 
+  /// No description provided for @welcomeToHasad.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to HASAD'**
+  String get welcomeToHasad;
+
+  /// No description provided for @pleaseSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Please Sign In'**
+  String get pleaseSignIn;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember Me'**
+  String get rememberMe;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @usernameOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Username or Email'**
+  String get usernameOrEmail;
+
   /// No description provided for @addFarmer.
   ///
   /// In en, this message translates to:

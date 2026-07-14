@@ -67,8 +67,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthResp
         {
             Token = accessToken,
             RefreshToken = refreshToken,
+            UserId = user.Id,
             Email = user.Email!,
             FullName = user.FullName,
+            GovernorateId = user.GovernorateId,
+            DirectorateId = user.DirectorateId,
             Roles = roles
         });
     }

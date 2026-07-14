@@ -13,12 +13,17 @@ public class LoginCommandHandlerTests
     private readonly IRefreshTokenStore _refreshTokenStore;
     private readonly LoginCommandHandler _handler;
 
+    private static readonly Guid GzId = Guid.NewGuid();
+    private static readonly Guid DirId = Guid.NewGuid();
+
     private static readonly ApplicationUser User = new()
     {
         Id = "user-1",
         Email = "user@hasad.ps",
         UserName = "user@hasad.ps",
-        FullName = "Test User"
+        FullName = "Test User",
+        GovernorateId = GzId,
+        DirectorateId = DirId
     };
 
     public LoginCommandHandlerTests()
@@ -81,7 +86,10 @@ public class LoginCommandHandlerTests
         Assert.True(result.Succeeded);
         Assert.Equal("access-token", result.Data!.Token);
         Assert.Equal("refresh-token", result.Data.RefreshToken);
+        Assert.Equal(User.Id, result.Data.UserId);
         Assert.Equal(User.Email, result.Data.Email);
+        Assert.Equal(GzId, result.Data.GovernorateId);
+        Assert.Equal(DirId, result.Data.DirectorateId);
         await _userManager.Received(1).ResetAccessFailedCountAsync(User);
     }
 }

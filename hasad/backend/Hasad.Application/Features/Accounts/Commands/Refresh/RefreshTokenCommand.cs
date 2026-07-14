@@ -59,8 +59,12 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         {
             Token = accessToken,
             RefreshToken = rotation.NewRefreshToken!,
+            UserId = user.Id,
             Email = user.Email!,
-            FullName = user.FullName
+            FullName = user.FullName,
+            GovernorateId = user.GovernorateId,
+            DirectorateId = user.DirectorateId,
+            Roles = roles
         });
     }
 }

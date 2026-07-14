@@ -90,10 +90,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (auth.status == AuthStatus.unknown) {
         return location == AppRoutes.splash ? null : AppRoutes.splash;
       }
+      
       if (!auth.isAuthenticated) {
-        return location == AppRoutes.login ? null : AppRoutes.login;
+        final isAuthPath = location == AppRoutes.login || location == AppRoutes.forgotPassword;
+        return isAuthPath ? null : AppRoutes.login;
       }
-      if (location == AppRoutes.splash || location == AppRoutes.login) {
+      
+      if (location == AppRoutes.splash || location == AppRoutes.login || location == AppRoutes.forgotPassword) {
         return AppRoutes.home;
       }
       return null;

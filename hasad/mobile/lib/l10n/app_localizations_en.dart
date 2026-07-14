@@ -145,4 +145,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorLoadingFarms => 'Failed to load farms.';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get emailSent => 'A reset link has been sent to your email.';
+
+  @override
+  String get backToLogin => 'Back to Login';
+
+  @override
+  String get enterEmailToReset =>
+      'Enter your email address and we\'ll send you a link to reset your password.';
 }

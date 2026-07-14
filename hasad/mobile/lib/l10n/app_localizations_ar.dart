@@ -145,4 +145,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorLoadingFarms => 'فشل تحميل المزارع.';
+
+  @override
+  String get resetPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get sendResetLink => 'إرسال رابط التعيين';
+
+  @override
+  String get emailSent => 'تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.';
+
+  @override
+  String get backToLogin => 'العودة لتسجيل الدخول';
+
+  @override
+  String get enterEmailToReset =>
+      'أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.';
 }

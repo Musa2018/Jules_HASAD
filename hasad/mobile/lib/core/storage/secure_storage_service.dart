@@ -7,6 +7,7 @@ class SecureStorageService {
 
   static const String _tokenKey = 'jwt_token';
   static const String _refreshTokenKey = 'refresh_token';
+  static const String _rememberEmailKey = 'remembered_email';
 
   Future<void> saveToken(String token) async {
     await _storage.write(key: _tokenKey, value: token);
@@ -24,7 +25,28 @@ class SecureStorageService {
     return await _storage.read(key: _refreshTokenKey);
   }
 
+  Future<void> saveRememberedEmail(String? email) async {
+    if (email == null) {
+      await _storage.delete(key: _rememberEmailKey);
+    } else {
+      await _storage.write(key: _rememberEmailKey, value: email);
+    }
+  }
+
+  Future<String?> getRememberedEmail() async {
+    return await _storage.read(key: _rememberEmailKey);
+  }
+
   Future<void> clearAll() async {
+    final email = await getRememberedEmail();
     await _storage.deleteAll();
+    if (email != null) {
+      await saveRememberedEmail(email);
+    }
+  }
+
+  Future<void> logout() async {
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _refreshTokenKey);
   }
 }

@@ -75,5 +75,10 @@
   "unit": "Unit",
   "ownershipType": "Ownership Type",
   "noFarms": "No farms found.",
-  "errorLoadingFarms": "Failed to load farms."
+  "errorLoadingFarms": "Failed to load farms.",
+  "resetPassword": "Reset Password",
+  "sendResetLink": "Send Reset Link",
+  "emailSent": "A reset link has been sent to your email.",
+  "backToLogin": "Back to Login",
+  "enterEmailToReset": "Enter your email address and we'll send you a link to reset your password."
 }

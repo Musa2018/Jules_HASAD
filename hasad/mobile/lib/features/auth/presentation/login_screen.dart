@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/l10n/locale_provider.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -21,6 +23,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   static final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberedEmail();
+  }
+
+  Future<void> _loadRememberedEmail() async {
+    final email = await ref.read(secureStorageServiceProvider).getRememberedEmail();
+    if (email != null && mounted) {
+      setState(() {
+        _emailController.text = email;
+        _rememberMe = true;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -34,7 +52,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     FocusScope.of(context).unfocus();
     await ref
         .read(authProvider.notifier)
-        .login(_emailController.text.trim(), _passwordController.text);
+        .login(
+          _emailController.text.trim(), 
+          _passwordController.text,
+          rememberMe: _rememberMe,
+        );
   }
 
   @override
@@ -94,11 +116,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.all(24.0),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 15,
                               offset: const Offset(0, 5),
                             ),
@@ -179,7 +201,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       style: const TextStyle(fontSize: 13)),
                                   const Spacer(),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () => context.push(AppRoutes.forgotPassword),
                                     child: Text(
                                       l10n.forgotPassword,
                                       style: const TextStyle(
@@ -313,9 +335,9 @@ class _LanguageToggle extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.7),
+          color: Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF689F38).withOpacity(0.3)),
+          border: Border.all(color: const Color(0xFF689F38).withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

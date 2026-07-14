@@ -23,8 +23,11 @@ AuthSession _$AuthSessionFromJson(Map<String, dynamic> json) {
 mixin _$AuthSession {
   String get token => throw _privateConstructorUsedError;
   String get refreshToken => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get fullName => throw _privateConstructorUsedError;
+  String? get governorateId => throw _privateConstructorUsedError;
+  String? get directorateId => throw _privateConstructorUsedError;
   List<String> get roles => throw _privateConstructorUsedError;
 
   /// Serializes this AuthSession to a JSON map.
@@ -47,8 +50,11 @@ abstract class $AuthSessionCopyWith<$Res> {
   $Res call({
     String token,
     String refreshToken,
+    String userId,
     String email,
     String fullName,
+    String? governorateId,
+    String? directorateId,
     List<String> roles,
   });
 }
@@ -70,8 +76,11 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
   $Res call({
     Object? token = null,
     Object? refreshToken = null,
+    Object? userId = null,
     Object? email = null,
     Object? fullName = null,
+    Object? governorateId = freezed,
+    Object? directorateId = freezed,
     Object? roles = null,
   }) {
     return _then(
@@ -84,6 +93,10 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
                 ? _value.refreshToken
                 : refreshToken // ignore: cast_nullable_to_non_nullable
                       as String,
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String,
             email: null == email
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
@@ -92,6 +105,14 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
                 ? _value.fullName
                 : fullName // ignore: cast_nullable_to_non_nullable
                       as String,
+            governorateId: freezed == governorateId
+                ? _value.governorateId
+                : governorateId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            directorateId: freezed == directorateId
+                ? _value.directorateId
+                : directorateId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             roles: null == roles
                 ? _value.roles
                 : roles // ignore: cast_nullable_to_non_nullable
@@ -114,8 +135,11 @@ abstract class _$$AuthSessionImplCopyWith<$Res>
   $Res call({
     String token,
     String refreshToken,
+    String userId,
     String email,
     String fullName,
+    String? governorateId,
+    String? directorateId,
     List<String> roles,
   });
 }
@@ -136,8 +160,11 @@ class __$$AuthSessionImplCopyWithImpl<$Res>
   $Res call({
     Object? token = null,
     Object? refreshToken = null,
+    Object? userId = null,
     Object? email = null,
     Object? fullName = null,
+    Object? governorateId = freezed,
+    Object? directorateId = freezed,
     Object? roles = null,
   }) {
     return _then(
@@ -150,6 +177,10 @@ class __$$AuthSessionImplCopyWithImpl<$Res>
             ? _value.refreshToken
             : refreshToken // ignore: cast_nullable_to_non_nullable
                   as String,
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
         email: null == email
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
@@ -158,6 +189,14 @@ class __$$AuthSessionImplCopyWithImpl<$Res>
             ? _value.fullName
             : fullName // ignore: cast_nullable_to_non_nullable
                   as String,
+        governorateId: freezed == governorateId
+            ? _value.governorateId
+            : governorateId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        directorateId: freezed == directorateId
+            ? _value.directorateId
+            : directorateId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         roles: null == roles
             ? _value._roles
             : roles // ignore: cast_nullable_to_non_nullable
@@ -173,8 +212,11 @@ class _$AuthSessionImpl implements _AuthSession {
   const _$AuthSessionImpl({
     required this.token,
     required this.refreshToken,
+    required this.userId,
     required this.email,
     required this.fullName,
+    this.governorateId,
+    this.directorateId,
     final List<String> roles = const [],
   }) : _roles = roles;
 
@@ -186,9 +228,15 @@ class _$AuthSessionImpl implements _AuthSession {
   @override
   final String refreshToken;
   @override
+  final String userId;
+  @override
   final String email;
   @override
   final String fullName;
+  @override
+  final String? governorateId;
+  @override
+  final String? directorateId;
   final List<String> _roles;
   @override
   @JsonKey()
@@ -200,7 +248,7 @@ class _$AuthSessionImpl implements _AuthSession {
 
   @override
   String toString() {
-    return 'AuthSession(token: $token, refreshToken: $refreshToken, email: $email, fullName: $fullName, roles: $roles)';
+    return 'AuthSession(token: $token, refreshToken: $refreshToken, userId: $userId, email: $email, fullName: $fullName, governorateId: $governorateId, directorateId: $directorateId, roles: $roles)';
   }
 
   @override
@@ -211,9 +259,14 @@ class _$AuthSessionImpl implements _AuthSession {
             (identical(other.token, token) || other.token == token) &&
             (identical(other.refreshToken, refreshToken) ||
                 other.refreshToken == refreshToken) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
+            (identical(other.governorateId, governorateId) ||
+                other.governorateId == governorateId) &&
+            (identical(other.directorateId, directorateId) ||
+                other.directorateId == directorateId) &&
             const DeepCollectionEquality().equals(other._roles, _roles));
   }
 
@@ -223,8 +276,11 @@ class _$AuthSessionImpl implements _AuthSession {
     runtimeType,
     token,
     refreshToken,
+    userId,
     email,
     fullName,
+    governorateId,
+    directorateId,
     const DeepCollectionEquality().hash(_roles),
   );
 
@@ -246,8 +302,11 @@ abstract class _AuthSession implements AuthSession {
   const factory _AuthSession({
     required final String token,
     required final String refreshToken,
+    required final String userId,
     required final String email,
     required final String fullName,
+    final String? governorateId,
+    final String? directorateId,
     final List<String> roles,
   }) = _$AuthSessionImpl;
 
@@ -259,9 +318,15 @@ abstract class _AuthSession implements AuthSession {
   @override
   String get refreshToken;
   @override
+  String get userId;
+  @override
   String get email;
   @override
   String get fullName;
+  @override
+  String? get governorateId;
+  @override
+  String? get directorateId;
   @override
   List<String> get roles;
 

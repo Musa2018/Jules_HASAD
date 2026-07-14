@@ -88,6 +88,7 @@ class _FakeAuthNotifier extends AuthNotifier {
       session: AuthSession(
         token: 't',
         refreshToken: 'r',
+        userId: 'u1',
         email: 'a@a.com',
         fullName: 'Admin',
         roles: roles,

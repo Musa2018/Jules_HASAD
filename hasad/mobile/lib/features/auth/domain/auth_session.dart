@@ -11,8 +11,11 @@ class AuthSession with _$AuthSession {
   const factory AuthSession({
     required String token,
     required String refreshToken,
+    required String userId,
     required String email,
     required String fullName,
+    String? governorateId,
+    String? directorateId,
     @Default([]) List<String> roles,
   }) = _AuthSession;
 

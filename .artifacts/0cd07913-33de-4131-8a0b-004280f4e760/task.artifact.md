@@ -1,0 +1,16 @@
+- [ ] Create User Management Models (Domain Layer)
+    - [ ] `Role` model
+    - [ ] `Governorate` model
+    - [ ] `Directorate` model
+- [ ] Run build_runner to generate Freezed/JSON files
+- [ ] Create `UsersRepository` (Data Layer)
+- [ ] Create Riverpod providers (Presentation Layer)
+- [ ] Implement client-side security checks (SuperAdmin only)
+- [ ] Add Unit Tests
+    - [ ] Model serialization tests
+    - [ ] Repository API tests
+    - [ ] Provider state tests
+- [ ] Final Verification
+    - [ ] Run `flutter analyze`
+    - [ ] Run `flutter test`
+- [ ] Git Commit and Push

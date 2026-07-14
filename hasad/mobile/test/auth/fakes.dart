@@ -124,6 +124,8 @@ class FakeAuthRepository implements AuthRepository {
 AuthSession sampleSession({String token = 'access-1'}) => AuthSession(
   token: token,
   refreshToken: 'refresh-1',
+  userId: 'user-1',
   email: 'admin@hasad.ps',
   fullName: 'Super Admin',
+  roles: ['SuperAdmin'],
 );

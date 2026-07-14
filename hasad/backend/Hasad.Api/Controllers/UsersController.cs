@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Hasad.Application.Features.Users.Commands.CreateUser;
 using Hasad.Application.Features.Users.Queries.GetDirectorates;
 using Hasad.Application.Features.Users.Queries.GetGovernorates;
 using Hasad.Application.Features.Users.Queries.GetRoles;
@@ -40,5 +41,12 @@ public class UsersController : ControllerBase
     {
         var result = await _mediator.Send(new GetDirectoratesQuery(governorateId));
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateUserCommand command)
+    {
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
     }
 }

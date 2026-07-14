@@ -161,4 +161,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get enterEmailToReset =>
       'Enter your email address and we\'ll send you a link to reset your password.';
+
+  @override
+  String get compensation => 'Compensation';
+
+  @override
+  String get calculatedAmount => 'Calculated Amount';
+
+  @override
+  String get approvedAmount => 'Approved Amount';
+
+  @override
+  String get remarks => 'Remarks';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get calculateCompensation => 'Calculate Compensation';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get paid => 'Paid';
+
+  @override
+  String get noCompensation => 'No compensation calculated yet.';
 }

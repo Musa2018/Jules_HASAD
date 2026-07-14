@@ -48,5 +48,14 @@
   "sendResetLink": "إرسال رابط التعيين",
   "emailSent": "تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.",
   "backToLogin": "العودة لتسجيل الدخول",
-  "enterEmailToReset": "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور."
+  "enterEmailToReset": "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
+  "compensation": "التعويض",
+  "calculatedAmount": "المبلغ المحتسب",
+  "approvedAmount": "المبلغ المعتمد",
+  "remarks": "ملاحظات",
+  "status": "الحالة",
+  "calculateCompensation": "احتساب التعويض",
+  "approve": "اعتماد",
+  "paid": "تم الصرف",
+  "noCompensation": "لم يتم احتساب التعويض بعد."
 }

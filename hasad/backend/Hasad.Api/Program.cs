@@ -133,6 +133,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.AddScoped<ICompensationService, CompensationService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

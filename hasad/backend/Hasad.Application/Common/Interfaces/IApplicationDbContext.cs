@@ -9,6 +9,7 @@ public interface IApplicationDbContext
     DbSet<Farmer> Farmers { get; }
     DbSet<Farm> Farms { get; }
     DbSet<DamageReport> DamageReports { get; }
+    DbSet<Compensation> Compensations { get; }
     DbSet<DamageItem> DamageItems { get; }
     DbSet<DamageReportAttachment> DamageReportAttachments { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);

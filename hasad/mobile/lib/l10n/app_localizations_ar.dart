@@ -161,4 +161,31 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get enterEmailToReset =>
       'أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.';
+
+  @override
+  String get compensation => 'التعويض';
+
+  @override
+  String get calculatedAmount => 'المبلغ المحتسب';
+
+  @override
+  String get approvedAmount => 'المبلغ المعتمد';
+
+  @override
+  String get remarks => 'ملاحظات';
+
+  @override
+  String get status => 'الحالة';
+
+  @override
+  String get calculateCompensation => 'احتساب التعويض';
+
+  @override
+  String get approve => 'اعتماد';
+
+  @override
+  String get paid => 'تم الصرف';
+
+  @override
+  String get noCompensation => 'لم يتم احتساب التعويض بعد.';
 }

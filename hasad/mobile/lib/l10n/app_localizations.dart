@@ -397,6 +397,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your email address and we\'ll send you a link to reset your password.'**
   String get enterEmailToReset;
+
+  /// No description provided for @compensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Compensation'**
+  String get compensation;
+
+  /// No description provided for @calculatedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculated Amount'**
+  String get calculatedAmount;
+
+  /// No description provided for @approvedAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved Amount'**
+  String get approvedAmount;
+
+  /// No description provided for @remarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Remarks'**
+  String get remarks;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @calculateCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculate Compensation'**
+  String get calculateCompensation;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid;
+
+  /// No description provided for @noCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'No compensation calculated yet.'**
+  String get noCompensation;
 }
 
 class _AppLocalizationsDelegate

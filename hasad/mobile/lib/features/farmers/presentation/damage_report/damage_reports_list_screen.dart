@@ -37,6 +37,11 @@ class DamageReportsListScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
+                      icon: const Icon(Icons.attach_money),
+                      tooltip: l10n.compensation,
+                      onPressed: () => context.push(AppRoutes.compensation, extra: report.id),
+                    ),
+                    IconButton(
                       icon: const Icon(Icons.photo_library),
                       onPressed: () => context.push(AppRoutes.attachments, extra: report.id),
                     ),

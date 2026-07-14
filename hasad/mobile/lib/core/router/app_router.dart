@@ -11,6 +11,7 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/damage_report/attachment_gallery_screen.dart';
 import 'package:mobile/features/farmers/presentation/damage_report/damage_report_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/damage_report/damage_reports_list_screen.dart';
+import 'package:mobile/features/farmers/presentation/compensation/compensation_screen.dart';
 import 'package:mobile/features/farmers/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
@@ -63,6 +64,9 @@ abstract final class AppRoutes {
 
   /// Attachment gallery.
   static const attachments = '/damage-reports/attachments';
+
+  /// Compensation.
+  static const compensation = '/compensation';
 }
 
 /// Bridges a Riverpod provider into a [Listenable] so GoRouter re-evaluates
@@ -183,6 +187,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.attachments,
         builder: (context, state) => AttachmentGalleryScreen(reportId: state.extra as String),
+      ),
+      GoRoute(
+        path: AppRoutes.compensation,
+        builder: (context, state) => CompensationScreen(reportId: state.extra as String),
       ),
     ],
   );

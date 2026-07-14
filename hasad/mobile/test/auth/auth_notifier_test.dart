@@ -39,6 +39,7 @@ void main() {
     test('login persists the token pair and authenticates', () async {
       repository.session = sampleSession();
       final notifier = createNotifier();
+      await notifier.restoreSession(); // Ensure initialization completes
 
       await notifier.login('admin@hasad.ps', 'password');
 
@@ -47,9 +48,20 @@ void main() {
       expect(await storage.getRefreshToken(), 'refresh-1');
     });
 
+    test('login with rememberMe persists the email', () async {
+      repository.session = sampleSession();
+      final notifier = createNotifier();
+      await notifier.restoreSession();
+
+      await notifier.login('admin@hasad.ps', 'password', rememberMe: true);
+
+      expect(await storage.getRememberedEmail(), 'admin@hasad.ps');
+    });
+
     test('failed login surfaces errors and stays unauthenticated', () async {
       repository.session = null;
       final notifier = createNotifier();
+      await notifier.restoreSession();
 
       await notifier.login('admin@hasad.ps', 'wrong');
 
@@ -61,6 +73,7 @@ void main() {
     test('unexpected login failure clears the loading state', () async {
       repository.unexpectedError = StateError('boom');
       final notifier = createNotifier();
+      await notifier.restoreSession();
 
       await notifier.login('admin@hasad.ps', 'password');
 
@@ -68,17 +81,19 @@ void main() {
       expect(notifier.state.isLoading, isFalse);
     });
 
-    test('logout revokes the refresh token and clears storage', () async {
+    test('logout revokes the refresh token and clears credentials but keeps email', () async {
       repository.session = sampleSession();
       final notifier = createNotifier();
-      await notifier.login('admin@hasad.ps', 'password');
+      await notifier.restoreSession();
+      await notifier.login('admin@hasad.ps', 'password', rememberMe: true);
 
       await notifier.logout();
 
       expect(notifier.state.status, AuthStatus.unauthenticated);
       expect(repository.logoutCalls, 1);
       expect(repository.revokedTokens, ['refresh-1']);
-      expect(storage.values, isEmpty);
+      expect(await storage.getToken(), isNull);
+      expect(await storage.getRememberedEmail(), 'admin@hasad.ps');
     });
 
     test('logout without a stored token skips the server call', () async {

@@ -30,6 +30,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Damage reports.</summary>
     public DbSet<DamageReport> DamageReports => Set<DamageReport>();
 
+    /// <summary>Compensations linked to reports.</summary>
+    public DbSet<Compensation> Compensations => Set<Compensation>();
+
     /// <summary>Damage items within reports.</summary>
     public DbSet<DamageItem> DamageItems => Set<DamageItem>();
 
@@ -147,6 +150,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasOne(e => e.DamageReport)
                 .WithMany(r => r.Attachments)
                 .HasForeignKey(e => e.DamageReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Compensation>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CalculatedAmount).HasPrecision(18, 2);
+            entity.Property(e => e.ApprovedAmount).HasPrecision(18, 2);
+            entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.RowVersion).IsRowVersion();
+
+            entity.HasIndex(e => e.ClientId).IsUnique();
+            entity.HasIndex(e => e.DamageReportId).IsUnique();
+
+            entity.HasOne(e => e.DamageReport)
+                .WithOne()
+                .HasForeignKey<Compensation>(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

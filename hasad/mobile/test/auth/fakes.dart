@@ -25,7 +25,31 @@ class FakeSecureStorage extends SecureStorageService {
   Future<String?> getRefreshToken() async => values['refresh'];
 
   @override
-  Future<void> clearAll() async => values.clear();
+  Future<void> saveRememberedEmail(String? email) async {
+    if (email == null) {
+      values.remove('remembered_email');
+    } else {
+      values['remembered_email'] = email;
+    }
+  }
+
+  @override
+  Future<String?> getRememberedEmail() async => values['remembered_email'];
+
+  @override
+  Future<void> clearAll() async {
+    final email = await getRememberedEmail();
+    values.clear();
+    if (email != null) {
+      await saveRememberedEmail(email);
+    }
+  }
+
+  @override
+  Future<void> logout() async {
+    values.remove('token');
+    values.remove('refresh');
+  }
 }
 
 /// Scriptable [AuthRepository] for tests.
@@ -77,6 +101,22 @@ class FakeAuthRepository implements AuthRepository {
   Future<void> logout(String refreshToken) async {
     logoutCalls++;
     revokedTokens.add(refreshToken);
+  }
+
+  @override
+  Future<void> forgotPassword(String email) async {
+    final error = unexpectedError;
+    if (error != null) throw error;
+  }
+
+  @override
+  Future<void> resetPassword(
+    String email,
+    String token,
+    String newPassword,
+  ) async {
+    final error = unexpectedError;
+    if (error != null) throw error;
   }
 }
 

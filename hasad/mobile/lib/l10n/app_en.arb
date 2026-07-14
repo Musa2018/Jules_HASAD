@@ -80,5 +80,14 @@
   "sendResetLink": "Send Reset Link",
   "emailSent": "A reset link has been sent to your email.",
   "backToLogin": "Back to Login",
-  "enterEmailToReset": "Enter your email address and we'll send you a link to reset your password."
+  "enterEmailToReset": "Enter your email address and we'll send you a link to reset your password.",
+  "compensation": "Compensation",
+  "calculatedAmount": "Calculated Amount",
+  "approvedAmount": "Approved Amount",
+  "remarks": "Remarks",
+  "status": "Status",
+  "calculateCompensation": "Calculate Compensation",
+  "approve": "Approve",
+  "paid": "Paid",
+  "noCompensation": "No compensation calculated yet."
 }

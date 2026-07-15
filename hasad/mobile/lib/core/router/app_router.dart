@@ -17,6 +17,8 @@ import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farms_list_screen.dart';
 import 'package:mobile/features/home/presentation/home_screen.dart';
+import 'package:mobile/features/admin/presentation/users_screen.dart';
+import 'package:mobile/features/admin/presentation/create_user_screen.dart';
 
 /// Route paths used across the application.
 abstract final class AppRoutes {
@@ -34,6 +36,12 @@ abstract final class AppRoutes {
 
   /// Authenticated home screen.
   static const home = '/home';
+
+  /// Users list.
+  static const users = '/users';
+
+  /// Add user.
+  static const addUser = '/users/add';
 
   /// Farmers list.
   static const farmers = '/farmers';
@@ -135,6 +143,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.users,
+        builder: (context, state) => const UsersScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.addUser,
+        builder: (context, state) => const CreateUserScreen(),
       ),
       GoRoute(
         path: AppRoutes.farmers,

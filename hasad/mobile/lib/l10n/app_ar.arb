@@ -57,5 +57,16 @@
   "calculateCompensation": "احتساب التعويض",
   "approve": "اعتماد",
   "paid": "تم الصرف",
-  "noCompensation": "لم يتم احتساب التعويض بعد."
+  "noCompensation": "لم يتم احتساب التعويض بعد.",
+  "userManagement": "إدارة المستخدمين",
+  "users": "المستخدمين",
+  "addUser": "إضافة مستخدم",
+  "fullName": "الاسم الكامل",
+  "username": "اسم المستخدم",
+  "role": "الصلاحية",
+  "directorate": "المديرية",
+  "active": "نشط",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "userCreatedSuccessfully": "تم إنشاء المستخدم بنجاح.",
+  "errorCreatingUser": "فشل إنشاء المستخدم."
 }

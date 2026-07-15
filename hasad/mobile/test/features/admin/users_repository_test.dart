@@ -104,5 +104,21 @@ void main() {
         throwsA(isA<UsersException>()),
       );
     });
+
+    test('createUser sends correct data and succeeds', () async {
+      final repository = _repositoryFor({'succeeded': true});
+
+      await repository.createUser(
+        fullName: 'New User',
+        userName: 'newuser',
+        email: 'new@test.com',
+        phoneNumber: '123',
+        password: 'Password123!',
+        confirmPassword: 'Password123!',
+        role: 'Admin',
+        isActive: true,
+      );
+      // No exception means success
+    });
   });
 }

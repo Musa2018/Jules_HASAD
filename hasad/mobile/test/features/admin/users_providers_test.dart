@@ -98,5 +98,33 @@ void main() {
 
       verify(() => mockRepository.getDirectorates(governorateId: 'g1')).called(1);
     });
+
+    test('userManagementProvider.createUser calls repository and updates state', () async {
+      final container = createContainer();
+      when(() => mockRepository.createUser(
+            fullName: any(named: 'fullName'),
+            userName: any(named: 'userName'),
+            email: any(named: 'email'),
+            phoneNumber: any(named: 'phoneNumber'),
+            password: any(named: 'password'),
+            confirmPassword: any(named: 'confirmPassword'),
+            role: any(named: 'role'),
+            isActive: any(named: 'isActive'),
+          )).thenAnswer((_) async {});
+
+      final notifier = container.read(userManagementProvider.notifier);
+      await notifier.createUser(
+        fullName: 'Test',
+        userName: 'test',
+        email: 't@t.com',
+        phoneNumber: '1',
+        password: 'p',
+        confirmPassword: 'p',
+        role: 'r',
+        isActive: true,
+      );
+
+      expect(container.read(userManagementProvider).success, true);
+    });
   });
 }

@@ -15,6 +15,18 @@ abstract class UsersRepository {
   Future<List<Role>> getRoles();
   Future<List<Governorate>> getGovernorates();
   Future<List<Directorate>> getDirectorates({String? governorateId});
+  Future<void> createUser({
+    required String fullName,
+    required String userName,
+    required String email,
+    required String phoneNumber,
+    required String password,
+    required String confirmPassword,
+    required String role,
+    String? governorateId,
+    String? directorateId,
+    required bool isActive,
+  });
 }
 
 class UsersRepositoryImpl implements UsersRepository {
@@ -39,6 +51,44 @@ class UsersRepositoryImpl implements UsersRepository {
       (json) => Directorate.fromJson(json),
       queryParameters: governorateId != null ? {'governorateId': governorateId} : null,
     );
+  }
+
+  @override
+  Future<void> createUser({
+    required String fullName,
+    required String userName,
+    required String email,
+    required String phoneNumber,
+    required String password,
+    required String confirmPassword,
+    required String role,
+    String? governorateId,
+    String? directorateId,
+    required bool isActive,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/v1/Users',
+        data: {
+          'fullName': fullName,
+          'userName': userName,
+          'email': email,
+          'phoneNumber': phoneNumber,
+          'password': password,
+          'confirmPassword': confirmPassword,
+          'role': role,
+          'governorateId': governorateId,
+          'directorateId': directorateId,
+          'isActive': isActive,
+        },
+      );
+      final envelope = response.data;
+      if (envelope?['succeeded'] != true) {
+        throw UsersException(_errorsFromEnvelope(envelope));
+      }
+    } on DioException catch (e) {
+      throw UsersException(_errorsFromDio(e));
+    }
   }
 
   Future<List<T>> _getMany<T>(

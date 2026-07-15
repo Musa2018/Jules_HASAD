@@ -188,4 +188,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noCompensation => 'لم يتم احتساب التعويض بعد.';
+
+  @override
+  String get userManagement => 'إدارة المستخدمين';
+
+  @override
+  String get users => 'المستخدمين';
+
+  @override
+  String get addUser => 'إضافة مستخدم';
+
+  @override
+  String get fullName => 'الاسم الكامل';
+
+  @override
+  String get username => 'اسم المستخدم';
+
+  @override
+  String get role => 'الصلاحية';
+
+  @override
+  String get directorate => 'المديرية';
+
+  @override
+  String get active => 'نشط';
+
+  @override
+  String get confirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get userCreatedSuccessfully => 'تم إنشاء المستخدم بنجاح.';
+
+  @override
+  String get errorCreatingUser => 'فشل إنشاء المستخدم.';
 }

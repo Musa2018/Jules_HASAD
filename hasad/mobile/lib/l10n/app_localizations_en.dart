@@ -188,4 +188,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCompensation => 'No compensation calculated yet.';
+
+  @override
+  String get userManagement => 'User Management';
+
+  @override
+  String get users => 'Users';
+
+  @override
+  String get addUser => 'Add User';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get role => 'Role';
+
+  @override
+  String get directorate => 'Directorate';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get userCreatedSuccessfully => 'User created successfully.';
+
+  @override
+  String get errorCreatingUser => 'Failed to create user.';
 }

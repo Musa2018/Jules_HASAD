@@ -89,5 +89,16 @@
   "calculateCompensation": "Calculate Compensation",
   "approve": "Approve",
   "paid": "Paid",
-  "noCompensation": "No compensation calculated yet."
+  "noCompensation": "No compensation calculated yet.",
+  "userManagement": "User Management",
+  "users": "Users",
+  "addUser": "Add User",
+  "fullName": "Full Name",
+  "username": "Username",
+  "role": "Role",
+  "directorate": "Directorate",
+  "active": "Active",
+  "confirmPassword": "Confirm Password",
+  "userCreatedSuccessfully": "User created successfully.",
+  "errorCreatingUser": "Failed to create user."
 }

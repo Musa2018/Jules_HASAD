@@ -451,6 +451,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No compensation calculated yet.'**
   String get noCompensation;
+
+  /// No description provided for @userManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get userManagement;
+
+  /// No description provided for @users.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get users;
+
+  /// No description provided for @addUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Add User'**
+  String get addUser;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @role.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get role;
+
+  /// No description provided for @directorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Directorate'**
+  String get directorate;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @userCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'User created successfully.'**
+  String get userCreatedSuccessfully;
+
+  /// No description provided for @errorCreatingUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create user.'**
+  String get errorCreatingUser;
 }
 
 class _AppLocalizationsDelegate

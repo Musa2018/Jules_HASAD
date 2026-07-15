@@ -1,49 +1,46 @@
-# Walkthrough — Sprint 9.1 — Step 3B: Flutter User Management Read Module
+# Walkthrough — User Scope Classification (3-Level Architecture)
 
-I have successfully implemented the Flutter data layer for User Management, following the approved plan. This module enables the application to fetch and manage roles, governorates, and directorates from the backend.
+I have implemented the three-level geographic scope validation for user creation in the backend. This architecture replaces hardcoded role checks with a centralized, scalable registry that defines the geographic requirements for each role.
 
 ## Changes Made
 
-### Domain Layer (Models)
-Created Freezed models for all user-related data:
-- [role.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/admin/domain/role.dart): Represents user roles.
-- [governorate.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/admin/domain/governorate.dart): Represents administrative governorates.
-- [directorate.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/admin/domain/directorate.dart): Represents directorates within a governorate.
+### Domain Layer
+- [RoleScopeType.cs](file:///hasad/backend/Hasad.Domain/Enums/RoleScopeType.cs): Defined a new enum for the three scope levels: `Global`, `Governorate`, and `Directorate`.
+- [AppRoles.cs](file:///hasad/backend/Hasad.Domain/Constants/AppRoles.cs): Created a centralized role registry that maps each role to its corresponding `RoleScopeType`.
+  - **Global**: `SuperAdmin`, `Administrator`, `Finance`, `ReadOnly`, `Farmer`.
+  - **Governorate**: `Director`.
+  - **Directorate**: `AgriculturalEngineer`, `FieldSurveyor`.
 
-### Data Layer (Repository)
-Implemented [users_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/admin/data/users_repository.dart):
-- Integrates with `GET /api/v1/Users/roles`
-- Integrates with `GET /api/v1/Users/governorates`
-- Integrates with `GET /api/v1/Users/directorates` (with optional filtering by governorate ID)
-- Implements robust error handling using `UsersException` and standard project response envelope checks.
+### Application Layer
+- [CreateUserCommand.cs](file:///hasad/backend/Hasad.Application/Features/Users/Commands/CreateUser/CreateUserCommand.cs): Updated the `Handle` method to use `AppRoles.GetScopeType` for validation.
+  - **Global**: No geographic assignment required.
+  - **Governorate**: `GovernorateId` required, `DirectorateId` optional.
+  - **Directorate**: Both `GovernorateId` and `DirectorateId` required.
+  - Ownership validation: If `DirectorateId` is provided, it must belong to the selected `GovernorateId`.
 
-### Presentation Layer (State Management)
-Implemented [users_providers.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/admin/presentation/users_providers.dart):
-- `rolesProvider`: Fetches roles (SuperAdmin only).
-- `governoratesProvider`: Fetches governorates (SuperAdmin only).
-- `directoratesProvider`: Fetches directorates filtered by governorate ID (SuperAdmin only).
-- **Security**: Added client-side role verification for all admin-related providers.
+### Infrastructure Layer
+- [DbInitializer.cs](file:///hasad/backend/Hasad.Infrastructure/Persistence/Seed/DbInitializer.cs): Updated the role seeding logic to use the centralized `AppRoles.All()` list.
+
+### Tests
+- [CreateUserTests.cs](file:///hasad/backend/Hasad.Application.Tests/CreateUserTests.cs): Added 4 new unit tests covering each scope level and the ownership validation.
+- [DbInitializerTests.cs](file:///hasad/backend/Hasad.Application.Tests/DbInitializerTests.cs): Updated to support the expanded list of roles (8 roles total).
 
 ## Verification Results
 
 ### Automated Tests
-Ran 12 new unit tests covering models, repository logic, and provider security/state:
-- `models_test.dart`: JSON parsing verification.
-- `users_repository_test.dart`: API response handling and error scenarios.
-- `users_providers_test.dart`: Role-based access control and state transitions.
-
+Ran all 68 backend application tests. All tests passed.
 ```text
-00:04 +12: All tests passed!
+Test summary: total: 68, failed: 0, succeeded: 68, skipped: 0, duration: 5.5s
+Build succeeded with 3 warning(s) in 8.5s
 ```
 
-### Static Analysis
-Ran `flutter analyze` to ensure code quality and adherence to project standards.
+### Build Result
+The backend API project builds successfully without errors.
 ```text
-Analyzing mobile...
-No issues found!
+Build succeeded with 2 warning(s) in 4.4s
 ```
 
-## How to Verify
-1. Ensure you are logged in as a `SuperAdmin`.
-2. Access the `rolesProvider` or `governoratesProvider` from any widget using `ref.watch()`.
-3. Verify that non-SuperAdmin users receive an "Unauthorized" exception when attempting to access these providers.
+## GitHub Integration
+- **Commit Hash**: `3efe53f`
+- **Branch**: `main`
+- **Push Verification**: Success.

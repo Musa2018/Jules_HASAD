@@ -48,7 +48,12 @@ class HomeScreen extends ConsumerWidget {
                   icon: Icons.people,
                   onTap: () => context.push(AppRoutes.farmers),
                 ),
-                // Other features can be added here
+                if (session?.roles.contains('SuperAdmin') ?? false)
+                  _FeatureCard(
+                    title: l10n.users,
+                    icon: Icons.admin_panel_settings,
+                    onTap: () => context.push(AppRoutes.users),
+                  ),
               ],
             ),
           ),

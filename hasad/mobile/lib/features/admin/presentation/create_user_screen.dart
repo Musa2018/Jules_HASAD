@@ -37,6 +37,8 @@ class _CreateUserScreenState extends ConsumerState<CreateUserScreen> {
     super.dispose();
   }
 
+  // TECHNICAL DEBT: Role scope is currently mapped client-side based on role names.
+  // Ideally, the backend should return scope metadata in the Role model.
   _RoleScope _getScope(String? roleName) {
     if (roleName == 'Director') return _RoleScope.governorate;
     if (roleName == 'AgriculturalEngineer' || roleName == 'FieldSurveyor') {

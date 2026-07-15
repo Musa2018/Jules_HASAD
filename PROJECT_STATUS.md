@@ -2,10 +2,20 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.6.0-alpha (Evidence module + Storage abstraction)
-- **Current Sprint**: Sprint 9 — Compensation Workflow (planned)
+- **Current Version**: v0.7.0-alpha (User Management + Regional Scoping)
+- **Current Sprint**: Sprint 9 — Compensation Workflow (in progress)
 - **Current Branch**: `main`
-- **Last Updated**: 2026-07-11
+- **Last Updated**: 2026-07-15
+
+## Sprint 9.1 — IN PROGRESS
+Implemented User Management and Regional Scoping:
+- **Backend Core**: New `AppRoles` registry and `RoleScopeType` enum (Global, Governorate, Directorate) for multi-level geographic validation.
+- **Security**: Hardened `CreateUserCommand` with 3-level scope validation and safe DTO exposure (no sensitive fields).
+- **Mobile Admin**: New `admin` feature module with `UsersScreen` and `CreateUserScreen`.
+- **Dynamic UI**: User creation form adapts automatically to selected roles, enforcing mandatory geographic assignments (e.g., Engineer requires Directorate).
+- **Session Scoping**: `AuthSession` extended to include `userId`, `governorateId`, and `directorateId`, enabling offline-ready regional isolation.
+- **Localization**: Full Arabic/English support for all new administrative interfaces.
+- Tests: Added 20+ unit/widget tests for user management logic and security.
 
 ## Sprint 8 — COMPLETED
 Implemented Evidence & Attachment Management module:

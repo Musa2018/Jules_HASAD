@@ -2,6 +2,8 @@ using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.Users.Models;
+using Hasad.Domain.Constants;
+using Hasad.Domain.Enums;
 using Hasad.Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -63,13 +65,16 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         }
 
         // 3. Geographic Validation
-        bool isAdministrativeRole = request.Role == "SuperAdmin" || request.Role == "Administrator";
+        var scopeType = AppRoles.GetScopeType(request.Role);
 
-        if (!isAdministrativeRole)
+        if (scopeType == RoleScopeType.Governorate || scopeType == RoleScopeType.Directorate)
         {
             if (!request.GovernorateId.HasValue)
                 return Result<UserDto>.Failure(new[] { "Governorate is required for this role." });
+        }
 
+        if (scopeType == RoleScopeType.Directorate)
+        {
             if (!request.DirectorateId.HasValue)
                 return Result<UserDto>.Failure(new[] { "Directorate is required for this role." });
         }

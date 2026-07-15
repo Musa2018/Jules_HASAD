@@ -1,9 +1,11 @@
+using Hasad.Domain.Constants;
 using Hasad.Domain.Identity;
 using Hasad.Infrastructure.Persistence;
 using Hasad.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Hasad.Application.Tests;
 
@@ -31,12 +33,11 @@ public class DbInitializerTests
         await DbInitializer.SeedRolesAsync(roleManager);
         await DbInitializer.SeedRolesAsync(roleManager);
 
-        string[] expected = { "SuperAdmin", "Administrator", "AgriculturalEngineer", "FieldSurveyor", "Farmer", "ReadOnly" };
-        foreach (var role in expected)
+        foreach (var role in AppRoles.All())
         {
             Assert.True(await roleManager.RoleExistsAsync(role));
         }
-        Assert.Equal(expected.Length, roleManager.Roles.Count());
+        Assert.Equal(AppRoles.All().Length, await roleManager.Roles.CountAsync());
     }
 
     [Fact]

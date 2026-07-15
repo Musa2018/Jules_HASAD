@@ -133,4 +133,88 @@ public class CreateUserTests
         Assert.False(result.Succeeded);
         Assert.Contains("Username is already taken", result.Errors[0]);
     }
+
+    [Fact]
+    public async Task CreateUser_Succeeds_ForGlobalRole_WithoutGeo()
+    {
+        var context = CreateContext();
+        using var provider = CreateServices(context);
+        var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        await roleManager.CreateAsync(new IdentityRole("Finance"));
+
+        var handler = new CreateUserCommandHandler(userManager, roleManager, context);
+        var command = new CreateUserCommand("Finance User", "finance1", "f@test.com", "123", "Pass123!", "Pass123!", "Finance", null, null, true);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.True(result.Succeeded);
+    }
+
+    [Fact]
+    public async Task CreateUser_Succeeds_ForGovernorateRole_WithOnlyGovernorate()
+    {
+        var context = CreateContext();
+        var gzId = Guid.NewGuid();
+        context.Governorates.Add(new Governorate { Id = gzId, NameAr = "Gaza", NameEn = "Gaza", Code = "GZ" });
+        await context.SaveChangesAsync();
+
+        using var provider = CreateServices(context);
+        var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
+        await roleManager.CreateAsync(new IdentityRole("Director"));
+
+        var handler = new CreateUserCommandHandler(userManager, roleManager, context);
+        var command = new CreateUserCommand("Director Name", "dir1", "d@test.com", "123", "Pass123!", "Pass123!", "Director", gzId, null, true);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.True(result.Succeeded);
+    }
+
+    [Fact]
+    public async Task CreateUser_Fails_ForDirectorateRole_WithoutDirectorate()
+    {
+        var context = CreateContext();
+        var gzId = Guid.NewGuid();
+        context.Governorates.Add(new Governorate { Id = gzId, NameAr = "Gaza", NameEn = "Gaza", Code = "GZ" });
+        await context.SaveChangesAsync();
+
+        using var provider = CreateServices(context);
+        var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
+        await roleManager.CreateAsync(new IdentityRole("FieldSurveyor"));
+
+        var handler = new CreateUserCommandHandler(userManager, roleManager, context);
+        var command = new CreateUserCommand("Surveyor", "sur1", "s@test.com", "123", "Pass123!", "Pass123!", "FieldSurveyor", gzId, null, true);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Directorate is required", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task CreateUser_Succeeds_ForDirectorateRole_WithBothIds()
+    {
+        var context = CreateContext();
+        var gzId = Guid.NewGuid();
+        var dirId = Guid.NewGuid();
+        context.Governorates.Add(new Governorate { Id = gzId, NameAr = "Gaza", NameEn = "Gaza", Code = "GZ" });
+        context.Directorates.Add(new Directorate { Id = dirId, NameAr = "D", NameEn = "D", GovernorateId = gzId });
+        await context.SaveChangesAsync();
+
+        using var provider = CreateServices(context);
+        var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
+        await roleManager.CreateAsync(new IdentityRole("FieldSurveyor"));
+
+        var handler = new CreateUserCommandHandler(userManager, roleManager, context);
+        var command = new CreateUserCommand("Surveyor", "sur1", "s@test.com", "123", "Pass123!", "Pass123!", "FieldSurveyor", gzId, dirId, true);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.True(result.Succeeded);
+    }
 }

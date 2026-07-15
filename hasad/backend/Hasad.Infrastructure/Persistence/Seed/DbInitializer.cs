@@ -1,3 +1,4 @@
+using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using Hasad.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -16,9 +17,7 @@ public static class DbInitializer
     /// <param name="roleManager">Identity role manager.</param>
     public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
     {
-        string[] roleNames = { "SuperAdmin", "Administrator", "AgriculturalEngineer", "FieldSurveyor", "Farmer", "ReadOnly", "Director", "Finance" };
-
-        foreach (var roleName in roleNames)
+        foreach (var roleName in AppRoles.All())
         {
             if (!await roleManager.RoleExistsAsync(roleName))
             {

@@ -1,16 +1,11 @@
-- [ ] Create User Management Models (Domain Layer)
-    - [ ] `Role` model
-    - [ ] `Governorate` model
-    - [ ] `Directorate` model
-- [ ] Run build_runner to generate Freezed/JSON files
-- [ ] Create `UsersRepository` (Data Layer)
-- [ ] Create Riverpod providers (Presentation Layer)
-- [ ] Implement client-side security checks (SuperAdmin only)
-- [ ] Add Unit Tests
-    - [ ] Model serialization tests
-    - [ ] Repository API tests
-    - [ ] Provider state tests
-- [ ] Final Verification
-    - [ ] Run `flutter analyze`
-    - [ ] Run `flutter test`
-- [ ] Git Commit and Push
+- [x] Backend Implementation (3-Level Scope)
+    - [x] Create `RoleScopeType` enum
+    - [x] Create `AppRoles` constants with scope mapping
+    - [x] Update `CreateUserCommand` validation logic
+    - [x] Update `DbInitializer` with centralized role list
+- [/] Testing & Verification
+    - [/] Add unit tests for all scope levels (Global, Governorate, Directorate)
+    - [ ] Run backend tests
+    - [ ] Verify build
+- [ ] GitHub
+    - [ ] Git commit and push

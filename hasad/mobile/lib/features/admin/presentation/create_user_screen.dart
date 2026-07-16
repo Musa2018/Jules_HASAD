@@ -220,7 +220,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
               const SizedBox(height: 16),
               rolesAsync.when(
                 data: (rolesList) => DropdownButtonFormField<String>(
-                  value: _selectedRoleId,
+                  initialValue: _selectedRoleId,
                   decoration: InputDecoration(labelText: l10n.role),
                   items: rolesList
                       .map<DropdownMenuItem<String>>((r) => DropdownMenuItem(value: r.id, child: Text(r.name)))
@@ -260,7 +260,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                 governoratesAsync.when(
                   data: (govList) => DropdownButtonFormField<String>(
                     key: ValueKey('gov_$_selectedRoleId'),
-                    value: _selectedGovernorateId,
+                    initialValue: _selectedGovernorateId,
                     decoration: InputDecoration(labelText: l10n.governorate),
                     items: govList
                         .map<DropdownMenuItem<String>>((g) => DropdownMenuItem(value: g.id, child: Text(g.nameEn)))
@@ -304,7 +304,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                     : directoratesAsync.when(
                         data: (dirList) => DropdownButtonFormField<String>(
                           key: ValueKey('dir_$_selectedGovernorateId'),
-                          value: _selectedDirectorateId,
+                          initialValue: _selectedDirectorateId,
                           decoration: InputDecoration(labelText: l10n.directorate),
                           items: dirList
                               .map<DropdownMenuItem<String>>((d) => DropdownMenuItem(value: d.id, child: Text(d.nameEn)))

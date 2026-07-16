@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/network/connectivity_provider.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
@@ -49,7 +50,15 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.person_add),
-            onPressed: () => context.push(AppRoutes.addUser),
+            onPressed: () {
+              if (ref.isOffline) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No internet connection. This action is online only.')),
+                );
+                return;
+              }
+              context.push(AppRoutes.addUser);
+            },
           ),
         ],
       ),
@@ -66,7 +75,15 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     Text(state.errors.first, style: const TextStyle(color: Colors.red)),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true),
+                      onPressed: () {
+                        if (ref.isOffline) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No internet connection.')),
+                          );
+                          return;
+                        }
+                        ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
+                      },
                       child: Text(l10n.retry),
                     ),
                   ],
@@ -84,7 +101,15 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     Text(l10n.noFarmers), // Reusing existing key
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
-                      onPressed: () => context.push(AppRoutes.addUser),
+                      onPressed: () {
+                        if (ref.isOffline) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No internet connection.')),
+                          );
+                          return;
+                        }
+                        context.push(AppRoutes.addUser);
+                      },
                       icon: const Icon(Icons.person_add),
                       label: Text(l10n.addUser),
                     ),
@@ -95,7 +120,15 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
           else
             Expanded(
               child: RefreshIndicator(
-                onRefresh: () => ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true),
+                onRefresh: () {
+                  if (ref.isOffline) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No internet connection.')),
+                    );
+                    return Future.value();
+                  }
+                  return ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
+                },
                 child: ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(8),
@@ -251,17 +284,41 @@ class _UserCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton.icon(
-                  onPressed: () => context.push(AppRoutes.editUser, extra: user),
+                  onPressed: () {
+                    if (ref.isOffline) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No internet connection.')),
+                      );
+                      return;
+                    }
+                    context.push(AppRoutes.editUser, extra: user);
+                  },
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   label: const Text('Edit'),
                 ),
                 TextButton.icon(
-                  onPressed: () => _resetPassword(context, ref),
+                  onPressed: () {
+                    if (ref.isOffline) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No internet connection.')),
+                      );
+                      return;
+                    }
+                    _resetPassword(context, ref);
+                  },
                   icon: const Icon(Icons.lock_reset_outlined, size: 18),
                   label: const Text('Reset'),
                 ),
                 TextButton.icon(
-                  onPressed: () => _toggleStatus(context, ref),
+                  onPressed: () {
+                    if (ref.isOffline) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No internet connection.')),
+                      );
+                      return;
+                    }
+                    _toggleStatus(context, ref);
+                  },
                   icon: Icon(user.isActive ? Icons.person_off_outlined : Icons.person_outline, size: 18),
                   label: Text(user.isActive ? 'Deactivate' : 'Activate'),
                 ),

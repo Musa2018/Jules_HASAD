@@ -5,8 +5,6 @@ import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
-enum _RoleScope { global, governorate, directorate }
-
 class UserFormScreen extends ConsumerStatefulWidget {
   final User? user;
 
@@ -46,10 +44,6 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     _isActive = u?.isActive ?? true;
     _selectedGovernorateId = u?.governorateId;
     _selectedDirectorateId = u?.directorateId;
-    
-    // We'll need to wait for roles to load to set _selectedRoleId if we only have the name
-    // but the User object should ideally have the role name. 
-    // If UserDto.Role is the name, we can find the ID from rolesProvider.
   }
 
   @override
@@ -61,14 +55,6 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
-  }
-
-  _RoleScope _getScope(String? roleName) {
-    if (roleName == 'Director') return _RoleScope.governorate;
-    if (roleName == 'AgriculturalEngineer' || roleName == 'FieldSurveyor') {
-      return _RoleScope.directorate;
-    }
-    return _RoleScope.global;
   }
 
   Future<void> _submit() async {
@@ -125,7 +111,6 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
 
     final roles = rolesAsync.value ?? [];
     
-    // Set initial role ID once roles are loaded
     if (_selectedRoleId == null && widget.user != null && roles.isNotEmpty) {
       try {
         _selectedRoleId = roles.firstWhere((r) => r.name == widget.user!.role).id;
@@ -133,7 +118,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     }
 
     final selectedRole = _selectedRoleId != null ? roles.where((r) => r.id == _selectedRoleId).firstOrNull : null;
-    final scope = _getScope(selectedRole?.name);
+    final scopeType = selectedRole?.scopeType ?? 'Global';
 
     final bool lookupLoading = rolesAsync.isLoading ||
         governoratesAsync.isLoading ||
@@ -227,9 +212,8 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                       .toList(),
                   onChanged: (v) => setState(() {
                     _selectedRoleId = v;
-                    final roleName = rolesList.firstWhere((r) => r.id == v).name;
-                    final newScope = _getScope(roleName);
-                    if (newScope == _RoleScope.global) {
+                    final role = rolesList.firstWhere((r) => r.id == v);
+                    if (role.scopeType == 'Global') {
                       _selectedGovernorateId = null;
                       _selectedDirectorateId = null;
                     }
@@ -255,7 +239,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                   ),
                 ),
               ),
-              if (scope != _RoleScope.global) ...[
+              if (scopeType != 'Global') ...[
                 const SizedBox(height: 16),
                 governoratesAsync.when(
                   data: (govList) => DropdownButtonFormField<String>(
@@ -292,7 +276,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                   ),
                 ),
               ],
-              if (scope == _RoleScope.directorate) ...[
+              if (scopeType == 'Directorate') ...[
                 const SizedBox(height: 16),
                 _selectedGovernorateId == null
                     ? DropdownButtonFormField<String>(

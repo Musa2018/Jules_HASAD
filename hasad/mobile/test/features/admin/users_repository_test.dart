@@ -41,8 +41,8 @@ void main() {
       final repository = _repositoryFor({
         'succeeded': true,
         'data': [
-          {'id': 'r1', 'name': 'SuperAdmin'},
-          {'id': 'r2', 'name': 'Admin'},
+          {'id': 'r1', 'name': 'SuperAdmin', 'scopeType': 'Global'},
+          {'id': 'r2', 'name': 'Admin', 'scopeType': 'Global'},
         ],
       });
 
@@ -50,6 +50,7 @@ void main() {
 
       expect(roles.length, 2);
       expect(roles[0].name, 'SuperAdmin');
+      expect(roles[0].scopeType, 'Global');
       expect(roles[1].name, 'Admin');
     });
 

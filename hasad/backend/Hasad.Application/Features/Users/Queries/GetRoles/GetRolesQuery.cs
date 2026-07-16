@@ -1,5 +1,6 @@
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.Users.Models;
+using Hasad.Domain.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +23,14 @@ public class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, Result<List<R
         var roles = await _roleManager.Roles
             .AsNoTracking()
             .OrderBy(r => r.Name)
-            .Select(r => new RoleDto(r.Id, r.Name ?? string.Empty))
             .ToListAsync(cancellationToken);
 
-        return Result<List<RoleDto>>.Success(roles);
+        var dtos = roles.Select(r => new RoleDto(
+            r.Id,
+            r.Name ?? string.Empty,
+            AppRoles.GetScopeType(r.Name ?? string.Empty).ToString()
+        )).ToList();
+
+        return Result<List<RoleDto>>.Success(dtos);
     }
 }

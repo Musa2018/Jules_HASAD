@@ -83,7 +83,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<Pagina
                 DirectorateId = user.DirectorateId,
                 DirectorateName = user.Directorate?.NameEn,
                 IsActive = user.IsActive,
-                CreatedAt = DateTime.UtcNow // ApplicationUser doesn't have CreatedAt by default, could be added in a future migration
+                CreatedAt = user.CreatedAt
             });
         }
 

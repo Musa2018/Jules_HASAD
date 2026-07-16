@@ -124,7 +124,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             Role = request.Role,
             GovernorateId = user.GovernorateId,
             DirectorateId = user.DirectorateId,
-            IsActive = user.IsActive
+            IsActive = user.IsActive,
+            CreatedAt = user.CreatedAt
         });
     }
 }

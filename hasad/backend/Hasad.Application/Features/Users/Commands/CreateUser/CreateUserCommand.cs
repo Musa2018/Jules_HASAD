@@ -102,6 +102,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             GovernorateId = request.GovernorateId,
             DirectorateId = request.DirectorateId,
             IsActive = request.IsActive,
+            CreatedAt = DateTime.UtcNow,
             EmailConfirmed = true // Default to confirmed for admin-created users
         };
 

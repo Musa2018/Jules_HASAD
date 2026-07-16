@@ -6,10 +6,11 @@ import 'package:mobile/features/admin/domain/directorate.dart';
 void main() {
   group('User Management Models', () {
     test('Role.fromJson parses correctly', () {
-      final json = {'id': 'r1', 'name': 'SuperAdmin'};
+      final json = {'id': 'r1', 'name': 'SuperAdmin', 'scopeType': 'Global'};
       final role = Role.fromJson(json);
       expect(role.id, 'r1');
       expect(role.name, 'SuperAdmin');
+      expect(role.scopeType, 'Global');
     });
 
     test('Governorate.fromJson parses correctly', () {

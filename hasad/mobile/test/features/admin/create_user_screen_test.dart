@@ -81,8 +81,8 @@ void main() {
 
   testWidgets('UserFormScreen geographic fields appear based on role', (tester) async {
     final roles = [
-      const Role(id: 'r1', name: 'SuperAdmin'),
-      const Role(id: 'r2', name: 'Director'),
+      const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global'),
+      const Role(id: 'r2', name: 'Director', scopeType: 'Governorate'),
     ];
     when(() => repository.getRoles()).thenAnswer((_) async => roles);
     when(() => repository.getGovernorates()).thenAnswer((_) async => []);

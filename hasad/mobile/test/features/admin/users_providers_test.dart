@@ -69,7 +69,7 @@ void main() {
 
     test('rolesProvider succeeds when user is SuperAdmin', () async {
       final container = createContainer(roles: ['SuperAdmin']);
-      final roles = [const Role(id: 'r1', name: 'SuperAdmin')];
+      final roles = [const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global')];
       when(() => mockRepository.getRoles()).thenAnswer((_) async => roles);
 
       final result = await container.read(rolesProvider.future);
@@ -82,7 +82,7 @@ void main() {
   group('Users Providers State', () {
     test('rolesProvider returns data from repository', () async {
       final container = createContainer();
-      final roles = [const Role(id: 'r1', name: 'SuperAdmin')];
+      final roles = [const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global')];
       when(() => mockRepository.getRoles()).thenAnswer((_) async => roles);
 
       final result = await container.read(rolesProvider.future);

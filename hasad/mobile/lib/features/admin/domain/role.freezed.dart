@@ -23,6 +23,7 @@ Role _$RoleFromJson(Map<String, dynamic> json) {
 mixin _$Role {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String get scopeType => throw _privateConstructorUsedError;
 
   /// Serializes this Role to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -38,7 +39,7 @@ abstract class $RoleCopyWith<$Res> {
   factory $RoleCopyWith(Role value, $Res Function(Role) then) =
       _$RoleCopyWithImpl<$Res, Role>;
   @useResult
-  $Res call({String id, String name});
+  $Res call({String id, String name, String scopeType});
 }
 
 /// @nodoc
@@ -55,7 +56,11 @@ class _$RoleCopyWithImpl<$Res, $Val extends Role>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? name = null}) {
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? scopeType = null,
+  }) {
     return _then(
       _value.copyWith(
             id: null == id
@@ -65,6 +70,10 @@ class _$RoleCopyWithImpl<$Res, $Val extends Role>
             name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            scopeType: null == scopeType
+                ? _value.scopeType
+                : scopeType // ignore: cast_nullable_to_non_nullable
                       as String,
           )
           as $Val,
@@ -80,7 +89,7 @@ abstract class _$$RoleImplCopyWith<$Res> implements $RoleCopyWith<$Res> {
   ) = __$$RoleImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name});
+  $Res call({String id, String name, String scopeType});
 }
 
 /// @nodoc
@@ -94,7 +103,11 @@ class __$$RoleImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? name = null}) {
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? scopeType = null,
+  }) {
     return _then(
       _$RoleImpl(
         id: null == id
@@ -105,6 +118,10 @@ class __$$RoleImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
+        scopeType: null == scopeType
+            ? _value.scopeType
+            : scopeType // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -113,7 +130,11 @@ class __$$RoleImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$RoleImpl implements _Role {
-  const _$RoleImpl({required this.id, required this.name});
+  const _$RoleImpl({
+    required this.id,
+    required this.name,
+    required this.scopeType,
+  });
 
   factory _$RoleImpl.fromJson(Map<String, dynamic> json) =>
       _$$RoleImplFromJson(json);
@@ -122,10 +143,12 @@ class _$RoleImpl implements _Role {
   final String id;
   @override
   final String name;
+  @override
+  final String scopeType;
 
   @override
   String toString() {
-    return 'Role(id: $id, name: $name)';
+    return 'Role(id: $id, name: $name, scopeType: $scopeType)';
   }
 
   @override
@@ -134,12 +157,14 @@ class _$RoleImpl implements _Role {
         (other.runtimeType == runtimeType &&
             other is _$RoleImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.scopeType, scopeType) ||
+                other.scopeType == scopeType));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name);
+  int get hashCode => Object.hash(runtimeType, id, name, scopeType);
 
   /// Create a copy of Role
   /// with the given fields replaced by the non-null parameter values.
@@ -156,8 +181,11 @@ class _$RoleImpl implements _Role {
 }
 
 abstract class _Role implements Role {
-  const factory _Role({required final String id, required final String name}) =
-      _$RoleImpl;
+  const factory _Role({
+    required final String id,
+    required final String name,
+    required final String scopeType,
+  }) = _$RoleImpl;
 
   factory _Role.fromJson(Map<String, dynamic> json) = _$RoleImpl.fromJson;
 
@@ -165,6 +193,8 @@ abstract class _Role implements Role {
   String get id;
   @override
   String get name;
+  @override
+  String get scopeType;
 
   /// Create a copy of Role
   /// with the given fields replaced by the non-null parameter values.

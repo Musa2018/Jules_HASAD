@@ -88,6 +88,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<ApplicationUser>(entity =>
         {
+            entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(u => u.IsActive).HasDefaultValue(true);
+
             entity.HasOne(u => u.Governorate)
                 .WithMany()
                 .HasForeignKey(u => u.GovernorateId)

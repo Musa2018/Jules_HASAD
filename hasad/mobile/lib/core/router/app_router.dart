@@ -151,14 +151,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.users,
         builder: (context, state) => const UsersScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.addUser,
-        builder: (context, state) => const UserFormScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.editUser,
-        builder: (context, state) => UserFormScreen(user: state.extra as User?),
+        routes: [
+          GoRoute(
+            path: 'add',
+            builder: (context, state) => const UserFormScreen(),
+          ),
+          GoRoute(
+            path: 'edit',
+            builder: (context, state) => UserFormScreen(user: state.extra as User?),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.farmers,

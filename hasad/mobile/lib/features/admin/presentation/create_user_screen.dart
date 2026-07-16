@@ -146,10 +146,31 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.only(bottom: 16),
-                  color: Colors.orange.shade50,
-                  child: const Text(
-                    'Warning: Some lookup data failed to load. Please refresh.',
-                    style: TextStyle(color: Colors.orange),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    border: Border.all(color: Colors.orange.shade200),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Warning: Some lookup data failed to load.',
+                          style: TextStyle(color: Colors.orange),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          ref.invalidate(rolesProvider);
+                          ref.invalidate(governoratesProvider);
+                          if (_selectedGovernorateId != null) {
+                            ref.invalidate(directoratesProvider(_selectedGovernorateId));
+                          }
+                        },
+                        icon: const Icon(Icons.refresh, size: 18),
+                        label: const Text('Retry'),
+                      ),
+                    ],
                   ),
                 ),
               if (state.errors.isNotEmpty)

@@ -61,6 +61,29 @@ public static class DbInitializer
     }
 
     /// <summary>
+    /// Seeds default compensation rules if none exist.
+    /// </summary>
+    public static async Task SeedCompensationRulesAsync(ApplicationDbContext context)
+    {
+        if (await context.CompensationRules.AnyAsync())
+        {
+            return;
+        }
+
+        context.CompensationRules.Add(new CompensationRule
+        {
+            Id = Guid.NewGuid(),
+            Name = "Standard 80% Rule",
+            Description = "Standard compensation rule covering 80% of estimated losses.",
+            Multiplier = 0.8m,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        await context.SaveChangesAsync();
+    }
+
+    /// <summary>
     /// Seeds the official Palestinian geographic dataset (Governorates and Directorates).
     /// </summary>
     public static async Task SeedGeographicsAsync(ApplicationDbContext context)

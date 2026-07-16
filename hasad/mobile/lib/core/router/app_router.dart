@@ -17,6 +17,7 @@ import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farms_list_screen.dart';
 import 'package:mobile/features/home/presentation/home_screen.dart';
+import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_screen.dart';
 import 'package:mobile/features/admin/presentation/create_user_screen.dart';
 
@@ -42,6 +43,9 @@ abstract final class AppRoutes {
 
   /// Add user.
   static const addUser = '/users/add';
+
+  /// Edit user.
+  static const editUser = '/users/edit';
 
   /// Farmers list.
   static const farmers = '/farmers';
@@ -150,7 +154,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.addUser,
-        builder: (context, state) => const CreateUserScreen(),
+        builder: (context, state) => const UserFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editUser,
+        builder: (context, state) => UserFormScreen(user: state.extra as User?),
       ),
       GoRoute(
         path: AppRoutes.farmers,

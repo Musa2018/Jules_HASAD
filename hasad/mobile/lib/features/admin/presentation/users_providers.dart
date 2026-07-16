@@ -165,6 +165,75 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       state = UserFormState(errors: [e.toString()]);
     }
   }
+
+  Future<void> updateUser({
+    required String id,
+    required String fullName,
+    required String userName,
+    required String email,
+    required String phoneNumber,
+    required String role,
+    String? governorateId,
+    String? directorateId,
+    required bool isActive,
+  }) async {
+    state = UserFormState(isLoading: true);
+    try {
+      await _repository.updateUser(
+        id: id,
+        fullName: fullName,
+        email: email,
+        phoneNumber: phoneNumber,
+        role: role,
+        governorateId: governorateId,
+        directorateId: directorateId,
+        isActive: isActive,
+      );
+      state = UserFormState(success: true);
+    } on UsersException catch (e) {
+      state = UserFormState(errors: e.errors);
+    } catch (e) {
+      state = UserFormState(errors: [e.toString()]);
+    }
+  }
+
+  Future<void> resetPassword({
+    required String userId,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    state = UserFormState(isLoading: true);
+    try {
+      await _repository.resetPassword(
+        userId: userId,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      );
+      state = UserFormState(success: true);
+    } on UsersException catch (e) {
+      state = UserFormState(errors: e.errors);
+    } catch (e) {
+      state = UserFormState(errors: [e.toString()]);
+    }
+  }
+
+  Future<void> changeStatus({
+    required String userId,
+    required bool isActive,
+  }) async {
+    state = UserFormState(isLoading: true);
+    try {
+      await _repository.changeStatus(
+        userId: userId,
+        isActive: isActive,
+      );
+      state = UserFormState(success: true);
+    } on UsersException catch (e) {
+      state = UserFormState(errors: e.errors);
+    } catch (e) {
+      state = UserFormState(errors: [e.toString()]);
+    }
+  }
 }
 
 final userManagementProvider = StateNotifierProvider<UserManagementNotifier, UserFormState>((ref) {

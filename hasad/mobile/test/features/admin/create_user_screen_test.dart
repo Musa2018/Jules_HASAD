@@ -59,12 +59,12 @@ void main() {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: [Locale('en')],
-        home: CreateUserScreen(),
+        home: UserFormScreen(),
       ),
     );
   }
 
-  testWidgets('CreateUserScreen shows validation errors for empty fields', (tester) async {
+  testWidgets('UserFormScreen shows validation errors for empty fields', (tester) async {
     when(() => repository.getRoles()).thenAnswer((_) async => []);
     when(() => repository.getGovernorates()).thenAnswer((_) async => []);
 
@@ -79,7 +79,7 @@ void main() {
     expect(find.text('This field is required.'), findsWidgets);
   });
 
-  testWidgets('CreateUserScreen geographic fields appear based on role', (tester) async {
+  testWidgets('UserFormScreen geographic fields appear based on role', (tester) async {
     final roles = [
       const Role(id: 'r1', name: 'SuperAdmin'),
       const Role(id: 'r2', name: 'Director'),

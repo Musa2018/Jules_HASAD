@@ -6,6 +6,7 @@ namespace Hasad.Domain.Identity;
 public class ApplicationUser : IdentityUser
 {
     public string FullName { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
 
     public Guid? GovernorateId { get; set; }
     public Governorate? Governorate { get; set; }

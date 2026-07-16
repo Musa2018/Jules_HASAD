@@ -38,6 +38,25 @@ abstract class UsersRepository {
     String? directorateId,
     required bool isActive,
   });
+  Future<void> updateUser({
+    required String id,
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    required String role,
+    String? governorateId,
+    String? directorateId,
+    required bool isActive,
+  });
+  Future<void> resetPassword({
+    required String userId,
+    required String newPassword,
+    required String confirmPassword,
+  });
+  Future<void> changeStatus({
+    required String userId,
+    required bool isActive,
+  });
 }
 
 class UsersRepositoryImpl implements UsersRepository {
@@ -129,6 +148,86 @@ class UsersRepositoryImpl implements UsersRepository {
           'role': role,
           'governorateId': governorateId,
           'directorateId': directorateId,
+          'isActive': isActive,
+        },
+      );
+      final envelope = response.data;
+      if (envelope?['succeeded'] != true) {
+        throw UsersException(_errorsFromEnvelope(envelope));
+      }
+    } on DioException catch (e) {
+      throw UsersException(_errorsFromDio(e));
+    }
+  }
+
+  @override
+  Future<void> updateUser({
+    required String id,
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    required String role,
+    String? governorateId,
+    String? directorateId,
+    required bool isActive,
+  }) async {
+    try {
+      final response = await _dio.put<Map<String, dynamic>>(
+        '/v1/Users/$id',
+        data: {
+          'id': id,
+          'fullName': fullName,
+          'email': email,
+          'phoneNumber': phoneNumber,
+          'role': role,
+          'governorateId': governorateId,
+          'directorateId': directorateId,
+          'isActive': isActive,
+        },
+      );
+      final envelope = response.data;
+      if (envelope?['succeeded'] != true) {
+        throw UsersException(_errorsFromEnvelope(envelope));
+      }
+    } on DioException catch (e) {
+      throw UsersException(_errorsFromDio(e));
+    }
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String userId,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/v1/Users/$userId/reset-password',
+        data: {
+          'userId': userId,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
+        },
+      );
+      final envelope = response.data;
+      if (envelope?['succeeded'] != true) {
+        throw UsersException(_errorsFromEnvelope(envelope));
+      }
+    } on DioException catch (e) {
+      throw UsersException(_errorsFromDio(e));
+    }
+  }
+
+  @override
+  Future<void> changeStatus({
+    required String userId,
+    required bool isActive,
+  }) async {
+    try {
+      final response = await _dio.patch<Map<String, dynamic>>(
+        '/v1/Users/$userId/status',
+        data: {
+          'userId': userId,
           'isActive': isActive,
         },
       );

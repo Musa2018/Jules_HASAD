@@ -81,7 +81,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   children: [
                     const Icon(Icons.people_outline, size: 80, color: Colors.grey),
                     const SizedBox(height: 16),
-                    Text(l10n.noFarmers), // Reusing existing key or hardcode for now
+                    Text(l10n.noFarmers), // Reusing existing key
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
                       onPressed: () => context.push(AppRoutes.addUser),
@@ -115,13 +115,109 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   }
 }
 
-class _UserCard extends StatelessWidget {
+class _UserCard extends ConsumerWidget {
   final User user;
 
   const _UserCard({required this.user});
 
+  Future<void> _resetPassword(BuildContext context, WidgetRef ref) async {
+    final passwordController = TextEditingController();
+    final confirmController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Enter new password for ${user.fullName}'),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: passwordController,
+                decoration: const InputDecoration(labelText: 'New Password'),
+                obscureText: true,
+                validator: (v) => (v == null || v.length < 6) ? 'Min 6 characters' : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: confirmController,
+                decoration: const InputDecoration(labelText: 'Confirm Password'),
+                obscureText: true,
+                validator: (v) => v != passwordController.text ? 'Passwords do not match' : null,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) Navigator.pop(context, true);
+            },
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await ref.read(userManagementProvider.notifier).resetPassword(
+            userId: user.id,
+            newPassword: passwordController.text,
+            confirmPassword: confirmController.text,
+          );
+
+      if (context.mounted) {
+        final state = ref.read(userManagementProvider);
+        if (state.success) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset successfully')));
+        } else if (state.errors.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errors.first), backgroundColor: Colors.red));
+        }
+      }
+    }
+  }
+
+  Future<void> _toggleStatus(BuildContext context, WidgetRef ref) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(user.isActive ? 'Deactivate User' : 'Activate User'),
+        content: Text('Are you sure you want to ${user.isActive ? 'deactivate' : 'activate'} ${user.fullName}?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(user.isActive ? 'Deactivate' : 'Activate'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await ref.read(userManagementProvider.notifier).changeStatus(
+            userId: user.id,
+            isActive: !user.isActive,
+          );
+
+      if (context.mounted) {
+        final state = ref.read(userManagementProvider);
+        if (state.success) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User ${user.isActive ? 'deactivated' : 'activated'} successfully')));
+          ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
+        } else if (state.errors.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errors.first), backgroundColor: Colors.red));
+        }
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -155,17 +251,17 @@ class _UserCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton.icon(
-                  onPressed: null, // TODO: Implement edit
+                  onPressed: () => context.push(AppRoutes.editUser, extra: user),
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   label: const Text('Edit'),
                 ),
                 TextButton.icon(
-                  onPressed: null, // TODO: Implement reset password
+                  onPressed: () => _resetPassword(context, ref),
                   icon: const Icon(Icons.lock_reset_outlined, size: 18),
                   label: const Text('Reset'),
                 ),
                 TextButton.icon(
-                  onPressed: null, // TODO: Implement toggle status
+                  onPressed: () => _toggleStatus(context, ref),
                   icon: Icon(user.isActive ? Icons.person_off_outlined : Icons.person_outline, size: 18),
                   label: Text(user.isActive ? 'Deactivate' : 'Activate'),
                 ),
@@ -220,7 +316,7 @@ class _InfoRow extends StatelessWidget {
           Icon(icon, size: 16, color: Colors.grey),
           const SizedBox(width: 8),
           Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-          Text(value, style: const TextStyle(fontSize: 13)),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis)),
         ],
       ),
     );

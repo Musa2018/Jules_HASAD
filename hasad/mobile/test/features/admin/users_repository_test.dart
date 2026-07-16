@@ -149,5 +149,28 @@ void main() {
       expect(result.items[0].fullName, 'User One');
       expect(result.totalCount, 1);
     });
+
+    test('returns Network error message on connectivity failure', () async {
+      final dio = Dio(BaseOptions(baseUrl: 'https://test.local'));
+      // Simulate a connection error
+      dio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.reject(DioException(
+            requestOptions: options,
+            type: DioExceptionType.connectionError,
+          ));
+        },
+      ));
+      final repository = UsersRepositoryImpl(dio);
+
+      expect(
+        () => repository.getRoles(),
+        throwsA(isA<UsersException>().having(
+          (e) => e.errors.first,
+          'errors.first',
+          contains('Network error'),
+        )),
+      );
+    });
   });
 }

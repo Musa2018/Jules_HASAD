@@ -264,6 +264,13 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   List<String> _errorsFromDio(DioException e) {
+    if (e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
+      return ['Network error: Please check your internet connection.'];
+    }
+
     final data = e.response?.data;
     if (data is Map<String, dynamic>) {
       return _errorsFromEnvelope(data);
@@ -272,7 +279,8 @@ class UsersRepositoryImpl implements UsersRepository {
   }
 
   List<String> _errorsFromEnvelope(Map<String, dynamic>? envelope) {
-    final errors = envelope?['errors'];
+    if (envelope == null) return [];
+    final errors = envelope['errors'];
     if (errors is List) {
       return errors.whereType<String>().toList();
     }

@@ -96,7 +96,7 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
         );
       }
     } on UsersException catch (e) {
-      state = state.copyWith(isLoading: false, errors: e.errors);
+      state = state.copyWith(isLoading: false, errors: e.errors.isEmpty ? [e.toString()] : e.errors);
     } catch (e) {
       state = state.copyWith(isLoading: false, errors: [e.toString()]);
     }
@@ -160,7 +160,7 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       );
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors);
+      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }
@@ -191,7 +191,7 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       );
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors);
+      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }
@@ -211,7 +211,7 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       );
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors);
+      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }
@@ -229,7 +229,7 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       );
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors);
+      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }

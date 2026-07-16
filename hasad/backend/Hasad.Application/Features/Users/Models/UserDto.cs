@@ -9,6 +9,9 @@ public class UserDto
     public string PhoneNumber { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public Guid? GovernorateId { get; set; }
+    public string? GovernorateName { get; set; }
     public Guid? DirectorateId { get; set; }
+    public string? DirectorateName { get; set; }
     public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

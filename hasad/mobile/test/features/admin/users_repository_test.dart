@@ -120,5 +120,34 @@ void main() {
       );
       // No exception means success
     });
+
+    test('getUsers returns paginated list on success', () async {
+      final repository = _repositoryFor({
+        'succeeded': true,
+        'data': {
+          'items': [
+            {
+              'id': 'u1',
+              'fullName': 'User One',
+              'userName': 'user1',
+              'email': 'u1@test.com',
+              'phoneNumber': '111',
+              'role': 'Admin',
+              'isActive': true,
+              'createdAt': '2026-07-16T12:00:00Z',
+            }
+          ],
+          'pageNumber': 1,
+          'totalPages': 1,
+          'totalCount': 1,
+        },
+      });
+
+      final result = await repository.getUsers(pageNumber: 1);
+
+      expect(result.items.length, 1);
+      expect(result.items[0].fullName, 'User One');
+      expect(result.totalCount, 1);
+    });
   });
 }

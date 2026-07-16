@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:mobile/features/admin/domain/directorate.dart';
 import 'package:mobile/features/admin/domain/governorate.dart';
 import 'package:mobile/features/admin/domain/role.dart';
+import 'package:mobile/features/admin/domain/user.dart';
+import 'package:mobile/shared/domain/paginated_list.dart';
 
 class UsersException implements Exception {
   final List<String> errors;
@@ -12,6 +14,15 @@ class UsersException implements Exception {
 }
 
 abstract class UsersRepository {
+  Future<PaginatedList<User>> getUsers({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? search,
+    String? role,
+    String? governorateId,
+    String? directorateId,
+    bool? isActive,
+  });
   Future<List<Role>> getRoles();
   Future<List<Governorate>> getGovernorates();
   Future<List<Directorate>> getDirectorates({String? governorateId});
@@ -33,6 +44,45 @@ class UsersRepositoryImpl implements UsersRepository {
   final Dio _dio;
 
   UsersRepositoryImpl(this._dio);
+
+  @override
+  Future<PaginatedList<User>> getUsers({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? search,
+    String? role,
+    String? governorateId,
+    String? directorateId,
+    bool? isActive,
+  }) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/Users',
+        queryParameters: {
+          'pageNumber': pageNumber,
+          'pageSize': pageSize,
+          'search': search,
+          'role': role,
+          'governorateId': governorateId,
+          'directorateId': directorateId,
+          'isActive': isActive,
+        }..removeWhere((key, value) => value == null),
+      );
+      final envelope = response.data;
+      final data = envelope?['data'];
+
+      if (envelope?['succeeded'] != true || data == null) {
+        throw UsersException(_errorsFromEnvelope(envelope));
+      }
+
+      return PaginatedList<User>.fromJson(
+        data as Map<String, dynamic>,
+        (json) => User.fromJson(json as Map<String, dynamic>),
+      );
+    } on DioException catch (e) {
+      throw UsersException(_errorsFromDio(e));
+    }
+  }
 
   @override
   Future<List<Role>> getRoles() async {

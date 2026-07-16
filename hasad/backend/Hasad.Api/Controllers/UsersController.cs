@@ -3,6 +3,7 @@ using Hasad.Application.Features.Users.Commands.CreateUser;
 using Hasad.Application.Features.Users.Queries.GetDirectorates;
 using Hasad.Application.Features.Users.Queries.GetGovernorates;
 using Hasad.Application.Features.Users.Queries.GetRoles;
+using Hasad.Application.Features.Users.Queries.GetUsers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,13 @@ public class UsersController : ControllerBase
     public UsersController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpGet("roles")]

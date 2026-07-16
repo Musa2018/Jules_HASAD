@@ -3,7 +3,9 @@ import 'package:mobile/features/admin/data/users_repository.dart';
 import 'package:mobile/features/admin/domain/directorate.dart';
 import 'package:mobile/features/admin/domain/governorate.dart';
 import 'package:mobile/features/admin/domain/role.dart';
+import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
+import 'package:mobile/shared/domain/paginated_list.dart';
 
 final usersRepositoryProvider = Provider<UsersRepository>((ref) {
   return UsersRepositoryImpl(ref.watch(apiDioProvider));
@@ -31,6 +33,90 @@ final directoratesProvider = FutureProvider.family<List<Directorate>, String?>((
     throw Exception('Unauthorized: SuperAdmin access required');
   }
   return ref.watch(usersRepositoryProvider).getDirectorates(governorateId: governorateId);
+});
+
+class UsersListState {
+  final bool isLoading;
+  final PaginatedList<User>? data;
+  final List<String> errors;
+  final String? search;
+  final String? role;
+
+  UsersListState({
+    this.isLoading = false,
+    this.data,
+    this.errors = const [],
+    this.search,
+    this.role,
+  });
+
+  UsersListState copyWith({
+    bool? isLoading,
+    PaginatedList<User>? data,
+    List<String>? errors,
+    String? search,
+    String? role,
+  }) {
+    return UsersListState(
+      isLoading: isLoading ?? this.isLoading,
+      data: data ?? this.data,
+      errors: errors ?? this.errors,
+      search: search ?? this.search,
+      role: role ?? this.role,
+    );
+  }
+}
+
+class UsersListNotifier extends StateNotifier<UsersListState> {
+  final UsersRepository _repository;
+
+  UsersListNotifier(this._repository) : super(UsersListState());
+
+  Future<void> fetchUsers({int pageNumber = 1, bool isRefresh = false}) async {
+    if (isRefresh) {
+      state = state.copyWith(isLoading: true, errors: []);
+    } else if (state.isLoading) {
+      return;
+    }
+
+    try {
+      final result = await _repository.getUsers(
+        pageNumber: pageNumber,
+        search: state.search,
+        role: state.role,
+      );
+
+      if (isRefresh || pageNumber == 1) {
+        state = state.copyWith(isLoading: false, data: result);
+      } else {
+        final existingItems = state.data?.items ?? [];
+        state = state.copyWith(
+          isLoading: false,
+          data: result.copyWith(items: [...existingItems, ...result.items]),
+        );
+      }
+    } on UsersException catch (e) {
+      state = state.copyWith(isLoading: false, errors: e.errors);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errors: [e.toString()]);
+    }
+  }
+
+  void setSearch(String? search) {
+    state = state.copyWith(search: search);
+    fetchUsers(isRefresh: true);
+  }
+
+  void setRole(String? role) {
+    state = state.copyWith(role: role);
+    fetchUsers(isRefresh: true);
+  }
+}
+
+final usersListProvider = StateNotifierProvider<UsersListNotifier, UsersListState>((ref) {
+  final notifier = UsersListNotifier(ref.watch(usersRepositoryProvider));
+  notifier.fetchUsers();
+  return notifier;
 });
 
 class UserFormState {

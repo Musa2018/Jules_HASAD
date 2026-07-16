@@ -1,10 +1,12 @@
 using Hasad.Domain.Entities;
+using Hasad.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hasad.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
+    DbSet<ApplicationUser> Users { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Governorate> Governorates { get; }
     DbSet<Directorate> Directorates { get; }

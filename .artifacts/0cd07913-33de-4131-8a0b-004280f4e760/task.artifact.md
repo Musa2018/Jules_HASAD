@@ -1,11 +1,13 @@
-- [x] Backend Implementation (3-Level Scope)
-    - [x] Create `RoleScopeType` enum
-    - [x] Create `AppRoles` constants with scope mapping
-    - [x] Update `CreateUserCommand` validation logic
-    - [x] Update `DbInitializer` with centralized role list
-- [/] Testing & Verification
-    - [/] Add unit tests for all scope levels (Global, Governorate, Directorate)
-    - [ ] Run backend tests
-    - [ ] Verify build
-- [ ] GitHub
+- [ ] Verify Root Cause (Investigation)
+- [ ] Backend Implementation (Geographic Seeding)
+    - [ ] Update `DbInitializer.cs` with official Palestinian geographic dataset
+    - [ ] Update `Program.cs` to call geographic seeding
+- [ ] Flutter Implementation (UI Hardening)
+    - [ ] Update `CreateUserScreen.dart` with loading/error/empty states
+    - [ ] Update `UsersRepository` / Providers if necessary
+- [ ] Verification & Testing
+    - [ ] Run backend tests (`dotnet test`)
+    - [ ] Run Flutter tests (`flutter test`)
+    - [ ] Run `flutter analyze`
+- [ ] Finalize & GitHub
     - [ ] Git commit and push

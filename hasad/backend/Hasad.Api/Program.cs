@@ -191,6 +191,7 @@ using (var scope = app.Services.CreateScope())
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         await DbInitializer.SeedRolesAsync(roleManager);
         await DbInitializer.SeedCompensationRulesAsync(context);
+        await DbInitializer.SeedGeographicsAsync(context);
 
         var seedAdminEmail = app.Configuration["SeedAdmin:Email"];
         var seedAdminPassword = app.Configuration["SeedAdmin:Password"];

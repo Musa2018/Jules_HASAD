@@ -48,9 +48,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<Pagina
 
         if (request.IsActive.HasValue)
         {
-            // Assuming IsActive is mapped to LockoutEnabled or similar if not a custom property
-            // For now, let's assume all users are active or add logic if ApplicationUser had IsActive
-            // query = query.Where(u => u.IsActive == request.IsActive.Value);
+            query = query.Where(u => u.IsActive == request.IsActive.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(request.Role))
@@ -84,7 +82,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<Pagina
                 GovernorateName = user.Governorate?.NameEn,
                 DirectorateId = user.DirectorateId,
                 DirectorateName = user.Directorate?.NameEn,
-                IsActive = !user.LockoutEnabled || (user.LockoutEnd == null || user.LockoutEnd <= DateTimeOffset.UtcNow),
+                IsActive = user.IsActive,
                 CreatedAt = DateTime.UtcNow // ApplicationUser doesn't have CreatedAt by default, could be added in a future migration
             });
         }

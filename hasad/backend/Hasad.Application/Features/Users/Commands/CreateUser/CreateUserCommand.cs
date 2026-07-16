@@ -101,6 +101,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             PhoneNumber = request.PhoneNumber,
             GovernorateId = request.GovernorateId,
             DirectorateId = request.DirectorateId,
+            IsActive = request.IsActive,
             EmailConfirmed = true // Default to confirmed for admin-created users
         };
 

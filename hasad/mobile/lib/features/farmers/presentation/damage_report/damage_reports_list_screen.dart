@@ -18,9 +18,7 @@ class DamageReportsListScreen extends ConsumerWidget {
     final reportsAsync = ref.watch(damageReportsListByFarmProvider(farm.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${l10n.damageReports}: ${farm.name}'),
-      ),
+      appBar: AppBar(title: Text('${l10n.damageReports}: ${farm.name}')),
       body: reportsAsync.when(
         data: (reports) {
           if (reports.isEmpty) {
@@ -32,29 +30,39 @@ class DamageReportsListScreen extends ConsumerWidget {
               final report = reports[index];
               return ListTile(
                 title: Text(DateFormat.yMMMd().format(report.damageDate)),
-                subtitle: Text('${report.statusId} - ${report.items.length} items'),
+                subtitle: Text(
+                  '${report.statusId} - ${report.items.length} items',
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.attach_money),
                       tooltip: l10n.compensation,
-                      onPressed: () => context.push(AppRoutes.compensation, extra: report.id),
+                      onPressed: () => context.push(
+                        AppRoutes.compensation,
+                        extra: report.id,
+                      ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.photo_library),
-                      onPressed: () => context.push(AppRoutes.attachments, extra: report.id),
+                      onPressed: () =>
+                          context.push(AppRoutes.attachments, extra: report.id),
                     ),
                     const Icon(Icons.chevron_right),
                   ],
                 ),
-                onTap: () => context.push('/damage-reports/edit', extra: {'farm': farm, 'report': report}),
+                onTap: () => context.push(
+                  '/damage-reports/edit',
+                  extra: {'farm': farm, 'report': report},
+                ),
               );
             },
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error loading reports: $err')),
+        error: (err, stack) =>
+            Center(child: Text('Error loading reports: $err')),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/damage-reports/add', extra: farm),

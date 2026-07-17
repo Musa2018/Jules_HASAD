@@ -14,10 +14,12 @@ class DamageReportFormScreen extends ConsumerStatefulWidget {
   const DamageReportFormScreen({super.key, required this.farm, this.report});
 
   @override
-  ConsumerState<DamageReportFormScreen> createState() => _DamageReportFormScreenState();
+  ConsumerState<DamageReportFormScreen> createState() =>
+      _DamageReportFormScreenState();
 }
 
-class _DamageReportFormScreenState extends ConsumerState<DamageReportFormScreen> {
+class _DamageReportFormScreenState
+    extends ConsumerState<DamageReportFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late DateTime _damageDate;
   late TextEditingController _notesController;
@@ -55,9 +57,13 @@ class _DamageReportFormScreenState extends ConsumerState<DamageReportFormScreen>
     );
 
     if (widget.report == null) {
-      await ref.read(damageReportFormProvider.notifier).createDamageReport(report);
+      await ref
+          .read(damageReportFormProvider.notifier)
+          .createDamageReport(report);
     } else {
-      await ref.read(damageReportFormProvider.notifier).updateDamageReport(report);
+      await ref
+          .read(damageReportFormProvider.notifier)
+          .updateDamageReport(report);
     }
 
     if (mounted && ref.read(damageReportFormProvider).success) {
@@ -72,7 +78,9 @@ class _DamageReportFormScreenState extends ConsumerState<DamageReportFormScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.report == null ? 'Add Damage Report' : 'Edit Damage Report'),
+        title: Text(
+          widget.report == null ? 'Add Damage Report' : 'Edit Damage Report',
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -105,21 +113,26 @@ class _DamageReportFormScreenState extends ConsumerState<DamageReportFormScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Damage Items', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Damage Items',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   IconButton(
                     icon: const Icon(Icons.add_circle),
                     onPressed: _addItem,
                   ),
                 ],
               ),
-              ..._items.map((item) => ListTile(
-                title: Text('${item.agriculturalSectorId} - ${item.cropId}'),
-                subtitle: Text('${item.damagePercentage}% damage'),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => setState(() => _items.remove(item)),
+              ..._items.map(
+                (item) => ListTile(
+                  title: Text('${item.agriculturalSectorId} - ${item.cropId}'),
+                  subtitle: Text('${item.damagePercentage}% damage'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => setState(() => _items.remove(item)),
+                  ),
                 ),
-              )),
+              ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: state.isLoading ? null : _save,

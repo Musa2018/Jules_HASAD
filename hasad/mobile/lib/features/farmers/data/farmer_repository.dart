@@ -8,11 +8,15 @@ class FarmerException implements Exception {
   final List<String> errors;
   FarmerException(this.errors);
   @override
-  String toString() => errors.isEmpty ? 'An error occurred.' : errors.join('\n');
+  String toString() =>
+      errors.isEmpty ? 'An error occurred.' : errors.join('\n');
 }
 
 abstract class FarmerRepository {
-  Future<List<domain.Farmer>> getFarmers({int pageNumber = 1, int pageSize = 10});
+  Future<List<domain.Farmer>> getFarmers({
+    int pageNumber = 1,
+    int pageSize = 10,
+  });
   Future<domain.Farmer> getFarmer(String id);
   Future<domain.Farmer> createFarmer(domain.Farmer farmer);
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer);
@@ -26,25 +30,35 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   OfflineFirstFarmerRepository(this._db, this._syncService);
 
   @override
-  Future<List<domain.Farmer>> getFarmers({int pageNumber = 1, int pageSize = 10}) async {
-    final items = await (_db.select(_db.farmers)
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
-          ..limit(pageSize, offset: (pageNumber - 1) * pageSize))
-        .get();
+  Future<List<domain.Farmer>> getFarmers({
+    int pageNumber = 1,
+    int pageSize = 10,
+  }) async {
+    final items =
+        await (_db.select(_db.farmers)
+              ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
+              ..limit(pageSize, offset: (pageNumber - 1) * pageSize))
+            .get();
 
-    return items.map((e) => domain.Farmer(
-          id: e.id,
-          name: e.name,
-          nationalId: e.nationalId,
-          phoneNumber: e.phoneNumber,
-          address: e.address,
-          rowVersion: e.rowVersion,
-        )).toList();
+    return items
+        .map(
+          (e) => domain.Farmer(
+            id: e.id,
+            name: e.name,
+            nationalId: e.nationalId,
+            phoneNumber: e.phoneNumber,
+            address: e.address,
+            rowVersion: e.rowVersion,
+          ),
+        )
+        .toList();
   }
 
   @override
   Future<domain.Farmer> getFarmer(String id) async {
-    final e = await (_db.select(_db.farmers)..where((t) => t.id.equals(id))).getSingle();
+    final e = await (_db.select(
+      _db.farmers,
+    )..where((t) => t.id.equals(id))).getSingle();
     return domain.Farmer(
       id: e.id,
       name: e.name,

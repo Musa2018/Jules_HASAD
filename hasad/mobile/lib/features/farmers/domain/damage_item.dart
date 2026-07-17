@@ -19,5 +19,6 @@ class DamageItem with _$DamageItem {
     @Default('') String rowVersion,
   }) = _DamageItem;
 
-  factory DamageItem.fromJson(Map<String, dynamic> json) => _$DamageItemFromJson(json);
+  factory DamageItem.fromJson(Map<String, dynamic> json) =>
+      _$DamageItemFromJson(json);
 }

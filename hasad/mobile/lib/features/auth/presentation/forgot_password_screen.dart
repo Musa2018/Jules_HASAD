@@ -9,7 +9,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -28,9 +29,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() => _isLoading = true);
-    
+
     try {
-      await ref.read(authRepositoryProvider).forgotPassword(_emailController.text.trim());
+      await ref
+          .read(authRepositoryProvider)
+          .forgotPassword(_emailController.text.trim());
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -40,9 +43,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -69,11 +72,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE8F5E9),
-              Color(0xFFA5D6A7),
-              Color(0xFF81C784),
-            ],
+            colors: [Color(0xFFE8F5E9), Color(0xFFA5D6A7), Color(0xFF81C784)],
             stops: [0.0, 0.6, 1.0],
           ),
         ),
@@ -107,7 +106,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           Text(
             l10n.resetPassword,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20)),
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1B5E20),
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -121,9 +124,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             decoration: InputDecoration(
               hintText: l10n.email,
               prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
-            validator: (v) => (v == null || v.isEmpty) ? l10n.emailRequired : null,
+            validator: (v) =>
+                (v == null || v.isEmpty) ? l10n.emailRequired : null,
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -133,11 +139,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF689F38),
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
               child: _isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(l10n.sendResetLink, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  : Text(
+                      l10n.sendResetLink,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
             ),
           ),
         ],
@@ -157,17 +168,31 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         ),
         const SizedBox(height: 32),
         ElevatedButton(
-          onPressed: () => context.push(AppRoutes.resetPassword, extra: _emailController.text),
+          onPressed: () => context.push(
+            AppRoutes.resetPassword,
+            extra: _emailController.text,
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF689F38),
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
           ),
-          child: const Text('Enter Reset Token', style: TextStyle(fontWeight: FontWeight.bold)),
+          child: const Text(
+            'Enter Reset Token',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
         TextButton(
           onPressed: () => context.pop(),
-          child: Text(l10n.backToLogin, style: const TextStyle(color: Color(0xFF1B5E20), fontWeight: FontWeight.bold)),
+          child: Text(
+            l10n.backToLogin,
+            style: const TextStyle(
+              color: Color(0xFF1B5E20),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );

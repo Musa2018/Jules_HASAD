@@ -11,5 +11,6 @@ class Governorate with _$Governorate {
     required String nameEn,
   }) = _Governorate;
 
-  factory Governorate.fromJson(Map<String, dynamic> json) => _$GovernorateFromJson(json);
+  factory Governorate.fromJson(Map<String, dynamic> json) =>
+      _$GovernorateFromJson(json);
 }

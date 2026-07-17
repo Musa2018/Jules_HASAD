@@ -11,13 +11,20 @@ import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockUsersRepository extends Mock implements UsersRepository {}
+
 class MockAuthRepository extends Mock implements AuthRepository {}
+
 class MockSecureStorageService extends Mock implements SecureStorageService {}
+
 class MockTokenRefresher extends Mock implements TokenRefresher {}
 
 class FakeAuthNotifier extends AuthNotifier {
   FakeAuthNotifier({required AuthStatus status, AuthSession? session})
-      : super(MockAuthRepository(), MockSecureStorageService(), MockTokenRefresher()) {
+    : super(
+        MockAuthRepository(),
+        MockSecureStorageService(),
+        MockTokenRefresher(),
+      ) {
     state = AuthState(status: status, session: session);
   }
 
@@ -50,7 +57,9 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         usersRepositoryProvider.overrideWithValue(mockRepository),
-        authProvider.overrideWith((ref) => FakeAuthNotifier(status: status, session: session)),
+        authProvider.overrideWith(
+          (ref) => FakeAuthNotifier(status: status, session: session),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -63,13 +72,17 @@ void main() {
 
       await expectLater(
         container.read(rolesProvider.future),
-        throwsA(predicate((e) => e.toString().contains('SuperAdmin access required'))),
+        throwsA(
+          predicate((e) => e.toString().contains('SuperAdmin access required')),
+        ),
       );
     });
 
     test('rolesProvider succeeds when user is SuperAdmin', () async {
       final container = createContainer(roles: ['SuperAdmin']);
-      final roles = [const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global')];
+      final roles = [
+        const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global'),
+      ];
       when(() => mockRepository.getRoles()).thenAnswer((_) async => roles);
 
       final result = await container.read(rolesProvider.future);
@@ -82,7 +95,9 @@ void main() {
   group('Users Providers State', () {
     test('rolesProvider returns data from repository', () async {
       final container = createContainer();
-      final roles = [const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global')];
+      final roles = [
+        const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global'),
+      ];
       when(() => mockRepository.getRoles()).thenAnswer((_) async => roles);
 
       final result = await container.read(rolesProvider.future);
@@ -91,17 +106,23 @@ void main() {
 
     test('directoratesProvider calls repository with correct ID', () async {
       final container = createContainer();
-      when(() => mockRepository.getDirectorates(governorateId: 'g1'))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockRepository.getDirectorates(governorateId: 'g1'),
+      ).thenAnswer((_) async => []);
 
       await container.read(directoratesProvider('g1').future);
 
-      verify(() => mockRepository.getDirectorates(governorateId: 'g1')).called(1);
+      verify(
+        () => mockRepository.getDirectorates(governorateId: 'g1'),
+      ).called(1);
     });
 
-    test('userManagementProvider.createUser calls repository and updates state', () async {
-      final container = createContainer();
-      when(() => mockRepository.createUser(
+    test(
+      'userManagementProvider.createUser calls repository and updates state',
+      () async {
+        final container = createContainer();
+        when(
+          () => mockRepository.createUser(
             fullName: any(named: 'fullName'),
             userName: any(named: 'userName'),
             email: any(named: 'email'),
@@ -110,21 +131,23 @@ void main() {
             confirmPassword: any(named: 'confirmPassword'),
             role: any(named: 'role'),
             isActive: any(named: 'isActive'),
-          )).thenAnswer((_) async {});
+          ),
+        ).thenAnswer((_) async {});
 
-      final notifier = container.read(userManagementProvider.notifier);
-      await notifier.createUser(
-        fullName: 'Test',
-        userName: 'test',
-        email: 't@t.com',
-        phoneNumber: '1',
-        password: 'p',
-        confirmPassword: 'p',
-        role: 'r',
-        isActive: true,
-      );
+        final notifier = container.read(userManagementProvider.notifier);
+        await notifier.createUser(
+          fullName: 'Test',
+          userName: 'test',
+          email: 't@t.com',
+          phoneNumber: '1',
+          password: 'p',
+          confirmPassword: 'p',
+          role: 'r',
+          isActive: true,
+        );
 
-      expect(container.read(userManagementProvider).success, true);
-    });
+        expect(container.read(userManagementProvider).success, true);
+      },
+    );
   });
 }

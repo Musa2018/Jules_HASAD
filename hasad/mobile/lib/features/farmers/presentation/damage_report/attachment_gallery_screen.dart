@@ -15,9 +15,7 @@ class AttachmentGalleryScreen extends ConsumerWidget {
     final attachmentsAsync = ref.watch(attachmentsByReportProvider(reportId));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Evidence Attachments'),
-      ),
+      appBar: AppBar(title: const Text('Evidence Attachments')),
       body: attachmentsAsync.when(
         data: (attachments) {
           if (attachments.isEmpty) {
@@ -49,8 +47,11 @@ class AttachmentGalleryScreen extends ConsumerWidget {
 
   Future<void> _addAttachment(BuildContext context, WidgetRef ref) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
-    
+    final image = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 70,
+    );
+
     if (image != null) {
       final attachment = DamageReportAttachment(
         id: '',
@@ -73,10 +74,7 @@ class _AttachmentTile extends ConsumerWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.file(
-            File(attachment.localPath),
-            fit: BoxFit.cover,
-          ),
+          child: Image.file(File(attachment.localPath), fit: BoxFit.cover),
         ),
         if (attachment.uploadStatus == 'pending')
           Container(
@@ -89,8 +87,12 @@ class _AttachmentTile extends ConsumerWidget {
           child: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: () async {
-              await ref.read(attachmentRepositoryProvider).deleteAttachment(attachment.id);
-              ref.invalidate(attachmentsByReportProvider(attachment.damageReportId));
+              await ref
+                  .read(attachmentRepositoryProvider)
+                  .deleteAttachment(attachment.id);
+              ref.invalidate(
+                attachmentsByReportProvider(attachment.damageReportId),
+              );
             },
           ),
         ),

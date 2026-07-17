@@ -24,7 +24,9 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.farmer?.name);
-    _nationalIdController = TextEditingController(text: widget.farmer?.nationalId);
+    _nationalIdController = TextEditingController(
+      text: widget.farmer?.nationalId,
+    );
     _phoneController = TextEditingController(text: widget.farmer?.phoneNumber);
     _addressController = TextEditingController(text: widget.farmer?.address);
   }
@@ -96,19 +98,22 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(labelText: l10n.farmerName),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _nationalIdController,
                 decoration: InputDecoration(labelText: l10n.nationalId),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
                 decoration: InputDecoration(labelText: l10n.phoneNumber),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -150,7 +155,9 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     );
 
     if (confirmed == true && mounted) {
-      await ref.read(farmerFormProvider.notifier).deleteFarmer(widget.farmer!.id);
+      await ref
+          .read(farmerFormProvider.notifier)
+          .deleteFarmer(widget.farmer!.id);
       if (mounted && ref.read(farmerFormProvider).success) {
         ref.invalidate(farmersListProvider);
         Navigator.of(context).pop();

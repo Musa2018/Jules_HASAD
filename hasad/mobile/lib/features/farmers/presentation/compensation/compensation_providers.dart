@@ -7,7 +7,10 @@ final compensationRepositoryProvider = Provider<CompensationRepository>((ref) {
   return CompensationRepositoryImpl(ref.watch(apiDioProvider));
 });
 
-final compensationProvider = FutureProvider.family<Compensation?, String>((ref, reportId) async {
+final compensationProvider = FutureProvider.family<Compensation?, String>((
+  ref,
+  reportId,
+) async {
   return ref.watch(compensationRepositoryProvider).getByReportId(reportId);
 });
 
@@ -23,30 +26,55 @@ class CompensationNotifier extends StateNotifier<AsyncValue<void>> {
 
   Future<void> recalculate(Compensation compensation) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _repository.recalculate(compensation.id, compensation.rowVersion));
+    state = await AsyncValue.guard(
+      () => _repository.recalculate(compensation.id, compensation.rowVersion),
+    );
   }
 
   Future<void> submit(Compensation compensation) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _repository.submit(compensation.id, compensation.rowVersion));
+    state = await AsyncValue.guard(
+      () => _repository.submit(compensation.id, compensation.rowVersion),
+    );
   }
 
-  Future<void> approve(Compensation compensation, double amount, String remarks) async {
+  Future<void> approve(
+    Compensation compensation,
+    double amount,
+    String remarks,
+  ) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _repository.approve(compensation.id, amount, remarks, compensation.rowVersion));
+    state = await AsyncValue.guard(
+      () => _repository.approve(
+        compensation.id,
+        amount,
+        remarks,
+        compensation.rowVersion,
+      ),
+    );
   }
 
   Future<void> reject(Compensation compensation, String remarks) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _repository.reject(compensation.id, remarks, compensation.rowVersion));
+    state = await AsyncValue.guard(
+      () =>
+          _repository.reject(compensation.id, remarks, compensation.rowVersion),
+    );
   }
 
   Future<void> pay(Compensation compensation, String remarks) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _repository.markAsPaid(compensation.id, remarks, compensation.rowVersion));
+    state = await AsyncValue.guard(
+      () => _repository.markAsPaid(
+        compensation.id,
+        remarks,
+        compensation.rowVersion,
+      ),
+    );
   }
 }
 
-final compensationActionProvider = StateNotifierProvider<CompensationNotifier, AsyncValue<void>>((ref) {
-  return CompensationNotifier(ref.watch(compensationRepositoryProvider));
-});
+final compensationActionProvider =
+    StateNotifierProvider<CompensationNotifier, AsyncValue<void>>((ref) {
+      return CompensationNotifier(ref.watch(compensationRepositoryProvider));
+    });

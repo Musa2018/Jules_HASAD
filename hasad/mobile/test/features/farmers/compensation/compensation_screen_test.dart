@@ -16,9 +16,13 @@ import 'package:mobile/features/auth/data/auth_repository.dart';
 import 'package:mobile/core/storage/secure_storage_service.dart';
 import 'package:mobile/core/network/token_refresher.dart';
 
-class MockCompensationRepository extends Mock implements CompensationRepository {}
+class MockCompensationRepository extends Mock
+    implements CompensationRepository {}
+
 class MockAuthRepository extends Mock implements AuthRepository {}
+
 class MockSecureStorageService extends Mock implements SecureStorageService {}
+
 class MockTokenRefresher extends Mock implements TokenRefresher {}
 
 void main() {
@@ -29,7 +33,10 @@ void main() {
     repository = MockCompensationRepository();
   });
 
-  Widget buildTestApp(String reportId, {List<String> roles = const ['SuperAdmin']}) {
+  Widget buildTestApp(
+    String reportId, {
+    List<String> roles = const ['SuperAdmin'],
+  }) {
     return ProviderScope(
       overrides: [
         compensationRepositoryProvider.overrideWithValue(repository),
@@ -48,7 +55,9 @@ void main() {
     );
   }
 
-  testWidgets('CompensationScreen shows no compensation view when null', (tester) async {
+  testWidgets('CompensationScreen shows no compensation view when null', (
+    tester,
+  ) async {
     when(() => repository.getByReportId('123')).thenAnswer((_) async => null);
 
     await tester.pumpWidget(buildTestApp('123'));
@@ -58,7 +67,9 @@ void main() {
     expect(find.byType(ElevatedButton), findsOneWidget);
   });
 
-  testWidgets('CompensationScreen shows detail view when compensation exists', (tester) async {
+  testWidgets('CompensationScreen shows detail view when compensation exists', (
+    tester,
+  ) async {
     final comp = Compensation(
       id: 'c1',
       clientId: 'c1',
@@ -82,7 +93,12 @@ void main() {
 }
 
 class _FakeAuthNotifier extends AuthNotifier {
-  _FakeAuthNotifier(List<String> roles) : super(MockAuthRepository(), MockSecureStorageService(), MockTokenRefresher()) {
+  _FakeAuthNotifier(List<String> roles)
+    : super(
+        MockAuthRepository(),
+        MockSecureStorageService(),
+        MockTokenRefresher(),
+      ) {
     state = AuthState(
       status: AuthStatus.authenticated,
       session: AuthSession(

@@ -22,5 +22,6 @@ class DamageReport with _$DamageReport {
     @Default([]) List<DamageItem> items,
   }) = _DamageReport;
 
-  factory DamageReport.fromJson(Map<String, dynamic> json) => _$DamageReportFromJson(json);
+  factory DamageReport.fromJson(Map<String, dynamic> json) =>
+      _$DamageReportFromJson(json);
 }

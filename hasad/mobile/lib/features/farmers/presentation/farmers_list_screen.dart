@@ -13,9 +13,7 @@ class FarmersListScreen extends ConsumerWidget {
     final farmersAsync = ref.watch(farmersListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.farmers),
-      ),
+      appBar: AppBar(title: Text(l10n.farmers)),
       body: farmersAsync.when(
         data: (farmers) {
           if (farmers.isEmpty) {

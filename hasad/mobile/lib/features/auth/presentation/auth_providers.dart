@@ -110,7 +110,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Attempts to log in and persists the returned token pair on success.
-  Future<void> login(String email, String password, {bool rememberMe = false}) async {
+  Future<void> login(
+    String email,
+    String password, {
+    bool rememberMe = false,
+  }) async {
     state = const AuthState(
       status: AuthStatus.unauthenticated,
       isLoading: true,
@@ -119,7 +123,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final session = await _repository.login(email, password);
       await _storage.saveToken(session.token);
       await _storage.saveRefreshToken(session.refreshToken);
-      
+
       if (rememberMe) {
         await _storage.saveRememberedEmail(email);
       } else {
@@ -150,7 +154,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // Server-side revocation is best effort; local logout always proceeds.
       }
     }
-    await _storage.logout(); // Use the new logout that preserves remembered email
+    await _storage
+        .logout(); // Use the new logout that preserves remembered email
     if (!mounted) return;
     state = const AuthState(status: AuthStatus.unauthenticated);
   }

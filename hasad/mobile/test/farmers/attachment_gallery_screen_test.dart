@@ -20,7 +20,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          attachmentsByReportProvider('report-1').overrideWith((ref) => attachments),
+          attachmentsByReportProvider(
+            'report-1',
+          ).overrideWith((ref) => attachments),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -16,13 +16,13 @@ class FarmsListScreen extends ConsumerWidget {
     final farmsAsync = ref.watch(farmsListByFarmerProvider(farmer.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${l10n.farms}: ${farmer.name}'),
-      ),
+      appBar: AppBar(title: Text('${l10n.farms}: ${farmer.name}')),
       body: farmsAsync.when(
         data: (farms) {
           if (farms.isEmpty) {
-            return Center(child: Text(l10n.noFarms)); // I need to add noFarms to l10n
+            return Center(
+              child: Text(l10n.noFarms),
+            ); // I need to add noFarms to l10n
           }
           return ListView.builder(
             itemCount: farms.length,
@@ -33,7 +33,10 @@ class FarmsListScreen extends ConsumerWidget {
                 subtitle: Text('${farm.landArea} ${farm.landAreaUnit}'),
                 trailing: IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed: () => context.push('/farms/edit', extra: {'farmer': farmer, 'farm': farm}),
+                  onPressed: () => context.push(
+                    '/farms/edit',
+                    extra: {'farmer': farmer, 'farm': farm},
+                  ),
                 ),
                 onTap: () => context.push('/damage-reports', extra: farm),
               );
@@ -41,7 +44,8 @@ class FarmsListScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l10n.errorLoadingFarms)), // Add to l10n
+        error: (error, stack) =>
+            Center(child: Text(l10n.errorLoadingFarms)), // Add to l10n
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/farms/add', extra: farmer),

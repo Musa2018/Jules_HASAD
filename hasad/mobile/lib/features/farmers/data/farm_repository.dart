@@ -4,7 +4,8 @@ class FarmException implements Exception {
   final List<String> errors;
   FarmException(this.errors);
   @override
-  String toString() => errors.isEmpty ? 'An error occurred.' : errors.join('\n');
+  String toString() =>
+      errors.isEmpty ? 'An error occurred.' : errors.join('\n');
 }
 
 abstract class FarmRepository {

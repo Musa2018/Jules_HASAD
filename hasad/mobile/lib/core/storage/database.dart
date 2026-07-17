@@ -15,12 +15,13 @@ class Farmers extends Table {
   TextColumn get nationalId => text().withLength(max: 20)();
   TextColumn get phoneNumber => text().withLength(max: 20)();
   TextColumn get address => text().withLength(max: 500)();
-  
+
   // Optimistic concurrency token
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
 
   // Sync Status: pending, syncing, completed, failed, conflict
-  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
+  TextColumn get syncStatus =>
+      text().withDefault(const Constant('completed'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -42,7 +43,8 @@ class Farms extends Table {
   TextColumn get ownershipTypeId => text().withLength(max: 50)();
 
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
-  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
+  TextColumn get syncStatus =>
+      text().withDefault(const Constant('completed'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -56,21 +58,22 @@ class DamageReports extends Table {
   TextColumn get serverId => text().nullable()();
   TextColumn get farmId => text()();
   TextColumn get farmerId => text()();
-  
+
   DateTimeColumn get damageDate => dateTime()();
   DateTimeColumn get documentationDate => dateTime()();
-  
+
   TextColumn get governorateId => text().withLength(max: 50)();
   TextColumn get localityId => text().withLength(max: 50)();
-  
+
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();
-  
+
   TextColumn get statusId => text().withLength(max: 50)();
   TextColumn get notes => text()();
 
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
-  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
+  TextColumn get syncStatus =>
+      text().withDefault(const Constant('completed'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -83,19 +86,20 @@ class DamageItems extends Table {
   TextColumn get id => text()(); // ClientId
   TextColumn get serverId => text().nullable()();
   TextColumn get damageReportId => text()();
-  
+
   TextColumn get agriculturalSectorId => text().withLength(max: 50)();
   TextColumn get subSectorId => text().withLength(max: 50)();
   TextColumn get cropId => text().withLength(max: 50)();
   TextColumn get damageTypeId => text().withLength(max: 50)();
-  
+
   RealColumn get affectedArea => real()();
   RealColumn get damagePercentage => real()();
   RealColumn get quantity => real()();
   RealColumn get estimatedLoss => real()();
 
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
-  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
+  TextColumn get syncStatus =>
+      text().withDefault(const Constant('completed'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -108,13 +112,15 @@ class DamageReportAttachments extends Table {
   TextColumn get id => text()(); // ClientId
   TextColumn get serverId => text().nullable()();
   TextColumn get damageReportId => text()();
-  
+
   TextColumn get localPath => text()();
   TextColumn get remotePath => text().nullable()();
-  
-  TextColumn get uploadStatus => text().withDefault(const Constant('pending'))(); // pending, uploading, completed, failed
+
+  TextColumn get uploadStatus => text().withDefault(
+    const Constant('pending'),
+  )(); // pending, uploading, completed, failed
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
-  
+
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -125,8 +131,10 @@ class DamageReportAttachments extends Table {
 class SyncQueue extends Table {
   TextColumn get id => text()();
   TextColumn get localId => text()();
-  TextColumn get entityType => text()(); // 'farmer', 'farm', 'damage_report', 'damage_item', 'attachment'
-  TextColumn get operation => text()(); // 'create', 'update', 'delete', 'upload'
+  TextColumn get entityType =>
+      text()(); // 'farmer', 'farm', 'damage_report', 'damage_item', 'attachment'
+  TextColumn get operation =>
+      text()(); // 'create', 'update', 'delete', 'upload'
   TextColumn get data => text()(); // JSON payload
   TextColumn get status => text().withDefault(const Constant('pending'))();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
@@ -138,7 +146,16 @@ class SyncQueue extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Farmers, Farms, DamageReports, DamageItems, DamageReportAttachments, SyncQueue])
+@DriftDatabase(
+  tables: [
+    Farmers,
+    Farms,
+    DamageReports,
+    DamageItems,
+    DamageReportAttachments,
+    SyncQueue,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   AppDatabase.withExecutor(super.e);
@@ -165,10 +182,22 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 6) {
         // Upgrade DamageReportAttachments table
-        await m.addColumn(damageReportAttachments, damageReportAttachments.serverId);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.remotePath);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.uploadStatus);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.updatedAt);
+        await m.addColumn(
+          damageReportAttachments,
+          damageReportAttachments.serverId,
+        );
+        await m.addColumn(
+          damageReportAttachments,
+          damageReportAttachments.remotePath,
+        );
+        await m.addColumn(
+          damageReportAttachments,
+          damageReportAttachments.uploadStatus,
+        );
+        await m.addColumn(
+          damageReportAttachments,
+          damageReportAttachments.updatedAt,
+        );
       }
     },
     beforeOpen: (details) async {

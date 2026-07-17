@@ -16,12 +16,20 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockUsersRepository extends Mock implements UsersRepository {}
+
 class MockAuthRepository extends Mock implements AuthRepository {}
+
 class MockSecureStorageService extends Mock implements SecureStorageService {}
+
 class MockTokenRefresher extends Mock implements TokenRefresher {}
 
 class FakeAuthNotifier extends AuthNotifier {
-  FakeAuthNotifier() : super(MockAuthRepository(), MockSecureStorageService(), MockTokenRefresher()) {
+  FakeAuthNotifier()
+    : super(
+        MockAuthRepository(),
+        MockSecureStorageService(),
+        MockTokenRefresher(),
+      ) {
     state = AuthState(
       status: AuthStatus.authenticated,
       session: const AuthSession(
@@ -65,7 +73,9 @@ void main() {
     );
   }
 
-  testWidgets('UserFormScreen shows validation errors for empty fields', (tester) async {
+  testWidgets('UserFormScreen shows validation errors for empty fields', (
+    tester,
+  ) async {
     when(() => repository.getRoles()).thenAnswer((_) async => []);
     when(() => repository.getGovernorates()).thenAnswer((_) async => []);
 
@@ -75,25 +85,29 @@ void main() {
     // Use find.text('Save') to be more specific
     final saveButton = find.text('Save');
     expect(saveButton, findsOneWidget);
-    
+
     await tester.ensureVisible(saveButton);
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
 
     // Verify repository was not called due to validation failure
-    verifyNever(() => repository.createUser(
-          fullName: any(named: 'fullName'),
-          userName: any(named: 'userName'),
-          email: any(named: 'email'),
-          phoneNumber: any(named: 'phoneNumber'),
-          password: any(named: 'password'),
-          confirmPassword: any(named: 'confirmPassword'),
-          role: any(named: 'role'),
-          isActive: any(named: 'isActive'),
-        ));
+    verifyNever(
+      () => repository.createUser(
+        fullName: any(named: 'fullName'),
+        userName: any(named: 'userName'),
+        email: any(named: 'email'),
+        phoneNumber: any(named: 'phoneNumber'),
+        password: any(named: 'password'),
+        confirmPassword: any(named: 'confirmPassword'),
+        role: any(named: 'role'),
+        isActive: any(named: 'isActive'),
+      ),
+    );
   });
 
-  testWidgets('UserFormScreen geographic fields appear based on role', (tester) async {
+  testWidgets('UserFormScreen geographic fields appear based on role', (
+    tester,
+  ) async {
     final roles = [
       const Role(id: 'r1', name: 'SuperAdmin', scopeType: 'Global'),
       const Role(id: 'r2', name: 'Director', scopeType: 'Governorate'),
@@ -113,7 +127,7 @@ void main() {
     await tester.ensureVisible(roleField);
     await tester.tap(roleField);
     await tester.pumpAndSettle();
-    
+
     // In the search sheet, tap Director
     final directorItem = find.text('Director').last;
     await tester.tap(directorItem);

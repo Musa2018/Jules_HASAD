@@ -6,7 +6,12 @@ abstract class CompensationRepository {
   Future<Compensation> create(String reportId, String remarks);
   Future<Compensation> recalculate(String id, String rowVersion);
   Future<Compensation> submit(String id, String rowVersion);
-  Future<Compensation> approve(String id, double amount, String remarks, String rowVersion);
+  Future<Compensation> approve(
+    String id,
+    double amount,
+    String remarks,
+    String rowVersion,
+  );
   Future<Compensation> reject(String id, String remarks, String rowVersion);
   Future<Compensation> markAsPaid(String id, String remarks, String rowVersion);
 }
@@ -57,7 +62,12 @@ class CompensationRepositoryImpl implements CompensationRepository {
   }
 
   @override
-  Future<Compensation> approve(String id, double amount, String remarks, String rowVersion) async {
+  Future<Compensation> approve(
+    String id,
+    double amount,
+    String remarks,
+    String rowVersion,
+  ) async {
     final response = await _dio.post(
       '/v1/compensations/$id/approve',
       data: {
@@ -71,27 +81,27 @@ class CompensationRepositoryImpl implements CompensationRepository {
   }
 
   @override
-  Future<Compensation> reject(String id, String remarks, String rowVersion) async {
+  Future<Compensation> reject(
+    String id,
+    String remarks,
+    String rowVersion,
+  ) async {
     final response = await _dio.post(
       '/v1/compensations/$id/reject',
-      data: {
-        'id': id,
-        'remarks': remarks,
-        'rowVersion': rowVersion,
-      },
+      data: {'id': id, 'remarks': remarks, 'rowVersion': rowVersion},
     );
     return Compensation.fromJson(response.data['data']);
   }
 
   @override
-  Future<Compensation> markAsPaid(String id, String remarks, String rowVersion) async {
+  Future<Compensation> markAsPaid(
+    String id,
+    String remarks,
+    String rowVersion,
+  ) async {
     final response = await _dio.post(
       '/v1/compensations/$id/pay',
-      data: {
-        'id': id,
-        'remarks': remarks,
-        'rowVersion': rowVersion,
-      },
+      data: {'id': id, 'remarks': remarks, 'rowVersion': rowVersion},
     );
     return Compensation.fromJson(response.data['data']);
   }

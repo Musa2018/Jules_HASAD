@@ -64,7 +64,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
   void _retryLookups() async {
     if (await ref.checkIsOffline()) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No internet connection.')));
       return;
     }
     ref.invalidate(rolesProvider);
@@ -77,7 +79,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
   Future<void> _submit() async {
     if (await ref.checkIsOffline()) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No internet connection.')));
       return;
     }
 
@@ -87,7 +91,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     final selectedRole = roles.firstWhere((r) => r.id == _selectedRoleId);
 
     if (_isEdit) {
-      await ref.read(userManagementProvider.notifier).updateUser(
+      await ref
+          .read(userManagementProvider.notifier)
+          .updateUser(
             id: widget.user!.id,
             fullName: _fullNameController.text.trim(),
             userName: _userNameController.text.trim(),
@@ -99,7 +105,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
             isActive: _isActive,
           );
     } else {
-      await ref.read(userManagementProvider.notifier).createUser(
+      await ref
+          .read(userManagementProvider.notifier)
+          .createUser(
             fullName: _fullNameController.text.trim(),
             userName: _userNameController.text.trim(),
             email: _emailController.text.trim(),
@@ -115,7 +123,13 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
 
     if (mounted && ref.read(userManagementProvider).success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_isEdit ? 'User updated successfully' : AppLocalizations.of(context)!.userCreatedSuccessfully)),
+        SnackBar(
+          content: Text(
+            _isEdit
+                ? 'User updated successfully'
+                : AppLocalizations.of(context)!.userCreatedSuccessfully,
+          ),
+        ),
       );
       ref.invalidate(usersListProvider);
       Navigator.of(context).pop();
@@ -133,21 +147,27 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
         : const AsyncValue<List<Directorate>>.data([]);
 
     final roles = rolesAsync.value ?? [];
-    
+
     if (_selectedRoleId == null && widget.user != null && roles.isNotEmpty) {
       try {
-        _selectedRoleId = roles.firstWhere((r) => r.name == widget.user!.role).id;
+        _selectedRoleId = roles
+            .firstWhere((r) => r.name == widget.user!.role)
+            .id;
       } catch (_) {}
     }
 
-    final selectedRole = _selectedRoleId != null ? roles.where((r) => r.id == _selectedRoleId).firstOrNull : null;
+    final selectedRole = _selectedRoleId != null
+        ? roles.where((r) => r.id == _selectedRoleId).firstOrNull
+        : null;
     final scopeType = selectedRole?.scopeType ?? 'Global';
 
-    final bool lookupLoading = rolesAsync.isLoading ||
+    final bool lookupLoading =
+        rolesAsync.isLoading ||
         governoratesAsync.isLoading ||
         directoratesAsync.isLoading;
 
-    final bool lookupError = rolesAsync.hasError ||
+    final bool lookupError =
+        rolesAsync.hasError ||
         governoratesAsync.hasError ||
         directoratesAsync.hasError;
 
@@ -187,12 +207,18 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.orange,
+                          ),
                           const SizedBox(width: 12),
                           const Expanded(
                             child: Text(
                               'Warning: Failed to load required data.',
-                              style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           ElevatedButton.icon(
@@ -202,7 +228,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
                             ),
                           ),
                         ],
@@ -218,19 +246,24 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                     color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(state.errors.join('\n'), style: const TextStyle(color: Colors.red)),
+                  child: Text(
+                    state.errors.join('\n'),
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               TextFormField(
                 controller: _fullNameController,
                 decoration: InputDecoration(labelText: l10n.fullName),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _userNameController,
                 enabled: !_isEdit,
                 decoration: InputDecoration(labelText: l10n.username),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -253,14 +286,18 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                   controller: _passwordController,
                   decoration: InputDecoration(labelText: l10n.password),
                   obscureText: true,
-                  validator: (v) => (v == null || v.length < 6) ? l10n.passwordRequired : null,
+                  validator: (v) => (v == null || v.length < 6)
+                      ? l10n.passwordRequired
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(labelText: l10n.confirmPassword),
                   obscureText: true,
-                  validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
+                  validator: (v) => v != _passwordController.text
+                      ? 'Passwords do not match'
+                      : null,
                 ),
               ],
               const SizedBox(height: 16),
@@ -269,7 +306,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                   label: l10n.role,
                   items: rolesList,
                   itemLabel: (r) => r.name,
-                  value: rolesList.where((r) => r.id == _selectedRoleId).firstOrNull,
+                  value: rolesList
+                      .where((r) => r.id == _selectedRoleId)
+                      .firstOrNull,
                   onChanged: (v) => setState(() {
                     _selectedRoleId = v?.id;
                     if (v?.scopeType == 'Global') {
@@ -302,7 +341,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                     items: govList,
                     itemLabel: (g) => g.nameEn,
                     searchStrings: (g) => [g.nameEn, g.nameAr],
-                    value: govList.where((g) => g.id == _selectedGovernorateId).firstOrNull,
+                    value: govList
+                        .where((g) => g.id == _selectedGovernorateId)
+                        .firstOrNull,
                     onChanged: (v) => setState(() {
                       _selectedGovernorateId = v?.id;
                       _selectedDirectorateId = null;
@@ -329,7 +370,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                 const SizedBox(height: 16),
                 _selectedGovernorateId == null
                     ? InputDecorator(
-                        decoration: const InputDecoration(labelText: 'Directorate'),
+                        decoration: const InputDecoration(
+                          labelText: 'Directorate',
+                        ),
                         child: const Text('Select Governorate first'),
                       )
                     : directoratesAsync.when(
@@ -338,9 +381,13 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                           items: dirList,
                           itemLabel: (d) => d.nameEn,
                           searchStrings: (d) => [d.nameEn, d.nameAr],
-                          value: dirList.where((d) => d.id == _selectedDirectorateId).firstOrNull,
-                          onChanged: (v) => setState(() => _selectedDirectorateId = v?.id),
-                          validator: (v) => v == null ? l10n.requiredField : null,
+                          value: dirList
+                              .where((d) => d.id == _selectedDirectorateId)
+                              .firstOrNull,
+                          onChanged: (v) =>
+                              setState(() => _selectedDirectorateId = v?.id),
+                          validator: (v) =>
+                              v == null ? l10n.requiredField : null,
                         ),
                         loading: () => SearchableLookupField<Directorate>(
                           label: l10n.directorate,
@@ -366,8 +413,12 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: (state.isLoading || lookupLoading || lookupError) ? null : _submit,
-                child: state.isLoading ? const CircularProgressIndicator() : Text(l10n.save),
+                onPressed: (state.isLoading || lookupLoading || lookupError)
+                    ? null
+                    : _submit,
+                child: state.isLoading
+                    ? const CircularProgressIndicator()
+                    : Text(l10n.save),
               ),
             ],
           ),

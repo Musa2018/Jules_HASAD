@@ -17,8 +17,17 @@ void main() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockSyncService = MockSyncService();
     repository = OfflineFirstFarmerRepository(db, mockSyncService);
-    
-    registerFallbackValue(const Farmer(id: '', name: '', nationalId: '', phoneNumber: '', address: '', rowVersion: ''));
+
+    registerFallbackValue(
+      const Farmer(
+        id: '',
+        name: '',
+        nationalId: '',
+        phoneNumber: '',
+        address: '',
+        rowVersion: '',
+      ),
+    );
   });
 
   tearDown(() async {
@@ -26,12 +35,14 @@ void main() {
   });
 
   test('createFarmer saves locally and adds to sync queue', () async {
-    when(() => mockSyncService.addToQueue(
-          localId: any(named: 'localId'),
-          entityType: any(named: 'entityType'),
-          operation: any(named: 'operation'),
-          data: any(named: 'data'),
-        )).thenAnswer((_) async {});
+    when(
+      () => mockSyncService.addToQueue(
+        localId: any(named: 'localId'),
+        entityType: any(named: 'entityType'),
+        operation: any(named: 'operation'),
+        data: any(named: 'data'),
+      ),
+    ).thenAnswer((_) async {});
 
     const farmer = Farmer(
       id: '',
@@ -51,11 +62,13 @@ void main() {
     expect(localFarmers.first.name, farmer.name);
     expect(localFarmers.first.syncStatus, 'pending');
 
-    verify(() => mockSyncService.addToQueue(
-          localId: result.id,
-          entityType: 'farmer',
-          operation: 'create',
-          data: result.toJson(),
-        )).called(1);
+    verify(
+      () => mockSyncService.addToQueue(
+        localId: result.id,
+        entityType: 'farmer',
+        operation: 'create',
+        data: result.toJson(),
+      ),
+    ).called(1);
   });
 }

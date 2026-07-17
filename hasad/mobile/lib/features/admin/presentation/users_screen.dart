@@ -392,8 +392,9 @@ class _UserCard extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () {
-              if (formKey.currentState!.validate())
+              if (formKey.currentState!.validate()) {
                 Navigator.pop(context, true);
+              }
             },
             child: const Text('Reset'),
           ),

@@ -127,7 +127,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          _debounce?.cancel();
+                          if (_debounce?.isActive ?? false) _debounce?.cancel();
                           _searchController.clear();
                           setState(() {});
                           ref.read(usersListProvider.notifier).setSearch(null);

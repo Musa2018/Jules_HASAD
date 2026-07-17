@@ -40,10 +40,14 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       final state = ref.read(usersListProvider);
-      if (!state.isLoading && (state.data?.pageNumber ?? 0) < (state.data?.totalPages ?? 0)) {
-        ref.read(usersListProvider.notifier).fetchUsers(pageNumber: (state.data?.pageNumber ?? 0) + 1);
+      if (!state.isLoading &&
+          (state.data?.pageNumber ?? 0) < (state.data?.totalPages ?? 0)) {
+        ref
+            .read(usersListProvider.notifier)
+            .fetchUsers(pageNumber: (state.data?.pageNumber ?? 0) + 1);
       }
     }
   }
@@ -52,7 +56,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
-        ref.read(usersListProvider.notifier).setSearch(query.isEmpty ? null : query);
+        ref
+            .read(usersListProvider.notifier)
+            .setSearch(query.isEmpty ? null : query);
       }
     });
   }
@@ -72,7 +78,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             onPressed: () async {
               if (await ref.checkIsOffline()) {
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('No internet connection.')),
+                );
                 return;
               }
               ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
@@ -80,7 +88,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             tooltip: 'Refresh List',
           ),
           IconButton(
-            icon: Icon(_showFilters ? Icons.filter_list_off : Icons.filter_list),
+            icon: Icon(
+              _showFilters ? Icons.filter_list_off : Icons.filter_list,
+            ),
             onPressed: () => setState(() => _showFilters = !_showFilters),
             tooltip: 'Toggle Filters',
           ),
@@ -90,7 +100,11 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
               if (await ref.checkIsOffline()) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('No internet connection. This action is online only.')),
+                  const SnackBar(
+                    content: Text(
+                      'No internet connection. This action is online only.',
+                    ),
+                  ),
                 );
                 return;
               }
@@ -119,7 +133,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                         },
                       )
                     : null,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onChanged: _onSearchChanged,
             ),
@@ -133,18 +149,25 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(state.errors.first, style: const TextStyle(color: Colors.red)),
+                    Text(
+                      state.errors.first,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () async {
                         if (await ref.checkIsOffline()) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('No internet connection.')),
+                            const SnackBar(
+                              content: Text('No internet connection.'),
+                            ),
                           );
                           return;
                         }
-                        ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
+                        ref
+                            .read(usersListProvider.notifier)
+                            .fetchUsers(isRefresh: true);
                       },
                       child: Text(l10n.retry),
                     ),
@@ -158,7 +181,11 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.people_outline, size: 80, color: Colors.grey),
+                    const Icon(
+                      Icons.people_outline,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(height: 16),
                     Text(l10n.noFarmers), // Reusing existing key
                     const SizedBox(height: 32),
@@ -167,7 +194,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                         if (await ref.checkIsOffline()) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('No internet connection.')),
+                            const SnackBar(
+                              content: Text('No internet connection.'),
+                            ),
                           );
                           return;
                         }
@@ -192,7 +221,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     );
                     return;
                   }
-                  return ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
+                  return ref
+                      .read(usersListProvider.notifier)
+                      .fetchUsers(isRefresh: true);
                 },
                 child: ListView.builder(
                   controller: _scrollController,
@@ -200,7 +231,12 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   itemCount: users.length + (state.isLoading ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index == users.length) {
-                      return const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()));
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
                     }
                     return _UserCard(user: users[index]);
                   },
@@ -238,7 +274,8 @@ class _FilterPanel extends ConsumerWidget {
                     items: roles,
                     itemLabel: (r) => r.name,
                     value: roles.where((r) => r.name == state.role).firstOrNull,
-                    onChanged: (v) => ref.read(usersListProvider.notifier).setRole(v?.name),
+                    onChanged: (v) =>
+                        ref.read(usersListProvider.notifier).setRole(v?.name),
                   ),
                   loading: () => const Padding(
                     padding: EdgeInsets.only(top: 20),
@@ -255,8 +292,12 @@ class _FilterPanel extends ConsumerWidget {
                     items: govs,
                     itemLabel: (g) => g.nameEn,
                     searchStrings: (g) => [g.nameEn, g.nameAr],
-                    value: govs.where((g) => g.id == state.governorateId).firstOrNull,
-                    onChanged: (v) => ref.read(usersListProvider.notifier).setGovernorate(v?.id),
+                    value: govs
+                        .where((g) => g.id == state.governorateId)
+                        .firstOrNull,
+                    onChanged: (v) => ref
+                        .read(usersListProvider.notifier)
+                        .setGovernorate(v?.id),
                   ),
                   loading: () => const Padding(
                     padding: EdgeInsets.only(top: 20),
@@ -275,8 +316,11 @@ class _FilterPanel extends ConsumerWidget {
                 items: dirs,
                 itemLabel: (d) => d.nameEn,
                 searchStrings: (d) => [d.nameEn, d.nameAr],
-                value: dirs.where((d) => d.id == state.directorateId).firstOrNull,
-                onChanged: (v) => ref.read(usersListProvider.notifier).setDirectorate(v?.id),
+                value: dirs
+                    .where((d) => d.id == state.directorateId)
+                    .firstOrNull,
+                onChanged: (v) =>
+                    ref.read(usersListProvider.notifier).setDirectorate(v?.id),
               ),
               loading: () => const LinearProgressIndicator(),
               error: (e, _) => const Text('Error loading directorates'),
@@ -286,7 +330,8 @@ class _FilterPanel extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton.icon(
-                onPressed: () => ref.read(usersListProvider.notifier).clearFilters(),
+                onPressed: () =>
+                    ref.read(usersListProvider.notifier).clearFilters(),
                 icon: const Icon(Icons.clear_all, size: 18),
                 label: const Text('Clear All Filters'),
               ),
@@ -323,23 +368,33 @@ class _UserCard extends ConsumerWidget {
                 controller: passwordController,
                 decoration: const InputDecoration(labelText: 'New Password'),
                 obscureText: true,
-                validator: (v) => (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                validator: (v) =>
+                    (v == null || v.length < 6) ? 'Min 6 characters' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: confirmController,
-                decoration: const InputDecoration(labelText: 'Confirm Password'),
+                decoration: const InputDecoration(
+                  labelText: 'Confirm Password',
+                ),
                 obscureText: true,
-                validator: (v) => v != passwordController.text ? 'Passwords do not match' : null,
+                validator: (v) => v != passwordController.text
+                    ? 'Passwords do not match'
+                    : null,
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
-              if (formKey.currentState!.validate()) Navigator.pop(context, true);
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(context, true);
+              }
             },
             child: const Text('Reset'),
           ),
@@ -348,7 +403,9 @@ class _UserCard extends ConsumerWidget {
     );
 
     if (confirmed == true) {
-      await ref.read(userManagementProvider.notifier).resetPassword(
+      await ref
+          .read(userManagementProvider.notifier)
+          .resetPassword(
             userId: user.id,
             newPassword: passwordController.text,
             confirmPassword: confirmController.text,
@@ -357,9 +414,16 @@ class _UserCard extends ConsumerWidget {
       if (context.mounted) {
         final state = ref.read(userManagementProvider);
         if (state.success) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset successfully')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Password reset successfully')),
+          );
         } else if (state.errors.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errors.first), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errors.first),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
     }
@@ -370,9 +434,14 @@ class _UserCard extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(user.isActive ? 'Deactivate User' : 'Activate User'),
-        content: Text('Are you sure you want to ${user.isActive ? 'deactivate' : 'activate'} ${user.fullName}?'),
+        content: Text(
+          'Are you sure you want to ${user.isActive ? 'deactivate' : 'activate'} ${user.fullName}?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(user.isActive ? 'Deactivate' : 'Activate'),
@@ -382,18 +451,28 @@ class _UserCard extends ConsumerWidget {
     );
 
     if (confirmed == true) {
-      await ref.read(userManagementProvider.notifier).changeStatus(
-            userId: user.id,
-            isActive: !user.isActive,
-          );
+      await ref
+          .read(userManagementProvider.notifier)
+          .changeStatus(userId: user.id, isActive: !user.isActive);
 
       if (context.mounted) {
         final state = ref.read(userManagementProvider);
         if (state.success) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User ${user.isActive ? 'deactivated' : 'activated'} successfully')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'User ${user.isActive ? 'deactivated' : 'activated'} successfully',
+              ),
+            ),
+          );
           ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
         } else if (state.errors.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errors.first), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errors.first),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
     }
@@ -416,8 +495,14 @@ class _UserCard extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user.fullName, style: Theme.of(context).textTheme.titleMedium),
-                      Text('@${user.userName}', style: Theme.of(context).textTheme.bodySmall),
+                      Text(
+                        user.fullName,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        '@${user.userName}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ],
                   ),
                 ),
@@ -425,10 +510,22 @@ class _UserCard extends ConsumerWidget {
               ],
             ),
             const Divider(height: 24),
-            _InfoRow(icon: Icons.badge_outlined, label: 'Role', value: user.role),
-            _InfoRow(icon: Icons.location_on_outlined, label: 'Governorate', value: user.governorateName ?? 'Global'),
+            _InfoRow(
+              icon: Icons.badge_outlined,
+              label: 'Role',
+              value: user.role,
+            ),
+            _InfoRow(
+              icon: Icons.location_on_outlined,
+              label: 'Governorate',
+              value: user.governorateName ?? 'Global',
+            ),
             if (user.directorateName != null)
-              _InfoRow(icon: Icons.business_outlined, label: 'Directorate', value: user.directorateName!),
+              _InfoRow(
+                icon: Icons.business_outlined,
+                label: 'Directorate',
+                value: user.directorateName!,
+              ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -438,7 +535,9 @@ class _UserCard extends ConsumerWidget {
                     if (await ref.checkIsOffline()) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No internet connection.')),
+                        const SnackBar(
+                          content: Text('No internet connection.'),
+                        ),
                       );
                       return;
                     }
@@ -453,7 +552,9 @@ class _UserCard extends ConsumerWidget {
                     if (await ref.checkIsOffline()) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No internet connection.')),
+                        const SnackBar(
+                          content: Text('No internet connection.'),
+                        ),
                       );
                       return;
                     }
@@ -468,14 +569,21 @@ class _UserCard extends ConsumerWidget {
                     if (await ref.checkIsOffline()) {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No internet connection.')),
+                        const SnackBar(
+                          content: Text('No internet connection.'),
+                        ),
                       );
                       return;
                     }
                     if (!context.mounted) return;
                     _toggleStatus(context, ref);
                   },
-                  icon: Icon(user.isActive ? Icons.person_off_outlined : Icons.person_outline, size: 18),
+                  icon: Icon(
+                    user.isActive
+                        ? Icons.person_off_outlined
+                        : Icons.person_outline,
+                    size: 18,
+                  ),
                   label: Text(user.isActive ? 'Deactivate' : 'Activate'),
                 ),
               ],
@@ -499,7 +607,9 @@ class _StatusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: isActive ? Colors.green.shade50 : Colors.red.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isActive ? Colors.green.shade200 : Colors.red.shade200),
+        border: Border.all(
+          color: isActive ? Colors.green.shade200 : Colors.red.shade200,
+        ),
       ),
       child: Text(
         isActive ? 'Active' : 'Inactive',
@@ -518,7 +628,11 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -528,8 +642,17 @@ class _InfoRow extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: Colors.grey),
           const SizedBox(width: 8),
-          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-          Expanded(child: Text(value, style: const TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis)),
+          Text(
+            '$label: ',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 13),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );

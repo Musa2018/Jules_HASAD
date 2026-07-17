@@ -110,16 +110,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (auth.status == AuthStatus.unknown) {
         return location == AppRoutes.splash ? null : AppRoutes.splash;
       }
-      
+
       if (!auth.isAuthenticated) {
-        final isAuthPath = location == AppRoutes.login || 
-                          location == AppRoutes.forgotPassword ||
-                          location == AppRoutes.resetPassword;
+        final isAuthPath =
+            location == AppRoutes.login ||
+            location == AppRoutes.forgotPassword ||
+            location == AppRoutes.resetPassword;
         return isAuthPath ? null : AppRoutes.login;
       }
-      
-      if (location == AppRoutes.splash || 
-          location == AppRoutes.login || 
+
+      if (location == AppRoutes.splash ||
+          location == AppRoutes.login ||
           location == AppRoutes.forgotPassword ||
           location == AppRoutes.resetPassword) {
         return AppRoutes.home;
@@ -142,7 +143,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.resetPassword,
-        builder: (context, state) => ResetPasswordScreen(email: state.extra as String),
+        builder: (context, state) =>
+            ResetPasswordScreen(email: state.extra as String),
       ),
       GoRoute(
         path: AppRoutes.home,
@@ -158,7 +160,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: 'edit',
-            builder: (context, state) => UserFormScreen(user: state.extra as User?),
+            builder: (context, state) =>
+                UserFormScreen(user: state.extra as User?),
           ),
         ],
       ),
@@ -172,15 +175,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.editFarmer,
-        builder: (context, state) => FarmerFormScreen(farmer: state.extra as Farmer?),
+        builder: (context, state) =>
+            FarmerFormScreen(farmer: state.extra as Farmer?),
       ),
       GoRoute(
         path: AppRoutes.farms,
-        builder: (context, state) => FarmsListScreen(farmer: state.extra as Farmer),
+        builder: (context, state) =>
+            FarmsListScreen(farmer: state.extra as Farmer),
       ),
       GoRoute(
         path: AppRoutes.addFarm,
-        builder: (context, state) => FarmFormScreen(farmer: state.extra as Farmer),
+        builder: (context, state) =>
+            FarmFormScreen(farmer: state.extra as Farmer),
       ),
       GoRoute(
         path: AppRoutes.editFarm,
@@ -194,11 +200,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.damageReports,
-        builder: (context, state) => DamageReportsListScreen(farm: state.extra as Farm),
+        builder: (context, state) =>
+            DamageReportsListScreen(farm: state.extra as Farm),
       ),
       GoRoute(
         path: AppRoutes.addDamageReport,
-        builder: (context, state) => DamageReportFormScreen(farm: state.extra as Farm),
+        builder: (context, state) =>
+            DamageReportFormScreen(farm: state.extra as Farm),
       ),
       GoRoute(
         path: AppRoutes.editDamageReport,
@@ -212,11 +220,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.attachments,
-        builder: (context, state) => AttachmentGalleryScreen(reportId: state.extra as String),
+        builder: (context, state) =>
+            AttachmentGalleryScreen(reportId: state.extra as String),
       ),
       GoRoute(
         path: AppRoutes.compensation,
-        builder: (context, state) => CompensationScreen(reportId: state.extra as String),
+        builder: (context, state) =>
+            CompensationScreen(reportId: state.extra as String),
       ),
     ],
   );

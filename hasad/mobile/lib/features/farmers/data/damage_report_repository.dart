@@ -5,7 +5,8 @@ class DamageReportException implements Exception {
   final List<String> errors;
   DamageReportException(this.errors);
   @override
-  String toString() => errors.isEmpty ? 'An error occurred.' : errors.join('\n');
+  String toString() =>
+      errors.isEmpty ? 'An error occurred.' : errors.join('\n');
 }
 
 abstract class DamageReportRepository {

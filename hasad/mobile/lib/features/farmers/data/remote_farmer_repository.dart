@@ -8,23 +8,25 @@ class RemoteFarmerRepository implements FarmerRepository {
   RemoteFarmerRepository(this._dio);
 
   @override
-  Future<List<domain.Farmer>> getFarmers({int pageNumber = 1, int pageSize = 10}) async {
+  Future<List<domain.Farmer>> getFarmers({
+    int pageNumber = 1,
+    int pageSize = 10,
+  }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         '/v1/farmers',
-        queryParameters: {
-          'pageNumber': pageNumber,
-          'pageSize': pageSize,
-        },
+        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize},
       );
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
         throw FarmerException(_errorsFromEnvelope(envelope));
       }
-      
+
       final items = data['items'] as List;
-      return items.map((e) => domain.Farmer.fromJson(e as Map<String, dynamic>)).toList();
+      return items
+          .map((e) => domain.Farmer.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw FarmerException(_errorsFromDio(e));
     }
@@ -77,12 +79,13 @@ class RemoteFarmerRepository implements FarmerRepository {
       // We assume farmer.id is the serverId if it's an existing record being updated from remote.
       // Wait, in OfflineFirstFarmerRepository, we update with local id.
       // The background sync service handles the mapping.
-      
+
       final response = await _dio.put<Map<String, dynamic>>(
         '/v1/farmers/${farmer.id}',
         data: {
           'id': farmer.id,
-          'clientId': farmer.id, // This is a bit redundant if they are same, but safe
+          'clientId':
+              farmer.id, // This is a bit redundant if they are same, but safe
           'name': farmer.name,
           'nationalId': farmer.nationalId,
           'phoneNumber': farmer.phoneNumber,
@@ -98,7 +101,9 @@ class RemoteFarmerRepository implements FarmerRepository {
       return domain.Farmer.fromJson(data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 409) {
-        throw FarmerException(['CONFLICT: The record has been modified by another user.']);
+        throw FarmerException([
+          'CONFLICT: The record has been modified by another user.',
+        ]);
       }
       throw FarmerException(_errorsFromDio(e));
     }
@@ -107,7 +112,9 @@ class RemoteFarmerRepository implements FarmerRepository {
   @override
   Future<void> deleteFarmer(String id) async {
     try {
-      final response = await _dio.delete<Map<String, dynamic>>('/v1/farmers/$id');
+      final response = await _dio.delete<Map<String, dynamic>>(
+        '/v1/farmers/$id',
+      );
       final envelope = response.data;
       if (envelope?['succeeded'] != true) {
         throw FarmerException(_errorsFromEnvelope(envelope));

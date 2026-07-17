@@ -27,12 +27,17 @@ final governoratesProvider = FutureProvider<List<Governorate>>((ref) async {
   return ref.watch(usersRepositoryProvider).getGovernorates();
 });
 
-final directoratesProvider = FutureProvider.family<List<Directorate>, String?>((ref, governorateId) async {
+final directoratesProvider = FutureProvider.family<List<Directorate>, String?>((
+  ref,
+  governorateId,
+) async {
   final auth = ref.watch(authProvider);
   if (auth.session?.roles.contains('SuperAdmin') != true) {
     throw Exception('Unauthorized: SuperAdmin access required');
   }
-  return ref.watch(usersRepositoryProvider).getDirectorates(governorateId: governorateId);
+  return ref
+      .watch(usersRepositoryProvider)
+      .getDirectorates(governorateId: governorateId);
 });
 
 class UsersListState {
@@ -106,7 +111,10 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
         );
       }
     } on UsersException catch (e) {
-      state = state.copyWith(isLoading: false, errors: e.errors.isEmpty ? [e.toString()] : e.errors);
+      state = state.copyWith(
+        isLoading: false,
+        errors: e.errors.isEmpty ? [e.toString()] : e.errors,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, errors: [e.toString()]);
     }
@@ -123,7 +131,11 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
   }
 
   void setGovernorate(String? governorateId) {
-    state = state.copyWith(governorateId: governorateId, directorateId: null, data: null);
+    state = state.copyWith(
+      governorateId: governorateId,
+      directorateId: null,
+      data: null,
+    );
     fetchUsers(isRefresh: true);
   }
 
@@ -138,18 +150,23 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
   }
 }
 
-final usersListProvider = StateNotifierProvider<UsersListNotifier, UsersListState>((ref) {
-  final notifier = UsersListNotifier(ref.watch(usersRepositoryProvider));
-  notifier.fetchUsers();
-  return notifier;
-});
+final usersListProvider =
+    StateNotifierProvider<UsersListNotifier, UsersListState>((ref) {
+      final notifier = UsersListNotifier(ref.watch(usersRepositoryProvider));
+      notifier.fetchUsers();
+      return notifier;
+    });
 
 class UserFormState {
   final bool isLoading;
   final bool success;
   final List<String> errors;
 
-  UserFormState({this.isLoading = false, this.success = false, this.errors = const []});
+  UserFormState({
+    this.isLoading = false,
+    this.success = false,
+    this.errors = const [],
+  });
 }
 
 class UserManagementNotifier extends StateNotifier<UserFormState> {
@@ -185,7 +202,9 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       );
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
+      state = UserFormState(
+        errors: e.errors.isEmpty ? [e.toString()] : e.errors,
+      );
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }
@@ -216,7 +235,9 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       );
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
+      state = UserFormState(
+        errors: e.errors.isEmpty ? [e.toString()] : e.errors,
+      );
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }
@@ -236,7 +257,9 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
       );
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
+      state = UserFormState(
+        errors: e.errors.isEmpty ? [e.toString()] : e.errors,
+      );
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }
@@ -248,20 +271,19 @@ class UserManagementNotifier extends StateNotifier<UserFormState> {
   }) async {
     state = UserFormState(isLoading: true);
     try {
-      await _repository.changeStatus(
-        userId: userId,
-        isActive: isActive,
-      );
+      await _repository.changeStatus(userId: userId, isActive: isActive);
       state = UserFormState(success: true);
     } on UsersException catch (e) {
-      state = UserFormState(errors: e.errors.isEmpty ? [e.toString()] : e.errors);
+      state = UserFormState(
+        errors: e.errors.isEmpty ? [e.toString()] : e.errors,
+      );
     } catch (e) {
       state = UserFormState(errors: [e.toString()]);
     }
   }
 }
 
-final userManagementProvider = StateNotifierProvider<UserManagementNotifier, UserFormState>((ref) {
-  return UserManagementNotifier(ref.watch(usersRepositoryProvider));
-});
-
+final userManagementProvider =
+    StateNotifierProvider<UserManagementNotifier, UserFormState>((ref) {
+      return UserManagementNotifier(ref.watch(usersRepositoryProvider));
+    });

@@ -29,7 +29,10 @@ class _FixedAdapter implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-UsersRepositoryImpl _repositoryFor(Map<String, dynamic> body, {int statusCode = 200}) {
+UsersRepositoryImpl _repositoryFor(
+  Map<String, dynamic> body, {
+  int statusCode = 200,
+}) {
   final dio = Dio(BaseOptions(baseUrl: 'https://test.local'))
     ..httpClientAdapter = _FixedAdapter(body, statusCode: statusCode);
   return UsersRepositoryImpl(dio);
@@ -90,7 +93,11 @@ void main() {
 
       expect(
         () => repository.getRoles(),
-        throwsA(isA<UsersException>().having((e) => e.errors, 'errors', ['Something went wrong'])),
+        throwsA(
+          isA<UsersException>().having((e) => e.errors, 'errors', [
+            'Something went wrong',
+          ]),
+        ),
       );
     });
 
@@ -100,10 +107,7 @@ void main() {
         'errors': ['Internal Server Error'],
       }, statusCode: 500);
 
-      expect(
-        () => repository.getRoles(),
-        throwsA(isA<UsersException>()),
-      );
+      expect(() => repository.getRoles(), throwsA(isA<UsersException>()));
     });
 
     test('createUser sends correct data and succeeds', () async {
@@ -136,7 +140,7 @@ void main() {
               'role': 'Admin',
               'isActive': true,
               'createdAt': '2026-07-16T12:00:00Z',
-            }
+            },
           ],
           'pageNumber': 1,
           'totalPages': 1,
@@ -154,23 +158,29 @@ void main() {
     test('returns Network error message on connectivity failure', () async {
       final dio = Dio(BaseOptions(baseUrl: 'https://test.local'));
       // Simulate a connection error
-      dio.interceptors.add(InterceptorsWrapper(
-        onRequest: (options, handler) {
-          handler.reject(DioException(
-            requestOptions: options,
-            type: DioExceptionType.connectionError,
-          ));
-        },
-      ));
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            handler.reject(
+              DioException(
+                requestOptions: options,
+                type: DioExceptionType.connectionError,
+              ),
+            );
+          },
+        ),
+      );
       final repository = UsersRepositoryImpl(dio);
 
       expect(
         () => repository.getRoles(),
-        throwsA(isA<UsersException>().having(
-          (e) => e.errors.first,
-          'errors.first',
-          contains('Network error'),
-        )),
+        throwsA(
+          isA<UsersException>().having(
+            (e) => e.errors.first,
+            'errors.first',
+            contains('Network error'),
+          ),
+        ),
       );
     });
   });

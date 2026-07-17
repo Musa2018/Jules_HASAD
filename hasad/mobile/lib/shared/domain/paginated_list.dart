@@ -13,6 +13,7 @@ class PaginatedList<T> with _$PaginatedList<T> {
   }) = _PaginatedList<T>;
 
   factory PaginatedList.fromJson(
-          Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
-      _$PaginatedListFromJson(json, fromJsonT);
+    Map<String, dynamic> json,
+    T Function(Object?) fromJsonT,
+  ) => _$PaginatedListFromJson(json, fromJsonT);
 }

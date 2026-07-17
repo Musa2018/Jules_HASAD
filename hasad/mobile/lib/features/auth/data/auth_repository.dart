@@ -81,15 +81,15 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> resetPassword(String email, String token, String newPassword) async {
+  Future<void> resetPassword(
+    String email,
+    String token,
+    String newPassword,
+  ) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/accounts/reset-password',
-        data: {
-          'email': email,
-          'token': token,
-          'newPassword': newPassword,
-        },
+        data: {'email': email, 'token': token, 'newPassword': newPassword},
       );
       if (response.data?['succeeded'] != true) {
         throw AuthException(_errorsFromEnvelope(response.data));

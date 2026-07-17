@@ -10,14 +10,18 @@ class RemoteFarmRepository implements FarmRepository {
   @override
   Future<List<Farm>> getFarmsByFarmer(String farmerId) async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>('/v1/farms/farmer/$farmerId');
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/farms/farmer/$farmerId',
+      );
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
         throw FarmException(_errorsFromEnvelope(envelope));
       }
       final items = data as List;
-      return items.map((e) => Farm.fromJson(e as Map<String, dynamic>)).toList();
+      return items
+          .map((e) => Farm.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw FarmException(_errorsFromDio(e));
     }
@@ -95,7 +99,9 @@ class RemoteFarmRepository implements FarmRepository {
       return Farm.fromJson(data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 409) {
-        throw FarmException(['CONFLICT: The record has been modified by another user.']);
+        throw FarmException([
+          'CONFLICT: The record has been modified by another user.',
+        ]);
       }
       throw FarmException(_errorsFromDio(e));
     }

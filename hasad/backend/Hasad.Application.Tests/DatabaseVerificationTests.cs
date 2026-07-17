@@ -34,7 +34,7 @@ public class DatabaseVerificationTests
         return services.BuildServiceProvider();
     }
 
-    [Fact]
+    [Fact(Skip = "Requires local SQL Server instance. Ignored in CI.")]
     public async Task VerifyAndSeedAdminManually()
     {
         using var provider = CreateServices();

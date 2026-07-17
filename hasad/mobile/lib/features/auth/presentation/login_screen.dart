@@ -29,7 +29,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _loadRememberedEmail() async {
-    final email = await ref.read(secureStorageServiceProvider).getRememberedEmail();
+    final email = await ref
+        .read(secureStorageServiceProvider)
+        .getRememberedEmail();
     if (email != null && mounted) {
       setState(() {
         _emailController.text = email;
@@ -53,7 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     await ref
         .read(authProvider.notifier)
         .login(
-          _emailController.text.trim(), 
+          _emailController.text.trim(),
           _passwordController.text,
           rememberMe: _rememberMe,
         );
@@ -141,7 +143,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 16),
+                                    horizontal: 20,
+                                    vertical: 16,
+                                  ),
                                 ),
                                 validator: (v) {
                                   final email = v?.trim() ?? '';
@@ -167,14 +171,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           : Icons.visibility_outlined,
                                       color: Colors.grey,
                                     ),
-                                    onPressed: () => setState(() =>
-                                        _obscurePassword = !_obscurePassword),
+                                    onPressed: () => setState(
+                                      () =>
+                                          _obscurePassword = !_obscurePassword,
+                                    ),
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 16),
+                                    horizontal: 20,
+                                    vertical: 16,
+                                  ),
                                 ),
                                 validator: (v) => (v == null || v.isEmpty)
                                     ? l10n.passwordRequired
@@ -190,24 +198,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       value: _rememberMe,
                                       activeColor: const Color(0xFF689F38),
                                       shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4)),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
                                       onChanged: (v) => setState(
-                                          () => _rememberMe = v ?? false),
+                                        () => _rememberMe = v ?? false,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(l10n.rememberMe,
-                                      style: const TextStyle(fontSize: 13)),
+                                  Text(
+                                    l10n.rememberMe,
+                                    style: const TextStyle(fontSize: 13),
+                                  ),
                                   const Spacer(),
                                   TextButton(
-                                    onPressed: () => context.push(AppRoutes.forgotPassword),
+                                    onPressed: () =>
+                                        context.push(AppRoutes.forgotPassword),
                                     child: Text(
                                       l10n.forgotPassword,
                                       style: const TextStyle(
-                                          color: Color(0xFF1976D2),
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold),
+                                        color: Color(0xFF1976D2),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -216,8 +229,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               SizedBox(
                                 height: 50,
                                 child: ElevatedButton(
-                                  onPressed:
-                                      authState.isLoading ? null : _submit,
+                                  onPressed: authState.isLoading
+                                      ? null
+                                      : _submit,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF689F38),
                                     foregroundColor: Colors.white,
@@ -231,13 +245,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           height: 20,
                                           width: 20,
                                           child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2))
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
                                       : Text(
                                           l10n.login,
                                           style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                 ),
                               ),
@@ -245,7 +262,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                       ),
-                      
+
                       if (authState.errors.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         Text(
@@ -258,7 +275,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              
+
               // Bottom Language Toggle
               Positioned(
                 bottom: 16,
@@ -285,11 +302,11 @@ class _LoginLogo extends StatelessWidget {
         Stack(
           alignment: Alignment.center,
           children: [
-             const Icon(Icons.eco_outlined, size: 64, color: Color(0xFF1B5E20)),
-             const Positioned(
-               bottom: 8,
-               child: Icon(Icons.grain, size: 32, color: Color(0xFF689F38)),
-             ),
+            const Icon(Icons.eco_outlined, size: 64, color: Color(0xFF1B5E20)),
+            const Positioned(
+              bottom: 8,
+              child: Icon(Icons.grain, size: 32, color: Color(0xFF689F38)),
+            ),
           ],
         ),
         const SizedBox(width: 12),
@@ -329,7 +346,7 @@ class _LanguageToggle extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isAr = currentLocale.languageCode == 'ar';
-    
+
     return GestureDetector(
       onTap: () => ref.read(localeProvider.notifier).toggleLocale(),
       child: Container(
@@ -337,7 +354,9 @@ class _LanguageToggle extends ConsumerWidget {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF689F38).withValues(alpha: 0.3)),
+          border: Border.all(
+            color: const Color(0xFF689F38).withValues(alpha: 0.3),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

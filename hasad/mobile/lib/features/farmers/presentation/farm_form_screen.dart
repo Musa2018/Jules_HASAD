@@ -28,11 +28,19 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.farm?.name);
-    _governorateController = TextEditingController(text: widget.farm?.governorateId);
+    _governorateController = TextEditingController(
+      text: widget.farm?.governorateId,
+    );
     _localityController = TextEditingController(text: widget.farm?.localityId);
-    _areaController = TextEditingController(text: widget.farm?.landArea.toString());
-    _areaUnitController = TextEditingController(text: widget.farm?.landAreaUnit);
-    _ownershipController = TextEditingController(text: widget.farm?.ownershipTypeId);
+    _areaController = TextEditingController(
+      text: widget.farm?.landArea.toString(),
+    );
+    _areaUnitController = TextEditingController(
+      text: widget.farm?.landAreaUnit,
+    );
+    _ownershipController = TextEditingController(
+      text: widget.farm?.ownershipTypeId,
+    );
   }
 
   @override
@@ -100,19 +108,22 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(labelText: l10n.farmName),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _governorateController,
                 decoration: InputDecoration(labelText: l10n.governorate),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _localityController,
                 decoration: InputDecoration(labelText: l10n.locality),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               Row(
@@ -123,7 +134,9 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
                       controller: _areaController,
                       decoration: InputDecoration(labelText: l10n.landArea),
                       keyboardType: TextInputType.number,
-                      validator: (v) => (double.tryParse(v ?? '') ?? 0) <= 0 ? l10n.requiredField : null,
+                      validator: (v) => (double.tryParse(v ?? '') ?? 0) <= 0
+                          ? l10n.requiredField
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -131,7 +144,8 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
                     child: TextFormField(
                       controller: _areaUnitController,
                       decoration: InputDecoration(labelText: l10n.unit),
-                      validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? l10n.requiredField : null,
                     ),
                   ),
                 ],
@@ -140,7 +154,8 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
               TextFormField(
                 controller: _ownershipController,
                 decoration: InputDecoration(labelText: l10n.ownershipType),
-                validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 24),
               ElevatedButton(

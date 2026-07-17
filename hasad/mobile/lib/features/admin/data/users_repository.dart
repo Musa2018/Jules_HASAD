@@ -10,7 +10,8 @@ class UsersException implements Exception {
   UsersException(this.errors);
 
   @override
-  String toString() => errors.isEmpty ? 'User management operation failed.' : errors.join('\n');
+  String toString() =>
+      errors.isEmpty ? 'User management operation failed.' : errors.join('\n');
 }
 
 abstract class UsersRepository {
@@ -53,10 +54,7 @@ abstract class UsersRepository {
     required String newPassword,
     required String confirmPassword,
   });
-  Future<void> changeStatus({
-    required String userId,
-    required bool isActive,
-  });
+  Future<void> changeStatus({required String userId, required bool isActive});
 }
 
 class UsersRepositoryImpl implements UsersRepository {
@@ -110,7 +108,10 @@ class UsersRepositoryImpl implements UsersRepository {
 
   @override
   Future<List<Governorate>> getGovernorates() async {
-    return _getMany('/v1/Users/governorates', (json) => Governorate.fromJson(json));
+    return _getMany(
+      '/v1/Users/governorates',
+      (json) => Governorate.fromJson(json),
+    );
   }
 
   @override
@@ -118,7 +119,9 @@ class UsersRepositoryImpl implements UsersRepository {
     return _getMany(
       '/v1/Users/directorates',
       (json) => Directorate.fromJson(json),
-      queryParameters: governorateId != null ? {'governorateId': governorateId} : null,
+      queryParameters: governorateId != null
+          ? {'governorateId': governorateId}
+          : null,
     );
   }
 
@@ -226,10 +229,7 @@ class UsersRepositoryImpl implements UsersRepository {
     try {
       final response = await _dio.patch<Map<String, dynamic>>(
         '/v1/Users/$userId/status',
-        data: {
-          'userId': userId,
-          'isActive': isActive,
-        },
+        data: {'userId': userId, 'isActive': isActive},
       );
       final envelope = response.data;
       if (envelope?['succeeded'] != true) {
@@ -257,7 +257,9 @@ class UsersRepositoryImpl implements UsersRepository {
         throw UsersException(_errorsFromEnvelope(envelope));
       }
 
-      return data.map((json) => fromJson(json as Map<String, dynamic>)).toList();
+      return data
+          .map((json) => fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw UsersException(_errorsFromDio(e));
     }

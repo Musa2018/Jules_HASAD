@@ -12,5 +12,6 @@ class Directorate with _$Directorate {
     required String governorateId,
   }) = _Directorate;
 
-  factory Directorate.fromJson(Map<String, dynamic> json) => _$DirectorateFromJson(json);
+  factory Directorate.fromJson(Map<String, dynamic> json) =>
+      _$DirectorateFromJson(json);
 }

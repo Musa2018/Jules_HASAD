@@ -10,7 +10,8 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key, required this.email});
 
   @override
-  ConsumerState<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
@@ -32,11 +33,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ref.read(authRepositoryProvider).resetPassword(
-        widget.email,
-        _tokenController.text.trim(),
-        _passwordController.text,
-      );
+      await ref
+          .read(authRepositoryProvider)
+          .resetPassword(
+            widget.email,
+            _tokenController.text.trim(),
+            _passwordController.text,
+          );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Password reset successfully!')),
@@ -46,9 +49,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -82,7 +85,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Resetting password for: ${widget.email}', style: const TextStyle(color: Colors.black54)),
+                      Text(
+                        'Resetting password for: ${widget.email}',
+                        style: const TextStyle(color: Colors.black54),
+                      ),
                       const SizedBox(height: 24),
                       TextFormField(
                         controller: _tokenController,
@@ -90,7 +96,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                           hintText: 'Reset Token',
                           prefixIcon: Icon(Icons.vpn_key_outlined),
                         ),
-                        validator: (v) => (v == null || v.isEmpty) ? 'Token is required' : null,
+                        validator: (v) => (v == null || v.isEmpty)
+                            ? 'Token is required'
+                            : null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -100,7 +108,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                           hintText: 'New Password',
                           prefixIcon: Icon(Icons.lock_outline),
                         ),
-                        validator: (v) => (v == null || v.isEmpty) ? 'Password is required' : null,
+                        validator: (v) => (v == null || v.isEmpty)
+                            ? 'Password is required'
+                            : null,
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
@@ -108,9 +118,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF689F38),
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
-                        child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Reset Password'),
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text('Reset Password'),
                       ),
                     ],
                   ),

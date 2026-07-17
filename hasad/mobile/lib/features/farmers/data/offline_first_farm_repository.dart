@@ -13,29 +13,36 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
-    final items = await (_db.select(_db.farms)
-          ..where((t) => t.farmerId.equals(farmerId))
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
-        .get();
+    final items =
+        await (_db.select(_db.farms)
+              ..where((t) => t.farmerId.equals(farmerId))
+              ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+            .get();
 
-    return items.map((e) => domain.Farm(
-          id: e.id,
-          farmerId: e.farmerId,
-          name: e.name,
-          governorateId: e.governorateId,
-          localityId: e.localityId,
-          landArea: e.landArea,
-          landAreaUnit: e.landAreaUnit,
-          latitude: e.latitude,
-          longitude: e.longitude,
-          ownershipTypeId: e.ownershipTypeId,
-          rowVersion: e.rowVersion,
-        )).toList();
+    return items
+        .map(
+          (e) => domain.Farm(
+            id: e.id,
+            farmerId: e.farmerId,
+            name: e.name,
+            governorateId: e.governorateId,
+            localityId: e.localityId,
+            landArea: e.landArea,
+            landAreaUnit: e.landAreaUnit,
+            latitude: e.latitude,
+            longitude: e.longitude,
+            ownershipTypeId: e.ownershipTypeId,
+            rowVersion: e.rowVersion,
+          ),
+        )
+        .toList();
   }
 
   @override
   Future<domain.Farm> getFarm(String id) async {
-    final e = await (_db.select(_db.farms)..where((t) => t.id.equals(id))).getSingle();
+    final e = await (_db.select(
+      _db.farms,
+    )..where((t) => t.id.equals(id))).getSingle();
     return domain.Farm(
       id: e.id,
       farmerId: e.farmerId,

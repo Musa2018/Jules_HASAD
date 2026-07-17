@@ -81,20 +81,23 @@ void main() {
       expect(notifier.state.isLoading, isFalse);
     });
 
-    test('logout revokes the refresh token and clears credentials but keeps email', () async {
-      repository.session = sampleSession();
-      final notifier = createNotifier();
-      await notifier.restoreSession();
-      await notifier.login('admin@hasad.ps', 'password', rememberMe: true);
+    test(
+      'logout revokes the refresh token and clears credentials but keeps email',
+      () async {
+        repository.session = sampleSession();
+        final notifier = createNotifier();
+        await notifier.restoreSession();
+        await notifier.login('admin@hasad.ps', 'password', rememberMe: true);
 
-      await notifier.logout();
+        await notifier.logout();
 
-      expect(notifier.state.status, AuthStatus.unauthenticated);
-      expect(repository.logoutCalls, 1);
-      expect(repository.revokedTokens, ['refresh-1']);
-      expect(await storage.getToken(), isNull);
-      expect(await storage.getRememberedEmail(), 'admin@hasad.ps');
-    });
+        expect(notifier.state.status, AuthStatus.unauthenticated);
+        expect(repository.logoutCalls, 1);
+        expect(repository.revokedTokens, ['refresh-1']);
+        expect(await storage.getToken(), isNull);
+        expect(await storage.getRememberedEmail(), 'admin@hasad.ps');
+      },
+    );
 
     test('logout without a stored token skips the server call', () async {
       final notifier = createNotifier();

@@ -33,28 +33,39 @@ final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   );
 });
 
-final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>((ref) {
-  return OfflineFirstDamageReportAttachmentRepository(
-    ref.watch(databaseProvider),
-    ref.watch(syncServiceProvider),
-  );
-});
+final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
+  (ref) {
+    return OfflineFirstDamageReportAttachmentRepository(
+      ref.watch(databaseProvider),
+      ref.watch(syncServiceProvider),
+    );
+  },
+);
 
-final farmersListProvider = FutureProvider.autoDispose<List<Farmer>>((ref) async {
+final farmersListProvider = FutureProvider.autoDispose<List<Farmer>>((
+  ref,
+) async {
   return ref.watch(farmerRepositoryProvider).getFarmers();
 });
 
-final farmsListByFarmerProvider = FutureProvider.autoDispose.family<List<Farm>, String>((ref, farmerId) async {
-  return ref.watch(farmRepositoryProvider).getFarmsByFarmer(farmerId);
-});
+final farmsListByFarmerProvider = FutureProvider.autoDispose
+    .family<List<Farm>, String>((ref, farmerId) async {
+      return ref.watch(farmRepositoryProvider).getFarmsByFarmer(farmerId);
+    });
 
-final damageReportsListByFarmProvider = FutureProvider.autoDispose.family<List<DamageReport>, String>((ref, farmId) async {
-  return ref.watch(damageReportRepositoryProvider).getDamageReportsByFarm(farmId);
-});
+final damageReportsListByFarmProvider = FutureProvider.autoDispose
+    .family<List<DamageReport>, String>((ref, farmId) async {
+      return ref
+          .watch(damageReportRepositoryProvider)
+          .getDamageReportsByFarm(farmId);
+    });
 
-final attachmentsByReportProvider = FutureProvider.autoDispose.family<List<DamageReportAttachment>, String>((ref, reportId) async {
-  return ref.watch(attachmentRepositoryProvider).getAttachmentsByReport(reportId);
-});
+final attachmentsByReportProvider = FutureProvider.autoDispose
+    .family<List<DamageReportAttachment>, String>((ref, reportId) async {
+      return ref
+          .watch(attachmentRepositoryProvider)
+          .getAttachmentsByReport(reportId);
+    });
 
 class DamageReportFormState {
   final bool isLoading;
@@ -71,7 +82,8 @@ class DamageReportFormState {
 class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
   final DamageReportRepository _repository;
 
-  DamageReportFormNotifier(this._repository) : super(const DamageReportFormState());
+  DamageReportFormNotifier(this._repository)
+    : super(const DamageReportFormState());
 
   Future<void> createDamageReport(DamageReport report) async {
     state = const DamageReportFormState(isLoading: true);
@@ -81,7 +93,9 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     } on DamageReportException catch (e) {
       state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(errors: ['An unexpected error occurred.']);
+      state = const DamageReportFormState(
+        errors: ['An unexpected error occurred.'],
+      );
     }
   }
 
@@ -93,7 +107,9 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     } on DamageReportException catch (e) {
       state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(errors: ['An unexpected error occurred.']);
+      state = const DamageReportFormState(
+        errors: ['An unexpected error occurred.'],
+      );
     }
   }
 
@@ -105,14 +121,22 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     } on DamageReportException catch (e) {
       state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(errors: ['An unexpected error occurred.']);
+      state = const DamageReportFormState(
+        errors: ['An unexpected error occurred.'],
+      );
     }
   }
 }
 
-final damageReportFormProvider = StateNotifierProvider.autoDispose<DamageReportFormNotifier, DamageReportFormState>((ref) {
-  return DamageReportFormNotifier(ref.watch(damageReportRepositoryProvider));
-});
+final damageReportFormProvider =
+    StateNotifierProvider.autoDispose<
+      DamageReportFormNotifier,
+      DamageReportFormState
+    >((ref) {
+      return DamageReportFormNotifier(
+        ref.watch(damageReportRepositoryProvider),
+      );
+    });
 
 class FarmerFormState {
   final bool isLoading;
@@ -168,9 +192,12 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
   }
 }
 
-final farmerFormProvider = StateNotifierProvider.autoDispose<FarmerFormNotifier, FarmerFormState>((ref) {
-  return FarmerFormNotifier(ref.watch(farmerRepositoryProvider));
-});
+final farmerFormProvider =
+    StateNotifierProvider.autoDispose<FarmerFormNotifier, FarmerFormState>((
+      ref,
+    ) {
+      return FarmerFormNotifier(ref.watch(farmerRepositoryProvider));
+    });
 
 class FarmFormState {
   final bool isLoading;
@@ -226,6 +253,7 @@ class FarmFormNotifier extends StateNotifier<FarmFormState> {
   }
 }
 
-final farmFormProvider = StateNotifierProvider.autoDispose<FarmFormNotifier, FarmFormState>((ref) {
-  return FarmFormNotifier(ref.watch(farmRepositoryProvider));
-});
+final farmFormProvider =
+    StateNotifierProvider.autoDispose<FarmFormNotifier, FarmFormState>((ref) {
+      return FarmFormNotifier(ref.watch(farmRepositoryProvider));
+    });

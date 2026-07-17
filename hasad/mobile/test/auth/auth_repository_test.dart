@@ -49,7 +49,7 @@ void main() {
           'fullName': 'Super Admin',
           'roles': ['SuperAdmin'],
           'governorateId': 'gz-1',
-          'directorateId': 'dir-1'
+          'directorateId': 'dir-1',
         },
       });
 

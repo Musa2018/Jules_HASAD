@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/network/connectivity_provider.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/admin/domain/user.dart';
+import 'package:mobile/features/admin/domain/directorate.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -16,6 +18,9 @@ class UsersScreen extends ConsumerStatefulWidget {
 
 class _UsersScreenState extends ConsumerState<UsersScreen> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
+  bool _showFilters = false;
 
   @override
   void initState() {
@@ -26,6 +31,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -38,6 +45,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     }
   }
 
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      ref.read(usersListProvider.notifier).setSearch(query.isEmpty ? null : query);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -48,6 +62,11 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       appBar: AppBar(
         title: Text(l10n.users),
         actions: [
+          IconButton(
+            icon: Icon(_showFilters ? Icons.filter_list_off : Icons.filter_list),
+            onPressed: () => setState(() => _showFilters = !_showFilters),
+            tooltip: 'Toggle Filters',
+          ),
           IconButton(
             icon: const Icon(Icons.person_add),
             onPressed: () {
@@ -64,6 +83,28 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search by name, email, or username...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          ref.read(usersListProvider.notifier).setSearch(null);
+                        },
+                      )
+                    : null,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onChanged: _onSearchChanged,
+            ),
+          ),
+          if (_showFilters) _FilterPanel(),
           if (state.isLoading && users.isEmpty)
             const Expanded(child: Center(child: CircularProgressIndicator()))
           else if (state.errors.isNotEmpty && users.isEmpty)
@@ -142,6 +183,82 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterPanel extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(usersListProvider);
+    final rolesAsync = ref.watch(rolesProvider);
+    final governoratesAsync = ref.watch(governoratesProvider);
+    final directoratesAsync = state.governorateId != null
+        ? ref.watch(directoratesProvider(state.governorateId))
+        : const AsyncValue<List<Directorate>>.data([]);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: Colors.grey.shade50,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: rolesAsync.when(
+                  data: (roles) => DropdownButtonFormField<String>(
+                    initialValue: state.role,
+                    decoration: const InputDecoration(labelText: 'Role', isDense: true),
+                    items: [
+                      const DropdownMenuItem<String>(value: null, child: Text('All Roles')),
+                      ...roles.map((r) => DropdownMenuItem<String>(value: r.name, child: Text(r.name))),
+                    ],
+                    onChanged: (v) => ref.read(usersListProvider.notifier).setRole(v),
+                  ),
+                  loading: () => const LinearProgressIndicator(),
+                  error: (e, _) => const Text('Error loading roles'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: governoratesAsync.when(
+                  data: (govs) => DropdownButtonFormField<String>(
+                    initialValue: state.governorateId,
+                    decoration: const InputDecoration(labelText: 'Governorate', isDense: true),
+                    items: [
+                      const DropdownMenuItem<String>(value: null, child: Text('All')),
+                      ...govs.map((g) => DropdownMenuItem<String>(value: g.id, child: Text(g.nameEn))),
+                    ],
+                    onChanged: (v) => ref.read(usersListProvider.notifier).setGovernorate(v),
+                  ),
+                  loading: () => const LinearProgressIndicator(),
+                  error: (e, _) => const Text('Error loading geo'),
+                ),
+              ),
+            ],
+          ),
+          if (state.governorateId != null) ...[
+            const SizedBox(height: 8),
+            directoratesAsync.when(
+              data: (dirs) => DropdownButtonFormField<String>(
+                initialValue: state.directorateId,
+                decoration: const InputDecoration(labelText: 'Directorate', isDense: true),
+                items: [
+                  const DropdownMenuItem<String>(value: null, child: Text('All Directorates')),
+                  ...dirs.map((d) => DropdownMenuItem<String>(value: d.id, child: Text(d.nameEn))),
+                ],
+                onChanged: (v) => ref.read(usersListProvider.notifier).setDirectorate(v),
+              ),
+              loading: () => const LinearProgressIndicator(),
+              error: (e, _) => const Text('Error loading directorates'),
+            ),
+          ],
+          TextButton(
+            onPressed: () => ref.read(usersListProvider.notifier).clearFilters(),
+            child: const Text('Clear All Filters'),
+          ),
         ],
       ),
     );

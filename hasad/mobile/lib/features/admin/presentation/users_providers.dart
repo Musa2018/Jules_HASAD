@@ -41,6 +41,8 @@ class UsersListState {
   final List<String> errors;
   final String? search;
   final String? role;
+  final String? governorateId;
+  final String? directorateId;
 
   UsersListState({
     this.isLoading = false,
@@ -48,6 +50,8 @@ class UsersListState {
     this.errors = const [],
     this.search,
     this.role,
+    this.governorateId,
+    this.directorateId,
   });
 
   UsersListState copyWith({
@@ -56,6 +60,8 @@ class UsersListState {
     List<String>? errors,
     String? search,
     String? role,
+    String? governorateId,
+    String? directorateId,
   }) {
     return UsersListState(
       isLoading: isLoading ?? this.isLoading,
@@ -63,6 +69,8 @@ class UsersListState {
       errors: errors ?? this.errors,
       search: search ?? this.search,
       role: role ?? this.role,
+      governorateId: governorateId ?? this.governorateId,
+      directorateId: directorateId ?? this.directorateId,
     );
   }
 }
@@ -84,6 +92,8 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
         pageNumber: pageNumber,
         search: state.search,
         role: state.role,
+        governorateId: state.governorateId,
+        directorateId: state.directorateId,
       );
 
       if (isRefresh || pageNumber == 1) {
@@ -109,6 +119,21 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
 
   void setRole(String? role) {
     state = state.copyWith(role: role);
+    fetchUsers(isRefresh: true);
+  }
+
+  void setGovernorate(String? governorateId) {
+    state = state.copyWith(governorateId: governorateId, directorateId: null);
+    fetchUsers(isRefresh: true);
+  }
+
+  void setDirectorate(String? directorateId) {
+    state = state.copyWith(directorateId: directorateId);
+    fetchUsers(isRefresh: true);
+  }
+
+  void clearFilters() {
+    state = UsersListState();
     fetchUsers(isRefresh: true);
   }
 }

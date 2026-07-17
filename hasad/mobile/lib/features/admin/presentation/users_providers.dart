@@ -40,6 +40,9 @@ final directoratesProvider = FutureProvider.family<List<Directorate>, String?>((
       .getDirectorates(governorateId: governorateId);
 });
 
+// تعريف Sentinel للسماح بتمرير null
+const Object _sentinel = Object();
+
 class UsersListState {
   final bool isLoading;
   final PaginatedList<User>? data;
@@ -63,19 +66,23 @@ class UsersListState {
     bool? isLoading,
     PaginatedList<User>? data,
     List<String>? errors,
-    String? search,
-    String? role,
-    String? governorateId,
-    String? directorateId,
+    Object? search = _sentinel,
+    Object? role = _sentinel,
+    Object? governorateId = _sentinel,
+    Object? directorateId = _sentinel,
   }) {
     return UsersListState(
       isLoading: isLoading ?? this.isLoading,
       data: data ?? this.data,
       errors: errors ?? this.errors,
-      search: search ?? this.search,
-      role: role ?? this.role,
-      governorateId: governorateId ?? this.governorateId,
-      directorateId: directorateId ?? this.directorateId,
+      search: search == _sentinel ? this.search : (search as String?),
+      role: role == _sentinel ? this.role : (role as String?),
+      governorateId: governorateId == _sentinel
+          ? this.governorateId
+          : (governorateId as String?),
+      directorateId: directorateId == _sentinel
+          ? this.directorateId
+          : (directorateId as String?),
     );
   }
 }

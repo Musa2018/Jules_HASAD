@@ -221,4 +221,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCreatingUser => 'Failed to create user.';
+
+  @override
+  String get noUsers => 'There are no users.';
 }

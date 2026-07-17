@@ -100,5 +100,6 @@
   "active": "Active",
   "confirmPassword": "Confirm Password",
   "userCreatedSuccessfully": "User created successfully.",
-  "errorCreatingUser": "Failed to create user."
+  "errorCreatingUser": "Failed to create user.",
+  "noUsers": "There are no users."
 }

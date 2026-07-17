@@ -517,6 +517,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to create user.'**
   String get errorCreatingUser;
+
+  /// No description provided for @noUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no users.'**
+  String get noUsers;
 }
 
 class _AppLocalizationsDelegate

@@ -68,5 +68,6 @@
   "active": "نشط",
   "confirmPassword": "تأكيد كلمة المرور",
   "userCreatedSuccessfully": "تم إنشاء المستخدم بنجاح.",
-  "errorCreatingUser": "فشل إنشاء المستخدم."
+  "errorCreatingUser": "فشل إنشاء المستخدم.",
+  "noUsers": "لا يوجد مستخدمون."
 }

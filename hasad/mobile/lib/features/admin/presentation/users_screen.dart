@@ -1,14 +1,15 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/network/connectivity_provider.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/core/router/app_router.dart';
-import 'package:mobile/features/admin/domain/user.dart';
-import 'package:mobile/features/admin/domain/role.dart';
-import 'package:mobile/features/admin/domain/governorate.dart';
 import 'package:mobile/features/admin/domain/directorate.dart';
+import 'package:mobile/features/admin/domain/governorate.dart';
+import 'package:mobile/features/admin/domain/role.dart';
+import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -127,9 +128,13 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
+                          // إيقاف أي عملية بحث معلقة
                           if (_debounce?.isActive ?? false) _debounce?.cancel();
+                          // مسح النص
                           _searchController.clear();
+                          // إجبار الواجهة على التحديث لإخفاء الأيقونة فوراً
                           setState(() {});
+                          // إعادة جلب البيانات
                           ref.read(usersListProvider.notifier).setSearch(null);
                         },
                       )
@@ -140,6 +145,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
               ),
               onChanged: (value) {
                 _onSearchChanged(value);
+                // إجبار الواجهة على التحديث عند كل حرف لتظهر الأيقونة
                 setState(() {});
               },
             ),
@@ -191,7 +197,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                       color: Colors.grey,
                     ),
                     const SizedBox(height: 16),
-                    Text(l10n.noFarmers), // Reusing existing key
+                    Text(l10n.noUsers),
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
                       onPressed: () async {

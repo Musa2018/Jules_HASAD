@@ -221,4 +221,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorCreatingUser => 'فشل إنشاء المستخدم.';
+
+  @override
+  String get noUsers => 'لا يوجد مستخدمون.';
 }

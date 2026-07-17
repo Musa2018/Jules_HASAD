@@ -17,7 +17,7 @@ extension ConnectivityX on WidgetRef {
   /// Use this inside action buttons (onPressed) to avoid "fake offline" errors.
   Future<bool> checkIsOffline() async {
     try {
-      final connectivity = Connectivity();
+      final connectivity = read(_connectivityProvider);
       final List<ConnectivityResult> results = await connectivity.checkConnectivity();
       return results.isEmpty || results.contains(ConnectivityResult.none);
     } catch (_) {

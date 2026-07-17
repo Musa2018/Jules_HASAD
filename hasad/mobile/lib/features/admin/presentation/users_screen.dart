@@ -48,7 +48,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(usersListProvider.notifier).setSearch(query.isEmpty ? null : query);
+      if (mounted) {
+        ref.read(usersListProvider.notifier).setSearch(query.isEmpty ? null : query);
+      }
     });
   }
 
@@ -62,6 +64,17 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       appBar: AppBar(
         title: Text(l10n.users),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              if (ref.isOffline) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
+                return;
+              }
+              ref.read(usersListProvider.notifier).fetchUsers(isRefresh: true);
+            },
+            tooltip: 'Refresh List',
+          ),
           IconButton(
             icon: Icon(_showFilters ? Icons.filter_list_off : Icons.filter_list),
             onPressed: () => setState(() => _showFilters = !_showFilters),
@@ -94,6 +107,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
+                          if (_debounce?.isActive ?? false) _debounce?.cancel();
                           _searchController.clear();
                           ref.read(usersListProvider.notifier).setSearch(null);
                         },
@@ -131,7 +145,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                 ),
               ),
             )
-          else if (users.isEmpty)
+          else if (users.isEmpty && !state.isLoading)
             Expanded(
               child: Center(
                 child: Column(
@@ -201,23 +215,34 @@ class _FilterPanel extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: Colors.grey.shade50,
+      color: Colors.grey.shade100,
       child: Column(
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: rolesAsync.when(
                   data: (roles) => DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: state.role,
-                    decoration: const InputDecoration(labelText: 'Role', isDense: true),
+                    decoration: const InputDecoration(labelText: 'Role', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8)),
                     items: [
-                      const DropdownMenuItem<String>(value: null, child: Text('All Roles')),
-                      ...roles.map((r) => DropdownMenuItem<String>(value: r.name, child: Text(r.name))),
+                      const DropdownMenuItem<String>(
+                        value: null,
+                        child: Text('All Roles', overflow: TextOverflow.ellipsis),
+                      ),
+                      ...roles.map((r) => DropdownMenuItem<String>(
+                            value: r.name,
+                            child: Text(r.name, overflow: TextOverflow.ellipsis),
+                          )),
                     ],
                     onChanged: (v) => ref.read(usersListProvider.notifier).setRole(v),
                   ),
-                  loading: () => const LinearProgressIndicator(),
+                  loading: () => const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: LinearProgressIndicator(),
+                  ),
                   error: (e, _) => const Text('Error loading roles'),
                 ),
               ),
@@ -225,15 +250,25 @@ class _FilterPanel extends ConsumerWidget {
               Expanded(
                 child: governoratesAsync.when(
                   data: (govs) => DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: state.governorateId,
-                    decoration: const InputDecoration(labelText: 'Governorate', isDense: true),
+                    decoration: const InputDecoration(labelText: 'Governorate', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8)),
                     items: [
-                      const DropdownMenuItem<String>(value: null, child: Text('All')),
-                      ...govs.map((g) => DropdownMenuItem<String>(value: g.id, child: Text(g.nameEn))),
+                      const DropdownMenuItem<String>(
+                        value: null,
+                        child: Text('All', overflow: TextOverflow.ellipsis),
+                      ),
+                      ...govs.map((g) => DropdownMenuItem<String>(
+                            value: g.id,
+                            child: Text(g.nameEn, overflow: TextOverflow.ellipsis),
+                          )),
                     ],
                     onChanged: (v) => ref.read(usersListProvider.notifier).setGovernorate(v),
                   ),
-                  loading: () => const LinearProgressIndicator(),
+                  loading: () => const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: LinearProgressIndicator(),
+                  ),
                   error: (e, _) => const Text('Error loading geo'),
                 ),
               ),
@@ -243,11 +278,18 @@ class _FilterPanel extends ConsumerWidget {
             const SizedBox(height: 8),
             directoratesAsync.when(
               data: (dirs) => DropdownButtonFormField<String>(
+                isExpanded: true,
                 initialValue: state.directorateId,
-                decoration: const InputDecoration(labelText: 'Directorate', isDense: true),
+                decoration: const InputDecoration(labelText: 'Directorate', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8)),
                 items: [
-                  const DropdownMenuItem<String>(value: null, child: Text('All Directorates')),
-                  ...dirs.map((d) => DropdownMenuItem<String>(value: d.id, child: Text(d.nameEn))),
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('All Directorates', overflow: TextOverflow.ellipsis),
+                  ),
+                  ...dirs.map((d) => DropdownMenuItem<String>(
+                        value: d.id,
+                        child: Text(d.nameEn, overflow: TextOverflow.ellipsis),
+                      )),
                 ],
                 onChanged: (v) => ref.read(usersListProvider.notifier).setDirectorate(v),
               ),
@@ -255,9 +297,15 @@ class _FilterPanel extends ConsumerWidget {
               error: (e, _) => const Text('Error loading directorates'),
             ),
           ],
-          TextButton(
-            onPressed: () => ref.read(usersListProvider.notifier).clearFilters(),
-            child: const Text('Clear All Filters'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton.icon(
+                onPressed: () => ref.read(usersListProvider.notifier).clearFilters(),
+                icon: const Icon(Icons.clear_all, size: 18),
+                label: const Text('Clear All Filters'),
+              ),
+            ],
           ),
         ],
       ),

@@ -82,7 +82,7 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
 
   Future<void> fetchUsers({int pageNumber = 1, bool isRefresh = false}) async {
     if (isRefresh) {
-      state = state.copyWith(isLoading: true, errors: []);
+      state = state.copyWith(isLoading: true, errors: [], data: null);
     } else if (state.isLoading) {
       return;
     }
@@ -113,22 +113,22 @@ class UsersListNotifier extends StateNotifier<UsersListState> {
   }
 
   void setSearch(String? search) {
-    state = state.copyWith(search: search);
+    state = state.copyWith(search: search, data: null);
     fetchUsers(isRefresh: true);
   }
 
   void setRole(String? role) {
-    state = state.copyWith(role: role);
+    state = state.copyWith(role: role, data: null);
     fetchUsers(isRefresh: true);
   }
 
   void setGovernorate(String? governorateId) {
-    state = state.copyWith(governorateId: governorateId, directorateId: null);
+    state = state.copyWith(governorateId: governorateId, directorateId: null, data: null);
     fetchUsers(isRefresh: true);
   }
 
   void setDirectorate(String? directorateId) {
-    state = state.copyWith(directorateId: directorateId);
+    state = state.copyWith(directorateId: directorateId, data: null);
     fetchUsers(isRefresh: true);
   }
 

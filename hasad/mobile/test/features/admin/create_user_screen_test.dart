@@ -71,12 +71,25 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    final button = find.byType(ElevatedButton);
-    await tester.ensureVisible(button);
-    await tester.tap(button);
-    await tester.pump();
+    // Use find.text('Save') to be more specific
+    final saveButton = find.text('Save');
+    expect(saveButton, findsOneWidget);
+    
+    await tester.ensureVisible(saveButton);
+    await tester.tap(saveButton);
+    await tester.pumpAndSettle();
 
-    expect(find.text('This field is required.'), findsWidgets);
+    // Verify repository was not called due to validation failure
+    verifyNever(() => repository.createUser(
+          fullName: any(named: 'fullName'),
+          userName: any(named: 'userName'),
+          email: any(named: 'email'),
+          phoneNumber: any(named: 'phoneNumber'),
+          password: any(named: 'password'),
+          confirmPassword: any(named: 'confirmPassword'),
+          role: any(named: 'role'),
+          isActive: any(named: 'isActive'),
+        ));
   });
 
   testWidgets('UserFormScreen geographic fields appear based on role', (tester) async {

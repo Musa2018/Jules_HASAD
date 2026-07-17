@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/network/connectivity_provider.dart';
 import 'package:mobile/features/admin/domain/directorate.dart';
 import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
@@ -57,7 +58,24 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     super.dispose();
   }
 
+  void _retryLookups() {
+    if (ref.isOffline) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
+      return;
+    }
+    ref.invalidate(rolesProvider);
+    ref.invalidate(governoratesProvider);
+    if (_selectedGovernorateId != null) {
+      ref.invalidate(directoratesProvider(_selectedGovernorateId));
+    }
+  }
+
   Future<void> _submit() async {
+    if (ref.isOffline) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) return;
 
     final roles = ref.read(rolesProvider).value ?? [];
@@ -129,7 +147,16 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
         directoratesAsync.hasError;
 
     return Scaffold(
-      appBar: AppBar(title: Text(_isEdit ? 'Edit User' : l10n.addUser)),
+      appBar: AppBar(
+        title: Text(_isEdit ? 'Edit User' : l10n.addUser),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _retryLookups,
+            tooltip: 'Refresh Lookup Data',
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -149,26 +176,31 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                   decoration: BoxDecoration(
                     color: Colors.orange.shade50,
                     border: Border.all(color: Colors.orange.shade200),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      const Expanded(
-                        child: Text(
-                          'Warning: Some lookup data failed to load.',
-                          style: TextStyle(color: Colors.orange),
-                        ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          ref.invalidate(rolesProvider);
-                          ref.invalidate(governoratesProvider);
-                          if (_selectedGovernorateId != null) {
-                            ref.invalidate(directoratesProvider(_selectedGovernorateId));
-                          }
-                        },
-                        icon: const Icon(Icons.refresh, size: 18),
-                        label: const Text('Retry'),
+                      Row(
+                        children: [
+                          const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Warning: Failed to load required data.',
+                              style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: _retryLookups,
+                            icon: const Icon(Icons.refresh, size: 18),
+                            label: const Text('Retry All'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -177,7 +209,10 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.only(bottom: 16),
-                  color: Colors.red.shade50,
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Text(state.errors.join('\n'), style: const TextStyle(color: Colors.red)),
                 ),
               TextFormField(
@@ -226,10 +261,14 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
               const SizedBox(height: 16),
               rolesAsync.when(
                 data: (rolesList) => DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _selectedRoleId,
                   decoration: InputDecoration(labelText: l10n.role),
                   items: rolesList
-                      .map<DropdownMenuItem<String>>((r) => DropdownMenuItem(value: r.id, child: Text(r.name)))
+                      .map<DropdownMenuItem<String>>((r) => DropdownMenuItem(
+                            value: r.id,
+                            child: Text(r.name, overflow: TextOverflow.ellipsis),
+                          ))
                       .toList(),
                   onChanged: (v) => setState(() {
                     _selectedRoleId = v;
@@ -257,6 +296,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                   onChanged: null,
                   decoration: const InputDecoration(
                     labelText: 'Error loading roles',
+                    errorText: 'Tap Refresh button in AppBar',
                   ),
                 ),
               ),
@@ -264,11 +304,15 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                 const SizedBox(height: 16),
                 governoratesAsync.when(
                   data: (govList) => DropdownButtonFormField<String>(
+                    isExpanded: true,
                     key: ValueKey('gov_$_selectedRoleId'),
                     initialValue: _selectedGovernorateId,
                     decoration: InputDecoration(labelText: l10n.governorate),
                     items: govList
-                        .map<DropdownMenuItem<String>>((g) => DropdownMenuItem(value: g.id, child: Text(g.nameEn)))
+                        .map<DropdownMenuItem<String>>((g) => DropdownMenuItem(
+                              value: g.id,
+                              child: Text(g.nameEn, overflow: TextOverflow.ellipsis),
+                            ))
                         .toList(),
                     onChanged: (v) => setState(() {
                       _selectedGovernorateId = v;
@@ -293,6 +337,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                     onChanged: null,
                     decoration: const InputDecoration(
                       labelText: 'Error loading governorates',
+                      errorText: 'Tap Refresh button in AppBar',
                     ),
                   ),
                 ),
@@ -308,11 +353,15 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                       )
                     : directoratesAsync.when(
                         data: (dirList) => DropdownButtonFormField<String>(
+                          isExpanded: true,
                           key: ValueKey('dir_$_selectedGovernorateId'),
                           initialValue: _selectedDirectorateId,
                           decoration: InputDecoration(labelText: l10n.directorate),
                           items: dirList
-                              .map<DropdownMenuItem<String>>((d) => DropdownMenuItem(value: d.id, child: Text(d.nameEn)))
+                              .map<DropdownMenuItem<String>>((d) => DropdownMenuItem(
+                                    value: d.id,
+                                    child: Text(d.nameEn, overflow: TextOverflow.ellipsis),
+                                  ))
                               .toList(),
                           onChanged: (v) => setState(() => _selectedDirectorateId = v),
                           validator: (v) => v == null ? l10n.requiredField : null,
@@ -334,6 +383,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                           onChanged: null,
                           decoration: const InputDecoration(
                             labelText: 'Error loading directorates',
+                            errorText: 'Tap Refresh button in AppBar',
                           ),
                         ),
                       ),

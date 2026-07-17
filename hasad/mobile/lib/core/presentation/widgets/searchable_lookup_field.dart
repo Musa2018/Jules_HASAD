@@ -43,18 +43,21 @@ class SearchableLookupField<T> extends StatelessWidget {
               errorText: state.errorText ?? errorText,
               suffixIcon: isLoading
                   ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
+                width: 24,
+                height: 24,
+                child: Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
                   : const Icon(Icons.arrow_drop_down),
             ),
             child: Text(
               value != null ? itemLabel(value as T) : '',
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyLarge,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -119,7 +122,13 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
   @override
   void initState() {
     super.initState();
-    _filteredItems = widget.items;
+    // أخذ نسخة مستقلة من القائمة لتجنب مشاكل المرجعية (Reference Issues)
+    _filteredItems = List.from(widget.items);
+
+    // إضافة مستمع للتأكد من تفاعل واجهة المستخدم (مثل إظهار/إخفاء زر الحذف) بسلاسة
+    _searchController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -130,13 +139,15 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
 
   void _filterItems(String query) {
     setState(() {
-      if (query.isEmpty) {
-        _filteredItems = widget.items;
+      final trimmedQuery = query.trim();
+      if (trimmedQuery.isEmpty) {
+        _filteredItems = List.from(widget.items);
       } else {
-        final searchTerm = query.toLowerCase();
+        final searchTerm = trimmedQuery.toLowerCase();
         _filteredItems = widget.items.where((item) {
           if (widget.searchStrings != null) {
-            return widget.searchStrings!(item).any((s) => s.toLowerCase().contains(searchTerm));
+            return widget.searchStrings!(item).any((s) =>
+                s.toLowerCase().contains(searchTerm));
           }
           return widget.itemLabel(item).toLowerCase().contains(searchTerm);
         }).toList();
@@ -146,9 +157,15 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final padding = MediaQuery.of(context).viewInsets.bottom;
+    final padding = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * 0.8,
       padding: EdgeInsets.fromLTRB(16, 16, 16, padding + 16),
       child: Column(
         children: [
@@ -157,7 +174,10 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
             children: [
               Text(
                 widget.title,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleLarge,
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -174,16 +194,17 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        setState(() {
-                          _searchController.clear();
-                          _filteredItems = widget.items;
-                        });
-                      },
-                    )
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  setState(() {
+                    _searchController.clear();
+                    _filteredItems = List.from(widget.items);
+                  });
+                },
+              )
                   : null,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onChanged: _filterItems,
           ),
@@ -192,19 +213,20 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
             child: _filteredItems.isEmpty
                 ? const Center(child: Text('No results found.'))
                 : ListView.separated(
-                    itemCount: _filteredItems.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final item = _filteredItems[index];
-                      final isSelected = item == widget.initialValue;
-                      return ListTile(
-                        title: Text(widget.itemLabel(item)),
-                        selected: isSelected,
-                        trailing: isSelected ? const Icon(Icons.check, color: Colors.green) : null,
-                        onTap: () => widget.onSelected(item),
-                      );
-                    },
-                  ),
+              itemCount: _filteredItems.length,
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final item = _filteredItems[index];
+                final isSelected = item == widget.initialValue;
+                return ListTile(
+                  title: Text(widget.itemLabel(item)),
+                  selected: isSelected,
+                  trailing: isSelected ? const Icon(
+                      Icons.check, color: Colors.green) : null,
+                  onTap: () => widget.onSelected(item),
+                );
+              },
+            ),
           ),
         ],
       ),

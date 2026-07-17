@@ -16,7 +16,13 @@ extension ConnectivityX on WidgetRef {
   /// Performs a fresh, non-cached active check of the network status.
   /// Use this inside action buttons (onPressed) to avoid "fake offline" errors.
   Future<bool> checkIsOffline() async {
-    final results = await Connectivity().checkConnectivity();
-    return results.isEmpty || results.contains(ConnectivityResult.none);
+    try {
+      final connectivity = Connectivity();
+      final List<ConnectivityResult> results = await connectivity.checkConnectivity();
+      return results.isEmpty || results.contains(ConnectivityResult.none);
+    } catch (_) {
+      // If the plugin fails or returns an unexpected type, proceed cautiously
+      return false; 
+    }
   }
 }

@@ -45,7 +45,7 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
         byte[] expectedVersion = Convert.FromBase64String(request.RowVersion);
         if (!farmer.RowVersion.SequenceEqual(expectedVersion))
         {
-             return Result<FarmerDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
+            return Result<FarmerDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
         farmer.ClientId = request.ClientId; // Should ideally not change but we update it to stay consistent.

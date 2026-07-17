@@ -130,7 +130,8 @@ public class FarmerCommandHandlerTests
         var context = CreateContext();
         for (int i = 0; i < 15; i++)
         {
-            context.Farmers.Add(new Farmer {
+            context.Farmers.Add(new Farmer
+            {
                 Id = Guid.NewGuid(),
                 ClientId = Guid.NewGuid(),
                 NationalId = i.ToString(),

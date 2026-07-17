@@ -44,7 +44,7 @@ public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Resul
         byte[] expectedVersion = Convert.FromBase64String(request.RowVersion);
         if (!farm.RowVersion.SequenceEqual(expectedVersion))
         {
-             return Result<FarmDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
+            return Result<FarmDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
         farm.Name = request.Name;

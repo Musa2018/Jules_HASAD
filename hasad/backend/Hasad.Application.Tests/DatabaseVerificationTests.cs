@@ -21,7 +21,8 @@ public class DatabaseVerificationTests
             o.UseSqlServer("Data Source=MUSA_PC;Initial Catalog=hasad;Persist Security Info=True;User ID=sa;Password=Pass@word2023m;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Application Name=\"HASAD API\";Command Timeout=30"));
         services.AddLogging();
         services
-            .AddIdentityCore<ApplicationUser>(o => {
+            .AddIdentityCore<ApplicationUser>(o =>
+            {
                 o.Password.RequiredLength = 12;
                 o.Password.RequireDigit = true;
                 o.Password.RequireUppercase = true;

@@ -61,8 +61,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     super.dispose();
   }
 
-  void _retryLookups() {
-    if (ref.isOffline) {
+  void _retryLookups() async {
+    if (await ref.checkIsOffline()) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
       return;
     }
@@ -74,7 +75,8 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
   }
 
   Future<void> _submit() async {
-    if (ref.isOffline) {
+    if (await ref.checkIsOffline()) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No internet connection.')));
       return;
     }

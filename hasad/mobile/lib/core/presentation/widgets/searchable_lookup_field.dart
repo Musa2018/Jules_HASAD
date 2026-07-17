@@ -176,8 +176,10 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
                   ? IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
-                        _searchController.clear();
-                        _filterItems('');
+                        setState(() {
+                          _searchController.clear();
+                          _filteredItems = widget.items;
+                        });
                       },
                     )
                   : null,

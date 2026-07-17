@@ -127,8 +127,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          if (_debounce?.isActive ?? false) _debounce?.cancel();
+                          _debounce?.cancel();
                           _searchController.clear();
+                          setState(() {});
                           ref.read(usersListProvider.notifier).setSearch(null);
                         },
                       )
@@ -137,7 +138,10 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onChanged: _onSearchChanged,
+              onChanged: (value) {
+                _onSearchChanged(value);
+                setState(() {});
+              },
             ),
           ),
           if (_showFilters) _FilterPanel(),

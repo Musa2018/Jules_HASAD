@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/network/connectivity_provider.dart';
+import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/features/admin/domain/directorate.dart';
+import 'package:mobile/features/admin/domain/governorate.dart';
+import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
@@ -260,131 +263,96 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
               ],
               const SizedBox(height: 16),
               rolesAsync.when(
-                data: (rolesList) => DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  initialValue: _selectedRoleId,
-                  decoration: InputDecoration(labelText: l10n.role),
-                  items: rolesList
-                      .map<DropdownMenuItem<String>>((r) => DropdownMenuItem(
-                            value: r.id,
-                            child: Text(r.name, overflow: TextOverflow.ellipsis),
-                          ))
-                      .toList(),
+                data: (rolesList) => SearchableLookupField<Role>(
+                  label: l10n.role,
+                  items: rolesList,
+                  itemLabel: (r) => r.name,
+                  value: rolesList.where((r) => r.id == _selectedRoleId).firstOrNull,
                   onChanged: (v) => setState(() {
-                    _selectedRoleId = v;
-                    final role = rolesList.firstWhere((r) => r.id == v);
-                    if (role.scopeType == 'Global') {
+                    _selectedRoleId = v?.id;
+                    if (v?.scopeType == 'Global') {
                       _selectedGovernorateId = null;
                       _selectedDirectorateId = null;
                     }
                   }),
                   validator: (v) => v == null ? l10n.requiredField : null,
                 ),
-                loading: () => DropdownButtonFormField<String>(
+                loading: () => SearchableLookupField<Role>(
+                  label: l10n.role,
                   items: const [],
-                  onChanged: null,
-                  decoration: const InputDecoration(
-                    labelText: 'Loading roles...',
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
+                  itemLabel: (_) => '',
+                  onChanged: (_) {},
+                  isLoading: true,
                 ),
-                error: (e, _) => DropdownButtonFormField<String>(
+                error: (e, _) => SearchableLookupField<Role>(
+                  label: l10n.role,
                   items: const [],
-                  onChanged: null,
-                  decoration: const InputDecoration(
-                    labelText: 'Error loading roles',
-                    errorText: 'Tap Refresh button in AppBar',
-                  ),
+                  itemLabel: (_) => '',
+                  onChanged: (_) {},
+                  errorText: 'Tap Refresh button in AppBar',
                 ),
               ),
               if (scopeType != 'Global') ...[
                 const SizedBox(height: 16),
                 governoratesAsync.when(
-                  data: (govList) => DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    key: ValueKey('gov_$_selectedRoleId'),
-                    initialValue: _selectedGovernorateId,
-                    decoration: InputDecoration(labelText: l10n.governorate),
-                    items: govList
-                        .map<DropdownMenuItem<String>>((g) => DropdownMenuItem(
-                              value: g.id,
-                              child: Text(g.nameEn, overflow: TextOverflow.ellipsis),
-                            ))
-                        .toList(),
+                  data: (govList) => SearchableLookupField<Governorate>(
+                    label: l10n.governorate,
+                    items: govList,
+                    itemLabel: (g) => g.nameEn,
+                    searchStrings: (g) => [g.nameEn, g.nameAr],
+                    value: govList.where((g) => g.id == _selectedGovernorateId).firstOrNull,
                     onChanged: (v) => setState(() {
-                      _selectedGovernorateId = v;
+                      _selectedGovernorateId = v?.id;
                       _selectedDirectorateId = null;
                     }),
                     validator: (v) => v == null ? l10n.requiredField : null,
                   ),
-                  loading: () => DropdownButtonFormField<String>(
+                  loading: () => SearchableLookupField<Governorate>(
+                    label: l10n.governorate,
                     items: const [],
-                    onChanged: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Loading governorates...',
-                      suffixIcon: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
+                    itemLabel: (_) => '',
+                    onChanged: (_) {},
+                    isLoading: true,
                   ),
-                  error: (e, _) => DropdownButtonFormField<String>(
-                    initialValue: null,
+                  error: (e, _) => SearchableLookupField<Governorate>(
+                    label: l10n.governorate,
                     items: const [],
-                    onChanged: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Error loading governorates',
-                      errorText: 'Tap Refresh button in AppBar',
-                    ),
+                    itemLabel: (_) => '',
+                    onChanged: (_) {},
+                    errorText: 'Tap Refresh button in AppBar',
                   ),
                 ),
               ],
               if (scopeType == 'Directorate') ...[
                 const SizedBox(height: 16),
                 _selectedGovernorateId == null
-                    ? DropdownButtonFormField<String>(
-                        initialValue: null,
-                        items: const [],
-                        onChanged: null,
-                        decoration: const InputDecoration(labelText: 'Select Governorate first'),
+                    ? InputDecorator(
+                        decoration: const InputDecoration(labelText: 'Directorate'),
+                        child: const Text('Select Governorate first'),
                       )
                     : directoratesAsync.when(
-                        data: (dirList) => DropdownButtonFormField<String>(
-                          isExpanded: true,
-                          key: ValueKey('dir_$_selectedGovernorateId'),
-                          initialValue: _selectedDirectorateId,
-                          decoration: InputDecoration(labelText: l10n.directorate),
-                          items: dirList
-                              .map<DropdownMenuItem<String>>((d) => DropdownMenuItem(
-                                    value: d.id,
-                                    child: Text(d.nameEn, overflow: TextOverflow.ellipsis),
-                                  ))
-                              .toList(),
-                          onChanged: (v) => setState(() => _selectedDirectorateId = v),
+                        data: (dirList) => SearchableLookupField<Directorate>(
+                          label: l10n.directorate,
+                          items: dirList,
+                          itemLabel: (d) => d.nameEn,
+                          searchStrings: (d) => [d.nameEn, d.nameAr],
+                          value: dirList.where((d) => d.id == _selectedDirectorateId).firstOrNull,
+                          onChanged: (v) => setState(() => _selectedDirectorateId = v?.id),
                           validator: (v) => v == null ? l10n.requiredField : null,
                         ),
-                        loading: () => DropdownButtonFormField<String>(
+                        loading: () => SearchableLookupField<Directorate>(
+                          label: l10n.directorate,
                           items: const [],
-                          onChanged: null,
-                          decoration: const InputDecoration(
-                            labelText: 'Loading directorates...',
-                            suffixIcon: Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          ),
+                          itemLabel: (_) => '',
+                          onChanged: (_) {},
+                          isLoading: true,
                         ),
-                        error: (e, _) => DropdownButtonFormField<String>(
-                          initialValue: null,
+                        error: (e, _) => SearchableLookupField<Directorate>(
+                          label: l10n.directorate,
                           items: const [],
-                          onChanged: null,
-                          decoration: const InputDecoration(
-                            labelText: 'Error loading directorates',
-                            errorText: 'Tap Refresh button in AppBar',
-                          ),
+                          itemLabel: (_) => '',
+                          onChanged: (_) {},
+                          errorText: 'Tap Refresh button in AppBar',
                         ),
                       ),
               ],

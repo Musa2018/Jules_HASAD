@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/network/connectivity_provider.dart';
+import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/admin/domain/user.dart';
+import 'package:mobile/features/admin/domain/role.dart';
+import 'package:mobile/features/admin/domain/governorate.dart';
 import 'package:mobile/features/admin/domain/directorate.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
@@ -223,21 +226,12 @@ class _FilterPanel extends ConsumerWidget {
             children: [
               Expanded(
                 child: rolesAsync.when(
-                  data: (roles) => DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue: state.role,
-                    decoration: const InputDecoration(labelText: 'Role', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8)),
-                    items: [
-                      const DropdownMenuItem<String>(
-                        value: null,
-                        child: Text('All Roles', overflow: TextOverflow.ellipsis),
-                      ),
-                      ...roles.map((r) => DropdownMenuItem<String>(
-                            value: r.name,
-                            child: Text(r.name, overflow: TextOverflow.ellipsis),
-                          )),
-                    ],
-                    onChanged: (v) => ref.read(usersListProvider.notifier).setRole(v),
+                  data: (roles) => SearchableLookupField<Role>(
+                    label: 'Role',
+                    items: roles,
+                    itemLabel: (r) => r.name,
+                    value: roles.where((r) => r.name == state.role).firstOrNull,
+                    onChanged: (v) => ref.read(usersListProvider.notifier).setRole(v?.name),
                   ),
                   loading: () => const Padding(
                     padding: EdgeInsets.only(top: 20),
@@ -249,21 +243,13 @@ class _FilterPanel extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: governoratesAsync.when(
-                  data: (govs) => DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue: state.governorateId,
-                    decoration: const InputDecoration(labelText: 'Governorate', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8)),
-                    items: [
-                      const DropdownMenuItem<String>(
-                        value: null,
-                        child: Text('All', overflow: TextOverflow.ellipsis),
-                      ),
-                      ...govs.map((g) => DropdownMenuItem<String>(
-                            value: g.id,
-                            child: Text(g.nameEn, overflow: TextOverflow.ellipsis),
-                          )),
-                    ],
-                    onChanged: (v) => ref.read(usersListProvider.notifier).setGovernorate(v),
+                  data: (govs) => SearchableLookupField<Governorate>(
+                    label: 'Governorate',
+                    items: govs,
+                    itemLabel: (g) => g.nameEn,
+                    searchStrings: (g) => [g.nameEn, g.nameAr],
+                    value: govs.where((g) => g.id == state.governorateId).firstOrNull,
+                    onChanged: (v) => ref.read(usersListProvider.notifier).setGovernorate(v?.id),
                   ),
                   loading: () => const Padding(
                     padding: EdgeInsets.only(top: 20),
@@ -277,21 +263,13 @@ class _FilterPanel extends ConsumerWidget {
           if (state.governorateId != null) ...[
             const SizedBox(height: 8),
             directoratesAsync.when(
-              data: (dirs) => DropdownButtonFormField<String>(
-                isExpanded: true,
-                initialValue: state.directorateId,
-                decoration: const InputDecoration(labelText: 'Directorate', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8)),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All Directorates', overflow: TextOverflow.ellipsis),
-                  ),
-                  ...dirs.map((d) => DropdownMenuItem<String>(
-                        value: d.id,
-                        child: Text(d.nameEn, overflow: TextOverflow.ellipsis),
-                      )),
-                ],
-                onChanged: (v) => ref.read(usersListProvider.notifier).setDirectorate(v),
+              data: (dirs) => SearchableLookupField<Directorate>(
+                label: 'Directorate',
+                items: dirs,
+                itemLabel: (d) => d.nameEn,
+                searchStrings: (d) => [d.nameEn, d.nameAr],
+                value: dirs.where((d) => d.id == state.directorateId).firstOrNull,
+                onChanged: (v) => ref.read(usersListProvider.notifier).setDirectorate(v?.id),
               ),
               loading: () => const LinearProgressIndicator(),
               error: (e, _) => const Text('Error loading directorates'),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/network/token_refresher.dart';
 import 'package:mobile/core/storage/secure_storage_service.dart';
+import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/features/admin/data/users_repository.dart';
 import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/admin/presentation/create_user_screen.dart';
@@ -107,9 +108,15 @@ void main() {
     expect(find.text('Governorate'), findsNothing);
 
     // Select Director
-    await tester.tap(find.byType(DropdownButtonFormField<String>).first);
+    final roleField = find.byType(SearchableLookupField<Role>);
+    expect(roleField, findsOneWidget);
+    await tester.ensureVisible(roleField);
+    await tester.tap(roleField);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Director').last);
+    
+    // In the search sheet, tap Director
+    final directorItem = find.text('Director').last;
+    await tester.tap(directorItem);
     await tester.pumpAndSettle();
 
     expect(find.text('Governorate'), findsOneWidget);

@@ -84,7 +84,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get farmerName => 'اسم المزارع';
 
   @override
-  String get nationalId => 'رقم الهوية';
+  String get nationalId => 'هوية فلسطينية';
+
+  @override
+  String get jerusalemId => 'هوية القدس';
+
+  @override
+  String get passport => 'جواز سفر';
 
   @override
   String get phoneNumber => 'رقم الهاتف';
@@ -211,6 +217,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get invalidFamilySize => 'عدد أفراد أسرة غير صحيح';
+
+  @override
+  String get invalidPalestinianId => 'رقم هوية فلسطينية غير صحيح';
+
+  @override
+  String get mustBeNumeric => 'يجب أن يتكون من أرقام فقط';
+
+  @override
+  String get mustBeAlphanumeric => 'يجب أن يتكون من أحرف وأرقام فقط';
+
+  @override
+  String get mustBe18 => 'يجب أن يكون عمر المزارع 18 عاماً على الأقل';
+
+  @override
+  String get cannotBeInFuture => 'لا يمكن أن يكون التاريخ في المستقبل';
 
   @override
   String get selectIdType => 'اختر نوع الهوية';

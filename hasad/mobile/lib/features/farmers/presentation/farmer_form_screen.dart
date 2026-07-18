@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
+import 'package:mobile/core/utils/validators.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
@@ -189,6 +190,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                     decoration: InputDecoration(labelText: l10n.idType),
                     items: [
                       DropdownMenuItem(value: 1, child: Text(l10n.nationalId)),
+                      DropdownMenuItem(value: 2, child: Text(l10n.jerusalemId)),
+                      DropdownMenuItem(value: 3, child: Text(l10n.passport)),
                     ],
                     onChanged: (v) => setState(() => _idTypeId = v ?? 1),
                   ),
@@ -196,7 +199,28 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                   TextFormField(
                     controller: _idNumberController,
                     decoration: InputDecoration(labelText: l10n.idNumber),
-                    validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return l10n.requiredField;
+                      final id = v.trim();
+                      switch (_idTypeId) {
+                        case 1:
+                          if (!Validators.isValidPalestinianId(id)) {
+                            return l10n.invalidPalestinianId;
+                          }
+                          break;
+                        case 2:
+                          if (!Validators.isNumeric(id)) {
+                            return l10n.mustBeNumeric;
+                          }
+                          break;
+                        case 3:
+                          if (!Validators.isAlphanumeric(id)) {
+                            return l10n.mustBeAlphanumeric;
+                          }
+                          break;
+                      }
+                      return null;
+                    },
                   ),
                 ],
               ),
@@ -264,16 +288,37 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                 [
                   InkWell(
                     onTap: _selectDate,
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        labelText: l10n.dateOfBirth,
-                        suffixIcon: const Icon(Icons.calendar_today),
-                      ),
-                      child: Text(
-                        _birthDate == null 
-                            ? l10n.selectDate 
-                            : DateFormat.yMd(Localizations.localeOf(context).toString()).format(_birthDate!),
-                      ),
+                    child: FormField<DateTime>(
+                      initialValue: _birthDate,
+                      validator: (v) {
+                        if (_birthDate == null) return l10n.requiredField;
+                        if (!Validators.isAtLeast18(_birthDate!)) {
+                          return l10n.mustBe18;
+                        }
+                        if (_birthDate!.isAfter(DateTime.now())) {
+                          return l10n.cannotBeInFuture;
+                        }
+                        return null;
+                      },
+                      builder: (state) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: l10n.dateOfBirth,
+                                suffixIcon: const Icon(Icons.calendar_today),
+                                errorText: state.errorText,
+                              ),
+                              child: Text(
+                                _birthDate == null 
+                                    ? l10n.selectDate 
+                                    : DateFormat.yMd(Localizations.localeOf(context).toString()).format(_birthDate!),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),

@@ -137,7 +137,23 @@ public class UpdateFarmerCommandValidator : AbstractValidator<UpdateFarmerComman
 
         RuleFor(v => v.IdNumber)
             .NotEmpty().WithMessage("ID Number is required.")
-            .MaximumLength(20).WithMessage("ID Number must not exceed 20 characters.");
+            .MaximumLength(20).WithMessage("ID Number must not exceed 20 characters.")
+            .Must((command, idNumber) =>
+            {
+                return command.IdTypeId switch
+                {
+                    1 => FarmerValidationHelpers.ValidatePalestinianId(idNumber),
+                    2 => FarmerValidationHelpers.IsNumeric(idNumber),
+                    3 => FarmerValidationHelpers.IsAlphanumeric(idNumber),
+                    _ => true
+                };
+            }).WithMessage(command => command.IdTypeId switch
+            {
+                1 => "Invalid Palestinian ID checksum or length.",
+                2 => "Jerusalem ID must be numeric.",
+                3 => "Passport must be alphanumeric.",
+                _ => "Invalid ID Number."
+            });
 
         RuleFor(v => v.FirstNameAr).NotEmpty().MaximumLength(50);
         RuleFor(v => v.FatherNameAr).NotEmpty().MaximumLength(50);
@@ -150,7 +166,9 @@ public class UpdateFarmerCommandValidator : AbstractValidator<UpdateFarmerComman
         RuleFor(v => v.FamilyNameEn).NotEmpty().MaximumLength(50);
 
         RuleFor(v => v.BirthDate)
-            .NotEmpty().WithMessage("Birth Date is required.");
+            .NotEmpty().WithMessage("Birth Date is required.")
+            .Must(date => date <= DateOnly.FromDateTime(DateTime.UtcNow)).WithMessage("Birth Date cannot be in the future.")
+            .Must(FarmerValidationHelpers.IsAtLeast18).WithMessage("Farmer must be at least 18 years old.");
 
         RuleFor(v => v.Gender)
             .IsInEnum().WithMessage("A valid Gender is required.")

@@ -87,6 +87,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nationalId => 'National ID';
 
   @override
+  String get jerusalemId => 'Jerusalem ID';
+
+  @override
+  String get passport => 'Passport';
+
+  @override
   String get phoneNumber => 'Phone Number';
 
   @override
@@ -211,6 +217,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidFamilySize => 'Invalid family size';
+
+  @override
+  String get invalidPalestinianId => 'Invalid Palestinian ID';
+
+  @override
+  String get mustBeNumeric => 'Must be numeric only';
+
+  @override
+  String get mustBeAlphanumeric => 'Must be alphanumeric only';
+
+  @override
+  String get mustBe18 => 'Farmer must be at least 18 years old';
+
+  @override
+  String get cannotBeInFuture => 'Date cannot be in the future';
 
   @override
   String get selectIdType => 'Select ID Type';

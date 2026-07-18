@@ -248,6 +248,18 @@ abstract class AppLocalizations {
   /// **'National ID'**
   String get nationalId;
 
+  /// No description provided for @jerusalemId.
+  ///
+  /// In en, this message translates to:
+  /// **'Jerusalem ID'**
+  String get jerusalemId;
+
+  /// No description provided for @passport.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport'**
+  String get passport;
+
   /// No description provided for @phoneNumber.
   ///
   /// In en, this message translates to:
@@ -499,6 +511,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid family size'**
   String get invalidFamilySize;
+
+  /// No description provided for @invalidPalestinianId.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Palestinian ID'**
+  String get invalidPalestinianId;
+
+  /// No description provided for @mustBeNumeric.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be numeric only'**
+  String get mustBeNumeric;
+
+  /// No description provided for @mustBeAlphanumeric.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be alphanumeric only'**
+  String get mustBeAlphanumeric;
+
+  /// No description provided for @mustBe18.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmer must be at least 18 years old'**
+  String get mustBe18;
+
+  /// No description provided for @cannotBeInFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Date cannot be in the future'**
+  String get cannotBeInFuture;
 
   /// No description provided for @selectIdType.
   ///

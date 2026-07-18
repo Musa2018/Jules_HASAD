@@ -1,17 +1,18 @@
-- [ ] Domain Layer Updates
-    - [ ] Create `gender.dart`
-    - [ ] Update `farmer.dart` (Freezed model)
-- [ ] Drift Database Alignment
-    - [ ] Update `Farmers` table in `database.dart`
-    - [ ] Implement migration to schema version 7
-- [ ] Repository Layer Mapping
-    - [ ] Update `OfflineFirstFarmerRepository` mapping logic
-- [ ] Code Generation
-    - [ ] Run build_runner
-- [ ] Verification
-    - [ ] Run `flutter analyze`
-    - [ ] Run relevant tests
-- [ ] Git Operations
-    - [ ] Commit changes
-    - [ ] Push to `farmers` branch
-- [ ] Final Report
+- [x] Verify `farmers` branch
+- [x] Implement Repository Search Logic
+    - [x] Update `FarmerRepository` interface
+    - [x] Update `RemoteFarmerRepository.getFarmers` with `idNumber` support
+    - [x] Implement `OfflineFirstFarmerRepository.findByIdNumber`
+- [x] Implement State Management
+    - [x] Add `FarmerSearchNotifier` and provider in `farmers_providers.dart`
+- [x] Implement UI and Navigation
+    - [x] Create `FarmerSearchScreen`
+    - [x] Create placeholder `FarmerDetailsScreen`
+    - [x] Update `AppRoutes` and `GoRouter` in `app_router.dart`
+    - [x] Update `FarmersListScreen` entry point
+- [x] Verification
+    - [x] Run `flutter analyze`
+    - [x] Run search workflow tests
+- [x] Git Operations
+    - [x] Commit and push to `farmers` branch
+- [x] Final Report

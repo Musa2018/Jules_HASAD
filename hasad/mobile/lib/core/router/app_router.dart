@@ -16,6 +16,8 @@ import 'package:mobile/features/farmers/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farms_list_screen.dart';
+import 'package:mobile/features/farmers/presentation/farmer_details_screen.dart';
+import 'package:mobile/features/farmers/presentation/farmer_search_screen.dart';
 import 'package:mobile/features/home/presentation/home_screen.dart';
 import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_screen.dart';
@@ -46,6 +48,12 @@ abstract final class AppRoutes {
 
   /// Edit user.
   static const editUser = '/users/edit';
+
+  /// Farmer search.
+  static const farmerSearch = '/farmers/search';
+
+  /// Farmer details.
+  static const farmerDetails = '/farmers/details';
 
   /// Farmers list.
   static const farmers = '/farmers';
@@ -170,8 +178,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const FarmersListScreen(),
       ),
       GoRoute(
+        path: AppRoutes.farmerSearch,
+        builder: (context, state) => const FarmerSearchScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.farmerDetails,
+        builder: (context, state) =>
+            FarmerDetailsScreen(farmer: state.extra as Farmer),
+      ),
+      GoRoute(
         path: AppRoutes.addFarmer,
-        builder: (context, state) => const FarmerFormScreen(),
+        builder: (context, state) =>
+            FarmerFormScreen(initialIdNumber: state.extra as String?),
       ),
       GoRoute(
         path: AppRoutes.editFarmer,

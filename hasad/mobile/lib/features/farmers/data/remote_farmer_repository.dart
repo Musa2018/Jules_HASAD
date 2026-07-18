@@ -11,11 +11,18 @@ class RemoteFarmerRepository implements FarmerRepository {
   Future<List<domain.Farmer>> getFarmers({
     int pageNumber = 1,
     int pageSize = 10,
+    String? idNumber,
+    String? name,
   }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         '/v1/farmers',
-        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize},
+        queryParameters: {
+          'pageNumber': pageNumber,
+          'pageSize': pageSize,
+          'idNumber': idNumber,
+          'name': name,
+        },
       );
       final envelope = response.data;
       final data = envelope?['data'];
@@ -30,6 +37,12 @@ class RemoteFarmerRepository implements FarmerRepository {
     } on DioException catch (e) {
       throw FarmerException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Future<domain.Farmer?> findByIdNumber(String idNumber) async {
+    final results = await getFarmers(idNumber: idNumber, pageSize: 1);
+    return results.isEmpty ? null : results.first;
   }
 
   @override

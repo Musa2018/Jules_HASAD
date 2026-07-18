@@ -16,10 +16,14 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 
 final connectivityProvider = Provider<Connectivity>((ref) => Connectivity());
 
+final remoteFarmerRepositoryProvider = Provider<RemoteFarmerRepository>((ref) {
+  return RemoteFarmerRepository(ref.watch(apiDioProvider));
+});
+
 final syncServiceProvider = Provider<BackgroundSyncService>((ref) {
   final service = BackgroundSyncService(
     ref.watch(databaseProvider),
-    RemoteFarmerRepository(ref.watch(apiDioProvider)),
+    ref.watch(remoteFarmerRepositoryProvider),
     RemoteFarmRepository(ref.watch(apiDioProvider)),
     RemoteDamageReportRepository(ref.watch(apiDioProvider)),
     RemoteDamageReportAttachmentRepository(ref.watch(apiDioProvider)),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -28,9 +29,11 @@ class FarmersListScreen extends ConsumerWidget {
                 subtitle: Text(farmer.nationalId),
                 trailing: IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed: () => context.push('/farmers/edit', extra: farmer),
+                  onPressed: () =>
+                      context.push(AppRoutes.editFarmer, extra: farmer),
                 ),
-                onTap: () => context.push('/farms', extra: farmer),
+                onTap: () =>
+                    context.push(AppRoutes.farmerDetails, extra: farmer),
               );
             },
           );
@@ -50,7 +53,7 @@ class FarmersListScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/farmers/add'),
+        onPressed: () => context.push(AppRoutes.farmerSearch),
         tooltip: l10n.addFarmer,
         child: const Icon(Icons.add),
       ),

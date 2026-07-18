@@ -1,41 +1,45 @@
-# Sprint 10.2 — Farmers Backend Enhancement Walkthrough
+# Sprint 10.4 — Farmers Search First Workflow Walkthrough
 
-I have successfully enhanced the Farmers module backend to support advanced demographic fields and search capabilities. This work lays the foundation for the Search-First workflow and aligns the backend with the required HASAD data model.
+I have implemented the **Search First** workflow for the Farmers module. This workflow ensures that before a new farmer is created, a mandatory search is performed both locally (Drift database) and remotely (Backend API) to prevent duplicate records and ensure data consistency.
 
 ## Changes Made
 
-### 1. Domain Layer
-- **New Enum**: Added `Gender` enum (`Male`, `Female`, `Unspecified`) in `Hasad.Domain.Enums`.
-- **Entity Update**: Updated `Farmer.cs` with:
-    - `Gender Gender`
-    - `int FamilySize`
-    - `DateTime CreatedAt` (Auto-initialized to UTC)
-    - `DateTime? UpdatedAt`
+### 1. Data Layer (Repository)
+- **Repository Interface**: Added `findByIdNumber(String idNumber)` to `FarmerRepository`.
+- **Remote Implementation**: Updated `RemoteFarmerRepository.getFarmers` to support `idNumber` query parameters and implemented `findByIdNumber`.
+- **Offline-First Implementation**: Enhanced `OfflineFirstFarmerRepository.findByIdNumber` with the following logic:
+    1. Search local Drift database.
+    2. If not found locally, check connectivity.
+    3. If online, search the backend API.
+    4. If found remotely, automatically save/update the local Drift database to ensure the record is available offline.
 
-### 2. Application Layer
-- **DTO Refactoring**: Updated `FarmerDto` to use explicit field mapping for the 8-part name structure, removing concatenated `Name` and `NameEn` properties to adhere to the "Explicit Mapping" requirement.
-- **Commands**: Updated `CreateFarmerCommand` and `UpdateFarmerCommand` to include new fields and mapping logic.
-- **Validation**: Added validation rules for `Gender` (Must be valid enum) and `FamilySize` (Minimum 1).
-- **Search Support**: Enhanced `GetFarmersListQuery` to support optional `Name` and `IdNumber` parameters. The search is case-insensitive and covers all 8 name parts (Arabic and English).
+### 2. State Management (Riverpod)
+- **Farmer Search Notifier**: Created `FarmerSearchNotifier` to manage the search lifecycle (Idle, Searching, Found, NotFound, Error).
+- **Provider**: Exposed the notifier via `farmerSearchProvider`.
 
-### 3. Infrastructure Layer
-- **EF Configuration**: Updated `ApplicationDbContext` to configure `Gender`, `FamilySize`, and `CreatedAt` (using `GETUTCDATE()`).
-- **Migration**: Generated and applied the `EnhanceFarmerSchema` migration to the SQL Server database.
+### 3. UI and Navigation
+- **Search Gateway**: Created `FarmerSearchScreen` as the new entry point for adding/viewing farmers.
+- **Details Placeholder**: Created `FarmerDetailsScreen` to show farmer information after a successful search.
+- **Routing**:
+    - Updated `AppRoutes` and `GoRouter` configuration.
+    - Updated `FarmersListScreen` FAB to point to the search gateway.
+    - Updated `FarmerFormScreen` to support pre-filling the ID number from the search result.
 
-### 4. Tests
-- **Unit Tests**: Updated `FarmerCommandHandlerTests` and `FarmerValidatorTests` to reflect the new command structures and DTO schema.
-- **Bug Fix**: Fixed the `DeleteFarmer_Succeeds_WhenFarmerExists` test to correctly handle Soft Delete behavior.
+### 4. Localization
+- Added required keys to `app_en.arb` and `app_ar.arb` for the new search and details screens.
 
 ## Verification Results
 
 ### Automated Tests
-- All 9 Farmer-related backend tests passed successfully.
-- Command: `dotnet test hasad/backend/Hasad.Application.Tests/Hasad.Application.Tests.csproj --filter "FullyQualifiedName~Farmer"`
+- **Repository Tests**: Verified local search success and remote fallback logic.
+- **Connectivity Tests**: Verified that remote search is skipped when the device is offline.
+- **Navigation Tests**: Verified correct routing to Details (if found) or Form (if not found).
+- **Result**: All tests passed. Command: `flutter test test/farmers/search_workflow_test.dart`
 
-### Build Status
-- The project compiles successfully with no errors.
-- Command: `dotnet build hasad/backend/Hasad.Api/Hasad.Api.csproj`
+### Analyze Result
+- **Success**: No issues found. Command: `flutter analyze`
 
-## Database Status
-- The `Farmers` table in SQL Server now contains the new columns with appropriate default values.
-- `ApplicationDbContextModelSnapshot.cs` is synchronized.
+## Remaining Work
+- Implement full UI for `FarmerDetailsScreen` (currently a placeholder).
+- Update `FarmerFormScreen` UI to support the full 8-part name fields and new demographic data.
+- Implement advanced Palestinian ID checksum validation.

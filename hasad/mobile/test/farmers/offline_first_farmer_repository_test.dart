@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,15 +10,28 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 
 class MockSyncService extends Mock implements BackgroundSyncService {}
 
+class MockRemoteRepository extends Mock implements FarmerRepository {}
+
+class MockConnectivity extends Mock implements Connectivity {}
+
 void main() {
   late AppDatabase db;
   late MockSyncService mockSyncService;
+  late MockRemoteRepository mockRemoteRepository;
+  late MockConnectivity mockConnectivity;
   late OfflineFirstFarmerRepository repository;
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockSyncService = MockSyncService();
-    repository = OfflineFirstFarmerRepository(db, mockSyncService);
+    mockRemoteRepository = MockRemoteRepository();
+    mockConnectivity = MockConnectivity();
+    repository = OfflineFirstFarmerRepository(
+      db,
+      mockSyncService,
+      mockRemoteRepository,
+      mockConnectivity,
+    );
 
     registerFallbackValue(
       Farmer(

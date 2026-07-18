@@ -8,8 +8,9 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 
 class FarmerFormScreen extends ConsumerStatefulWidget {
   final Farmer? farmer;
+  final String? initialIdNumber;
 
-  const FarmerFormScreen({super.key, this.farmer});
+  const FarmerFormScreen({super.key, this.farmer, this.initialIdNumber});
 
   @override
   ConsumerState<FarmerFormScreen> createState() => _FarmerFormScreenState();
@@ -27,7 +28,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.farmer?.name);
     _nationalIdController = TextEditingController(
-      text: widget.farmer?.nationalId,
+      text: widget.farmer?.nationalId ?? widget.initialIdNumber,
     );
     _phoneController = TextEditingController(text: widget.farmer?.phoneNumber);
     _addressController = TextEditingController(text: widget.farmer?.address);

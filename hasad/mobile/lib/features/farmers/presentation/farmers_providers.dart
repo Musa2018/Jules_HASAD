@@ -16,6 +16,8 @@ final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
   return OfflineFirstFarmerRepository(
     ref.watch(databaseProvider),
     ref.watch(syncServiceProvider),
+    ref.watch(remoteFarmerRepositoryProvider),
+    ref.watch(connectivityProvider),
   );
 });
 
@@ -256,4 +258,55 @@ class FarmFormNotifier extends StateNotifier<FarmFormState> {
 final farmFormProvider =
     StateNotifierProvider.autoDispose<FarmFormNotifier, FarmFormState>((ref) {
       return FarmFormNotifier(ref.watch(farmRepositoryProvider));
+    });
+
+enum FarmerSearchStatus { idle, searching, found, notFound, error }
+
+class FarmerSearchState {
+  final FarmerSearchStatus status;
+  final Farmer? farmer;
+  final String? error;
+
+  const FarmerSearchState({
+    this.status = FarmerSearchStatus.idle,
+    this.farmer,
+    this.error,
+  });
+}
+
+class FarmerSearchNotifier extends StateNotifier<FarmerSearchState> {
+  final FarmerRepository _repository;
+
+  FarmerSearchNotifier(this._repository) : super(const FarmerSearchState());
+
+  Future<void> search(String idNumber) async {
+    if (idNumber.isEmpty) return;
+
+    state = const FarmerSearchState(status: FarmerSearchStatus.searching);
+
+    try {
+      final farmer = await _repository.findByIdNumber(idNumber);
+      if (farmer != null) {
+        state = FarmerSearchState(status: FarmerSearchStatus.found, farmer: farmer);
+      } else {
+        state = const FarmerSearchState(status: FarmerSearchStatus.notFound);
+      }
+    } catch (e) {
+      state = FarmerSearchState(
+        status: FarmerSearchStatus.error,
+        error: e.toString(),
+      );
+    }
+  }
+
+  void reset() {
+    state = const FarmerSearchState();
+  }
+}
+
+final farmerSearchProvider =
+    StateNotifierProvider.autoDispose<FarmerSearchNotifier, FarmerSearchState>((
+      ref,
+    ) {
+      return FarmerSearchNotifier(ref.watch(farmerRepositoryProvider));
     });

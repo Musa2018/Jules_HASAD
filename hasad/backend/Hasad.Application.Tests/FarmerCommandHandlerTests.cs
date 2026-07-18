@@ -25,13 +25,24 @@ public class FarmerCommandHandlerTests
     {
         var context = CreateContext();
         var handler = new CreateFarmerCommandHandler(context);
-        var command = new CreateFarmerCommand(Guid.NewGuid(), "John Doe", "123456789", "0599123456", "Gaza");
+        var command = new CreateFarmerCommand(
+            Guid.NewGuid(),
+            1,
+            "123456789",
+            "أحمد", "محمد", "علي", "محمود",
+            "Ahmed", "Mohammed", "Ali", "Mahmoud",
+            new DateOnly(1985, 5, 10),
+            "0599123456",
+            "GOV-1",
+            "LOC-1",
+            "Gaza");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
         Assert.NotNull(result.Data);
-        Assert.Equal("John Doe", result.Data.Name);
+        // نتأكد أن الكود قام بدمج الأسماء الأربعة بنجاح كما برمجناه
+        Assert.Equal("أحمد محمد علي محمود", result.Data.Name);
         Assert.Equal(command.ClientId, result.Data.ClientId);
         Assert.Single(context.Farmers);
     }
@@ -41,16 +52,27 @@ public class FarmerCommandHandlerTests
     {
         var context = CreateContext();
         var clientId = Guid.NewGuid();
-        context.Farmers.Add(new Farmer { Id = Guid.NewGuid(), ClientId = clientId, NationalId = "123", Name = "Existing", RowVersion = new byte[] { 1 } });
+        context.Farmers.Add(new Farmer
+        {
+            Id = Guid.NewGuid(),
+            ClientId = clientId,
+            IdTypeId = 1,
+            IdNumber = "123",
+            FirstNameAr = "مزارع", FatherNameAr = "موجود", GrandfatherNameAr = "سابقا", FamilyNameAr = "هنا",
+            FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
+            GovernorateId = "G", LocalityId = "L",
+            RowVersion = new byte[] { 1 }
+        });
         await context.SaveChangesAsync();
 
         var handler = new CreateFarmerCommandHandler(context);
-        var command = new CreateFarmerCommand(clientId, "Different Name", "123", "059", "Address");
+        var command = new CreateFarmerCommand(clientId, 1, "123", "اسم", "مختلف", "جدا", "هنا", "", "", "", "", new DateOnly(1990, 1, 1), "059", "G", "L", "Address");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.Equal("Existing", result.Data!.Name); // Returned existing record
+        // يجب أن يرجع الاسم القديم لأنه Idempotent (يمنع التكرار لنفس العميل)
+        Assert.Equal("مزارع موجود سابقا هنا", result.Data!.Name);
         Assert.Single(context.Farmers);
     }
 
@@ -59,29 +81,57 @@ public class FarmerCommandHandlerTests
     {
         var context = CreateContext();
         var version = new byte[] { 1, 2, 3, 4 };
-        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "Old Name", RowVersion = version };
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            ClientId = Guid.NewGuid(),
+            IdTypeId = 1,
+            IdNumber = "123",
+            FirstNameAr = "الاسم", FatherNameAr = "القديم", GrandfatherNameAr = "للمزارع", FamilyNameAr = "الحالي",
+            FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
+            GovernorateId = "G", LocalityId = "L",
+            RowVersion = version
+        };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
         var handler = new UpdateFarmerCommandHandler(context);
-        var command = new UpdateFarmerCommand(farmer.Id, farmer.ClientId, "New Name", "123", "059", "New Address", Convert.ToBase64String(version));
+        var command = new UpdateFarmerCommand(
+            farmer.Id, farmer.ClientId, 1, "123",
+            "الاسم", "الجديد", "تم", "تحديثه",
+            "", "", "", "",
+            new DateOnly(1980, 1, 1), "059", "G", "L", "New Address", Convert.ToBase64String(version));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.Equal("New Name", result.Data!.Name);
+        Assert.Equal("الاسم الجديد تم تحديثه", result.Data!.Name);
     }
 
     [Fact]
     public async Task UpdateFarmer_Fails_WhenVersionMismatches()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "Old", RowVersion = new byte[] { 1 } };
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            ClientId = Guid.NewGuid(),
+            IdTypeId = 1,
+            IdNumber = "123",
+            FirstNameAr = "قديم", FatherNameAr = "قديم", GrandfatherNameAr = "قديم", FamilyNameAr = "قديم",
+            FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
+            GovernorateId = "G", LocalityId = "L",
+            RowVersion = new byte[] { 1 }
+        };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
         var handler = new UpdateFarmerCommandHandler(context);
-        var command = new UpdateFarmerCommand(farmer.Id, farmer.ClientId, "New", "123", "059", "Add", Convert.ToBase64String(new byte[] { 2 }));
+        var command = new UpdateFarmerCommand(
+            farmer.Id, farmer.ClientId, 1, "123",
+            "جديد", "جديد", "جديد", "جديد",
+            "", "", "", "",
+            new DateOnly(1990, 1, 1), "059", "G", "L", "Add", Convert.ToBase64String(new byte[] { 2 }));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -93,7 +143,17 @@ public class FarmerCommandHandlerTests
     public async Task DeleteFarmer_Succeeds_WhenFarmerExists()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "To Delete", RowVersion = new byte[] { 1 } };
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            ClientId = Guid.NewGuid(),
+            IdTypeId = 1,
+            IdNumber = "123",
+            FirstNameAr = "مزارع", FatherNameAr = "للحذف", GrandfatherNameAr = "", FamilyNameAr = "",
+            FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
+            GovernorateId = "G", LocalityId = "L",
+            RowVersion = new byte[] { 1 }
+        };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
@@ -110,7 +170,17 @@ public class FarmerCommandHandlerTests
     public async Task GetFarmerById_ReturnsFarmer_WhenExists()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), NationalId = "123", Name = "Target", RowVersion = new byte[] { 1 } };
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            ClientId = Guid.NewGuid(),
+            IdTypeId = 1,
+            IdNumber = "123",
+            FirstNameAr = "الهدف", FatherNameAr = "المطلوب", GrandfatherNameAr = "هنا", FamilyNameAr = "صحيح",
+            FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
+            GovernorateId = "G", LocalityId = "L",
+            RowVersion = new byte[] { 1 }
+        };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
@@ -120,7 +190,7 @@ public class FarmerCommandHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.Equal("Target", result.Data!.Name);
+        Assert.Equal("الهدف المطلوب هنا صحيح", result.Data!.Name);
         Assert.NotEmpty(result.Data!.RowVersion);
     }
 
@@ -134,8 +204,11 @@ public class FarmerCommandHandlerTests
             {
                 Id = Guid.NewGuid(),
                 ClientId = Guid.NewGuid(),
-                NationalId = i.ToString(),
-                Name = $"Farmer {i:D2}",
+                IdTypeId = 1,
+                IdNumber = i.ToString(),
+                FirstNameAr = $"مزارع {i:D2}", FatherNameAr = "تجربة", GrandfatherNameAr = "رقم", FamilyNameAr = $"{i}",
+                FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
+                GovernorateId = "G", LocalityId = "L",
                 RowVersion = new byte[] { (byte)i }
             });
         }

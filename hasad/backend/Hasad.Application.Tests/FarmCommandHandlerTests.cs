@@ -23,7 +23,14 @@ public class FarmCommandHandlerTests
     public async Task CreateFarm_Succeeds_WhenDataIsValid()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), Name = "Farmer" };
+        // تم استبدال Name بالحقول الجديدة
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            FirstNameAr = "مزارع",
+            IdTypeId = 1,
+            IdNumber = "123456789"
+        };
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
@@ -53,7 +60,13 @@ public class FarmCommandHandlerTests
     {
         var context = CreateContext();
         var clientId = Guid.NewGuid();
-        var farmer = new Farmer { Id = Guid.NewGuid(), Name = "Farmer" };
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            FirstNameAr = "مزارع",
+            IdTypeId = 1,
+            IdNumber = "123456789"
+        };
         context.Farmers.Add(farmer);
         context.Farms.Add(new Farm { Id = Guid.NewGuid(), ClientId = clientId, FarmerId = farmer.Id, Name = "Existing", RowVersion = new byte[] { 1 } });
         await context.SaveChangesAsync();
@@ -72,7 +85,13 @@ public class FarmCommandHandlerTests
     public async Task UpdateFarm_Fails_WhenVersionMismatches()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), Name = "Farmer" };
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            FirstNameAr = "مزارع",
+            IdTypeId = 1,
+            IdNumber = "123456789"
+        };
         var farm = new Farm { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), FarmerId = farmer.Id, Name = "Old", RowVersion = new byte[] { 1 } };
         context.Farmers.Add(farmer);
         context.Farms.Add(farm);

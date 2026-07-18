@@ -32,11 +32,33 @@ public class GetFarmerByIdQueryHandler : IRequestHandler<GetFarmerByIdQuery, Res
         {
             Id = farmer.Id,
             ClientId = farmer.ClientId,
-            Name = farmer.Name,
-            NationalId = farmer.NationalId,
+
+            // دمج الأسماء المنسقة
+            Name = $"{farmer.FirstNameAr} {farmer.FatherNameAr} {farmer.GrandfatherNameAr} {farmer.FamilyNameAr}".Trim(),
+            NameEn = $"{farmer.FirstNameEn} {farmer.FatherNameEn} {farmer.GrandfatherNameEn} {farmer.FamilyNameEn}".Trim(),
+
+            // الحقول الأساسية
+            NationalId = farmer.IdNumber,
             PhoneNumber = farmer.PhoneNumber,
             Address = farmer.Address,
-            RowVersion = Convert.ToBase64String(farmer.RowVersion)
+            RowVersion = Convert.ToBase64String(farmer.RowVersion),
+
+            // الحقول الجديدة التي تمت إضافتها
+            IdTypeId = farmer.IdTypeId,
+            GovernorateId = farmer.GovernorateId,
+            LocalityId = farmer.LocalityId,
+            BirthDate = farmer.BirthDate,
+
+            // تفاصيل الأسماء (مهمة في حال أردت عرضها في نماذج التعديل بالواجهة)
+            FirstNameAr = farmer.FirstNameAr,
+            FatherNameAr = farmer.FatherNameAr,
+            GrandfatherNameAr = farmer.GrandfatherNameAr,
+            FamilyNameAr = farmer.FamilyNameAr,
+
+            FirstNameEn = farmer.FirstNameEn,
+            FatherNameEn = farmer.FatherNameEn,
+            GrandfatherNameEn = farmer.GrandfatherNameEn,
+            FamilyNameEn = farmer.FamilyNameEn
         });
     }
 }

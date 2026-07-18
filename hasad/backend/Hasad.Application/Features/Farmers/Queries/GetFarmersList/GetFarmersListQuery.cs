@@ -22,21 +22,55 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
         var query = _context.Farmers.AsNoTracking();
 
         var count = await query.CountAsync(cancellationToken);
-        var items = await query
-            .OrderBy(f => f.Name)
+
+        // 1. جلب البيانات الأساسية من SQL Server
+        var dbItems = await query
+            .OrderBy(f => f.FirstNameAr)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(f => new FarmerDto
+            .Select(f => new
             {
-                Id = f.Id,
-                ClientId = f.ClientId,
-                Name = f.Name,
-                NationalId = f.NationalId,
-                PhoneNumber = f.PhoneNumber,
-                Address = f.Address,
-                RowVersion = Convert.ToBase64String(f.RowVersion)
+                f.Id, f.ClientId, f.IdNumber, f.PhoneNumber, f.Address, f.RowVersion,
+                f.IdTypeId, f.GovernorateId, f.LocalityId, f.BirthDate,
+                f.FirstNameAr, f.FatherNameAr, f.GrandfatherNameAr, f.FamilyNameAr,
+                f.FirstNameEn, f.FatherNameEn, f.GrandfatherNameEn, f.FamilyNameEn
             })
             .ToListAsync(cancellationToken);
+
+        // 2. التحويل (Mapping) في الذاكرة لتفادي أخطاء الـ EF Core Translation
+        var items = dbItems.Select(f => new FarmerDto
+        {
+            Id = f.Id,
+            ClientId = f.ClientId,
+
+            // دمج وتنسيق الأسماء مع إزالة الفراغات الزائدة
+            Name = (f.FirstNameAr + " " + f.FatherNameAr + " " + f.GrandfatherNameAr + " " + f.FamilyNameAr).Trim(),
+            NameEn = (f.FirstNameEn + " " + f.FatherNameEn + " " + f.GrandfatherNameEn + " " + f.FamilyNameEn).Trim(),
+
+            NationalId = f.IdNumber,
+            PhoneNumber = f.PhoneNumber,
+            Address = f.Address,
+
+            // الحقول الجديدة
+            IdTypeId = f.IdTypeId,
+            GovernorateId = f.GovernorateId,
+            LocalityId = f.LocalityId,
+            BirthDate = f.BirthDate,
+
+            // الأسماء المفصلة
+            FirstNameAr = f.FirstNameAr,
+            FatherNameAr = f.FatherNameAr,
+            GrandfatherNameAr = f.GrandfatherNameAr,
+            FamilyNameAr = f.FamilyNameAr,
+
+            FirstNameEn = f.FirstNameEn,
+            FatherNameEn = f.FatherNameEn,
+            GrandfatherNameEn = f.GrandfatherNameEn,
+            FamilyNameEn = f.FamilyNameEn,
+
+            // تحويل الـ RowVersion آمن تماماً هنا لأنه ينفذ في الذاكرة
+            RowVersion = Convert.ToBase64String(f.RowVersion)
+        }).ToList();
 
         var paginatedList = new PaginatedList<FarmerDto>
         {

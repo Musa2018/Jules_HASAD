@@ -1,5 +1,6 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Domain.Entities;
+using Hasad.Domain.Enums;
 using Hasad.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -146,8 +147,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
                     // الجغرافيا والديموغرافيا
                     entity.Property(f => f.BirthDate).IsRequired();
+                    entity.Property(f => f.Gender).IsRequired().HasDefaultValue(Gender.Unspecified);
                     entity.Property(f => f.PhoneNumber).IsRequired().HasMaxLength(20);
-                    entity.Property(f => f.Address).HasMaxLength(500); // تمت استعادته
+                    entity.Property(f => f.FamilySize).IsRequired().HasDefaultValue(1);
+                    entity.Property(f => f.Address).HasMaxLength(500);
 
                     // توافق جغرافي مع Farm و DamageReport
                     entity.Property(f => f.GovernorateId).IsRequired().HasMaxLength(50);
@@ -155,6 +158,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
                     // إعدادات أخرى
                     entity.Property(f => f.SyncStatus).IsRequired().HasDefaultValue(0);
+                    entity.Property(f => f.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
                     entity.Property(f => f.RowVersion).IsRowVersion();
 
                     // العلاقات

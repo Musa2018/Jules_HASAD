@@ -1,0 +1,22 @@
+- [ ] Verify `farmers` branch
+- [ ] Implement Domain Layer enhancements
+    - [ ] Create `Gender.cs` enum
+    - [ ] Update `Farmer.cs` entity (Gender, FamilySize, Timestamps)
+- [ ] Implement Application Layer enhancements
+    - [ ] Update `FarmerDto.cs`
+    - [ ] Update `CreateFarmerCommand.cs` (Record, Handler, Validator)
+    - [ ] Update `UpdateFarmerCommand.cs` (Record, Handler, Validator)
+    - [ ] Update `GetFarmersListQuery.cs` (Search support)
+- [ ] Implement Infrastructure Layer enhancements
+    - [ ] Update `ApplicationDbContext.cs` configurations
+- [ ] Database Migration
+    - [ ] Generate EF Core migration `EnhanceFarmerSchema`
+    - [ ] Apply migration to SQL Server
+    - [ ] Verify `ApplicationDbContextModelSnapshot.cs`
+- [ ] Verification & Testing
+    - [ ] Run affected backend tests
+    - [ ] Verify build
+- [ ] Git Operations
+    - [ ] Commit changes to `farmers` branch
+    - [ ] Push to remote `farmers` branch
+- [ ] Final Report

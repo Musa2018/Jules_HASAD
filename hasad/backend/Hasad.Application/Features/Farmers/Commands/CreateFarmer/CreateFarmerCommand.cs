@@ -3,6 +3,7 @@ using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.Farmers.Models;
 using Hasad.Domain.Entities;
+using Hasad.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,9 @@ public record CreateFarmerCommand(
     string GrandfatherNameEn,
     string FamilyNameEn,
     DateOnly BirthDate,
+    Gender Gender,
     string PhoneNumber,
+    int FamilySize,
     string GovernorateId,
     string LocalityId,
     string Address) : IRequest<Result<FarmerDto>>;
@@ -68,11 +71,14 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
             GrandfatherNameEn = request.GrandfatherNameEn,
             FamilyNameEn = request.FamilyNameEn,
             BirthDate = request.BirthDate,
+            Gender = request.Gender,
             PhoneNumber = request.PhoneNumber,
+            FamilySize = request.FamilySize,
             GovernorateId = request.GovernorateId,
             LocalityId = request.LocalityId,
             Address = request.Address,
-            SyncStatus = 0
+            SyncStatus = 0,
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.Farmers.Add(farmer);
@@ -85,12 +91,26 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
     {
         Id = farmer.Id,
         ClientId = farmer.ClientId,
-        // دمج الأسماء الأربعة لتتوافق مع الـ DTO الحالي دون إحداث أخطاء إضافية
-        Name = $"{farmer.FirstNameAr} {farmer.FatherNameAr} {farmer.GrandfatherNameAr} {farmer.FamilyNameAr}".Trim(),
-        NationalId = farmer.IdNumber,
+        IdTypeId = farmer.IdTypeId,
+        IdNumber = farmer.IdNumber,
         PhoneNumber = farmer.PhoneNumber,
         Address = farmer.Address,
-        RowVersion = Convert.ToBase64String(farmer.RowVersion)
+        RowVersion = Convert.ToBase64String(farmer.RowVersion),
+        GovernorateId = farmer.GovernorateId,
+        LocalityId = farmer.LocalityId,
+        BirthDate = farmer.BirthDate,
+        Gender = farmer.Gender,
+        FamilySize = farmer.FamilySize,
+        FirstNameAr = farmer.FirstNameAr,
+        FatherNameAr = farmer.FatherNameAr,
+        GrandfatherNameAr = farmer.GrandfatherNameAr,
+        FamilyNameAr = farmer.FamilyNameAr,
+        FirstNameEn = farmer.FirstNameEn,
+        FatherNameEn = farmer.FatherNameEn,
+        GrandfatherNameEn = farmer.GrandfatherNameEn,
+        FamilyNameEn = farmer.FamilyNameEn,
+        CreatedAt = farmer.CreatedAt,
+        UpdatedAt = farmer.UpdatedAt
     };
 }
 
@@ -120,6 +140,13 @@ public class CreateFarmerCommandValidator : AbstractValidator<CreateFarmerComman
 
         RuleFor(v => v.BirthDate)
             .NotEmpty().WithMessage("Birth Date is required.");
+
+        RuleFor(v => v.Gender)
+            .IsInEnum().WithMessage("A valid Gender is required.")
+            .NotEqual(Gender.Unspecified).WithMessage("Gender must be Male or Female.");
+
+        RuleFor(v => v.FamilySize)
+            .GreaterThan(0).WithMessage("Family Size must be at least 1.");
 
         RuleFor(v => v.GovernorateId)
             .NotEmpty().MaximumLength(50);

@@ -1,5 +1,6 @@
 using Hasad.Application.Features.Farmers.Commands.CreateFarmer;
 using Hasad.Application.Features.Farmers.Commands.UpdateFarmer;
+using Hasad.Domain.Enums;
 using Xunit;
 
 namespace Hasad.Application.Tests;
@@ -10,15 +11,16 @@ public class FarmerValidatorTests
     public void CreateFarmerValidator_Fails_WhenClientIdIsEmpty()
     {
         var validator = new CreateFarmerCommandValidator();
-        // تمرير المتغيرات الجديدة بما يتوافق مع هيكل Command الجديد
         var command = new CreateFarmerCommand(
-            Guid.Empty, // هذا هو الحقل الذي سيؤدي لفشل التحقق وهو المطلوب اختباره
+            Guid.Empty,
             1,
             "123456789",
             "أحمد", "محمد", "علي", "محمود",
             "", "", "", "",
             new DateOnly(1985, 1, 1),
+            Gender.Male,
             "0599123456",
+            5,
             "GOV-1",
             "LOC-1",
             "Address");
@@ -41,11 +43,13 @@ public class FarmerValidatorTests
             "أحمد", "محمد", "علي", "محمود",
             "", "", "", "",
             new DateOnly(1985, 1, 1),
+            Gender.Male,
             "0599123456",
+            5,
             "GOV-1",
             "LOC-1",
             "Address",
-            ""); // هذا هو الحقل الفارغ (RowVersion) الذي سيؤدي لفشل التحقق
+            "");
 
         var result = validator.Validate(command);
 

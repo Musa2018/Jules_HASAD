@@ -1,5 +1,7 @@
 using System;
 
+using Hasad.Domain.Enums;
+
 namespace Hasad.Domain.Entities
 {
     public class Farmer
@@ -30,7 +32,9 @@ namespace Hasad.Domain.Entities
 
         // Demographics & Geography
         public DateOnly BirthDate { get; set; }
+        public Gender Gender { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
+        public int FamilySize { get; set; }
 
         // --- التحديث الجغرافي ليتوافق مع جداول النظام (المحافظة والمديرية/التجمع) ---
         public string GovernorateId { get; set; } = string.Empty; // من نوع String كما في Farm
@@ -41,6 +45,8 @@ namespace Hasad.Domain.Entities
 
         // Metadata
         public int SyncStatus { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         /// <summary>
         /// Concurrency token for optimistic synchronization.

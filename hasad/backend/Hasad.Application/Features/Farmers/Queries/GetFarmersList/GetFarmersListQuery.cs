@@ -6,7 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hasad.Application.Features.Farmers.Queries.GetFarmersList;
 
-public record GetFarmersListQuery(int PageNumber = 1, int PageSize = 10) : IRequest<Result<PaginatedList<FarmerDto>>>;
+public record GetFarmersListQuery(
+    int PageNumber = 1,
+    int PageSize = 10,
+    string? Name = null,
+    string? IdNumber = null) : IRequest<Result<PaginatedList<FarmerDto>>>;
 
 public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, Result<PaginatedList<FarmerDto>>>
 {
@@ -21,6 +25,26 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
     {
         var query = _context.Farmers.AsNoTracking();
 
+        // Filtering
+        if (!string.IsNullOrWhiteSpace(request.IdNumber))
+        {
+            query = query.Where(f => f.IdNumber.Contains(request.IdNumber));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            var searchName = request.Name.ToLower();
+            query = query.Where(f =>
+                f.FirstNameAr.ToLower().Contains(searchName) ||
+                f.FatherNameAr.ToLower().Contains(searchName) ||
+                f.GrandfatherNameAr.ToLower().Contains(searchName) ||
+                f.FamilyNameAr.ToLower().Contains(searchName) ||
+                f.FirstNameEn.ToLower().Contains(searchName) ||
+                f.FatherNameEn.ToLower().Contains(searchName) ||
+                f.GrandfatherNameEn.ToLower().Contains(searchName) ||
+                f.FamilyNameEn.ToLower().Contains(searchName));
+        }
+
         var count = await query.CountAsync(cancellationToken);
 
         // 1. جلب البيانات الأساسية من SQL Server
@@ -28,13 +52,6 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
             .OrderBy(f => f.FirstNameAr)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(f => new
-            {
-                f.Id, f.ClientId, f.IdNumber, f.PhoneNumber, f.Address, f.RowVersion,
-                f.IdTypeId, f.GovernorateId, f.LocalityId, f.BirthDate,
-                f.FirstNameAr, f.FatherNameAr, f.GrandfatherNameAr, f.FamilyNameAr,
-                f.FirstNameEn, f.FatherNameEn, f.GrandfatherNameEn, f.FamilyNameEn
-            })
             .ToListAsync(cancellationToken);
 
         // 2. التحويل (Mapping) في الذاكرة لتفادي أخطاء الـ EF Core Translation
@@ -42,34 +59,26 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
         {
             Id = f.Id,
             ClientId = f.ClientId,
-
-            // دمج وتنسيق الأسماء مع إزالة الفراغات الزائدة
-            Name = (f.FirstNameAr + " " + f.FatherNameAr + " " + f.GrandfatherNameAr + " " + f.FamilyNameAr).Trim(),
-            NameEn = (f.FirstNameEn + " " + f.FatherNameEn + " " + f.GrandfatherNameEn + " " + f.FamilyNameEn).Trim(),
-
-            NationalId = f.IdNumber,
+            IdTypeId = f.IdTypeId,
+            IdNumber = f.IdNumber,
             PhoneNumber = f.PhoneNumber,
             Address = f.Address,
-
-            // الحقول الجديدة
-            IdTypeId = f.IdTypeId,
             GovernorateId = f.GovernorateId,
             LocalityId = f.LocalityId,
             BirthDate = f.BirthDate,
-
-            // الأسماء المفصلة
+            Gender = f.Gender,
+            FamilySize = f.FamilySize,
             FirstNameAr = f.FirstNameAr,
             FatherNameAr = f.FatherNameAr,
             GrandfatherNameAr = f.GrandfatherNameAr,
             FamilyNameAr = f.FamilyNameAr,
-
             FirstNameEn = f.FirstNameEn,
             FatherNameEn = f.FatherNameEn,
             GrandfatherNameEn = f.GrandfatherNameEn,
             FamilyNameEn = f.FamilyNameEn,
-
-            // تحويل الـ RowVersion آمن تماماً هنا لأنه ينفذ في الذاكرة
-            RowVersion = Convert.ToBase64String(f.RowVersion)
+            RowVersion = Convert.ToBase64String(f.RowVersion),
+            CreatedAt = f.CreatedAt,
+            UpdatedAt = f.UpdatedAt
         }).ToList();
 
         var paginatedList = new PaginatedList<FarmerDto>

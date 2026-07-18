@@ -135,6 +135,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       localityId: e.localityId,
       address: e.address,
       rowVersion: e.rowVersion,
+      syncStatus: e.syncStatus,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );

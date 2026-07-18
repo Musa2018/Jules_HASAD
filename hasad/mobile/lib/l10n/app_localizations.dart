@@ -308,6 +308,186 @@ abstract class AppLocalizations {
   /// **'This field is required.'**
   String get requiredField;
 
+  /// No description provided for @searchFarmer.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Farmer'**
+  String get searchFarmer;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @farmerDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmer Details'**
+  String get farmerDetails;
+
+  /// No description provided for @identitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get identitySection;
+
+  /// No description provided for @idType.
+  ///
+  /// In en, this message translates to:
+  /// **'ID Type'**
+  String get idType;
+
+  /// No description provided for @idNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'ID Number'**
+  String get idNumber;
+
+  /// No description provided for @arabicNameSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic Name'**
+  String get arabicNameSection;
+
+  /// No description provided for @englishNameSection.
+  ///
+  /// In en, this message translates to:
+  /// **'English Name'**
+  String get englishNameSection;
+
+  /// No description provided for @firstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get firstName;
+
+  /// No description provided for @secondName.
+  ///
+  /// In en, this message translates to:
+  /// **'Second Name'**
+  String get secondName;
+
+  /// No description provided for @thirdName.
+  ///
+  /// In en, this message translates to:
+  /// **'Third Name'**
+  String get thirdName;
+
+  /// No description provided for @fourthName.
+  ///
+  /// In en, this message translates to:
+  /// **'Fourth Name'**
+  String get fourthName;
+
+  /// No description provided for @demographicsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Demographics'**
+  String get demographicsSection;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @familySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Size'**
+  String get familySize;
+
+  /// No description provided for @mobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile Number'**
+  String get mobileNumber;
+
+  /// No description provided for @locationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationSection;
+
+  /// No description provided for @village.
+  ///
+  /// In en, this message translates to:
+  /// **'Locality/Village'**
+  String get village;
+
+  /// No description provided for @auditSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Info'**
+  String get auditSection;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get createdAt;
+
+  /// No description provided for @updatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated At'**
+  String get updatedAt;
+
+  /// No description provided for @syncStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Status'**
+  String get syncStatus;
+
+  /// No description provided for @synced.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get synced;
+
+  /// No description provided for @pendingSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Sync'**
+  String get pendingSync;
+
+  /// No description provided for @syncError.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Error'**
+  String get syncError;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @unspecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Unspecified'**
+  String get unspecified;
+
+  /// No description provided for @enterFarmerIdToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Farmer ID to continue'**
+  String get enterFarmerIdToContinue;
+
   /// No description provided for @addFarm.
   ///
   /// In en, this message translates to:

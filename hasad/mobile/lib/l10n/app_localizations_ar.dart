@@ -117,6 +117,96 @@ class AppLocalizationsAr extends AppLocalizations {
   String get requiredField => 'هذا الحقل مطلوب.';
 
   @override
+  String get searchFarmer => 'بحث عن مزارع';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get farmerDetails => 'تفاصيل المزارع';
+
+  @override
+  String get identitySection => 'الهوية';
+
+  @override
+  String get idType => 'نوع الهوية';
+
+  @override
+  String get idNumber => 'رقم الهوية';
+
+  @override
+  String get arabicNameSection => 'الاسم بالعربية';
+
+  @override
+  String get englishNameSection => 'الاسم بالإنجليزية';
+
+  @override
+  String get firstName => 'الاسم الأول';
+
+  @override
+  String get secondName => 'اسم الأب';
+
+  @override
+  String get thirdName => 'اسم الجد';
+
+  @override
+  String get fourthName => 'اسم العائلة';
+
+  @override
+  String get demographicsSection => 'البيانات الديموغرافية';
+
+  @override
+  String get dateOfBirth => 'تاريخ الميلاد';
+
+  @override
+  String get gender => 'الجنس';
+
+  @override
+  String get familySize => 'عدد أفراد الأسرة';
+
+  @override
+  String get mobileNumber => 'رقم الجوال';
+
+  @override
+  String get locationSection => 'الموقع';
+
+  @override
+  String get village => 'التجمع/القرية';
+
+  @override
+  String get auditSection => 'معلومات التدقيق';
+
+  @override
+  String get createdAt => 'تاريخ الإنشاء';
+
+  @override
+  String get updatedAt => 'تاريخ التعديل';
+
+  @override
+  String get syncStatus => 'حالة المزامنة';
+
+  @override
+  String get synced => 'تمت المزامنة';
+
+  @override
+  String get pendingSync => 'قيد الانتظار';
+
+  @override
+  String get syncError => 'خطأ في المزامنة';
+
+  @override
+  String get male => 'ذكر';
+
+  @override
+  String get female => 'أنثى';
+
+  @override
+  String get unspecified => 'غير محدد';
+
+  @override
+  String get enterFarmerIdToContinue => 'أدخل رقم هوية المزارع للمتابعة';
+
+  @override
   String get addFarm => 'إضافة مزرعة';
 
   @override

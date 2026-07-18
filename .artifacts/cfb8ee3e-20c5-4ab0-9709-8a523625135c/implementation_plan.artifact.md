@@ -1,59 +1,68 @@
-# Sprint 10.3 — Flutter Farmer Data Layer Alignment Plan
+# Sprint 10.4 — Farmers Search First Workflow Plan
 
-Align the Flutter data layer with the updated backend schema from Sprint 10.2. This includes updating the domain model, the local Drift database, and the repository mapping logic.
+Implement the "Search First" workflow for the Farmers module. This ensures that users search for a farmer by ID number locally and remotely before creating a new record, maintaining data integrity and reducing duplicates.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - The Drift database schema will be upgraded to version 7.
-> - A migration path will be added to the `Farmers` table to include the new columns without data loss.
-> - The `Farmer` domain model will now use individual name parts (firstNameAr, etc.) instead of a single `name` field, matching the backend's explicit mapping.
+> - A new `FarmerSearchScreen` will be created as the primary entry point for looking up farmers.
+> - A placeholder `FarmerDetailsScreen` will be added to support navigation after a successful search.
+> - The backend API already supports `IdNumber` search, so no backend changes are needed.
 
 ## Proposed Changes
-
-### Domain Layer
-
-#### [NEW] [gender.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/gender.dart)
-Create a `Gender` enum to match the backend:
-```dart
-enum Gender { unspecified, male, female }
-```
-
-#### [MODIFY] [farmer.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/farmer.dart)
-Update the `Farmer` model with all new fields:
-- Identity: `id`, `clientId`, `rowVersion`, `serverId`, `idTypeId`, `idNumber`
-- Arabic Name: `firstNameAr`, `secondNameAr`, `thirdNameAr`, `fourthNameAr`
-- English Name: `firstNameEn`, `secondNameEn`, `thirdNameEn`, `fourthNameEn`
-- Demographics: `birthDate`, `gender`, `mobileNumber`, `familySize`
-- Geography: `governorateId`, `localityId`
-- Audit: `createdAt`, `updatedAt`
-
----
-
-### Local Storage Layer (Drift)
-
-#### [MODIFY] [database.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/database.dart)
-- Update `Farmers` table with new columns matching the backend.
-- Increment `schemaVersion` to `7`.
-- Add migration logic in `onUpgrade` to add the new columns to the `farmers` table.
-
----
 
 ### Data Layer (Repository)
 
 #### [MODIFY] [farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart)
-Update `OfflineFirstFarmerRepository` mapping logic:
-- Update `getFarmers` and `getFarmer` to map all new Drift columns to the `Farmer` domain model.
-- Update `createFarmer` and `updateFarmer` to map the `Farmer` domain model back to `FarmersCompanion`.
+- Add `Future<domain.Farmer?> findByIdNumber(String idNumber)` to `FarmerRepository`.
+- Implement in `OfflineFirstFarmerRepository`:
+    1. Search local Drift database.
+    2. If not found and online (using connectivity check), call remote search.
+    3. If found remotely, save to local Drift database.
+    4. Return the farmer or null.
+
+#### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart)
+- Update `getFarmers` to accept an optional `idNumber` parameter and pass it to the API.
+
+---
+
+### Presentation Layer
+
+#### [MODIFY] [farmers_providers.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/farmers_providers.dart)
+- Implement `FarmerSearchNotifier` and `farmerSearchProvider`.
+- Expose search logic and state (Idle, Searching, Found, NotFound, Error).
+
+#### [NEW] [farmer_search_screen.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/farmer_search_screen.dart)
+- Simple UI with an `idNumber` text field and search button.
+- Handles navigation based on search results:
+    - **Found**: Navigate to `FarmerDetailsScreen`.
+    - **Not Found**: Navigate to `FarmerFormScreen` with prefilled ID.
+
+#### [NEW] [farmer_details_screen.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/farmer_details_screen.dart)
+- Placeholder screen showing basic farmer info and navigation to farms/history.
+
+---
+
+### Navigation
+
+#### [MODIFY] [app_router.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/router/app_router.dart)
+- Add `AppRoutes.farmerSearch` route.
+- Add `AppRoutes.farmerDetails` route.
+- Configure `GoRouter` to include these new screens.
 
 ---
 
 ### Verification Plan
 
 #### Automated Tests
-- Run `flutter analyze` to ensure no compile-time errors.
-- Run `flutter test mobile/test/farmers/` if available.
-- Verify JSON serialization of the updated `Farmer` model.
+- Create `test/farmers/search_workflow_test.dart` to verify:
+    - Local search success.
+    - Remote fallback success.
+    - Offline behavior (skipping remote search).
+- Run `flutter analyze`.
 
 #### Manual Verification
-- Verify that the Drift migration logic is correctly defined in `database.dart`.
+- Open Farmers module.
+- Search for an existing local ID.
+- Search for an ID that exists only on the server.
+- Search for a non-existent ID and verify prefill in the form.

@@ -117,6 +117,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requiredField => 'This field is required.';
 
   @override
+  String get searchFarmer => 'Search Farmer';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get farmerDetails => 'Farmer Details';
+
+  @override
+  String get identitySection => 'Identity';
+
+  @override
+  String get idType => 'ID Type';
+
+  @override
+  String get idNumber => 'ID Number';
+
+  @override
+  String get arabicNameSection => 'Arabic Name';
+
+  @override
+  String get englishNameSection => 'English Name';
+
+  @override
+  String get firstName => 'First Name';
+
+  @override
+  String get secondName => 'Second Name';
+
+  @override
+  String get thirdName => 'Third Name';
+
+  @override
+  String get fourthName => 'Fourth Name';
+
+  @override
+  String get demographicsSection => 'Demographics';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get familySize => 'Family Size';
+
+  @override
+  String get mobileNumber => 'Mobile Number';
+
+  @override
+  String get locationSection => 'Location';
+
+  @override
+  String get village => 'Locality/Village';
+
+  @override
+  String get auditSection => 'Audit Info';
+
+  @override
+  String get createdAt => 'Created At';
+
+  @override
+  String get updatedAt => 'Updated At';
+
+  @override
+  String get syncStatus => 'Sync Status';
+
+  @override
+  String get synced => 'Synced';
+
+  @override
+  String get pendingSync => 'Pending Sync';
+
+  @override
+  String get syncError => 'Sync Error';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get unspecified => 'Unspecified';
+
+  @override
+  String get enterFarmerIdToContinue => 'Enter Farmer ID to continue';
+
+  @override
   String get addFarm => 'Add Farm';
 
   @override

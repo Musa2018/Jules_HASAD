@@ -28,6 +28,7 @@ _$FarmerImpl _$$FarmerImplFromJson(Map<String, dynamic> json) => _$FarmerImpl(
   localityId: json['localityId'] as String,
   address: json['address'] as String,
   rowVersion: json['rowVersion'] as String? ?? '',
+  syncStatus: json['syncStatus'] as String? ?? 'completed',
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -59,6 +60,7 @@ Map<String, dynamic> _$$FarmerImplToJson(_$FarmerImpl instance) =>
       'localityId': instance.localityId,
       'address': instance.address,
       'rowVersion': instance.rowVersion,
+      'syncStatus': instance.syncStatus,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

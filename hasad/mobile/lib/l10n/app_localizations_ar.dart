@@ -204,6 +204,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unspecified => 'غير محدد';
 
   @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get invalidPhone => 'رقم هاتف غير صحيح';
+
+  @override
+  String get invalidFamilySize => 'عدد أفراد أسرة غير صحيح';
+
+  @override
+  String get selectIdType => 'اختر نوع الهوية';
+
+  @override
+  String get farmerUpdatedSuccessfully => 'تم تحديث بيانات المزارع بنجاح';
+
+  @override
+  String get farmerCreatedSuccessfully => 'تم إنشاء المزارع بنجاح';
+
+  @override
   String get enterFarmerIdToContinue => 'أدخل رقم هوية المزارع للمتابعة';
 
   @override

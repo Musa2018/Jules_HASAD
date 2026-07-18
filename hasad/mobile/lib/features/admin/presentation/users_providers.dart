@@ -1,14 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/admin/data/users_repository.dart';
-import 'package:mobile/features/admin/domain/directorate.dart';
-import 'package:mobile/features/admin/domain/governorate.dart';
 import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
+import 'package:mobile/features/location/domain/governorate.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart' as location;
 import 'package:mobile/shared/domain/paginated_list.dart';
 
 final usersRepositoryProvider = Provider<UsersRepository>((ref) {
-  return UsersRepositoryImpl(ref.watch(apiDioProvider));
+  return UsersRepositoryImpl(
+    ref.watch(apiDioProvider),
+    ref.watch(location.locationRepositoryProvider),
+  );
 });
 
 final rolesProvider = FutureProvider<List<Role>>((ref) async {
@@ -24,7 +28,7 @@ final governoratesProvider = FutureProvider<List<Governorate>>((ref) async {
   if (auth.session?.roles.contains('SuperAdmin') != true) {
     throw Exception('Unauthorized: SuperAdmin access required');
   }
-  return ref.watch(usersRepositoryProvider).getGovernorates();
+  return ref.watch(location.governoratesProvider.future);
 });
 
 final directoratesProvider = FutureProvider.family<List<Directorate>, String?>((
@@ -35,9 +39,7 @@ final directoratesProvider = FutureProvider.family<List<Directorate>, String?>((
   if (auth.session?.roles.contains('SuperAdmin') != true) {
     throw Exception('Unauthorized: SuperAdmin access required');
   }
-  return ref
-      .watch(usersRepositoryProvider)
-      .getDirectorates(governorateId: governorateId);
+  return ref.watch(location.directoratesProvider(governorateId).future);
 });
 
 // تعريف Sentinel للسماح بتمرير null

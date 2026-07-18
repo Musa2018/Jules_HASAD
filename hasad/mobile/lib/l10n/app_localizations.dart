@@ -482,6 +482,42 @@ abstract class AppLocalizations {
   /// **'Unspecified'**
   String get unspecified;
 
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
+
+  /// No description provided for @invalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number'**
+  String get invalidPhone;
+
+  /// No description provided for @invalidFamilySize.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid family size'**
+  String get invalidFamilySize;
+
+  /// No description provided for @selectIdType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ID Type'**
+  String get selectIdType;
+
+  /// No description provided for @farmerUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmer updated successfully'**
+  String get farmerUpdatedSuccessfully;
+
+  /// No description provided for @farmerCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Farmer created successfully'**
+  String get farmerCreatedSuccessfully;
+
   /// No description provided for @enterFarmerIdToContinue.
   ///
   /// In en, this message translates to:

@@ -204,6 +204,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unspecified => 'Unspecified';
 
   @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get invalidPhone => 'Invalid phone number';
+
+  @override
+  String get invalidFamilySize => 'Invalid family size';
+
+  @override
+  String get selectIdType => 'Select ID Type';
+
+  @override
+  String get farmerUpdatedSuccessfully => 'Farmer updated successfully';
+
+  @override
+  String get farmerCreatedSuccessfully => 'Farmer created successfully';
+
+  @override
   String get enterFarmerIdToContinue => 'Enter Farmer ID to continue';
 
   @override

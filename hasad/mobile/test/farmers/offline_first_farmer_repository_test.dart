@@ -21,18 +21,7 @@ void main() {
   late MockConnectivity mockConnectivity;
   late OfflineFirstFarmerRepository repository;
 
-  setUp(() {
-    db = AppDatabase.withExecutor(NativeDatabase.memory());
-    mockSyncService = MockSyncService();
-    mockRemoteRepository = MockRemoteRepository();
-    mockConnectivity = MockConnectivity();
-    repository = OfflineFirstFarmerRepository(
-      db,
-      mockSyncService,
-      mockRemoteRepository,
-      mockConnectivity,
-    );
-
+  setUpAll(() {
     registerFallbackValue(
       Farmer(
         id: '',
@@ -55,6 +44,19 @@ void main() {
         address: '',
         rowVersion: '',
       ),
+    );
+  });
+
+  setUp(() {
+    db = AppDatabase.withExecutor(NativeDatabase.memory());
+    mockSyncService = MockSyncService();
+    mockRemoteRepository = MockRemoteRepository();
+    mockConnectivity = MockConnectivity();
+    repository = OfflineFirstFarmerRepository(
+      db,
+      mockSyncService,
+      mockRemoteRepository,
+      mockConnectivity,
     );
   });
 
@@ -109,6 +111,60 @@ void main() {
         entityType: 'farmer',
         operation: 'create',
         data: result.toJson(),
+      ),
+    ).called(1);
+  });
+
+  test('updateFarmer updates locally and adds to sync queue', () async {
+    when(
+      () => mockSyncService.addToQueue(
+        localId: any(named: 'localId'),
+        entityType: any(named: 'entityType'),
+        operation: any(named: 'operation'),
+        data: any(named: 'data'),
+      ),
+    ).thenAnswer((_) async {});
+
+    final farmer = Farmer(
+      id: '1',
+      idTypeId: 1,
+      idNumber: '12345',
+      firstNameAr: 'أحمد',
+      fatherNameAr: 'محمد',
+      grandfatherNameAr: 'علي',
+      familyNameAr: 'محمود',
+      firstNameEn: 'Ahmed',
+      fatherNameEn: 'Mohammed',
+      grandfatherNameEn: 'Ali',
+      familyNameEn: 'Mahmoud',
+      birthDate: DateTime(1985, 5, 10),
+      gender: Gender.male,
+      phoneNumber: '0599',
+      familySize: 5,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: 'Test Address',
+      syncStatus: 'completed',
+    );
+
+    // Initial insert using repository method
+    await repository.createFarmer(farmer);
+
+    final updatedFarmer = farmer.copyWith(firstNameAr: 'محمود', id: '1');
+    final result = await repository.updateFarmer(updatedFarmer);
+
+    expect(result.firstNameAr, 'محمود');
+
+    final localFarmers = await db.select(db.farmers).get();
+    expect(localFarmers.first.firstNameAr, 'محمود');
+    expect(localFarmers.first.syncStatus, 'pending');
+
+    verify(
+      () => mockSyncService.addToQueue(
+        localId: '1',
+        entityType: 'farmer',
+        operation: 'update',
+        data: updatedFarmer.toJson(),
       ),
     ).called(1);
   });

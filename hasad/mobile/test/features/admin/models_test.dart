@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/admin/domain/role.dart';
-import 'package:mobile/features/admin/domain/governorate.dart';
-import 'package:mobile/features/admin/domain/directorate.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
+import 'package:mobile/features/location/domain/governorate.dart';
 
 void main() {
   group('User Management Models', () {

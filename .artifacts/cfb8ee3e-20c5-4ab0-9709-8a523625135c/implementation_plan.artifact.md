@@ -1,70 +1,59 @@
-# Sprint 10.2 — Farmers Backend & Schema Enhancement Plan
+# Sprint 10.3 — Flutter Farmer Data Layer Alignment Plan
 
-Enhance the Farmers module backend schema and API contracts to support new demographic fields and search capabilities for the upcoming Search-First workflow.
+Align the Flutter data layer with the updated backend schema from Sprint 10.2. This includes updating the domain model, the local Drift database, and the repository mapping logic.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - I will add a `Gender` enum in the Domain layer (`Hasad.Domain.Enums`).
-> - `CreatedAt` and `UpdatedAt` will be added directly to the `Farmer` entity to match the pattern seen in `Farm` and `DamageReport`.
-> - A new EF Core migration will be created and applied.
+> - The Drift database schema will be upgraded to version 7.
+> - A migration path will be added to the `Farmers` table to include the new columns without data loss.
+> - The `Farmer` domain model will now use individual name parts (firstNameAr, etc.) instead of a single `name` field, matching the backend's explicit mapping.
 
 ## Proposed Changes
 
 ### Domain Layer
 
-#### [NEW] [Gender.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Domain/Enums/Gender.cs)
-Define a `Gender` enum (e.g., `Male`, `Female`, `Other/PreferNotToSay`).
+#### [NEW] [gender.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/gender.dart)
+Create a `Gender` enum to match the backend:
+```dart
+enum Gender { unspecified, male, female }
+```
 
-#### [MODIFY] [Farmer.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Domain/Entities/Farmer.cs)
-- Add `Gender Gender { get; set; }`
-- Add `int FamilySize { get; set; }`
-- Add `DateTime CreatedAt { get; set; }`
-- Add `DateTime? UpdatedAt { get; set; }`
-
----
-
-### Infrastructure Layer
-
-#### [MODIFY] [ApplicationDbContext.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Infrastructure/Persistence/ApplicationDbContext.cs)
-- Configure `Gender` (likely as an `int` or `string` in DB, I will follow existing patterns). Looking at other entities, enums aren't explicitly converted, so EF will use `int` by default.
-- Ensure `CreatedAt` has a default value (e.g., `GETUTCDATE()`).
-- Add shadow properties or explicit properties for audit if needed, but since they are in the entity, I'll just map them.
-
-#### [NEW] Migration
-Generate and apply a migration named `EnhanceFarmerSchema`.
+#### [MODIFY] [farmer.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/farmer.dart)
+Update the `Farmer` model with all new fields:
+- Identity: `id`, `clientId`, `rowVersion`, `serverId`, `idTypeId`, `idNumber`
+- Arabic Name: `firstNameAr`, `secondNameAr`, `thirdNameAr`, `fourthNameAr`
+- English Name: `firstNameEn`, `secondNameEn`, `thirdNameEn`, `fourthNameEn`
+- Demographics: `birthDate`, `gender`, `mobileNumber`, `familySize`
+- Geography: `governorateId`, `localityId`
+- Audit: `createdAt`, `updatedAt`
 
 ---
 
-### Application Layer
+### Local Storage Layer (Drift)
 
-#### [MODIFY] [FarmerDto.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Application/Features/Farmers/Models/FarmerDto.cs)
-- Add the new fields.
-- Ensure 8-part names are kept as individual fields (already present in the DTO, but I'll make sure they are used correctly).
+#### [MODIFY] [database.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/database.dart)
+- Update `Farmers` table with new columns matching the backend.
+- Increment `schemaVersion` to `7`.
+- Add migration logic in `onUpgrade` to add the new columns to the `farmers` table.
 
-#### [MODIFY] [CreateFarmerCommand.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Application/Features/Farmers/Commands/CreateFarmer/CreateFarmerCommand.cs)
-- Update command record to include `Gender` and `FamilySize`.
-- Update handler to map these to the entity.
-- Update validator to ensure they are required and valid.
+---
 
-#### [MODIFY] [UpdateFarmerCommand.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Application/Features/Farmers/Commands/UpdateFarmer/UpdateFarmerCommand.cs)
-- Similar updates as `CreateFarmerCommand`.
+### Data Layer (Repository)
 
-#### [MODIFY] [GetFarmersListQuery.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Application/Features/Farmers/Queries/GetFarmersList/GetFarmersListQuery.cs)
-- Add `string? Name` and `string? IdNumber` to the query.
-- Update handler to filter the `IQueryable<Farmer>` based on these parameters.
-- Search should be case-insensitive and support partial matches.
-- Name search should check across all 8 name parts (Ar and En).
+#### [MODIFY] [farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart)
+Update `OfflineFirstFarmerRepository` mapping logic:
+- Update `getFarmers` and `getFarmer` to map all new Drift columns to the `Farmer` domain model.
+- Update `createFarmer` and `updateFarmer` to map the `Farmer` domain model back to `FarmersCompanion`.
 
 ---
 
 ### Verification Plan
 
 #### Automated Tests
-- Run existing `FarmerCommandHandlerTests.cs` and `FarmerValidatorTests.cs`.
-- Update tests to cover new fields and search functionality.
-- Commands: `dotnet test backend/Hasad.Application.Tests`
+- Run `flutter analyze` to ensure no compile-time errors.
+- Run `flutter test mobile/test/farmers/` if available.
+- Verify JSON serialization of the updated `Farmer` model.
 
 #### Manual Verification
-- Verify the migration by inspecting the `ApplicationDbContextModelSnapshot.cs`.
-- Build the project: `dotnet build backend/Hasad.Api`.
+- Verify that the Drift migration logic is correctly defined in `database.dart`.

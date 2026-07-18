@@ -8,7 +8,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - .NET 8 Web API
   - Clean Architecture (Domain, Application, Infrastructure, API)
   - CQRS with MediatR
-  - EF Core with SQL Server (PostgreSQL support in config)
+  - EF Core with SQL Server
   - ASP.NET Identity with JWT Authentication & Refresh Tokens
 - **Flutter Stack**:
   - Riverpod (State Management)
@@ -33,37 +33,59 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - Three levels: Global, Governorate, Directorate.
   - Regional isolation enforced via geographic IDs in session and commands.
 
-## 3. Current Branches
+## 3. Current Project Status
+- **Current Branch**: `farmers`
+- **Latest Completed Sprint**: Sprint 10.5C — Locality Geographic Foundation
+- **Latest Commit Hash**: `6ca2236`
 - **main**: Stable production-ready code.
 - **farmers**: Active development branch for the Farmers module.
-- **Rules**: Merge features into `main` only after verified sprint completion.
 
 ## 4. Completed Work (Verified Sprints)
 - **Sprint 9.1 - User Management**: Implemented multi-level regional scoping and administrative user forms.
 - **Sprint 10.1 - Farmers Audit**: Engineering audit of existing Farmers implementation against target architecture.
-- **Sprint 10.2 - Farmers Backend Enhancement**:
-  - Added `Gender`, `FamilySize`, and 8-part names (4 Ar, 4 En).
-  - Implemented `EnhanceFarmerSchema` migration.
-  - Enhanced `GetFarmersListQuery` with `Name` and `IdNumber` search support.
-- **Sprint 10.3 - Flutter Farmer Data Layer Alignment**:
-  - Updated Freezed `Farmer` model and `Gender` enum.
-  - Upgraded Drift schema to **v7** with migration path.
-  - Updated `OfflineFirstFarmerRepository` mapping logic.
-- **Sprint 10.4 - Search First Workflow**:
-  - Implemented `findByIdNumber` with Local -> Online fallback logic.
-  - Created `FarmerSearchScreen` gateway.
-  - Configured navigation routing between Search, Details, and Form.
+- **Sprint 10.2 - Farmers Backend Enhancement**: Added `Gender`, `FamilySize`, 8-part names, and enhanced search.
+- **Sprint 10.3 - Flutter Farmer Data Layer Alignment**: Updated models and upgraded Drift schema to **v7**.
+- **Sprint 10.4 - Search First Workflow**: Implemented `findByIdNumber` with fallback logic and search gateway.
+- **Sprint 10.5A - Farmer Details Screen**: Full UI implementation with 6 sections (Identity, Names, Demographics, Location, Audit, Sync Status).
+- **Sprint 10.5B - Farmer Edit Workflow**: Redesigned form, refactored shared location feature, and implemented offline update flow.
+- **Sprint 10.5C - Locality Geographic Foundation**: Implemented `Locality` entity, lookup API, and cascading dropdowns (Gov -> Loc).
 
-## 5. Important Engineering Rules
-- **Branch Management**: Always verify you are on the correct feature branch (e.g., `farmers`). Never push to `main`.
-- **Offline Integrity**: Never bypass the Repository layer or Drift storage. Always save to local DB first.
-- **Core Systems**: Do not modify `SyncQueue` or `BackgroundSyncService` without explicit architectural approval.
-- **Testing**: Run only tests affected by your changes unless a full suite is requested.
-- **Standards**: Follow feature-first folder structure in Flutter and SOLID principles in both layers.
+## 5. Farmers Module Status
+- **Backend Capabilities**:
+  - Farmer entity enhanced with 8-part names and full demographics.
+  - Validated relationships with `Governorate` and `Locality`.
+  - Full CQRS CRUD support with `RowVersion` concurrency and `ClientId` idempotency.
+  - Search First workflow support implemented.
+- **Flutter Capabilities**:
+  - Domain models and Drift schema fully aligned with backend.
+  - Offline repository handles local-first persistence and sync queue tasks.
+  - Production-ready `FarmerSearchScreen`, `FarmerDetailsScreen`, and `FarmerFormScreen`.
+  - Shared Location feature supports cascading lookups for Governorates and Localities.
 
-## 6. Current Status (Farmers Module)
-- **Status**: Backend schema and Flutter data layer are fully aligned. Search workflow logic is implemented.
-- **Remaining Planned Work**:
-  - Implement full UI for `FarmerDetailsScreen` (currently a placeholder).
-  - Update `FarmerFormScreen` UI to support the full 8-part name fields and new demographic data.
-  - Implement advanced Business Rules (e.g., Palestinian ID checksum validation).
+## 6. Geographic Architecture
+- **Entities**:
+  - `Governorate`: Main administrative regions (16 Palestinian governorates).
+  - `Locality`: Cities and villages linked to a governorate (Governorate 1 -> * Localities).
+- **API**:
+  - `GET /api/v1/Location/governorates`: Fetch active governorates.
+  - `GET /api/v1/Location/localities?governorateId={id}`: Filtered locality lookup.
+- **Mobile**:
+  - Shared `location` feature providers (`governoratesProvider`, `localitiesProvider(govId)`).
+  - Used by both Admin and Farmers modules.
+
+## 7. Offline Architecture Status
+- **Farmer Data**: Strictly **Offline-First**. All writes (Create/Update) happen in Drift first, then added to `SyncQueue`.
+- **Location Data**: Treated as **Reference Data**. Currently retrieved online via shared providers to ensure data accuracy.
+- **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
+
+## 8. Pending Work
+- **Business Rules & Validation**:
+  - Palestinian ID checksum validation.
+  - Jerusalem ID rules implementation.
+  - Passport format validation.
+  - Birth Date validation (Age >= 18).
+- **UI/UX**:
+  - Conflict resolution comparison screen (handling 409 server responses).
+  - Mobile geographic caching for offline reference data support.
+- **Features**:
+  - Farm/Damage Report module alignment with new locality foundation.

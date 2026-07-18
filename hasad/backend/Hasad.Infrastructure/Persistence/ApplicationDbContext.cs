@@ -28,6 +28,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Directorates for geographic assignment.</summary>
     public DbSet<Directorate> Directorates => Set<Directorate>();
 
+    /// <summary>Localities for geographic assignment.</summary>
+    public DbSet<Locality> Localities => Set<Locality>();
+
     /// <summary>Registered farmers.</summary>
     public DbSet<Farmer> Farmers => Set<Farmer>();
 
@@ -105,6 +108,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(g => g.Directorates)
                 .HasForeignKey(e => e.GovernorateId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Locality>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+
+            entity.HasOne(e => e.Governorate)
+                .WithMany(g => g.Localities)
+                .HasForeignKey(e => e.GovernorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.GovernorateId);
         });
 
         builder.Entity<ApplicationUser>(entity =>

@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
+import 'package:mobile/features/location/domain/locality.dart';
 
 abstract class LocationRepository {
   Future<List<Governorate>> getGovernorates();
   Future<List<Directorate>> getDirectorates({String? governorateId});
+  Future<List<Locality>> getLocalities({String? governorateId});
 }
 
 class LocationRepositoryImpl implements LocationRepository {
@@ -15,7 +17,7 @@ class LocationRepositoryImpl implements LocationRepository {
   @override
   Future<List<Governorate>> getGovernorates() async {
     return _getMany(
-      '/v1/Users/governorates',
+      '/v1/Location/governorates',
       (json) => Governorate.fromJson(json),
     );
   }
@@ -25,6 +27,15 @@ class LocationRepositoryImpl implements LocationRepository {
     return _getMany(
       '/v1/Users/directorates',
       (json) => Directorate.fromJson(json),
+      queryParameters: governorateId != null ? {'governorateId': governorateId} : null,
+    );
+  }
+
+  @override
+  Future<List<Locality>> getLocalities({String? governorateId}) async {
+    return _getMany(
+      '/v1/Location/localities',
+      (json) => Locality.fromJson(json),
       queryParameters: governorateId != null ? {'governorateId': governorateId} : null,
     );
   }

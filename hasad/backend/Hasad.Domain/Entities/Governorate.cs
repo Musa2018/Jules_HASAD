@@ -10,4 +10,5 @@ public class Governorate
     public DateTime CreatedAt { get; set; }
 
     public ICollection<Directorate> Directorates { get; set; } = new List<Directorate>();
+    public ICollection<Locality> Localities { get; set; } = new List<Locality>();
 }

@@ -9,6 +9,7 @@ import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
+import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
@@ -85,10 +86,10 @@ void main() {
 
   testWidgets('FarmerFormScreen handles Cascading Lookups', (tester) async {
     final govs = [const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1')];
-    final locs = [const Directorate(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1')];
+    final locs = [const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1')];
 
     when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => govs);
-    when(() => mockLocationRepo.getDirectorates(governorateId: any(named: 'governorateId')))
+    when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId')))
         .thenAnswer((_) async => locs);
 
     await tester.pumpWidget(createWidget(const FarmerFormScreen()));
@@ -149,9 +150,9 @@ void main() {
     when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => [
       const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1')
     ]);
-    when(() => mockLocationRepo.getDirectorates(governorateId: any(named: 'governorateId')))
+    when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId')))
         .thenAnswer((_) async => [
-      const Directorate(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1')
+      const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1')
     ]);
     when(() => mockFarmerRepo.updateFarmer(any())).thenAnswer((_) async => farmer);
 
@@ -165,13 +166,11 @@ void main() {
     // Pump once to start the action
     await tester.pump();
     
-    // We expect SnackBar to appear. pumpAndSettle might be too aggressive if SnackBar is still showing during pop.
-    // Let's pump slowly.
+    // We expect SnackBar to appear.
     await tester.pump(const Duration(milliseconds: 100));
     
     verify(() => mockFarmerRepo.updateFarmer(any())).called(1);
     
-    // Check for SnackBar text before it might disappear or be popped
     expect(find.text('Farmer updated successfully'), findsOneWidget);
   });
 }

@@ -5,8 +5,8 @@ import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
-import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
+import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -158,8 +158,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     final state = ref.watch(farmerFormProvider);
     final govAsync = ref.watch(governoratesProvider);
     final locAsync = _selectedGovernorateId != null
-        ? ref.watch(directoratesProvider(_selectedGovernorateId))
-        : const AsyncValue<List<Directorate>>.data([]);
+        ? ref.watch(localitiesProvider(_selectedGovernorateId))
+        : const AsyncValue<List<Locality>>.data([]);
 
     return Scaffold(
       appBar: AppBar(
@@ -333,7 +333,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                           child: Text(l10n.governorate),
                         )
                       : locAsync.when(
-                          data: (locs) => SearchableLookupField<Directorate>(
+                          data: (locs) => SearchableLookupField<Locality>(
                             label: l10n.village,
                             items: locs,
                             itemLabel: (d) => Localizations.localeOf(context).languageCode == 'ar' ? d.nameAr : d.nameEn,

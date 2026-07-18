@@ -5,6 +5,7 @@ import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/domain/gender.dart';
 
 class MockSyncService extends Mock implements BackgroundSyncService {}
 
@@ -19,11 +20,24 @@ void main() {
     repository = OfflineFirstFarmerRepository(db, mockSyncService);
 
     registerFallbackValue(
-      const Farmer(
+      Farmer(
         id: '',
-        name: '',
-        nationalId: '',
+        idTypeId: 1,
+        idNumber: '',
+        firstNameAr: '',
+        fatherNameAr: '',
+        grandfatherNameAr: '',
+        familyNameAr: '',
+        firstNameEn: '',
+        fatherNameEn: '',
+        grandfatherNameEn: '',
+        familyNameEn: '',
+        birthDate: DateTime(1900),
+        gender: Gender.unspecified,
         phoneNumber: '',
+        familySize: 1,
+        governorateId: '',
+        localityId: '',
         address: '',
         rowVersion: '',
       ),
@@ -44,22 +58,35 @@ void main() {
       ),
     ).thenAnswer((_) async {});
 
-    const farmer = Farmer(
+    final farmer = Farmer(
       id: '',
-      name: 'Test Farmer',
-      nationalId: '12345',
-      phoneNumber: '555',
+      idTypeId: 1,
+      idNumber: '12345',
+      firstNameAr: 'أحمد',
+      fatherNameAr: 'محمد',
+      grandfatherNameAr: 'علي',
+      familyNameAr: 'محمود',
+      firstNameEn: 'Ahmed',
+      fatherNameEn: 'Mohammed',
+      grandfatherNameEn: 'Ali',
+      familyNameEn: 'Mahmoud',
+      birthDate: DateTime(1985, 5, 10),
+      gender: Gender.male,
+      phoneNumber: '0599',
+      familySize: 5,
+      governorateId: 'G1',
+      localityId: 'L1',
       address: 'Test Address',
     );
 
     final result = await repository.createFarmer(farmer);
 
-    expect(result.name, farmer.name);
+    expect(result.firstNameAr, farmer.firstNameAr);
     expect(result.id, isNotEmpty);
 
     final localFarmers = await db.select(db.farmers).get();
     expect(localFarmers.length, 1);
-    expect(localFarmers.first.name, farmer.name);
+    expect(localFarmers.first.firstNameAr, farmer.firstNameAr);
     expect(localFarmers.first.syncStatus, 'pending');
 
     verify(

@@ -15,6 +15,8 @@ import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 
+import 'package:mobile/features/farmers/domain/gender.dart';
+
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 
 class MockFarmRepository extends Mock implements FarmRepository {}
@@ -58,11 +60,24 @@ void main() {
     );
 
     registerFallbackValue(
-      const Farmer(
+      Farmer(
         id: '',
-        name: '',
-        nationalId: '',
+        idTypeId: 1,
+        idNumber: '',
+        firstNameAr: '',
+        fatherNameAr: '',
+        grandfatherNameAr: '',
+        familyNameAr: '',
+        firstNameEn: '',
+        fatherNameEn: '',
+        grandfatherNameEn: '',
+        familyNameEn: '',
+        birthDate: DateTime(1900),
+        gender: Gender.unspecified,
         phoneNumber: '',
+        familySize: 1,
+        governorateId: '',
+        localityId: '',
         address: '',
         rowVersion: '',
       ),
@@ -104,24 +119,48 @@ void main() {
 
   test('processQueue syncs create farmer item to remote', () async {
     const localId = 'local-123';
-    const farmer = Farmer(
+    final farmer = Farmer(
       id: localId,
-      name: 'John Doe',
-      nationalId: '12345',
-      phoneNumber: '555',
-      address: 'Gaza',
+      idTypeId: 1,
+      idNumber: '12345',
+      firstNameAr: 'أحمد',
+      fatherNameAr: 'محمد',
+      grandfatherNameAr: 'علي',
+      familyNameAr: 'محمود',
+      firstNameEn: 'Ahmed',
+      fatherNameEn: 'Mohammed',
+      grandfatherNameEn: 'Ali',
+      familyNameEn: 'Mahmoud',
+      birthDate: DateTime(1985, 5, 10),
+      gender: Gender.male,
+      phoneNumber: '0599',
+      familySize: 5,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: 'Test Address',
       rowVersion: '',
     );
 
-    await db
-        .into(db.farmers)
-        .insert(
+    await db.into(db.farmers).insert(
           FarmersCompanion.insert(
             id: localId,
-            name: farmer.name,
-            nationalId: farmer.nationalId,
-            phoneNumber: farmer.phoneNumber,
-            address: farmer.address,
+            idTypeId: const Value(1),
+            idNumber: const Value('12345'),
+            firstNameAr: const Value('أحمد'),
+            fatherNameAr: const Value('محمد'),
+            grandfatherNameAr: const Value('علي'),
+            familyNameAr: const Value('محمود'),
+            firstNameEn: const Value('Ahmed'),
+            fatherNameEn: const Value('Mohammed'),
+            grandfatherNameEn: const Value('Ali'),
+            familyNameEn: const Value('Mahmoud'),
+            birthDate: Value(DateTime(1985, 5, 10)),
+            gender: const Value(1),
+            phoneNumber: const Value('0599'),
+            familySize: const Value(5),
+            governorateId: const Value('G1'),
+            localityId: const Value('L1'),
+            address: const Value('Test Address'),
             syncStatus: const Value('pending'),
           ),
         );

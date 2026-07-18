@@ -4,6 +4,8 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
+import 'package:mobile/features/farmers/domain/gender.dart';
+
 class FarmerFormScreen extends ConsumerStatefulWidget {
   final Farmer? farmer;
 
@@ -45,9 +47,23 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
 
     final farmer = Farmer(
       id: widget.farmer?.id ?? '',
-      name: _nameController.text.trim(),
-      nationalId: _nationalIdController.text.trim(),
+      serverId: widget.farmer?.serverId,
+      idTypeId: widget.farmer?.idTypeId ?? 1,
+      idNumber: _nationalIdController.text.trim(),
+      firstNameAr: widget.farmer?.firstNameAr ?? _nameController.text.trim(),
+      fatherNameAr: widget.farmer?.fatherNameAr ?? '',
+      grandfatherNameAr: widget.farmer?.grandfatherNameAr ?? '',
+      familyNameAr: widget.farmer?.familyNameAr ?? '',
+      firstNameEn: widget.farmer?.firstNameEn ?? '',
+      fatherNameEn: widget.farmer?.fatherNameEn ?? '',
+      grandfatherNameEn: widget.farmer?.grandfatherNameEn ?? '',
+      familyNameEn: widget.farmer?.familyNameEn ?? '',
+      birthDate: widget.farmer?.birthDate ?? DateTime(1900),
+      gender: widget.farmer?.gender ?? Gender.unspecified,
       phoneNumber: _phoneController.text.trim(),
+      familySize: widget.farmer?.familySize ?? 1,
+      governorateId: widget.farmer?.governorateId ?? '',
+      localityId: widget.farmer?.localityId ?? '',
       address: _addressController.text.trim(),
       rowVersion: widget.farmer?.rowVersion ?? '',
     );

@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:uuid/uuid.dart';
 
 class FarmerException implements Exception {
@@ -40,18 +41,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
               ..limit(pageSize, offset: (pageNumber - 1) * pageSize))
             .get();
 
-    return items
-        .map(
-          (e) => domain.Farmer(
-            id: e.id,
-            name: e.name,
-            nationalId: e.nationalId,
-            phoneNumber: e.phoneNumber,
-            address: e.address,
-            rowVersion: e.rowVersion,
-          ),
-        )
-        .toList();
+    return items.map(_mapToDomain).toList();
   }
 
   @override
@@ -59,13 +49,34 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     final e = await (_db.select(
       _db.farmers,
     )..where((t) => t.id.equals(id))).getSingle();
+    return _mapToDomain(e);
+  }
+
+  domain.Farmer _mapToDomain(FarmerLocal e) {
     return domain.Farmer(
       id: e.id,
-      name: e.name,
-      nationalId: e.nationalId,
+      serverId: e.serverId,
+      clientId: e.id,
+      idTypeId: e.idTypeId,
+      idNumber: e.idNumber,
+      firstNameAr: e.firstNameAr,
+      fatherNameAr: e.fatherNameAr,
+      grandfatherNameAr: e.grandfatherNameAr,
+      familyNameAr: e.familyNameAr,
+      firstNameEn: e.firstNameEn,
+      fatherNameEn: e.fatherNameEn,
+      grandfatherNameEn: e.grandfatherNameEn,
+      familyNameEn: e.familyNameEn,
+      birthDate: e.birthDate ?? DateTime(1900),
+      gender: Gender.values[e.gender],
       phoneNumber: e.phoneNumber,
+      familySize: e.familySize,
+      governorateId: e.governorateId,
+      localityId: e.localityId,
       address: e.address,
       rowVersion: e.rowVersion,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
     );
   }
 
@@ -74,17 +85,31 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     final localId = farmer.id.isEmpty ? const Uuid().v4() : farmer.id;
     final companion = FarmersCompanion.insert(
       id: localId,
-      name: farmer.name,
-      nationalId: farmer.nationalId,
-      phoneNumber: farmer.phoneNumber,
-      address: farmer.address,
+      serverId: Value(farmer.serverId),
+      idTypeId: Value(farmer.idTypeId),
+      idNumber: Value(farmer.idNumber),
+      firstNameAr: Value(farmer.firstNameAr),
+      fatherNameAr: Value(farmer.fatherNameAr),
+      grandfatherNameAr: Value(farmer.grandfatherNameAr),
+      familyNameAr: Value(farmer.familyNameAr),
+      firstNameEn: Value(farmer.firstNameEn),
+      fatherNameEn: Value(farmer.fatherNameEn),
+      grandfatherNameEn: Value(farmer.grandfatherNameEn),
+      familyNameEn: Value(farmer.familyNameEn),
+      birthDate: Value(farmer.birthDate),
+      gender: Value(farmer.gender.index),
+      phoneNumber: Value(farmer.phoneNumber),
+      familySize: Value(farmer.familySize),
+      governorateId: Value(farmer.governorateId),
+      localityId: Value(farmer.localityId),
+      address: Value(farmer.address),
       rowVersion: Value(farmer.rowVersion),
       syncStatus: const Value('pending'),
     );
 
     await _db.into(_db.farmers).insert(companion);
 
-    final createdFarmer = farmer.copyWith(id: localId);
+    final createdFarmer = farmer.copyWith(id: localId, clientId: localId);
 
     await _syncService.addToQueue(
       localId: localId,
@@ -100,11 +125,26 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
     await (_db.update(_db.farmers)..where((t) => t.id.equals(farmer.id))).write(
       FarmersCompanion(
-        name: Value(farmer.name),
-        nationalId: Value(farmer.nationalId),
+        serverId: Value(farmer.serverId),
+        idTypeId: Value(farmer.idTypeId),
+        idNumber: Value(farmer.idNumber),
+        firstNameAr: Value(farmer.firstNameAr),
+        fatherNameAr: Value(farmer.fatherNameAr),
+        grandfatherNameAr: Value(farmer.grandfatherNameAr),
+        familyNameAr: Value(farmer.familyNameAr),
+        firstNameEn: Value(farmer.firstNameEn),
+        fatherNameEn: Value(farmer.fatherNameEn),
+        grandfatherNameEn: Value(farmer.grandfatherNameEn),
+        familyNameEn: Value(farmer.familyNameEn),
+        birthDate: Value(farmer.birthDate),
+        gender: Value(farmer.gender.index),
         phoneNumber: Value(farmer.phoneNumber),
+        familySize: Value(farmer.familySize),
+        governorateId: Value(farmer.governorateId),
+        localityId: Value(farmer.localityId),
         address: Value(farmer.address),
         rowVersion: Value(farmer.rowVersion),
+        updatedAt: Value(DateTime.now()),
         syncStatus: const Value('pending'),
       ),
     );

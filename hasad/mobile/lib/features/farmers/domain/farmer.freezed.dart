@@ -21,12 +21,30 @@ Farmer _$FarmerFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Farmer {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get nationalId => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError; // Local ClientId
+  String? get serverId => throw _privateConstructorUsedError;
+  String get clientId =>
+      throw _privateConstructorUsedError; // Redundant but kept for sync contract consistency
+  int get idTypeId => throw _privateConstructorUsedError;
+  String get idNumber => throw _privateConstructorUsedError;
+  String get firstNameAr => throw _privateConstructorUsedError;
+  String get fatherNameAr => throw _privateConstructorUsedError;
+  String get grandfatherNameAr => throw _privateConstructorUsedError;
+  String get familyNameAr => throw _privateConstructorUsedError;
+  String get firstNameEn => throw _privateConstructorUsedError;
+  String get fatherNameEn => throw _privateConstructorUsedError;
+  String get grandfatherNameEn => throw _privateConstructorUsedError;
+  String get familyNameEn => throw _privateConstructorUsedError;
+  DateTime get birthDate => throw _privateConstructorUsedError;
+  Gender get gender => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
+  int get familySize => throw _privateConstructorUsedError;
+  String get governorateId => throw _privateConstructorUsedError;
+  String get localityId => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this Farmer to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -44,11 +62,28 @@ abstract class $FarmerCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String name,
-    String nationalId,
+    String? serverId,
+    String clientId,
+    int idTypeId,
+    String idNumber,
+    String firstNameAr,
+    String fatherNameAr,
+    String grandfatherNameAr,
+    String familyNameAr,
+    String firstNameEn,
+    String fatherNameEn,
+    String grandfatherNameEn,
+    String familyNameEn,
+    DateTime birthDate,
+    Gender gender,
     String phoneNumber,
+    int familySize,
+    String governorateId,
+    String localityId,
     String address,
     String rowVersion,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -68,11 +103,28 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
-    Object? nationalId = null,
+    Object? serverId = freezed,
+    Object? clientId = null,
+    Object? idTypeId = null,
+    Object? idNumber = null,
+    Object? firstNameAr = null,
+    Object? fatherNameAr = null,
+    Object? grandfatherNameAr = null,
+    Object? familyNameAr = null,
+    Object? firstNameEn = null,
+    Object? fatherNameEn = null,
+    Object? grandfatherNameEn = null,
+    Object? familyNameEn = null,
+    Object? birthDate = null,
+    Object? gender = null,
     Object? phoneNumber = null,
+    Object? familySize = null,
+    Object? governorateId = null,
+    Object? localityId = null,
     Object? address = null,
     Object? rowVersion = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -80,17 +132,77 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
+            serverId: freezed == serverId
+                ? _value.serverId
+                : serverId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            clientId: null == clientId
+                ? _value.clientId
+                : clientId // ignore: cast_nullable_to_non_nullable
                       as String,
-            nationalId: null == nationalId
-                ? _value.nationalId
-                : nationalId // ignore: cast_nullable_to_non_nullable
+            idTypeId: null == idTypeId
+                ? _value.idTypeId
+                : idTypeId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            idNumber: null == idNumber
+                ? _value.idNumber
+                : idNumber // ignore: cast_nullable_to_non_nullable
                       as String,
+            firstNameAr: null == firstNameAr
+                ? _value.firstNameAr
+                : firstNameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            fatherNameAr: null == fatherNameAr
+                ? _value.fatherNameAr
+                : fatherNameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            grandfatherNameAr: null == grandfatherNameAr
+                ? _value.grandfatherNameAr
+                : grandfatherNameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            familyNameAr: null == familyNameAr
+                ? _value.familyNameAr
+                : familyNameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            firstNameEn: null == firstNameEn
+                ? _value.firstNameEn
+                : firstNameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+            fatherNameEn: null == fatherNameEn
+                ? _value.fatherNameEn
+                : fatherNameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+            grandfatherNameEn: null == grandfatherNameEn
+                ? _value.grandfatherNameEn
+                : grandfatherNameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+            familyNameEn: null == familyNameEn
+                ? _value.familyNameEn
+                : familyNameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+            birthDate: null == birthDate
+                ? _value.birthDate
+                : birthDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            gender: null == gender
+                ? _value.gender
+                : gender // ignore: cast_nullable_to_non_nullable
+                      as Gender,
             phoneNumber: null == phoneNumber
                 ? _value.phoneNumber
                 : phoneNumber // ignore: cast_nullable_to_non_nullable
+                      as String,
+            familySize: null == familySize
+                ? _value.familySize
+                : familySize // ignore: cast_nullable_to_non_nullable
+                      as int,
+            governorateId: null == governorateId
+                ? _value.governorateId
+                : governorateId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            localityId: null == localityId
+                ? _value.localityId
+                : localityId // ignore: cast_nullable_to_non_nullable
                       as String,
             address: null == address
                 ? _value.address
@@ -100,6 +212,14 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
                 ? _value.rowVersion
                 : rowVersion // ignore: cast_nullable_to_non_nullable
                       as String,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -116,11 +236,28 @@ abstract class _$$FarmerImplCopyWith<$Res> implements $FarmerCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String name,
-    String nationalId,
+    String? serverId,
+    String clientId,
+    int idTypeId,
+    String idNumber,
+    String firstNameAr,
+    String fatherNameAr,
+    String grandfatherNameAr,
+    String familyNameAr,
+    String firstNameEn,
+    String fatherNameEn,
+    String grandfatherNameEn,
+    String familyNameEn,
+    DateTime birthDate,
+    Gender gender,
     String phoneNumber,
+    int familySize,
+    String governorateId,
+    String localityId,
     String address,
     String rowVersion,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -139,11 +276,28 @@ class __$$FarmerImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
-    Object? nationalId = null,
+    Object? serverId = freezed,
+    Object? clientId = null,
+    Object? idTypeId = null,
+    Object? idNumber = null,
+    Object? firstNameAr = null,
+    Object? fatherNameAr = null,
+    Object? grandfatherNameAr = null,
+    Object? familyNameAr = null,
+    Object? firstNameEn = null,
+    Object? fatherNameEn = null,
+    Object? grandfatherNameEn = null,
+    Object? familyNameEn = null,
+    Object? birthDate = null,
+    Object? gender = null,
     Object? phoneNumber = null,
+    Object? familySize = null,
+    Object? governorateId = null,
+    Object? localityId = null,
     Object? address = null,
     Object? rowVersion = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _$FarmerImpl(
@@ -151,17 +305,77 @@ class __$$FarmerImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
+        serverId: freezed == serverId
+            ? _value.serverId
+            : serverId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        clientId: null == clientId
+            ? _value.clientId
+            : clientId // ignore: cast_nullable_to_non_nullable
                   as String,
-        nationalId: null == nationalId
-            ? _value.nationalId
-            : nationalId // ignore: cast_nullable_to_non_nullable
+        idTypeId: null == idTypeId
+            ? _value.idTypeId
+            : idTypeId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        idNumber: null == idNumber
+            ? _value.idNumber
+            : idNumber // ignore: cast_nullable_to_non_nullable
                   as String,
+        firstNameAr: null == firstNameAr
+            ? _value.firstNameAr
+            : firstNameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        fatherNameAr: null == fatherNameAr
+            ? _value.fatherNameAr
+            : fatherNameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        grandfatherNameAr: null == grandfatherNameAr
+            ? _value.grandfatherNameAr
+            : grandfatherNameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        familyNameAr: null == familyNameAr
+            ? _value.familyNameAr
+            : familyNameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        firstNameEn: null == firstNameEn
+            ? _value.firstNameEn
+            : firstNameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+        fatherNameEn: null == fatherNameEn
+            ? _value.fatherNameEn
+            : fatherNameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+        grandfatherNameEn: null == grandfatherNameEn
+            ? _value.grandfatherNameEn
+            : grandfatherNameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+        familyNameEn: null == familyNameEn
+            ? _value.familyNameEn
+            : familyNameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+        birthDate: null == birthDate
+            ? _value.birthDate
+            : birthDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        gender: null == gender
+            ? _value.gender
+            : gender // ignore: cast_nullable_to_non_nullable
+                  as Gender,
         phoneNumber: null == phoneNumber
             ? _value.phoneNumber
             : phoneNumber // ignore: cast_nullable_to_non_nullable
+                  as String,
+        familySize: null == familySize
+            ? _value.familySize
+            : familySize // ignore: cast_nullable_to_non_nullable
+                  as int,
+        governorateId: null == governorateId
+            ? _value.governorateId
+            : governorateId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        localityId: null == localityId
+            ? _value.localityId
+            : localityId // ignore: cast_nullable_to_non_nullable
                   as String,
         address: null == address
             ? _value.address
@@ -171,6 +385,14 @@ class __$$FarmerImplCopyWithImpl<$Res>
             ? _value.rowVersion
             : rowVersion // ignore: cast_nullable_to_non_nullable
                   as String,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -178,36 +400,90 @@ class __$$FarmerImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$FarmerImpl implements _Farmer {
+class _$FarmerImpl extends _Farmer {
   const _$FarmerImpl({
     required this.id,
-    required this.name,
-    required this.nationalId,
+    this.serverId,
+    this.clientId = '',
+    required this.idTypeId,
+    required this.idNumber,
+    required this.firstNameAr,
+    required this.fatherNameAr,
+    required this.grandfatherNameAr,
+    required this.familyNameAr,
+    required this.firstNameEn,
+    required this.fatherNameEn,
+    required this.grandfatherNameEn,
+    required this.familyNameEn,
+    required this.birthDate,
+    required this.gender,
     required this.phoneNumber,
+    required this.familySize,
+    required this.governorateId,
+    required this.localityId,
     required this.address,
     this.rowVersion = '',
-  });
+    this.createdAt,
+    this.updatedAt,
+  }) : super._();
 
   factory _$FarmerImpl.fromJson(Map<String, dynamic> json) =>
       _$$FarmerImplFromJson(json);
 
   @override
   final String id;
+  // Local ClientId
   @override
-  final String name;
+  final String? serverId;
   @override
-  final String nationalId;
+  @JsonKey()
+  final String clientId;
+  // Redundant but kept for sync contract consistency
+  @override
+  final int idTypeId;
+  @override
+  final String idNumber;
+  @override
+  final String firstNameAr;
+  @override
+  final String fatherNameAr;
+  @override
+  final String grandfatherNameAr;
+  @override
+  final String familyNameAr;
+  @override
+  final String firstNameEn;
+  @override
+  final String fatherNameEn;
+  @override
+  final String grandfatherNameEn;
+  @override
+  final String familyNameEn;
+  @override
+  final DateTime birthDate;
+  @override
+  final Gender gender;
   @override
   final String phoneNumber;
+  @override
+  final int familySize;
+  @override
+  final String governorateId;
+  @override
+  final String localityId;
   @override
   final String address;
   @override
   @JsonKey()
   final String rowVersion;
+  @override
+  final DateTime? createdAt;
+  @override
+  final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'Farmer(id: $id, name: $name, nationalId: $nationalId, phoneNumber: $phoneNumber, address: $address, rowVersion: $rowVersion)';
+    return 'Farmer(id: $id, serverId: $serverId, clientId: $clientId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -216,27 +492,78 @@ class _$FarmerImpl implements _Farmer {
         (other.runtimeType == runtimeType &&
             other is _$FarmerImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.nationalId, nationalId) ||
-                other.nationalId == nationalId) &&
+            (identical(other.serverId, serverId) ||
+                other.serverId == serverId) &&
+            (identical(other.clientId, clientId) ||
+                other.clientId == clientId) &&
+            (identical(other.idTypeId, idTypeId) ||
+                other.idTypeId == idTypeId) &&
+            (identical(other.idNumber, idNumber) ||
+                other.idNumber == idNumber) &&
+            (identical(other.firstNameAr, firstNameAr) ||
+                other.firstNameAr == firstNameAr) &&
+            (identical(other.fatherNameAr, fatherNameAr) ||
+                other.fatherNameAr == fatherNameAr) &&
+            (identical(other.grandfatherNameAr, grandfatherNameAr) ||
+                other.grandfatherNameAr == grandfatherNameAr) &&
+            (identical(other.familyNameAr, familyNameAr) ||
+                other.familyNameAr == familyNameAr) &&
+            (identical(other.firstNameEn, firstNameEn) ||
+                other.firstNameEn == firstNameEn) &&
+            (identical(other.fatherNameEn, fatherNameEn) ||
+                other.fatherNameEn == fatherNameEn) &&
+            (identical(other.grandfatherNameEn, grandfatherNameEn) ||
+                other.grandfatherNameEn == grandfatherNameEn) &&
+            (identical(other.familyNameEn, familyNameEn) ||
+                other.familyNameEn == familyNameEn) &&
+            (identical(other.birthDate, birthDate) ||
+                other.birthDate == birthDate) &&
+            (identical(other.gender, gender) || other.gender == gender) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
+            (identical(other.familySize, familySize) ||
+                other.familySize == familySize) &&
+            (identical(other.governorateId, governorateId) ||
+                other.governorateId == governorateId) &&
+            (identical(other.localityId, localityId) ||
+                other.localityId == localityId) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.rowVersion, rowVersion) ||
-                other.rowVersion == rowVersion));
+                other.rowVersion == rowVersion) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
-    name,
-    nationalId,
+    serverId,
+    clientId,
+    idTypeId,
+    idNumber,
+    firstNameAr,
+    fatherNameAr,
+    grandfatherNameAr,
+    familyNameAr,
+    firstNameEn,
+    fatherNameEn,
+    grandfatherNameEn,
+    familyNameEn,
+    birthDate,
+    gender,
     phoneNumber,
+    familySize,
+    governorateId,
+    localityId,
     address,
     rowVersion,
-  );
+    createdAt,
+    updatedAt,
+  ]);
 
   /// Create a copy of Farmer
   /// with the given fields replaced by the non-null parameter values.
@@ -252,30 +579,82 @@ class _$FarmerImpl implements _Farmer {
   }
 }
 
-abstract class _Farmer implements Farmer {
+abstract class _Farmer extends Farmer {
   const factory _Farmer({
     required final String id,
-    required final String name,
-    required final String nationalId,
+    final String? serverId,
+    final String clientId,
+    required final int idTypeId,
+    required final String idNumber,
+    required final String firstNameAr,
+    required final String fatherNameAr,
+    required final String grandfatherNameAr,
+    required final String familyNameAr,
+    required final String firstNameEn,
+    required final String fatherNameEn,
+    required final String grandfatherNameEn,
+    required final String familyNameEn,
+    required final DateTime birthDate,
+    required final Gender gender,
     required final String phoneNumber,
+    required final int familySize,
+    required final String governorateId,
+    required final String localityId,
     required final String address,
     final String rowVersion,
+    final DateTime? createdAt,
+    final DateTime? updatedAt,
   }) = _$FarmerImpl;
+  const _Farmer._() : super._();
 
   factory _Farmer.fromJson(Map<String, dynamic> json) = _$FarmerImpl.fromJson;
 
   @override
-  String get id;
+  String get id; // Local ClientId
   @override
-  String get name;
+  String? get serverId;
   @override
-  String get nationalId;
+  String get clientId; // Redundant but kept for sync contract consistency
+  @override
+  int get idTypeId;
+  @override
+  String get idNumber;
+  @override
+  String get firstNameAr;
+  @override
+  String get fatherNameAr;
+  @override
+  String get grandfatherNameAr;
+  @override
+  String get familyNameAr;
+  @override
+  String get firstNameEn;
+  @override
+  String get fatherNameEn;
+  @override
+  String get grandfatherNameEn;
+  @override
+  String get familyNameEn;
+  @override
+  DateTime get birthDate;
+  @override
+  Gender get gender;
   @override
   String get phoneNumber;
+  @override
+  int get familySize;
+  @override
+  String get governorateId;
+  @override
+  String get localityId;
   @override
   String get address;
   @override
   String get rowVersion;
+  @override
+  DateTime? get createdAt;
+  @override
+  DateTime? get updatedAt;
 
   /// Create a copy of Farmer
   /// with the given fields replaced by the non-null parameter values.

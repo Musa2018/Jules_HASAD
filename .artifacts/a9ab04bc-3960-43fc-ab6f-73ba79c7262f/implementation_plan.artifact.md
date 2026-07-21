@@ -1,52 +1,39 @@
-# Implementation Plan - Sprint 10.14: Entity Metadata Hardening & Update Sync Fix
+# Implementation Plan - Fix RowVersion Missing in Farmer Updates
 
-Resolve synchronization failures for `Update` operations by ensuring all entities preserve server-side metadata (`serverId`, `rowVersion`) and use strictly mapped DTOs.
+Resolve the "RowVersion is required" sync error by ensuring the latest database state (including server-assigned metadata) is passed to the Farmer Form during edits.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> I will add `serverId`, `syncStatus`, and `lastSyncError` to the `Farm`, `DamageReport`, and `DamageItem` domain models. This is necessary to correctly map the server's Authority ID during updates, preventing `404 Not Found` errors.
+> The root cause of the missing `RowVersion` is that the "Edit" button in the Farmer Details screen was using stale data passed to the screen constructor instead of the reactive data from the database stream. This resulted in an empty `rowVersion` being sent in the update sync payload.
 
 ## Proposed Changes
 
-### 1. Domain Model Refinement
+### 1. Presentation Layer Fixes
 
-#### [MODIFY] [farm.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/farm.dart)
-#### [MODIFY] [damage_report.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/damage_report.dart)
-#### [MODIFY] [damage_item.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/damage_item.dart)
-- Add `String? serverId`.
-- Add `String? lastSyncError`.
-- Ensure `@Default('completed') String syncStatus` is present.
+#### [MODIFY] [farmer_details_screen.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/farmer_details_screen.dart)
+- Update the `IconButton` in `AppBar` to use the latest farmer data from `farmerAsync` instead of the stale `widget.farmer`.
+- Ensure `_FarmerDetailsBody` passes the reactive `farmer` object to any navigation calls.
 
-### 2. DTO Mapping Fixes
+### 2. Synchronization Reliability
 
-#### [MODIFY] [farmer_sync_dtos.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_sync_dtos.dart)
-- `FarmSyncDto.toUpdateJson`: Change `'id': farm.id` to `'id': farm.serverId ?? farm.id`.
-- `DamageReportSyncDto.toUpdateJson`: Change `'id': report.id` to `'id': report.serverId ?? report.id`.
-- `DamageReportSyncDto.itemToUpdateJson`: Change `'id': item.id` to `'id': item.serverId ?? item.id`.
+#### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart)
+- Add a safety check in `updateFarmer` to throw an informative local exception if `rowVersion` is missing before attempting a network call.
 
-### 3. Repository Mapping Updates
+### 3. Verification & Traceability
 
-#### [MODIFY] [offline_first_farm_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/offline_first_farm_repository.dart)
-#### [MODIFY] [offline_first_damage_report_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/offline_first_damage_report_repository.dart)
-- Update `_mapToDomain` and `_mapToCompanion` to handle `serverId`, `syncStatus`, and `lastSyncError`.
-- Ensure `lastSyncError` is cleared on `update` (just as implemented for Farmers in 10.10).
-
-### 4. Background Sync Service Hardening
-
-#### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
-- Ensure successful `create` operations for Farm/Report/Item correctly update the local record with the returned `serverId` and `rowVersion`.
+- Re-enable `DebugLogger` for a single run to verify the fix.
+- Create `sync_update_fix_report.artifact.md` with the verified payload.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `flutter pub run build_runner build`.
-- Update `farmer_sync_dtos_test.dart` to verify `Update` payloads for all entities.
-- Run the full test suite in `background_sync_service_test.dart`.
+- Run `flutter test test/farmers/farmer_sync_dtos_test.dart` to ensure DTO mapping still works correctly.
+- Add a test case to verify `rowVersion` inclusion in the `Update` payload when server metadata is present.
 
 ### Manual Verification Flow
-1. Create a Farm offline.
-2. Sync to server.
-3. Confirm `serverId` is stored in the local DB.
-4. Edit the Farm offline.
-5. Sync again and verify the `PUT` request uses the `serverId`.
+1. Create a Farmer offline.
+2. Allow sync to complete (observe "Synced" status).
+3. Tap "Edit" and change a field.
+4. Observe the sync queue or debug logs to confirm `rowVersion` is sent.
+5. Verify the backend accepts the update.

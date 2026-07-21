@@ -96,6 +96,10 @@ class RemoteFarmerRepository implements FarmerRepository {
 
   @override
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
+    if (farmer.rowVersion.isEmpty) {
+      throw SyncException(['RowVersion is required for updates.']);
+    }
+
     try {
       final fullPayload = FarmerSyncDto.toUpdateJson(farmer);
 

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Sprint 10.15 — Farmer Update Sync Reliability
+
+#### Fixed
+- `FarmerDetailsScreen` stale data bug: navigation actions (Edit, Farms) now use the latest reactive data from the database stream.
+- Missing `RowVersion` in update payloads: guaranteed that the latest concurrency token is sent to the backend.
+
+#### Added
+- Safety guard in `RemoteFarmerRepository.updateFarmer` for missing `rowVersion`.
+
 ### Sprint 10.14 — Entity Metadata Hardening & Update Sync
 
 #### Added

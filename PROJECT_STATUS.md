@@ -7,6 +7,12 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.15 — COMPLETED
+Farmer Update Sync Reliability:
+- **Reactive Data Flow**: Fixed a critical bug in `FarmerDetailsScreen` where stale constructor data was being passed to the Edit form instead of the reactive database stream.
+- **RowVersion Persistence**: Ensured `rowVersion` (Concurrency Token) is correctly propagated to the edit form, resolving "RowVersion is required" sync failures.
+- **Repository Safety**: Added a guard in `RemoteFarmerRepository` to prevent sending updates with empty concurrency tokens.
+
 ## Sprint 10.14 — COMPLETED
 Entity Metadata Hardening & Update Sync Fix:
 - **Universal Metadata Mapping**: Added `serverId`, `syncStatus`, and `lastSyncError` to `Farm`, `DamageReport`, and `DamageItem` domain models to ensure consistency with the `Farmer` entity.

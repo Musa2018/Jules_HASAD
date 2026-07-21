@@ -68,19 +68,22 @@ class RemoteFarmerRepository implements FarmerRepository {
   @override
   Future<domain.Farmer> createFarmer(domain.Farmer farmer) async {
     try {
+      final payload = farmer.toJson();
+      payload.remove('id'); // Remove local Drift ID from payload
+
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/farmers',
         data: {
-          ...farmer.toJson(),
+          ...payload,
           'clientId': farmer.id, // Ensure clientId is set to local UUID
         },
       );
       final envelope = response.data;
-      final data = envelope?['data'];
-      if (envelope?['succeeded'] != true || data == null) {
+      final responseData = envelope?['data'];
+      if (envelope?['succeeded'] != true || responseData == null) {
         throw FarmerException(_errorsFromEnvelope(envelope));
       }
-      return domain.Farmer.fromJson(data);
+      return domain.Farmer.fromJson(responseData);
     } on DioException catch (e) {
       throw FarmerException(_errorsFromDio(e));
     }

@@ -7,6 +7,14 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-15
 
+## Sprint 10.7 — COMPLETED
+Hardened Farmers synchronization and fixed "Create Farmer" stuck status:
+- **Interrupted Sync Recovery**: Enhanced `BackgroundSyncService` to recover items stuck in `syncing` status using a 5-minute timeout or startup trigger.
+- **Unified Propagation**: Centralized `syncStatus` updates from `SyncQueue` to entity tables (e.g., `Farmers`), ensuring the UI (badge) accurately reflects states like `syncing`, `failed`, or `conflict`.
+- **Payload Optimization**: Fixed `RemoteFarmerRepository.createFarmer` to remove generated database `id` from POST requests, relying on `clientId` for idempotency as per backend requirements.
+- **Robustness**: Added tests for recovery of stuck items and real-time status propagation through the sync lifecycle.
+- Tests: Verified with all `background_sync_service_test.dart` scenarios passing.
+
 ## Sprint 10.6 — COMPLETED
 Fixed permanent "Awaiting Sync" status and improved UI reactivity:
 - **Background Sync**: Refactored `BackgroundSyncService` with a drain loop to process items added during active sync and added a startup trigger.

@@ -385,4 +385,152 @@ void main() {
         .getSingle();
     expect(f.syncStatus, 'completed');
   });
+
+  test('processQueue recovers stuck syncing items after timeout', () async {
+    const localId = 'stuck-1';
+    final farmer = Farmer(
+      id: localId,
+      idTypeId: 1,
+      idNumber: 'ST1',
+      firstNameAr: 'Stuck',
+      fatherNameAr: '',
+      grandfatherNameAr: '',
+      familyNameAr: '',
+      firstNameEn: '',
+      fatherNameEn: '',
+      grandfatherNameEn: '',
+      familyNameEn: '',
+      birthDate: DateTime(1990),
+      gender: Gender.male,
+      phoneNumber: '',
+      familySize: 1,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: '',
+      rowVersion: '',
+    );
+
+    await db.into(db.farmers).insert(
+          FarmersCompanion.insert(
+            id: localId,
+            idTypeId: const Value(1),
+            idNumber: const Value('ST1'),
+            firstNameAr: const Value('Stuck'),
+            fatherNameAr: const Value(''),
+            grandfatherNameAr: const Value(''),
+            familyNameAr: const Value(''),
+            firstNameEn: const Value(''),
+            fatherNameEn: const Value(''),
+            grandfatherNameEn: const Value(''),
+            familyNameEn: const Value(''),
+            birthDate: Value(DateTime(1990)),
+            gender: const Value(1),
+            phoneNumber: const Value(''),
+            familySize: const Value(1),
+            governorateId: const Value('G1'),
+            localityId: const Value('L1'),
+            address: const Value(''),
+            syncStatus: const Value('syncing'),
+          ),
+        );
+
+    // Insert as syncing but old
+    await db.into(db.syncQueue).insert(
+          SyncQueueCompanion.insert(
+            id: 'q-stuck',
+            localId: localId,
+            entityType: 'farmer',
+            operation: 'create',
+            data: jsonEncode(farmer.toJson()),
+            status: const Value('syncing'),
+            lastAttemptAt: Value(
+              DateTime.now().subtract(const Duration(minutes: 10)),
+            ),
+          ),
+        );
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.wifi]);
+    when(
+      () => mockFarmerRepo.createFarmer(any()),
+    ).thenAnswer((_) async => farmer.copyWith(rowVersion: 'vstuck'));
+
+    await syncService.processQueue();
+
+    final f = await (db.select(db.farmers)..where((t) => t.id.equals(localId)))
+        .getSingle();
+    expect(f.syncStatus, 'completed');
+  });
+
+  test('processQueue propagates status to entity (syncing -> failed)', () async {
+    const localId = 'fail-1';
+    final farmer = Farmer(
+      id: localId,
+      idTypeId: 1,
+      idNumber: 'F1',
+      firstNameAr: 'Fail',
+      fatherNameAr: '',
+      grandfatherNameAr: '',
+      familyNameAr: '',
+      firstNameEn: '',
+      fatherNameEn: '',
+      grandfatherNameEn: '',
+      familyNameEn: '',
+      birthDate: DateTime(1990),
+      gender: Gender.male,
+      phoneNumber: '',
+      familySize: 1,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: '',
+      rowVersion: '',
+    );
+
+    await db.into(db.farmers).insert(
+          FarmersCompanion.insert(
+            id: localId,
+            idTypeId: const Value(1),
+            idNumber: const Value('F1'),
+            firstNameAr: const Value('Fail'),
+            fatherNameAr: const Value(''),
+            grandfatherNameAr: const Value(''),
+            familyNameAr: const Value(''),
+            firstNameEn: const Value(''),
+            fatherNameEn: const Value(''),
+            grandfatherNameEn: const Value(''),
+            familyNameEn: const Value(''),
+            birthDate: Value(DateTime(1990)),
+            gender: const Value(1),
+            phoneNumber: const Value(''),
+            familySize: const Value(1),
+            governorateId: const Value('G1'),
+            localityId: const Value('L1'),
+            address: const Value(''),
+            syncStatus: const Value('pending'),
+          ),
+        );
+    await db.into(db.syncQueue).insert(
+          SyncQueueCompanion.insert(
+            id: 'q-fail',
+            localId: localId,
+            entityType: 'farmer',
+            operation: 'create',
+            data: jsonEncode(farmer.toJson()),
+          ),
+        );
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.wifi]);
+    when(
+      () => mockFarmerRepo.createFarmer(any()),
+    ).thenThrow(FarmerException(['NETWORK_ERROR']));
+
+    await syncService.processQueue();
+
+    final f = await (db.select(db.farmers)..where((t) => t.id.equals(localId)))
+        .getSingle();
+    expect(f.syncStatus, 'failed');
+  });
 }

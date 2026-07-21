@@ -82,14 +82,28 @@ class BackgroundSyncService {
 
     _isProcessing = true;
     try {
+      bool isStartup = true;
       while (true) {
         final now = DateTime.now();
         final pendingItems = await (_db.select(_db.syncQueue)
               ..where(
-                (t) => t.status.equals('pending') | t.status.equals('failed'),
+                (t) {
+                  final isPendingOrFailed =
+                      t.status.equals('pending') | t.status.equals('failed');
+                  // On startup, we include all 'syncing' items for recovery.
+                  // During session, we only include 'syncing' items that are "stuck" (> 5 mins).
+                  final isStuckSyncing = t.status.equals('syncing') &
+                      (isStartup
+                          ? const Constant(true)
+                          : t.lastAttemptAt.isSmallerThanValue(
+                            now.subtract(const Duration(minutes: 5)),
+                          ));
+                  return isPendingOrFailed | isStuckSyncing;
+                },
               )
               ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
             .get();
+        isStartup = false;
 
         if (pendingItems.isEmpty) break;
 
@@ -126,6 +140,7 @@ class BackgroundSyncService {
       await _db
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'syncing', lastAttemptAt: Value(now)));
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'syncing');
 
       if (item.entityType == 'farmer') {
         await _syncFarmer(item);
@@ -142,73 +157,104 @@ class BackgroundSyncService {
       await _db
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'completed'));
+      // Note: Synced status (completed) is usually handled inside _syncXXX 
+      // because it also needs to update serverId/rowVersion.
+      // But we call it here as a fallback if not already handled.
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'completed');
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(status: 'conflict', lastError: Value(e.toString())),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
         await _resolveConflict(item);
       } else {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(
-                status: 'failed',
-                retryCount: item.retryCount + 1,
-                lastError: Value(e.toString()),
-              ),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
       }
     } on FarmException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(status: 'conflict', lastError: Value(e.toString())),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
         await _resolveConflict(item);
       } else {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(
-                status: 'failed',
-                retryCount: item.retryCount + 1,
-                lastError: Value(e.toString()),
-              ),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
       }
     } on DamageReportException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(status: 'conflict', lastError: Value(e.toString())),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
         await _resolveConflict(item);
       } else {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(
-                status: 'failed',
-                retryCount: item.retryCount + 1,
-                lastError: Value(e.toString()),
-              ),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
       }
     } catch (e) {
-      await _db
-          .update(_db.syncQueue)
-          .replace(
-            item.copyWith(
-              status: 'failed',
-              retryCount: item.retryCount + 1,
-              lastError: Value(e.toString()),
-            ),
-          );
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+    }
+  }
+
+  Future<void> _updateEntitySyncStatus(
+    String entityType,
+    String localId,
+    String status,
+  ) async {
+    if (entityType == 'farmer') {
+      await (_db.update(_db.farmers)..where((t) => t.id.equals(localId))).write(
+        FarmersCompanion(syncStatus: Value(status)),
+      );
+    } else if (entityType == 'farm') {
+      await (_db.update(_db.farms)..where((t) => t.id.equals(localId))).write(
+        FarmsCompanion(syncStatus: Value(status)),
+      );
+    } else if (entityType == 'damage_report') {
+      await (_db.update(
+        _db.damageReports,
+      )..where((t) => t.id.equals(localId))).write(
+        DamageReportsCompanion(syncStatus: Value(status)),
+      );
+    } else if (entityType == 'damage_item') {
+      await (_db.update(
+        _db.damageItems,
+      )..where((t) => t.id.equals(localId))).write(
+        DamageItemsCompanion(syncStatus: Value(status)),
+      );
+    } else if (entityType == 'attachment') {
+      await (_db.update(
+        _db.damageReportAttachments,
+      )..where((t) => t.id.equals(localId))).write(
+        DamageReportAttachmentsCompanion(syncStatus: Value(status)),
+      );
     }
   }
 

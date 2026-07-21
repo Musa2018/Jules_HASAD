@@ -21,14 +21,14 @@ public class LocationController : ControllerBase
     }
 
     [HttpGet("governorates")]
-    public async Task\u003cIActionResult\u003e GetGovernorates()
+    public async Task<IActionResult> GetGovernorates()
     {
         var result = await _mediator.Send(new GetGovernoratesQuery());
         return Ok(result);
     }
 
     [HttpGet("localities")]
-    public async Task\u003cIActionResult\u003e GetLocalities([FromQuery] Guid? governorateId)
+    public async Task<IActionResult> GetLocalities([FromQuery] Guid? governorateId)
     {
         var result = await _mediator.Send(new GetLocalitiesQuery(governorateId));
         return Ok(result);

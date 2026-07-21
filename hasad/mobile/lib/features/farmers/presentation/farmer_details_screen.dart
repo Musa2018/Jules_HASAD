@@ -6,6 +6,7 @@ import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class FarmerDetailsScreen extends ConsumerWidget {
@@ -17,7 +18,6 @@ class FarmerDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     // We watch the farmerProvider to ensure we have the latest data from the local DB
-    // and to handle the loading/error states as required.
     final farmerAsync = ref.watch(farmerProvider(farmer.id));
 
     return Scaffold(
@@ -32,24 +32,45 @@ class FarmerDetailsScreen extends ConsumerWidget {
       ),
       body: farmerAsync.when(
         data: (latestFarmer) => _FarmerDetailsBody(farmer: latestFarmer),
-        loading: () => _FarmerDetailsBody(farmer: farmer), // Show initial data while loading
-        error: (error, stack) => _FarmerDetailsBody(farmer: farmer), // Fallback to passed data
+        loading: () => _FarmerDetailsBody(farmer: farmer),
+        error: (error, stack) => _FarmerDetailsBody(farmer: farmer),
       ),
     );
   }
 }
 
-class _FarmerDetailsBody extends StatelessWidget {
+class _FarmerDetailsBody extends ConsumerWidget {
   final Farmer farmer;
 
   const _FarmerDetailsBody({required this.farmer});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final dateFormat = DateFormat.yMd(locale);
     final dateTimeFormat = DateFormat.yMd(locale).add_Hm();
+
+    // Location lookups
+    final govAsync = ref.watch(governoratesProvider);
+    final locAsync = ref.watch(localitiesProvider(farmer.governorateId));
+
+    String govName = farmer.governorateId;
+    govAsync.whenData((govs) {
+      final gov = govs.where((g) => g.id == farmer.governorateId).firstOrNull;
+      if (gov != null) {
+        govName = isArabic ? gov.nameAr : gov.nameEn;
+      }
+    });
+
+    String locName = farmer.localityId;
+    locAsync.whenData((locs) {
+      final loc = locs.where((l) => l.id == farmer.localityId).firstOrNull;
+      if (loc != null) {
+        locName = isArabic ? loc.nameAr : loc.nameEn;
+      }
+    });
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -64,7 +85,7 @@ class _FarmerDetailsBody extends StatelessWidget {
             children: [
               _InfoRow(
                 label: l10n.idType,
-                value: farmer.idTypeId == 1 ? l10n.nationalId : farmer.idTypeId.toString(),
+                value: _getIdTypeLabel(context, farmer.idTypeId),
               ),
               _InfoRow(label: l10n.idNumber, value: farmer.idNumber),
             ],
@@ -112,8 +133,8 @@ class _FarmerDetailsBody extends StatelessWidget {
           _Section(
             title: l10n.locationSection,
             children: [
-              _InfoRow(label: l10n.governorate, value: farmer.governorateId),
-              _InfoRow(label: l10n.village, value: farmer.localityId),
+              _InfoRow(label: l10n.governorate, value: govName),
+              _InfoRow(label: l10n.village, value: locName),
               _InfoRow(label: l10n.address, value: farmer.address),
             ],
           ),
@@ -157,6 +178,20 @@ class _FarmerDetailsBody extends StatelessWidget {
         return l10n.female;
       case Gender.unspecified:
         return l10n.unspecified;
+    }
+  }
+
+  String _getIdTypeLabel(BuildContext context, int idTypeId) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (idTypeId) {
+      case 1:
+        return l10n.nationalId;
+      case 2:
+        return l10n.jerusalemId;
+      case 3:
+        return l10n.passport;
+      default:
+        return idTypeId.toString();
     }
   }
 }
@@ -247,9 +282,13 @@ class _SyncStatusBadge extends StatelessWidget {
         icon = Icons.check_circle;
         break;
       case 'pending':
-      case 'syncing':
         color = Colors.orange;
         label = l10n.pendingSync;
+        icon = Icons.hourglass_empty;
+        break;
+      case 'syncing':
+        color = Colors.blue;
+        label = l10n.syncing;
         icon = Icons.sync;
         break;
       case 'failed':
@@ -267,7 +306,7 @@ class _SyncStatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         border: Border.all(color: color),
         borderRadius: BorderRadius.circular(20),
       ),

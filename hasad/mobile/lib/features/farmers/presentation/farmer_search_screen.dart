@@ -32,7 +32,7 @@ class _FarmerSearchScreenState extends ConsumerState<FarmerSearchScreen> {
 
     final state = ref.read(farmerSearchProvider);
     if (state.status == FarmerSearchStatus.found && state.farmer != null) {
-      context.push(AppRoutes.editFarmer, extra: state.farmer); // Placeholder for details
+      context.push(AppRoutes.farmerDetails, extra: state.farmer);
     } else if (state.status == FarmerSearchStatus.notFound) {
       context.push(AppRoutes.addFarmer, extra: idNumber);
     }

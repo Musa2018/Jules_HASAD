@@ -195,7 +195,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get synced => 'تمت المزامنة';
 
   @override
-  String get pendingSync => 'قيد الانتظار';
+  String get pendingSync => 'بانتظار المزامنة';
+
+  @override
+  String get syncing => 'جاري المزامنة...';
 
   @override
   String get syncError => 'خطأ في المزامنة';

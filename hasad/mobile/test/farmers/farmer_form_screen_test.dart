@@ -7,7 +7,6 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
-import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/data/location_repository.dart';

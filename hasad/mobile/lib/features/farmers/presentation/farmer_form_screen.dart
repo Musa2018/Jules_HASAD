@@ -144,12 +144,14 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
       final message = widget.farmer == null
           ? AppLocalizations.of(context)!.farmerCreatedSuccessfully
           : AppLocalizations.of(context)!.farmerUpdatedSuccessfully;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      
       ref.invalidate(farmersListProvider);
       if (widget.farmer != null) {
         ref.invalidate(farmerProvider(widget.farmer!.id));
       }
+
       Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -186,7 +188,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                 l10n.identitySection,
                 [
                   DropdownButtonFormField<int>(
-                    value: _idTypeId,
+                    initialValue: _idTypeId,
                     decoration: InputDecoration(labelText: l10n.idType),
                     items: [
                       DropdownMenuItem(value: 1, child: Text(l10n.nationalId)),
@@ -323,7 +325,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<Gender>(
-                    value: _gender,
+                    initialValue: _gender,
                     decoration: InputDecoration(labelText: l10n.gender),
                     items: [
                       DropdownMenuItem(value: Gender.unspecified, child: Text(l10n.unspecified)),

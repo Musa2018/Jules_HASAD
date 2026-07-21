@@ -195,7 +195,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get synced => 'Synced';
 
   @override
-  String get pendingSync => 'Pending Sync';
+  String get pendingSync => 'Awaiting Sync';
+
+  @override
+  String get syncing => 'Syncing...';
 
   @override
   String get syncError => 'Sync Error';

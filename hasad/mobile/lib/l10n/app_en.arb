@@ -149,5 +149,6 @@
   "noData": "No data available",
   "syncInvalid": "Invalid Data",
   "syncErrorDetails": "Sync Error Details",
-  "fixData": "Fix Data"
+  "fixData": "Fix Data",
+  "all": "All"
 }

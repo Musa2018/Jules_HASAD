@@ -144,12 +144,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 {
                     entity.HasKey(f => f.Id);
 
-                    // التزامن
-                    entity.HasIndex(f => f.ClientId).IsUnique();
+                    // Global query filter for soft delete
+                    entity.HasQueryFilter(f => !f.IsDeleted);
 
-                    // الهوية
+                    // التزامن - Partial index to allow reusing ClientId from deleted records
+                    entity.HasIndex(f => f.ClientId)
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    // الهوية - Partial index to allow reusing ID Number from deleted records
                     entity.Property(f => f.IdNumber).IsRequired().HasMaxLength(20);
-                    entity.HasIndex(f => new { f.IdTypeId, f.IdNumber }).IsUnique();
+                    entity.HasIndex(f => new { f.IdTypeId, f.IdNumber })
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     // الأسماء
                     entity.Property(f => f.FirstNameAr).IsRequired().HasMaxLength(50);

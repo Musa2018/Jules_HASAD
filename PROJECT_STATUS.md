@@ -7,6 +7,13 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.17 — COMPLETED
+Farmer Soft Delete Workflow Fix:
+- **Filtered Lookups**: Updated `OfflineFirstFarmerRepository` to exclude soft-deleted records from the "search by ID" flow, enabling the creation of new farmers using the same ID number as a deleted record.
+- **Global Query Filter**: Implemented an EF Core Global Query Filter on the backend for the `Farmer` entity to transparently ignore deleted records in standard queries.
+- **Partial Unique Indexes**: Updated backend database indexes for `IdNumber` and `ClientId` to be partial, enforcing uniqueness only among active (non-deleted) records.
+- **Workflow Verification**: Added `soft_delete_workflow_test.dart` verifying the complete "Delete then Re-create" scenario.
+
 ## Sprint 10.16 — COMPLETED
 Farmer Management UI Redesign:
 - **Card-Based Interface**: Replaced the simple list view with a detailed `FarmerCard` UI showing essential demographics, location, and reactive sync status.

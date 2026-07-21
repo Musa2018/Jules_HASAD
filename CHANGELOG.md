@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Sprint 10.17 — Farmer Soft Delete Workflow Fix
+
+#### Fixed
+- Issue where soft-deleted farmers blocked the creation of new farmers with the same ID number.
+- Farmer creation form pre-filling with deleted farmer data.
+
+#### Added
+- EF Core Global Query Filter for `Farmer` entity.
+- Partial unique indexes for `Farmer` (`IdNumber` and `ClientId`) on the backend.
+- `soft_delete_workflow_test.dart` for regression testing.
+
 ### Sprint 10.16 — Farmer Management UI Redesign
 
 #### Added

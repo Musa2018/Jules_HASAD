@@ -1,47 +1,50 @@
-# Implementation Plan - Farmers List Redesign & Management UI
+# Implementation Plan - Soft Delete & Duplicate ID Fix
 
-Redesign the Farmers List screen into a production-ready management interface with card-based layout, advanced filtering, and a soft-delete workflow.
+Harden the Farmer Soft Delete workflow to allow reusing ID numbers from deleted records for new creations.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> The current `farmersListProvider` will be replaced by a more dynamic `farmersListProvider` that supports real-time filtering and local search. Deletion will be strictly "Soft Delete" (marking as pending delete and syncing with backend).
+> This change introduces a **Global Query Filter** on the backend for the `Farmer` entity. Standard queries will now ignore deleted records by default. I will also update the unique database indexes to be **Partial Indexes**, which only enforce uniqueness among non-deleted records.
 
 ## Proposed Changes
 
-### 1. Domain & Data Layer
-- **[MODIFY] [farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart)**:
-    - Enhance `getFarmers` to support all filters (Gender, Sync Status, Location).
-    - Ensure it returns a `Stream<List<Farmer>>` or use a `watchFarmers` method for real-time UI updates.
+### 1. Backend (ASP.NET Core)
 
-### 2. Presentation Layer - Providers
-- **[MODIFY] [farmers_providers.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/farmers_providers.dart)**:
-    - Create `FarmerFilterState` class (searchText, gender, syncStatus, governorateId, localityId).
-    - Create `farmerFiltersProvider` (StateProvider).
-    - Create `farmersListProvider` as a `StreamProvider` that watches the filters and repository.
+#### [MODIFY] [ApplicationDbContext.cs](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/backend/Hasad.Infrastructure/Persistence/ApplicationDbContext.cs)
+- Add a Global Query Filter for the `Farmer` entity: `builder.Entity<Farmer>().HasQueryFilter(f => !f.IsDeleted);`.
+- Update the unique index on `(IdTypeId, IdNumber)` to be partial: `.HasFilter("\"IsDeleted\" = false")`.
+- Update the unique index on `ClientId` to be partial: `.HasFilter("\"IsDeleted\" = false")`.
 
-### 3. Presentation Layer - UI Components
-- **[NEW] [farmer_card.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/widgets/farmer_card.dart)**:
-    - Implement the redesigned Card UI showing: Name, ID, Phone, Location, and Sync Status badge.
-    - Add action buttons: View (Details), Edit (Form), and Delete (Soft-delete with confirmation).
-- **[NEW] [farmer_filters_section.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/widgets/farmer_filters_section.dart)**:
-    - Implement the search bar and filter chips for status, gender, and location.
+#### [NEW] [Migration: FilterFarmerIndexes]
+- Generate a new EF Core migration to apply the index changes to the physical database.
 
-### 4. Farmers List Screen Redesign
-- **[MODIFY] [farmers_list_screen.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/farmers_list_screen.dart)**:
-    - Integrate `FarmerFiltersSection` at the top.
-    - Use `ListView.separated` with `FarmerCard`.
-    - Implement pull-to-refresh and empty/loading states.
+### 2. Flutter (Mobile)
+
+#### [MODIFY] [farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart)
+- Update `findByIdNumber` query to include `& t.isPendingDelete.equals(false)`.
+- This ensures that if a user searches for an ID that was previously used by a deleted farmer, the system starts a fresh creation flow instead of loading the old record.
+
+### 3. Verification & Regression Tests
+
+#### [NEW] [soft_delete_workflow_test.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/test/farmers/soft_delete_workflow_test.dart)
+- Scenario:
+    1. Create a farmer (ID: 123).
+    2. Soft delete the farmer (marks `isPendingDelete: true`).
+    3. Create a new farmer with same ID (ID: 123).
+    4. Verify both records exist in the DB (one deleted, one active).
+    5. Verify sync behavior (handled by existing service, but ensures new creation is queued).
 
 ## Verification Plan
 
 ### Automated Tests
-- **UI Tests**: Verify card rendering and action button presence.
-- **Provider Tests**: Verify filtering logic (e.g., searching for a name returns only matching farmers).
-- **Regression Tests**: Ensure editing from the card preserves `rowVersion` and triggers a successful sync.
+- **Flutter**: Run `flutter test test/farmers/soft_delete_workflow_test.dart`.
+- **Backend**: Run `dotnet test`.
 
 ### Manual Verification
-- Create a farmer -> Confirm sync status "Pending" then "Synced".
-- Search by partial name or ID.
-- Filter by "Male" or "Pending Sync".
-- Delete a farmer -> Confirm it disappears from the list and appears in the sync queue as a delete task.
+1. Create a farmer with ID `949585335`.
+2. Sync to server.
+3. Delete the farmer from the UI.
+4. Attempt to add a new farmer with the same ID `949585335`.
+5. Verify the form is empty and a new record is created.
+6. Verify synchronization succeeds on the backend.

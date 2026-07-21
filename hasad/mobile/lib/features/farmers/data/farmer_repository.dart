@@ -78,9 +78,9 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Future<domain.Farmer?> findByIdNumber(String idNumber) async {
-    // 1. Search local Drift database first
+    // 1. Search local Drift database first (exclude records pending deletion)
     final local = await (_db.select(_db.farmers)
-          ..where((t) => t.idNumber.equals(idNumber)))
+          ..where((t) => t.idNumber.equals(idNumber) & t.isPendingDelete.equals(false)))
         .getSingleOrNull();
 
     if (local != null) {

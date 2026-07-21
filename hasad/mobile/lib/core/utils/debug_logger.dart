@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class DebugLogger {
-  static const bool ENABLE_SYNC_DEBUG = true;
+  static const bool enableSyncDebug = false;
 
   static void log(String message) {
-    if (ENABLE_SYNC_DEBUG) {
+    if (enableSyncDebug) {
       if (kDebugMode) {
         print(message);
       }

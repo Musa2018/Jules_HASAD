@@ -230,7 +230,7 @@ class BackgroundSyncService {
   Future<void> _processItem(SyncQueueData item) async {
     final now = DateTime.now();
     try {
-      if (DebugLogger.ENABLE_SYNC_DEBUG) {
+      if (DebugLogger.enableSyncDebug) {
         DebugLogger.logHeader('Sync Processing');
         DebugLogger.log('Entity Type: ${item.entityType}');
         DebugLogger.log('Operation: ${item.operation}');
@@ -335,7 +335,7 @@ class BackgroundSyncService {
       );
       await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
     } catch (e, stackTrace) {
-      if (DebugLogger.ENABLE_SYNC_DEBUG) {
+      if (DebugLogger.enableSyncDebug) {
         DebugLogger.logHeader('SYNC ERROR TRACE');
         DebugLogger.log('Exception Type: ${e.runtimeType}');
         DebugLogger.log('Message: $e');

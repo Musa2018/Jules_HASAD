@@ -1,44 +1,55 @@
-# Implementation Plan - Production Debug Session: Farmers Sync Trace
+# Implementation Plan - Sync DTO Mapping Layer
 
-Add comprehensive, temporary logging to the synchronization pipeline to capture the exact HTTP request/response payloads and identify why the backend is rejecting Farmers data.
+Implement a dedicated DTO mapping layer for Farmers, Farms, and Damage Reports to ensure synchronization payloads strictly match the backend command contracts.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> This plan involves adding `print` statements and a custom `LogInterceptor` to the networking and sync layers. This data may contain PII (Farmer names, IDs) in the console output during debugging.
+> This change strictly decouples the Offline Domain Entities from the Synchronization payloads. `Farmer.toJson()` will no longer be used for API requests.
+
+- **Date Formatting**: `BirthDate` will be formatted as `yyyy-MM-dd` to match .NET `DateOnly`.
+- **Gender Validation**: Payloads will be blocked or defaulted if `Gender.unspecified` is present, as the backend forbids it.
+- **Payload Sanitization**: Metadata like `syncStatus` and `lastSyncError` will be excluded from all sync payloads.
 
 ## Proposed Changes
 
-### 1. Networking Layer (Logging Abstraction)
+### 1. Data Layer Mappings
 
-#### [NEW] [debug_logger.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/utils/debug_logger.dart)
-- Create a simple helper to pretty-print JSON and format the debug blocks requested.
-- Include a `const bool ENABLE_SYNC_DEBUG = true;` flag to easily disable it later.
+#### [NEW] [farmer_sync_dtos.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_sync_dtos.dart)
+- Create `FarmerSyncDto` with static methods:
+    - `toCreateJson(Farmer farmer)`: Maps to `CreateFarmerCommand`.
+    - `toUpdateJson(Farmer farmer)`: Maps to `UpdateFarmerCommand`.
+- Create `FarmSyncDto` with static methods:
+    - `toCreateJson(Farm farm)`: Maps to `CreateFarmCommand`.
+    - `toUpdateJson(Farm farm)`: Maps to `UpdateFarmCommand`.
+- Create `DamageReportSyncDto` with static methods:
+    - `toCreateJson(DamageReport report)`: Maps to `CreateDamageReportCommand`.
+    - `toUpdateJson(DamageReport report)`: Maps to `UpdateDamageReportCommand`.
 
-### 2. Networking Layer (Dio)
-
-#### [MODIFY] [auth_providers.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/auth/presentation/auth_providers.dart)
-- Add a custom `Interceptor` to `apiDioProvider` that uses `DebugLogger` to print full request/response details.
-
-### 3. Synchronization Layer
-
-#### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
-- In `_processItem`, log the "Sync Information" block (Entity Type, Operation, IDs, etc.) before handing off to the repositories.
-- Add try/catch blocks around sync calls to capture and log the full "Error Trace" including stack traces.
-
-### 4. Data Layer
+### 2. Repository Refactoring
 
 #### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart)
-- Add specific logging inside `createFarmer` and `updateFarmer` to show the exact `payload` after local ID removal and `clientId` assignment, just before the `dio.post/put` call.
+- Update `createFarmer` and `updateFarmer` to use `FarmerSyncDto`.
+
+#### [MODIFY] [remote_farm_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farm_repository.dart)
+- Update `createFarm` and `updateFarm` to use `FarmSyncDto`.
+
+#### [MODIFY] [remote_damage_report_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_damage_report_repository.dart)
+- Update `createDamageReport`, `updateDamageReport`, `addDamageItem`, and `updateDamageItem` to use `DamageReportSyncDto`.
+
+### 3. Synchronization Engine
+
+#### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
+- Ensure the `data` stored in `SyncQueue` remains the full entity JSON for resilience (so it can be re-mapped if the DTO logic changes), but the Repositories will perform the final DTO mapping before the HTTP call.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `flutter test test/core/storage/background_sync_service_test.dart`.
-- Verify that the logs appear in the test output as expected when the sync logic is exercised.
+- **Flutter**:
+    - Update/Add tests in `remote_farmer_repository_test.dart` to verify exact payload generation.
+    - Run `flutter test`.
+- **Backend**:
+    - Run existing command tests to ensure they still accept the new payloads.
 
-### Manual Debugging (Report Generation)
-1. Execute a sync operation (via test or running the app).
-2. Capture the console output.
-3. Analyze the field-by-field differences between the captured JSON and the Swagger definition.
-4. Produce the **Validation Report** in a new artifact.
+### Code Analysis
+- Run `flutter analyze`.

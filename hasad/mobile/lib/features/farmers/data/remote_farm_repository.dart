@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
+import 'package:mobile/features/farmers/data/farmer_sync_dtos.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 
 class RemoteFarmRepository implements FarmRepository {
@@ -17,14 +18,14 @@ class RemoteFarmRepository implements FarmRepository {
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
-        throw FarmException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
       final items = data as List;
       return items
           .map((e) => Farm.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
-      throw FarmException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 
@@ -35,11 +36,11 @@ class RemoteFarmRepository implements FarmRepository {
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
-        throw FarmException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
       return Farm.fromJson(data);
     } on DioException catch (e) {
-      throw FarmException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 
@@ -48,27 +49,16 @@ class RemoteFarmRepository implements FarmRepository {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/farms',
-        data: {
-          'clientId': farm.id,
-          'farmerId': farm.farmerId,
-          'name': farm.name,
-          'governorateId': farm.governorateId,
-          'localityId': farm.localityId,
-          'landArea': farm.landArea,
-          'landAreaUnit': farm.landAreaUnit,
-          'latitude': farm.latitude,
-          'longitude': farm.longitude,
-          'ownershipTypeId': farm.ownershipTypeId,
-        },
+        data: FarmSyncDto.toCreateJson(farm),
       );
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
-        throw FarmException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
       return Farm.fromJson(data);
     } on DioException catch (e) {
-      throw FarmException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 
@@ -77,34 +67,21 @@ class RemoteFarmRepository implements FarmRepository {
     try {
       final response = await _dio.put<Map<String, dynamic>>(
         '/v1/farms/${farm.id}',
-        data: {
-          'id': farm.id,
-          'clientId': farm.id,
-          'farmerId': farm.farmerId,
-          'name': farm.name,
-          'governorateId': farm.governorateId,
-          'localityId': farm.localityId,
-          'landArea': farm.landArea,
-          'landAreaUnit': farm.landAreaUnit,
-          'latitude': farm.latitude,
-          'longitude': farm.longitude,
-          'ownershipTypeId': farm.ownershipTypeId,
-          'rowVersion': farm.rowVersion,
-        },
+        data: FarmSyncDto.toUpdateJson(farm),
       );
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
-        throw FarmException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
       return Farm.fromJson(data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 409) {
-        throw FarmException([
+        throw SyncConflictException([
           'CONFLICT: The record has been modified by another user.',
         ]);
       }
-      throw FarmException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 
@@ -114,10 +91,10 @@ class RemoteFarmRepository implements FarmRepository {
       final response = await _dio.delete<Map<String, dynamic>>('/v1/farms/$id');
       final envelope = response.data;
       if (envelope?['succeeded'] != true) {
-        throw FarmException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
     } on DioException catch (e) {
-      throw FarmException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 

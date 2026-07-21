@@ -7,6 +7,14 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.13 — COMPLETED
+Sync DTO Mapping Layer Implementation:
+- **Decoupled Sync Payloads**: Implemented `FarmerSyncDto`, `FarmSyncDto`, and `DamageReportSyncDto` to strictly map local domain entities to backend command contracts.
+- **Date Normalization**: Ensured `BirthDate` for Farmers is sent in `yyyy-MM-dd` format to match .NET `DateOnly`, resolving parsing errors.
+- **Gender Validation Hardening**: DTO layer now enforces `Gender` rules (Male/Female) and blocks `unspecified` values before transmission.
+- **Payload Sanitization**: Cleaned all sync payloads of local-only metadata (`syncStatus`, `lastSyncError`, etc.), preventing payload pollution and backend binding issues.
+- Tests: Added `farmer_sync_dtos_test.dart` to verify exact JSON output for all sync operations.
+
 ## Sprint 10.12 — COMPLETED
 Universal Sync Lifecycle & Soft-Delete Hardening:
 - **Soft-Delete Foundation**: Implemented `isPendingDelete` across all entities. Local hard-deletes now only occur after successful server-side deletion, ensuring remote data integrity.

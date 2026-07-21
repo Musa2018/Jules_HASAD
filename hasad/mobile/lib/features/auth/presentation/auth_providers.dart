@@ -47,7 +47,7 @@ final apiDioProvider = Provider((ref) {
       ref.watch(baseDioProvider),
     ),
   );
-  if (DebugLogger.ENABLE_SYNC_DEBUG) {
+  if (DebugLogger.enableSyncDebug) {
     dio.interceptors.add(SyncDebugInterceptor());
   }
   return dio;

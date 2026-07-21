@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Sprint 10.13 — Sync DTO Mapping Layer
+
+#### Added
+- `FarmerSyncDto`, `FarmSyncDto`, and `DamageReportSyncDto` for strict API contract mapping.
+- Date normalization for `DateOnly` fields (`yyyy-MM-dd`).
+- Gender validation in the DTO layer to prevent invalid data transmission.
+- `farmer_sync_dtos_test.dart` with comprehensive payload verification.
+
+#### Changed
+- `RemoteFarmerRepository`, `RemoteFarmRepository`, and `RemoteDamageReportRepository` now use the DTO layer instead of `toJson()`.
+- Unified sync exception handling across all remote repositories.
+
 ### Sprint 4 — CI/CD Hardening
 
 #### Changed

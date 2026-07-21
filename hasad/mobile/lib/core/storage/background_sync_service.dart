@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
@@ -229,6 +230,16 @@ class BackgroundSyncService {
   Future<void> _processItem(SyncQueueData item) async {
     final now = DateTime.now();
     try {
+      if (DebugLogger.ENABLE_SYNC_DEBUG) {
+        DebugLogger.logHeader('Sync Processing');
+        DebugLogger.log('Entity Type: ${item.entityType}');
+        DebugLogger.log('Operation: ${item.operation}');
+        DebugLogger.log('Queue Item ID: ${item.id}');
+        DebugLogger.log('Local ID: ${item.localId}');
+        DebugLogger.log('Retry Count: ${item.retryCount}');
+        DebugLogger.logFooter();
+      }
+
       await _db
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'syncing', lastAttemptAt: Value(now)));
@@ -323,7 +334,14 @@ class BackgroundSyncService {
         ),
       );
       await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
-    } catch (e) {
+    } catch (e, stackTrace) {
+      if (DebugLogger.ENABLE_SYNC_DEBUG) {
+        DebugLogger.logHeader('SYNC ERROR TRACE');
+        DebugLogger.log('Exception Type: ${e.runtimeType}');
+        DebugLogger.log('Message: $e');
+        DebugLogger.log('Stack Trace:\n$stackTrace');
+        DebugLogger.logFooter();
+      }
       await _db.update(_db.syncQueue).replace(
         item.copyWith(
           status: 'failed',

@@ -1,41 +1,36 @@
-# Walkthrough - Sprint 10.11: Sync Lifecycle Consistency & Soft-Delete
+# Walkthrough - Sprint 10.12: Universal Sync Lifecycle & Soft-Delete Hardening
 
-Successfully standardized the synchronization lifecycle across all HASAD entities, implemented a robust soft-delete workflow, and resolved critical offline operation collapsing issues.
+Finalized the synchronization architecture for the Farmers and Damage Assessment modules, ensuring complete operational consistency and robust data integrity during offline scenarios.
 
 ## Changes Made
 
-### standardizing Sync Lifecycle
-- **Universal operation Collapsing**: Implemented generic logic in `BackgroundSyncService` to handle offline edits. If a record is edited offline before its initial sync, the `CREATE` operation is preserved, preventing backend 404s.
-- **Soft-Delete Workflow**: Implemented `isPendingDelete` state across all major entities (Farmers, Farms, DamageReports, DamageItems, and Attachments).
-    - Records are marked as pending delete locally.
-    - Synchronized with the server via remote DELETE call.
-    - Hard-deleted locally only upon successful server confirmation.
-- **Immediate Lifecycle Collapsing**: Unsynced records that are deleted offline are now removed immediately from both the database and the sync queue (CREATE + DELETE = NO-OP), keeping the system clean.
+### Robust Data Lifecycle
+- **Soft-Delete Implementation**: Standardized the `isPendingDelete` state across all entities (Farmers, Farms, Damage Reports, Items, and Attachments). Records are now preserved locally until the remote deletion is confirmed by the server.
+- **Manual Cascades**: Enhanced `BackgroundSyncService` to handle relational dependencies in Drift. When a `DamageReport` is hard-deleted after sync, its associated `DamageItem` and `Attachment` rows are also cleaned up.
+- **File System Cleanup**: Implemented automatic deletion of local image files on disk when a `DamageReportAttachment` is hard-deleted, preventing storage bloat.
+- **Lifecycle Collapsing**: Implemented immediate removal logic for unsynced records. If a record is created offline and then deleted before its first sync, the system removes both the database row and the queue task immediately (CREATE + DELETE = NO-OP).
 
-### Persistence & Error Handling
-- **Drift Schema v9**: Added `isPendingDelete` column to all synced entities with a safe `onUpgrade` path.
-- **Generic Sync Exceptions**: Introduced `SyncException` and `SyncValidationException` as a shared abstraction. All remote repositories now uniformly map HTTP 400 errors to these exceptions, allowing the sync engine to stop redundant retries for business rule violations.
-- **Context Preservation**: Updated repositories to clear `lastSyncError` when a record is manually updated, ensuring a clean slate for the next sync attempt.
+### Generic Sync Abstractions
+- **Universal Validation**: Unified error mapping using `SyncValidationException`. All remote repositories now convert backend validation failures (HTTP 400) into this exception, signaling the background engine to stop retrying and alert the user.
+- **Generic operation Collapsing**: The "Preserve CREATE" logic now applies to all HASAD entities, ensuring that offline edits to unsynced records always result in a `POST` rather than a premature `PUT`.
 
 ## Verification Results
 
 ### Automated Tests
-- Ran the expanded test suite in `background_sync_service_test.dart` and `offline_first_farmer_repository_test.dart`.
-- **18/18 tests passed**, including specialized scenarios for:
-    - [x] **Soft-Delete**: Remote deletion followed by local hard delete.
-    - [x] **Immediate Deletion**: Removing un-synced CREATE tasks immediately on delete.
-    - [x] **Operation Preservation**: Generic "Preserve CREATE" logic for both Farmers and Farms.
-    - [x] **Validation Consistency**: Uniform handling of HTTP 400 across entities.
+- Reached a total of **23 passing tests** across Sync Service and Repositories.
+- [x] **Relational Cascade**: Verified that deleting a report removes its items.
+- [x] **Generic Collapsing**: Confirmed operation preservation for `Farm` and `DamageReport` entities.
+- [x] **List Filtering**: Verified that records marked `isPendingDelete` are correctly excluded from UI lists before sync.
+- [x] **Error Mapping**: Confirmed consistent handling of HTTP 400 across all remote repositories.
 
 ### Code Analysis
-- Ran `flutter analyze` in `hasad/mobile`.
+- Ran `flutter analyze`.
 - **Result**: `No issues found!`.
 
-## Conflict Handling Summary (Current Implementation)
-Currently, HASAD follows a **"Server Wins"** strategy:
-- When a `409 Conflict` (RowVersion mismatch) occurs, the `BackgroundSyncService` automatically fetches the latest server version and overwrites the local record.
-- **Future Work**: This will eventually be replaced by a Merge UI to allow users to resolve conflicts manually.
-
 ## Documentation Updates
-- Updated `PROJECT_STATUS.md` with Sprint 10.11 completion.
-- Updated `AI_CONTEXT.md` with latest architecture details and commit hash `cf7e613`.
+- **ARCHITECTURE.md**: Documented the current "Server Wins" conflict resolution policy and the roadmap for a future Merge UI.
+- **PROJECT_STATUS.md**: Recorded completion of Sprint 10.12.
+- **AI_CONTEXT.md**: Updated latest architecture state and commit hash `2e67bf5`.
+
+## Remaining Risks
+- **Silent Overwrites**: In rare conflict scenarios (409 Conflict), local changes are automatically overwritten by server data. This is documented in the architecture roadmap for future Merge UI implementation.

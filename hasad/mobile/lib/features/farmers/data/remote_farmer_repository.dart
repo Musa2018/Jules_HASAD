@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
+import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
 
@@ -71,13 +72,20 @@ class RemoteFarmerRepository implements FarmerRepository {
     try {
       final payload = farmer.toJson();
       payload.remove('id'); // Remove local Drift ID from payload
+      final fullPayload = {
+        ...payload,
+        'clientId': farmer.id, // Ensure clientId is set to local UUID
+      };
+
+      if (DebugLogger.ENABLE_SYNC_DEBUG) {
+        DebugLogger.logHeader('FARMER CREATE PAYLOAD');
+        DebugLogger.logJson(fullPayload);
+        DebugLogger.logFooter();
+      }
 
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/farmers',
-        data: {
-          ...payload,
-          'clientId': farmer.id, // Ensure clientId is set to local UUID
-        },
+        data: fullPayload,
       );
       final envelope = response.data;
       final responseData = envelope?['data'];
@@ -93,13 +101,21 @@ class RemoteFarmerRepository implements FarmerRepository {
   @override
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
     try {
+      final fullPayload = {
+        ...farmer.toJson(),
+        'id': farmer.serverId ?? farmer.id,
+        'clientId': farmer.id,
+      };
+
+      if (DebugLogger.ENABLE_SYNC_DEBUG) {
+        DebugLogger.logHeader('FARMER UPDATE PAYLOAD');
+        DebugLogger.logJson(fullPayload);
+        DebugLogger.logFooter();
+      }
+
       final response = await _dio.put<Map<String, dynamic>>(
         '/v1/farmers/${farmer.serverId ?? farmer.id}',
-        data: {
-          ...farmer.toJson(),
-          'id': farmer.serverId ?? farmer.id,
-          'clientId': farmer.id,
-        },
+        data: fullPayload,
       );
       final envelope = response.data;
       final data = envelope?['data'];

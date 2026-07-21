@@ -1,70 +1,44 @@
-# Implementation Plan - Sprint 10.11: Sync Lifecycle Consistency & Soft-Delete
+# Implementation Plan - Production Debug Session: Farmers Sync Trace
 
-Achieve end-to-end synchronization consistency across all HASAD entities by fixing the broken delete lifecycle and generalizing sync logic.
+Add comprehensive, temporary logging to the synchronization pipeline to capture the exact HTTP request/response payloads and identify why the backend is rejecting Farmers data.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> This change involves a Drift database schema upgrade to **v9**. A new `isPendingDelete` column will be added to all tracked entities to support offline deletions without losing data integrity before remote sync.
+> This plan involves adding `print` statements and a custom `LogInterceptor` to the networking and sync layers. This data may contain PII (Farmer names, IDs) in the console output during debugging.
 
 ## Proposed Changes
 
-### 1. Storage & Persistence
+### 1. Networking Layer (Logging Abstraction)
 
-#### [MODIFY] [database.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/database.dart)
-- Increment `schemaVersion` to **9**.
-- Add `isPendingDelete` boolean column (default `false`) to:
-    - `Farmers`, `Farms`, `DamageReports`, `DamageItems`, `DamageReportAttachments`.
-- Update `onUpgrade` to handle the v9 migration.
+#### [NEW] [debug_logger.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/utils/debug_logger.dart)
+- Create a simple helper to pretty-print JSON and format the debug blocks requested.
+- Include a `const bool ENABLE_SYNC_DEBUG = true;` flag to easily disable it later.
 
-#### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
-- Refactor `addToQueue` to handle lifecycle collapsing:
-    - **CREATE + DELETE**: If an existing `pending` CREATE is deleted, remove both the task and the local record immediately (it never reached the server).
-    - **UPDATE + DELETE**: If an existing `pending`/`failed`/`invalid` UPDATE is deleted, change the operation to DELETE.
-- Generalize "CREATE preservation": The existing logic already works for all entities based on `entityType` and `localId`. I will ensure it stays robust.
+### 2. Networking Layer (Dio)
 
-### 2. Domain & Data Layer
+#### [MODIFY] [auth_providers.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/auth/presentation/auth_providers.dart)
+- Add a custom `Interceptor` to `apiDioProvider` that uses `DebugLogger` to print full request/response details.
 
-#### [NEW] [sync_exceptions.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/exceptions/sync_exceptions.dart)
-- Define `SyncValidationException` extending a base `SyncException`.
-
-#### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart) (and others)
-- Replace `FarmerValidationException` with the generic `SyncValidationException`.
-- Ensure all remote repositories throw this on HTTP 400.
-
-#### [MODIFY] [farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart) (and others)
-- Update `deleteFarmer`:
-    - Instead of hard delete, update `isPendingDelete = true` and `syncStatus = 'pending'`.
-    - Add `delete` task to `SyncQueue`.
-- Update `getFarmers` (list): Filter out items where `isPendingDelete` is true.
-
-### 3. Sync Engine Hardening
+### 3. Synchronization Layer
 
 #### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
-- Update `_syncFarmer` (and others) for `delete` operation:
-    - Perform remote DELETE call.
-    - On success: **Hard delete** local record from Drift.
-- Update `_processItem` to handle `SyncValidationException` generically for all entity types.
+- In `_processItem`, log the "Sync Information" block (Entity Type, Operation, IDs, etc.) before handing off to the repositories.
+- Add try/catch blocks around sync calls to capture and log the full "Error Trace" including stack traces.
+
+### 4. Data Layer
+
+#### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart)
+- Add specific logging inside `createFarmer` and `updateFarmer` to show the exact `payload` after local ID removal and `clientId` assignment, just before the `dio.post/put` call.
 
 ## Verification Plan
 
 ### Automated Tests
-- **Delete Lifecycle Test**:
-    - [x] Synced Farmer → Delete Offline → Sync → Verified Hard Deleted locally.
-    - [x] New Farmer → Delete Offline (Before Sync) → Verified Task and Record removed immediately.
-- **Generic Collapsing Test**:
-    - [x] Farm CREATE → Edit Offline → Verify operation stays CREATE.
-- **Validation Test**:
-    - [x] Any entity → HTTP 400 → Verify INVALID status and no retry.
+- Run `flutter test test/core/storage/background_sync_service_test.dart`.
+- Verify that the logs appear in the test output as expected when the sync logic is exercised.
 
-### Manual Verification
-- Verify that deleted farmers disappear from the list immediately (due to `isPendingDelete` filter) but remain in the database until sync.
-- Verify safe migration from v8 to v9.
-
-## Conflict Handling Review (Documentation)
-Currently, HASAD uses a **"Server Wins"** strategy:
-1. When an `Update` fails with `409 Conflict` (RowVersion mismatch).
-2. `BackgroundSyncService._resolveConflict` is triggered.
-3. It fetches the latest record from the server and overwrites the local Drift record.
-4. **Risk**: The user's local changes are lost without notification.
-5. **Future Work**: Implement a "Conflict Resolution UI" to allow users to merge or choose between local/server versions.
+### Manual Debugging (Report Generation)
+1. Execute a sync operation (via test or running the app).
+2. Capture the console output.
+3. Analyze the field-by-field differences between the captured JSON and the Swagger definition.
+4. Produce the **Validation Report** in a new artifact.

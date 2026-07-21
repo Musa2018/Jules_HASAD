@@ -41,11 +41,24 @@ void main() {
     });
 
     test('toUpdateJson includes serverId and rowVersion', () {
-      final farmer = baseFarmer.copyWith(serverId: 'remote-1', rowVersion: 'v1');
+      final farmer = baseFarmer.copyWith(
+        serverId: 'remote-1',
+        rowVersion: 'AAAAAAAAB98=',
+      );
       final json = FarmerSyncDto.toUpdateJson(farmer);
 
       expect(json['id'], 'remote-1');
-      expect(json['rowVersion'], 'v1');
+      expect(json['rowVersion'], 'AAAAAAAAB98=');
+      expect(json['clientId'], 'local-1');
+    });
+
+    test('toUpdateJson throws SyncValidationException for Gender.unspecified', () {
+      final invalidFarmer = baseFarmer.copyWith(gender: Gender.unspecified, serverId: 'rem', rowVersion: 'rv');
+
+      expect(
+        () => FarmerSyncDto.toUpdateJson(invalidFarmer),
+        throwsA(isA<SyncValidationException>()),
+      );
     });
 
     test('toCreateJson throws SyncValidationException for Gender.unspecified', () {

@@ -368,4 +368,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fixData => 'Fix Data';
+
+  @override
+  String get all => 'All';
 }

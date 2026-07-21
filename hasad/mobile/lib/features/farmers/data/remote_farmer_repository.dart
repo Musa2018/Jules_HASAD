@@ -4,6 +4,7 @@ import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_sync_dtos.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 class RemoteFarmerRepository implements FarmerRepository {
   final Dio _dio;
@@ -65,6 +66,13 @@ class RemoteFarmerRepository implements FarmerRepository {
 
   @override
   Stream<domain.Farmer?> watchFarmer(String id) {
+    throw UnimplementedError('Remote repository does not support watching.');
+  }
+
+  @override
+  Stream<List<domain.Farmer>> watchFarmers({
+    FarmerFilter filter = const FarmerFilter(),
+  }) {
     throw UnimplementedError('Remote repository does not support watching.');
   }
 

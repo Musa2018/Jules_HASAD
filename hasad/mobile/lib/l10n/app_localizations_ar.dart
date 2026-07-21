@@ -368,4 +368,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fixData => 'تصحيح البيانات';
+
+  @override
+  String get all => 'الكل';
 }

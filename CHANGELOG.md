@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Sprint 10.16 — Farmer Management UI Redesign
+
+#### Added
+- `FarmerCard` widget with comprehensive farmer details and action buttons.
+- `FarmerFiltersSection` with search-by-name/ID/phone and filter chips for gender/sync status.
+- `FarmerFilter` model and reactive `watchFarmers` repository method.
+
+#### Changed
+- `FarmersListScreen` redesigned with a modern card-based layout and sticky filters.
+- `farmersListProvider` refactored from `FutureProvider` to `StreamProvider` for real-time updates.
+- Standardized soft-delete confirmation and synchronization workflow.
+
 ### Sprint 10.15 — Farmer Update Sync Reliability
 
 #### Fixed

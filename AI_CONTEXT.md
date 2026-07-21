@@ -35,7 +35,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 3. Current Project Status
 - **Current Branch**: `farmers`
-- **Latest Completed Sprint**: Sprint 10.15 — Sync Reliability
+- **Latest Completed Sprint**: Sprint 10.16 — Farmer UI Redesign
 - **Latest Commit Hash**: ` farmers` (Branch: farmers)
 - **main**: Stable production-ready code.
 - **farmers**: Active development branch for the Farmers module.
@@ -59,6 +59,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Sprint 10.13 - Sync DTO Mapping Layer**: Implemented dedicated DTO mapping for all synchronized entities (Farmers, Farms, DamageReports). Standardized date formatting (`yyyy-MM-dd`) and gender validation to match strict backend command contracts, resolving parsing and payload pollution issues.
 - **Sprint 10.14 - Entity Metadata Hardening & Update Sync Fix**: Added `serverId` and sync metadata to all Farmer-related domain models. Hardened the `Update` flow to correctly use server-assigned Authority IDs, resolving sync failures caused by ClientID/ServerID mismatches during updates.
 - **Sprint 10.15 - Farmer Update Sync Reliability**: Fixed data consistency bug in `FarmerDetailsScreen` where stale constructor data was used for navigation actions. Ensured `rowVersion` is correctly passed to the edit form and added a safety guard in the repository to prevent invalid updates.
+- **Sprint 10.16 - Farmer Management UI Redesign**: Transformed the Farmers list into a production-ready management interface. Implemented card-based layout, reactive filtering (name/ID/phone), and a synchronized soft-delete workflow. Refactored data flow to use `StreamProvider` for real-time sync status updates.
 
 ## 5. Farmers Module Status
 - **Backend Capabilities**:

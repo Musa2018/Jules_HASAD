@@ -7,6 +7,13 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.16 — COMPLETED
+Farmer Management UI Redesign:
+- **Card-Based Interface**: Replaced the simple list view with a detailed `FarmerCard` UI showing essential demographics, location, and reactive sync status.
+- **Advanced Offline Filtering**: Implemented a real-time search and filter system powered by Drift database streams, supporting search by name/ID/phone and filtering by gender and sync status.
+- **Synchronized Soft-Delete**: Integrated a secure soft-delete workflow that marks local records as pending and queues remote deletion, preserving data integrity.
+- **Reactive Data Binding**: Refactored the list provider to use `StreamProvider`, ensuring the UI automatically reflects background synchronization progress and local edits.
+
 ## Sprint 10.15 — COMPLETED
 Farmer Update Sync Reliability:
 - **Reactive Data Flow**: Fixed a critical bug in `FarmerDetailsScreen` where stale constructor data was being passed to the Edit form instead of the reactive database stream.

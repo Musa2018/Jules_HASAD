@@ -38,6 +38,7 @@ class Farmer with _$Farmer {
 
   String get name =>
       '$firstNameAr $fatherNameAr $grandfatherNameAr $familyNameAr'.trim();
+  String get fullName => name;
   String get nameEn =>
       '$firstNameEn $fatherNameEn $grandfatherNameEn $familyNameEn'.trim();
   String get nationalId => idNumber;

@@ -36,7 +36,9 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [farmersListProvider.overrideWith((ref) => farmers)],
+        overrides: [
+          farmersListProvider.overrideWith((ref) => Stream.value(farmers)),
+        ],
         child: const MaterialApp(
           localizationsDelegates: [
             AppLocalizations.delegate,
@@ -59,7 +61,9 @@ void main() {
   testWidgets('FarmersListScreen shows empty message', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [farmersListProvider.overrideWith((ref) => [])],
+        overrides: [
+          farmersListProvider.overrideWith((ref) => Stream.value([])),
+        ],
         child: const MaterialApp(
           localizationsDelegates: [
             AppLocalizations.delegate,

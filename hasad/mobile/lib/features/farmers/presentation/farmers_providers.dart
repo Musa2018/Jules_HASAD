@@ -12,6 +12,11 @@ import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/damage_report_attachment.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/domain/farmer_filter.dart';
+
+final farmerFiltersProvider = StateProvider<FarmerFilter>((ref) {
+  return const FarmerFilter();
+});
 
 final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
   return OfflineFirstFarmerRepository(
@@ -20,6 +25,11 @@ final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
     ref.watch(remoteFarmerRepositoryProvider),
     ref.watch(connectivityProvider),
   );
+});
+
+final farmersListProvider = StreamProvider.autoDispose<List<Farmer>>((ref) {
+  final filter = ref.watch(farmerFiltersProvider);
+  return ref.watch(farmerRepositoryProvider).watchFarmers(filter: filter);
 });
 
 final farmRepositoryProvider = Provider<FarmRepository>((ref) {
@@ -44,12 +54,6 @@ final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
     );
   },
 );
-
-final farmersListProvider = FutureProvider.autoDispose<List<Farmer>>((
-  ref,
-) async {
-  return ref.watch(farmerRepositoryProvider).getFarmers();
-});
 
 final farmerProvider = FutureProvider.autoDispose.family<Farmer, String>((
   ref,

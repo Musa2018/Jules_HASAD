@@ -811,6 +811,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fix Data'**
   String get fixData;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
 }
 
 class _AppLocalizationsDelegate

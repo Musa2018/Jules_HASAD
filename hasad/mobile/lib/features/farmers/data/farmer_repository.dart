@@ -9,6 +9,8 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:uuid/uuid.dart';
 
 
+import 'package:mobile/features/farmers/domain/farmer_filter.dart';
+
 abstract class FarmerRepository {
   Future<List<domain.Farmer>> getFarmers({
     int pageNumber = 1,
@@ -16,6 +18,9 @@ abstract class FarmerRepository {
     String? idNumber,
     String? name,
   });
+
+  Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()});
+
   Future<domain.Farmer?> findByIdNumber(String idNumber);
   Future<domain.Farmer> getFarmer(String id);
   Stream<domain.Farmer?> watchFarmer(String id);
@@ -121,6 +126,47 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     return (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
         .watchSingleOrNull()
         .map((e) => e != null ? _mapToDomain(e) : null);
+  }
+
+  @override
+  Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()}) {
+    final query = _db.select(_db.farmers)
+      ..where((t) => t.isPendingDelete.equals(false));
+
+    if (filter.searchText.isNotEmpty) {
+      final search = '%${filter.searchText}%';
+      query.where((t) =>
+          t.firstNameAr.like(search) |
+          t.fatherNameAr.like(search) |
+          t.grandfatherNameAr.like(search) |
+          t.familyNameAr.like(search) |
+          t.firstNameEn.like(search) |
+          t.fatherNameEn.like(search) |
+          t.grandfatherNameEn.like(search) |
+          t.familyNameEn.like(search) |
+          t.idNumber.like(search) |
+          t.phoneNumber.like(search));
+    }
+
+    if (filter.gender != null) {
+      query.where((t) => t.gender.equals(filter.gender!.index));
+    }
+
+    if (filter.syncStatus != null) {
+      query.where((t) => t.syncStatus.equals(filter.syncStatus!));
+    }
+
+    if (filter.governorateId != null) {
+      query.where((t) => t.governorateId.equals(filter.governorateId!));
+    }
+
+    if (filter.localityId != null) {
+      query.where((t) => t.localityId.equals(filter.localityId!));
+    }
+
+    query.orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
+
+    return query.watch().map((items) => items.map(_mapToDomain).toList());
   }
 
   domain.Farmer _mapToDomain(FarmerLocal e) {

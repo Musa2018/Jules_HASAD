@@ -73,11 +73,17 @@ class BackgroundSyncService {
         .getSingleOrNull();
 
     if (existing != null) {
+      // Rule: Preserve 'create' operation during offline edits to avoid 404s
+      final finalOperation =
+          existing.operation == 'create' && operation == 'update'
+              ? 'create'
+              : operation;
+
       await (_db.update(_db.syncQueue)
             ..where((t) => t.id.equals(existing.id)))
           .write(
             SyncQueueCompanion(
-              operation: Value(operation),
+              operation: Value(finalOperation),
               data: Value(jsonEncode(data)),
               status: const Value('pending'),
               retryCount: const Value(0),

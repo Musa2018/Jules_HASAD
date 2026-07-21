@@ -1,22 +1,18 @@
-# Task - Farmers Offline Sync Invalid Data Handling Hardening
+# Task - Farmers Offline Sync Hardening Verification & Operation Collapsing Fix
 
-- [x] Storage & Persistence Hardening
-    - [x] Update `database.dart` to schema v8 with `lastSyncError` columns.
-    - [x] Implement safe `onUpgrade` logic in `database.dart`.
-    - [x] Update `BackgroundSyncService.addToQueue` to upsert pending/invalid tasks.
-- [x] Domain & Data Layer Alignment
-    - [x] Add `lastSyncError` to `Farmer` domain model and update JSON serialization.
-    - [x] Define `FarmerValidationException` (and base `ValidationException`).
-    - [x] Update `RemoteFarmerRepository` to throw `FarmerValidationException` on 400.
-    - [x] Update `OfflineFirstFarmerRepository` mapping logic (companion/domain).
-- [x] Sync Logic Refinement
-    - [x] Update `BackgroundSyncService` to catch validation exceptions.
-    - [x] Implement `invalid` status logic in `BackgroundSyncService._processItem`.
-    - [x] Ensure `invalid` items are excluded from `processQueue` loop.
-- [x] UI Feedback & Error Recovery
-    - [x] Add localized strings for `invalid` status and error details.
-    - [x] Update `FarmerDetailsScreen` with `invalid` badge and warning banner.
-- [x] Verification & Documentation
-    - [x] Add unit tests for validation failures vs network failures in `background_sync_service_test.dart`.
-    - [x] Run `flutter analyze` and tests.
-    - [x] Update `PROJECT_STATUS.md` and `AI_CONTEXT.md`.
+- [/] Research & Preparation
+    - [x] Verify current branch (`farmers`) and latest commit (`6b90f47`).
+    - [x] Review sync lifecycle documentation.
+- [ ] implementation
+    - [ ] Update `BackgroundSyncService.addToQueue` to preserve `create` operations during offline edits.
+    - [ ] Ensure `lastSyncError` is cleared when a task is updated for retry.
+- [ ] Verification
+    - [ ] Add Scenario 1: Offline Create Then Update test.
+    - [ ] Add Scenario 2: Multiple Offline Updates test.
+    - [ ] Add Scenario 3: Invalid Create Correction test.
+    - [ ] Add Scenario 4: Existing Synced Farmer Update test.
+    - [ ] Verify Drift migration safety (v7 to v8).
+- [ ] Documentation & Delivery
+    - [ ] Update `PROJECT_STATUS.md`.
+    - [ ] Update `AI_CONTEXT.md`.
+    - [ ] Commit and push to `farmers` branch.

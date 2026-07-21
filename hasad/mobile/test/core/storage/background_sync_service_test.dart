@@ -617,15 +617,16 @@ void main() {
     },
   );
 
-  test('addToQueue upserts existing pending/failed/invalid tasks', () async {
-    const localId = 'upsert-1';
+  test('addToQueue preserves CREATE operation during offline edits', () async {
+    const localId = 'collapsing-1';
     final data1 = {'name': 'Initial'};
     final data2 = {'name': 'Updated'};
 
     when(
       () => mockConnectivity.checkConnectivity(),
-    ).thenAnswer((_) async => [ConnectivityResult.none]); // No wifi to stop processing
+    ).thenAnswer((_) async => [ConnectivityResult.none]);
 
+    // 1. Initial CREATE
     await syncService.addToQueue(
       localId: localId,
       entityType: 'farmer',
@@ -635,12 +636,9 @@ void main() {
 
     var items = await db.select(db.syncQueue).get();
     expect(items.length, 1);
-    expect(jsonDecode(items.first.data)['name'], 'Initial');
+    expect(items.first.operation, 'create');
 
-    // Manually mark as failed
-    await (db.update(db.syncQueue)..where((t) => t.localId.equals(localId)))
-        .write(const SyncQueueCompanion(status: Value('failed')));
-
+    // 2. Offline UPDATE
     await syncService.addToQueue(
       localId: localId,
       entityType: 'farmer',
@@ -649,9 +647,92 @@ void main() {
     );
 
     items = await db.select(db.syncQueue).get();
-    expect(items.length, 1); // Should still be 1
-    expect(items.first.operation, 'update');
+    expect(items.length, 1);
+    expect(items.first.operation, 'create'); // Preserved!
     expect(jsonDecode(items.first.data)['name'], 'Updated');
-    expect(items.first.status, 'pending'); // Reset to pending
+  });
+
+  test('addToQueue handles multiple offline updates by collapsing', () async {
+    const localId = 'multi-1';
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.none]);
+
+    await syncService.addToQueue(
+      localId: localId,
+      entityType: 'farmer',
+      operation: 'create',
+      data: {'v': 1},
+    );
+
+    for (int i = 2; i <= 5; i++) {
+      await syncService.addToQueue(
+        localId: localId,
+        entityType: 'farmer',
+        operation: 'update',
+        data: {'v': i},
+      );
+    }
+
+    final items = await db.select(db.syncQueue).get();
+    expect(items.length, 1);
+    expect(items.first.operation, 'create');
+    expect(jsonDecode(items.first.data)['v'], 5);
+  });
+
+  test('addToQueue resets status to pending and clears errors on retry', () async {
+    const localId = 'retry-1';
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.none]);
+
+    // 1. Initial task that failed/invalid
+    await db.into(db.syncQueue).insert(
+      SyncQueueCompanion.insert(
+        id: 'q1',
+        localId: localId,
+        entityType: 'farmer',
+        operation: 'create',
+        data: '{}',
+        status: const Value('invalid'),
+        lastError: const Value('Old Error'),
+        retryCount: const Value(1),
+      ),
+    );
+
+    // 2. Call addToQueue (e.g. user fixed data and saved)
+    await syncService.addToQueue(
+      localId: localId,
+      entityType: 'farmer',
+      operation: 'update',
+      data: {'fixed': true},
+    );
+
+    final item = await db.select(db.syncQueue).getSingle();
+    expect(item.status, 'pending');
+    expect(item.lastError, null);
+    expect(item.retryCount, 0);
+    expect(item.operation, 'create'); // Preserved
+  });
+
+  test('addToQueue uses UPDATE operation for already synced farmer', () async {
+    const localId = 'synced-1';
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.none]);
+
+    // Record has no pending task in queue (it's already synced)
+    await syncService.addToQueue(
+      localId: localId,
+      entityType: 'farmer',
+      operation: 'update',
+      data: {'v': 1},
+    );
+
+    final item = await db.select(db.syncQueue).getSingle();
+    expect(item.operation, 'update');
   });
 }

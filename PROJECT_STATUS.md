@@ -7,6 +7,13 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.10 — COMPLETED
+Farmers Sync Hardening Verification & Fix:
+- **Operation Collapsing Fix**: Resolved a critical bug where offline edits to a pending `CREATE` operation would change the task to `UPDATE`, causing backend 404s. The system now preserves the `CREATE` operation until the record is successfully born on the server.
+- **Error Recovery Hardening**: Ensured `lastSyncError` is cleared when a record is updated after user correction, providing a clean slate for retry.
+- **Lifecycle Verification**: Verified the complete sync lifecycle including Invalid data flow, User correction flow, Offline Create-Update collapsing, and App Restart recovery.
+- Tests: Added 3 new test scenarios to `BackgroundSyncService` covering operation preservation, multiple update collapsing, and retry status resets.
+
 ## Sprint 10.9 — COMPLETED
 Offline Sync Invalid Data Handling Hardening:
 - **Schema Upgrade (v8)**: Added `lastSyncError` columns to all entities to persist exact backend failure reasons.

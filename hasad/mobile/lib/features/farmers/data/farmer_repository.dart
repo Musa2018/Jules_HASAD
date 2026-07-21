@@ -218,6 +218,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     final companion = _mapToCompanion(farmer).copyWith(
       updatedAt: Value(DateTime.now()),
       syncStatus: const Value('pending'),
+      lastSyncError: const Value(null),
     );
 
     await (_db.update(_db.farmers)..where((t) => t.id.equals(farmer.id)))

@@ -1,67 +1,46 @@
-# Implementation Plan - Farmers Offline Sync Invalid Data Handling Hardening
+# Implementation Plan - HASAD Farmers Sync Hardening Verification & Fix
 
-Harden the offline sync process to handle invalid business data gracefully, prevent endless retries for unrecoverable validation errors, and provide clear feedback to users.
+Perform a deep-dive verification of the sync hardening implementation and address a discovered risk regarding operation collapsing in the sync queue.
 
 ## User Review Required
 
-> [!IMPORTANT]
-> This change involves a Drift database schema upgrade to **v8**. Existing local data will be preserved, but new columns will be added to track sync errors across all major entities.
+> [!WARNING]
+> A bug was identified during research: If a farmer is created offline (pending `create`) and then edited before syncing, the task operation is currently changed to `update`. This would cause a `404 Not Found` on the backend since the record doesn't exist yet. I will apply a fix to preserve the `create` operation in this scenario.
 
 ## Proposed Changes
 
-### Storage & Persistence
-
-#### [MODIFY] [database.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/database.dart)
-- Increment `schemaVersion` to **8**.
-- Add `lastSyncError` nullable TextColumn to:
-    - `Farmers`
-    - `Farms`
-    - `DamageReports`
-    - `DamageItems`
-    - `DamageReportAttachments`
-- Update `onUpgrade` to add these columns for version 8.
+### Storage & Sync Logic
 
 #### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
-- Update `_processItem` to catch `FarmerValidationException` (and similar for other entities).
-- Introduce `invalid` status for `SyncQueue` and entities.
-- When a validation error (HTTP 400) occurs:
-    - Set `SyncQueue` item status to `invalid`.
-    - Update entity `syncStatus` to `invalid` and store error in `lastSyncError`.
-- **Optimization**: Update `addToQueue` to "upsert" tasks. If a `pending`, `failed`, or `invalid` task exists for the same `localId` and `entityType`, update it instead of adding a new row.
-
-### Domain & Data Layer
-
-#### [MODIFY] [farmer.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/farmer.dart)
-- Add `lastSyncError` field to `Farmer` class.
-
-#### [MODIFY] [farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart)
-- Add `FarmerValidationException` class.
-- Update `_mapToDomain` to populate `lastSyncError`.
-- Update `_mapToCompanion` to include `lastSyncError` (resetting it on manual update).
-
-#### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart)
-- Update `_errorsFromDio` to detect `statusCode == 400` and throw `FarmerValidationException`.
-
-### Presentation Layer
-
-#### [MODIFY] [farmer_details_screen.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/farmer_details_screen.dart)
-- Update `_SyncStatusBadge` to handle `invalid` status.
-- Add a warning banner at the top of the body if `farmer.syncStatus` is `invalid` or `failed`, displaying `farmer.lastSyncError`.
-
-#### [MODIFY] [app_en.arb](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/l10n/app_en.arb) (and `app_ar.arb`)
-- Add localized strings:
-    - `syncInvalid`: "Invalid Data"
-    - `syncErrorDetails`: "Sync Error Details"
-    - `fixData`: "Fix Data"
+- Update `addToQueue` logic:
+    - If an existing `pending`/`failed`/`invalid` task is found:
+        - If the existing operation is `create`, keep it as `create` even if the new request is an `update`.
+        - Otherwise, update the operation as requested.
 
 ## Verification Plan
 
-### Automated Tests
-- Run `flutter test test/farmers/offline_first_farmer_repository_test.dart`.
-- Add new tests in `background_sync_service_test.dart`:
-    - Verify that HTTP 400 marks item as `invalid`.
-    - Verify that `invalid` items are NOT retried in `processQueue`.
-    - Verify that `addToQueue` replaces existing `invalid`/`pending` items.
+### Automated Tests (New & Updated)
+- Update `test/core/storage/background_sync_service_test.dart`:
+    - **Scenario: User Correction Flow**:
+        - Start with an `invalid` item.
+        - Call `addToQueue` with updated data.
+        - Verify status resets to `pending`.
+    - **Scenario: Offline Create Then Update (Operation Collapsing)**:
+        - Call `addToQueue` with `create`.
+        - Call `addToQueue` with `update`.
+        - Verify queue item operation remains `create`.
+    - **Scenario: Multiple Offline Updates**:
+        - Call `addToQueue` multiple times.
+        - Verify only 1 row exists in `SyncQueue` with latest data.
 
-### Manual Verification
-- Not applicable in this environment.
+### Migration Verification
+- Create a scratch script `test/migration_v7_v8_test.dart` to:
+    - Initialize a database at schema v7.
+    - Insert test data.
+    - Trigger upgrade to v8.
+    - Verify `lastSyncError` columns are present and null.
+    - Verify test data is preserved.
+
+### Manual Verification Findings
+- Will report on `ValidationFailed` vs `invalid` status alignment.
+- Will report on App Restart recovery behavior.

@@ -793,6 +793,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data available'**
   String get noData;
+
+  /// No description provided for @syncInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Data'**
+  String get syncInvalid;
+
+  /// No description provided for @syncErrorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Error Details'**
+  String get syncErrorDetails;
+
+  /// No description provided for @fixData.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix Data'**
+  String get fixData;
 }
 
 class _AppLocalizationsDelegate

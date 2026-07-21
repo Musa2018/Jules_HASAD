@@ -59,18 +59,45 @@ class BackgroundSyncService {
     required String operation,
     required Map<String, dynamic> data,
   }) async {
-    await _db
-        .into(_db.syncQueue)
-        .insert(
-          SyncQueueCompanion.insert(
-            id: const Uuid().v4(),
-            localId: localId,
-            entityType: entityType,
-            operation: operation,
-            data: jsonEncode(data),
-            createdAt: Value(DateTime.now()),
-          ),
-        );
+    final existing = await (_db.select(_db.syncQueue)
+          ..where(
+            (t) =>
+                t.localId.equals(localId) & t.entityType.equals(entityType),
+          )
+          ..where(
+            (t) =>
+                t.status.equals('pending') |
+                t.status.equals('failed') |
+                t.status.equals('invalid'),
+          ))
+        .getSingleOrNull();
+
+    if (existing != null) {
+      await (_db.update(_db.syncQueue)
+            ..where((t) => t.id.equals(existing.id)))
+          .write(
+            SyncQueueCompanion(
+              operation: Value(operation),
+              data: Value(jsonEncode(data)),
+              status: const Value('pending'),
+              retryCount: const Value(0),
+              lastError: const Value(null),
+              lastAttemptAt: const Value(null),
+              createdAt: Value(DateTime.now()),
+            ),
+          );
+    } else {
+      await _db.into(_db.syncQueue).insert(
+        SyncQueueCompanion.insert(
+          id: const Uuid().v4(),
+          localId: localId,
+          entityType: entityType,
+          operation: operation,
+          data: jsonEncode(data),
+          createdAt: Value(DateTime.now()),
+        ),
+      );
+    }
     processQueue();
   }
 
@@ -161,6 +188,16 @@ class BackgroundSyncService {
       // because it also needs to update serverId/rowVersion.
       // But we call it here as a fallback if not already handled.
       await _updateEntitySyncStatus(item.entityType, item.localId, 'completed');
+    } on FarmerValidationException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(status: 'invalid', lastError: Value(e.toString())),
+      );
+      await _updateEntitySyncStatus(
+        item.entityType,
+        item.localId,
+        'invalid',
+        error: e.toString(),
+      );
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
         await _db.update(_db.syncQueue).replace(
@@ -227,33 +264,49 @@ class BackgroundSyncService {
   Future<void> _updateEntitySyncStatus(
     String entityType,
     String localId,
-    String status,
-  ) async {
+    String status, {
+    String? error,
+  }) async {
     if (entityType == 'farmer') {
       await (_db.update(_db.farmers)..where((t) => t.id.equals(localId))).write(
-        FarmersCompanion(syncStatus: Value(status)),
+        FarmersCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
       );
     } else if (entityType == 'farm') {
       await (_db.update(_db.farms)..where((t) => t.id.equals(localId))).write(
-        FarmsCompanion(syncStatus: Value(status)),
+        FarmsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
       );
     } else if (entityType == 'damage_report') {
       await (_db.update(
         _db.damageReports,
       )..where((t) => t.id.equals(localId))).write(
-        DamageReportsCompanion(syncStatus: Value(status)),
+        DamageReportsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
       );
     } else if (entityType == 'damage_item') {
       await (_db.update(
         _db.damageItems,
       )..where((t) => t.id.equals(localId))).write(
-        DamageItemsCompanion(syncStatus: Value(status)),
+        DamageItemsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
       );
     } else if (entityType == 'attachment') {
       await (_db.update(
         _db.damageReportAttachments,
       )..where((t) => t.id.equals(localId))).write(
-        DamageReportAttachmentsCompanion(syncStatus: Value(status)),
+        DamageReportAttachmentsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
       );
     }
   }
@@ -274,6 +327,7 @@ class BackgroundSyncService {
           remotePath: Value(result.remotePath),
           uploadStatus: const Value('completed'),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'delete') {
@@ -294,6 +348,7 @@ class BackgroundSyncService {
           serverId: Value(result.id),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'update') {
@@ -304,6 +359,7 @@ class BackgroundSyncService {
         FarmersCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'delete') {
@@ -329,6 +385,7 @@ class BackgroundSyncService {
           serverId: Value(result.id),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'update') {
@@ -339,6 +396,7 @@ class BackgroundSyncService {
         FarmsCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'delete') {
@@ -367,6 +425,7 @@ class BackgroundSyncService {
             serverId: Value(result.id),
             rowVersion: Value(result.rowVersion),
             syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
           ),
         );
         for (var i in result.items) {
@@ -377,6 +436,7 @@ class BackgroundSyncService {
               serverId: Value(i.id),
               rowVersion: Value(i.rowVersion),
               syncStatus: const Value('completed'),
+              lastSyncError: const Value(null),
             ),
           );
         }
@@ -391,6 +451,7 @@ class BackgroundSyncService {
         DamageReportsCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'delete') {
@@ -420,6 +481,7 @@ class BackgroundSyncService {
           serverId: Value(result.id),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'update') {
@@ -432,6 +494,7 @@ class BackgroundSyncService {
         DamageItemsCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'delete') {

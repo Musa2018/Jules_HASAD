@@ -292,6 +292,17 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -340,6 +351,7 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     nationalId,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   ];
@@ -522,6 +534,15 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -635,6 +656,10 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -676,6 +701,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
   final String nationalId;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const FarmerLocal({
@@ -702,6 +728,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     required this.nationalId,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
     required this.createdAt,
     this.updatedAt,
   });
@@ -735,6 +762,9 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     map['national_id'] = Variable<String>(nationalId);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -771,6 +801,9 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       nationalId: Value(nationalId),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -807,6 +840,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       nationalId: serializer.fromJson<String>(json['nationalId']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -838,6 +872,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       'nationalId': serializer.toJson<String>(nationalId),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -867,6 +902,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     String? nationalId,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => FarmerLocal(
@@ -893,6 +929,9 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     nationalId: nationalId ?? this.nationalId,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -951,6 +990,9 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -982,6 +1024,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           ..write('nationalId: $nationalId, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1013,6 +1056,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     nationalId,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   ]);
@@ -1043,6 +1087,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           other.nationalId == this.nationalId &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1071,6 +1116,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   final Value<String> nationalId;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -1098,6 +1144,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.nationalId = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1126,6 +1173,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.nationalId = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1154,6 +1202,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Expression<String>? nationalId,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1182,6 +1231,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       if (nationalId != null) 'national_id': nationalId,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1212,6 +1262,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Value<String>? nationalId,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -1240,6 +1291,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       nationalId: nationalId ?? this.nationalId,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1318,6 +1370,9 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1356,6 +1411,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
           ..write('nationalId: $nationalId, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1515,6 +1571,17 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1553,6 +1620,7 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     ownershipTypeId,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   ];
@@ -1668,6 +1736,15 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1741,6 +1818,10 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1772,6 +1853,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
   final String ownershipTypeId;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const FarmLocal({
@@ -1788,6 +1870,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     required this.ownershipTypeId,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
     required this.createdAt,
     this.updatedAt,
   });
@@ -1813,6 +1896,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     map['ownership_type_id'] = Variable<String>(ownershipTypeId);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -1841,6 +1927,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       ownershipTypeId: Value(ownershipTypeId),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1867,6 +1956,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       ownershipTypeId: serializer.fromJson<String>(json['ownershipTypeId']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -1888,6 +1978,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       'ownershipTypeId': serializer.toJson<String>(ownershipTypeId),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -1907,6 +1998,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     String? ownershipTypeId,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => FarmLocal(
@@ -1923,6 +2015,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     ownershipTypeId: ownershipTypeId ?? this.ownershipTypeId,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -1953,6 +2048,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1974,6 +2072,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           ..write('ownershipTypeId: $ownershipTypeId, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1995,6 +2094,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     ownershipTypeId,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   );
@@ -2015,6 +2115,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           other.ownershipTypeId == this.ownershipTypeId &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2033,6 +2134,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
   final Value<String> ownershipTypeId;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -2050,6 +2152,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     this.ownershipTypeId = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2068,6 +2171,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     required String ownershipTypeId,
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2093,6 +2197,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Expression<String>? ownershipTypeId,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -2111,6 +2216,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       if (ownershipTypeId != null) 'ownership_type_id': ownershipTypeId,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2131,6 +2237,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Value<String>? ownershipTypeId,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -2149,6 +2256,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       ownershipTypeId: ownershipTypeId ?? this.ownershipTypeId,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -2197,6 +2305,9 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -2225,6 +2336,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
           ..write('ownershipTypeId: $ownershipTypeId, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2393,6 +2505,17 @@ class $DamageReportsTable extends DamageReports
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -2432,6 +2555,7 @@ class $DamageReportsTable extends DamageReports
     notes,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   ];
@@ -2552,6 +2676,15 @@ class $DamageReportsTable extends DamageReports
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -2629,6 +2762,10 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -2662,6 +2799,7 @@ class DamageReportLocal extends DataClass
   final String notes;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageReportLocal({
@@ -2679,6 +2817,7 @@ class DamageReportLocal extends DataClass
     required this.notes,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
     required this.createdAt,
     this.updatedAt,
   });
@@ -2705,6 +2844,9 @@ class DamageReportLocal extends DataClass
     map['notes'] = Variable<String>(notes);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -2734,6 +2876,9 @@ class DamageReportLocal extends DataClass
       notes: Value(notes),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -2763,6 +2908,7 @@ class DamageReportLocal extends DataClass
       notes: serializer.fromJson<String>(json['notes']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -2785,6 +2931,7 @@ class DamageReportLocal extends DataClass
       'notes': serializer.toJson<String>(notes),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -2805,6 +2952,7 @@ class DamageReportLocal extends DataClass
     String? notes,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageReportLocal(
@@ -2822,6 +2970,9 @@ class DamageReportLocal extends DataClass
     notes: notes ?? this.notes,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -2853,6 +3004,9 @@ class DamageReportLocal extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2875,6 +3029,7 @@ class DamageReportLocal extends DataClass
           ..write('notes: $notes, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2897,6 +3052,7 @@ class DamageReportLocal extends DataClass
     notes,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   );
@@ -2918,6 +3074,7 @@ class DamageReportLocal extends DataClass
           other.notes == this.notes &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2937,6 +3094,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> notes;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -2955,6 +3113,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.notes = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2974,6 +3133,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     required String notes,
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3001,6 +3161,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<String>? notes,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -3020,6 +3181,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (notes != null) 'notes': notes,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -3041,6 +3203,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<String>? notes,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -3060,6 +3223,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       notes: notes ?? this.notes,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -3111,6 +3275,9 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -3140,6 +3307,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('notes: $notes, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -3299,6 +3467,17 @@ class $DamageItemsTable extends DamageItems
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -3337,6 +3516,7 @@ class $DamageItemsTable extends DamageItems
     estimatedLoss,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   ];
@@ -3468,6 +3648,15 @@ class $DamageItemsTable extends DamageItems
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -3541,6 +3730,10 @@ class $DamageItemsTable extends DamageItems
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -3572,6 +3765,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
   final double estimatedLoss;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageItemLocal({
@@ -3588,6 +3782,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     required this.estimatedLoss,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
     required this.createdAt,
     this.updatedAt,
   });
@@ -3609,6 +3804,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     map['estimated_loss'] = Variable<double>(estimatedLoss);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -3633,6 +3831,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       estimatedLoss: Value(estimatedLoss),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -3661,6 +3862,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       estimatedLoss: serializer.fromJson<double>(json['estimatedLoss']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -3682,6 +3884,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       'estimatedLoss': serializer.toJson<double>(estimatedLoss),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -3701,6 +3904,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     double? estimatedLoss,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageItemLocal(
@@ -3717,6 +3921,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     estimatedLoss: estimatedLoss ?? this.estimatedLoss,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -3753,6 +3960,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -3774,6 +3984,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           ..write('estimatedLoss: $estimatedLoss, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -3795,6 +4006,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     estimatedLoss,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   );
@@ -3815,6 +4027,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           other.estimatedLoss == this.estimatedLoss &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -3833,6 +4046,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
   final Value<double> estimatedLoss;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -3850,6 +4064,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     this.estimatedLoss = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3868,6 +4083,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     required double estimatedLoss,
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3895,6 +4111,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Expression<double>? estimatedLoss,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -3914,6 +4131,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       if (estimatedLoss != null) 'estimated_loss': estimatedLoss,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -3934,6 +4152,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Value<double>? estimatedLoss,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -3952,6 +4171,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       estimatedLoss: estimatedLoss ?? this.estimatedLoss,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -4002,6 +4222,9 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -4030,6 +4253,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
           ..write('estimatedLoss: $estimatedLoss, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -4121,6 +4345,17 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     requiredDuringInsert: false,
     defaultValue: const Constant('pending'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -4153,6 +4388,7 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     remotePath,
     uploadStatus,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   ];
@@ -4219,6 +4455,15 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -4271,6 +4516,10 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4297,6 +4546,7 @@ class DamageReportAttachmentLocal extends DataClass
   final String? remotePath;
   final String uploadStatus;
   final String syncStatus;
+  final String? lastSyncError;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageReportAttachmentLocal({
@@ -4307,6 +4557,7 @@ class DamageReportAttachmentLocal extends DataClass
     this.remotePath,
     required this.uploadStatus,
     required this.syncStatus,
+    this.lastSyncError,
     required this.createdAt,
     this.updatedAt,
   });
@@ -4324,6 +4575,9 @@ class DamageReportAttachmentLocal extends DataClass
     }
     map['upload_status'] = Variable<String>(uploadStatus);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -4344,6 +4598,9 @@ class DamageReportAttachmentLocal extends DataClass
           : Value(remotePath),
       uploadStatus: Value(uploadStatus),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -4364,6 +4621,7 @@ class DamageReportAttachmentLocal extends DataClass
       remotePath: serializer.fromJson<String?>(json['remotePath']),
       uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -4379,6 +4637,7 @@ class DamageReportAttachmentLocal extends DataClass
       'remotePath': serializer.toJson<String?>(remotePath),
       'uploadStatus': serializer.toJson<String>(uploadStatus),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -4392,6 +4651,7 @@ class DamageReportAttachmentLocal extends DataClass
     Value<String?> remotePath = const Value.absent(),
     String? uploadStatus,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageReportAttachmentLocal(
@@ -4402,6 +4662,9 @@ class DamageReportAttachmentLocal extends DataClass
     remotePath: remotePath.present ? remotePath.value : this.remotePath,
     uploadStatus: uploadStatus ?? this.uploadStatus,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -4424,6 +4687,9 @@ class DamageReportAttachmentLocal extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -4439,6 +4705,7 @@ class DamageReportAttachmentLocal extends DataClass
           ..write('remotePath: $remotePath, ')
           ..write('uploadStatus: $uploadStatus, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -4454,6 +4721,7 @@ class DamageReportAttachmentLocal extends DataClass
     remotePath,
     uploadStatus,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   );
@@ -4468,6 +4736,7 @@ class DamageReportAttachmentLocal extends DataClass
           other.remotePath == this.remotePath &&
           other.uploadStatus == this.uploadStatus &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -4481,6 +4750,7 @@ class DamageReportAttachmentsCompanion
   final Value<String?> remotePath;
   final Value<String> uploadStatus;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -4492,6 +4762,7 @@ class DamageReportAttachmentsCompanion
     this.remotePath = const Value.absent(),
     this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4504,6 +4775,7 @@ class DamageReportAttachmentsCompanion
     this.remotePath = const Value.absent(),
     this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4518,6 +4790,7 @@ class DamageReportAttachmentsCompanion
     Expression<String>? remotePath,
     Expression<String>? uploadStatus,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -4530,6 +4803,7 @@ class DamageReportAttachmentsCompanion
       if (remotePath != null) 'remote_path': remotePath,
       if (uploadStatus != null) 'upload_status': uploadStatus,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -4544,6 +4818,7 @@ class DamageReportAttachmentsCompanion
     Value<String?>? remotePath,
     Value<String>? uploadStatus,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -4556,6 +4831,7 @@ class DamageReportAttachmentsCompanion
       remotePath: remotePath ?? this.remotePath,
       uploadStatus: uploadStatus ?? this.uploadStatus,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -4586,6 +4862,9 @@ class DamageReportAttachmentsCompanion
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -4608,6 +4887,7 @@ class DamageReportAttachmentsCompanion
           ..write('remotePath: $remotePath, ')
           ..write('uploadStatus: $uploadStatus, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -5277,6 +5557,7 @@ typedef $$FarmersTableCreateCompanionBuilder =
       Value<String> nationalId,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5306,6 +5587,7 @@ typedef $$FarmersTableUpdateCompanionBuilder =
       Value<String> nationalId,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5432,6 +5714,11 @@ class $$FarmersTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5570,6 +5857,11 @@ class $$FarmersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5689,6 +5981,11 @@ class $$FarmersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -5750,6 +6047,7 @@ class $$FarmersTableTableManager
                 Value<String> nationalId = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5777,6 +6075,7 @@ class $$FarmersTableTableManager
                 nationalId: nationalId,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5806,6 +6105,7 @@ class $$FarmersTableTableManager
                 Value<String> nationalId = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5833,6 +6133,7 @@ class $$FarmersTableTableManager
                 nationalId: nationalId,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5874,6 +6175,7 @@ typedef $$FarmsTableCreateCompanionBuilder =
       required String ownershipTypeId,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5893,6 +6195,7 @@ typedef $$FarmsTableUpdateCompanionBuilder =
       Value<String> ownershipTypeId,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5968,6 +6271,11 @@ class $$FarmsTableFilterComposer extends Composer<_$AppDatabase, $FarmsTable> {
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6056,6 +6364,11 @@ class $$FarmsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6127,6 +6440,11 @@ class $$FarmsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -6175,6 +6493,7 @@ class $$FarmsTableTableManager
                 Value<String> ownershipTypeId = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6192,6 +6511,7 @@ class $$FarmsTableTableManager
                 ownershipTypeId: ownershipTypeId,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6211,6 +6531,7 @@ class $$FarmsTableTableManager
                 required String ownershipTypeId,
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6228,6 +6549,7 @@ class $$FarmsTableTableManager
                 ownershipTypeId: ownershipTypeId,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6270,6 +6592,7 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       required String notes,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6290,6 +6613,7 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<String> notes,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6371,6 +6695,11 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6464,6 +6793,11 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6538,6 +6872,11 @@ class $$DamageReportsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -6594,6 +6933,7 @@ class $$DamageReportsTableTableManager
                 Value<String> notes = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6612,6 +6952,7 @@ class $$DamageReportsTableTableManager
                 notes: notes,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6632,6 +6973,7 @@ class $$DamageReportsTableTableManager
                 required String notes,
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6650,6 +6992,7 @@ class $$DamageReportsTableTableManager
                 notes: notes,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6694,6 +7037,7 @@ typedef $$DamageItemsTableCreateCompanionBuilder =
       required double estimatedLoss,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6713,6 +7057,7 @@ typedef $$DamageItemsTableUpdateCompanionBuilder =
       Value<double> estimatedLoss,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6789,6 +7134,11 @@ class $$DamageItemsTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6877,6 +7227,11 @@ class $$DamageItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6954,6 +7309,11 @@ class $$DamageItemsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -7005,6 +7365,7 @@ class $$DamageItemsTableTableManager
                 Value<double> estimatedLoss = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7022,6 +7383,7 @@ class $$DamageItemsTableTableManager
                 estimatedLoss: estimatedLoss,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7041,6 +7403,7 @@ class $$DamageItemsTableTableManager
                 required double estimatedLoss,
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7058,6 +7421,7 @@ class $$DamageItemsTableTableManager
                 estimatedLoss: estimatedLoss,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7096,6 +7460,7 @@ typedef $$DamageReportAttachmentsTableCreateCompanionBuilder =
       Value<String?> remotePath,
       Value<String> uploadStatus,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -7109,6 +7474,7 @@ typedef $$DamageReportAttachmentsTableUpdateCompanionBuilder =
       Value<String?> remotePath,
       Value<String> uploadStatus,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -7155,6 +7521,11 @@ class $$DamageReportAttachmentsTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7213,6 +7584,11 @@ class $$DamageReportAttachmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -7259,6 +7635,11 @@ class $$DamageReportAttachmentsTableAnnotationComposer
 
   GeneratedColumn<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
     builder: (column) => column,
   );
 
@@ -7322,6 +7703,7 @@ class $$DamageReportAttachmentsTableTableManager
                 Value<String?> remotePath = const Value.absent(),
                 Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7333,6 +7715,7 @@ class $$DamageReportAttachmentsTableTableManager
                 remotePath: remotePath,
                 uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7346,6 +7729,7 @@ class $$DamageReportAttachmentsTableTableManager
                 Value<String?> remotePath = const Value.absent(),
                 Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7357,6 +7741,7 @@ class $$DamageReportAttachmentsTableTableManager
                 remotePath: remotePath,
                 uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

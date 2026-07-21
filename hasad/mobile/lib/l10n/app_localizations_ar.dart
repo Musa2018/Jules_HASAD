@@ -359,4 +359,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noData => 'لا توجد بيانات متاحة';
+
+  @override
+  String get syncInvalid => 'بيانات غير صالحة';
+
+  @override
+  String get syncErrorDetails => 'تفاصيل خطأ المزامنة';
+
+  @override
+  String get fixData => 'تصحيح البيانات';
 }

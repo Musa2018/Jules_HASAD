@@ -146,5 +146,8 @@
   "userCreatedSuccessfully": "User created successfully.",
   "errorCreatingUser": "Failed to create user.",
   "noUsers": "There are no users.",
-  "noData": "No data available"
+  "noData": "No data available",
+  "syncInvalid": "Invalid Data",
+  "syncErrorDetails": "Sync Error Details",
+  "fixData": "Fix Data"
 }

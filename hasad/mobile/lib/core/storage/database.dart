@@ -45,6 +45,7 @@ class Farmers extends Table {
   // Sync Status: pending, syncing, completed, failed, conflict
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -69,6 +70,7 @@ class Farms extends Table {
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -98,6 +100,7 @@ class DamageReports extends Table {
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -124,6 +127,7 @@ class DamageItems extends Table {
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -144,6 +148,7 @@ class DamageReportAttachments extends Table {
     const Constant('pending'),
   )(); // pending, uploading, completed, failed
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  TextColumn get lastSyncError => text().nullable()();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
@@ -185,7 +190,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -241,6 +246,13 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(farmers, farmers.governorateId);
         await m.addColumn(farmers, farmers.localityId);
         await m.addColumn(farmers, farmers.updatedAt);
+      }
+      if (from < 8) {
+        await m.addColumn(farmers, farmers.lastSyncError);
+        await m.addColumn(farms, farms.lastSyncError);
+        await m.addColumn(damageReports, damageReports.lastSyncError);
+        await m.addColumn(damageItems, damageItems.lastSyncError);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.lastSyncError);
       }
     },
     beforeOpen: (details) async {

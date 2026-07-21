@@ -359,4 +359,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noData => 'No data available';
+
+  @override
+  String get syncInvalid => 'Invalid Data';
+
+  @override
+  String get syncErrorDetails => 'Sync Error Details';
+
+  @override
+  String get fixData => 'Fix Data';
 }

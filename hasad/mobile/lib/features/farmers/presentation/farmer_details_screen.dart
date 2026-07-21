@@ -79,6 +79,8 @@ class _FarmerDetailsBody extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (farmer.syncStatus == 'failed' || farmer.syncStatus == 'invalid')
+            _SyncErrorBanner(farmer: farmer),
           _SyncStatusBadge(status: farmer.syncStatus),
           const SizedBox(height: 16),
           
@@ -198,6 +200,63 @@ class _FarmerDetailsBody extends ConsumerWidget {
   }
 }
 
+class _SyncErrorBanner extends StatelessWidget {
+  final Farmer farmer;
+
+  const _SyncErrorBanner({required this.farmer});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
+      color: Colors.red[50],
+      margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(
+        side: const BorderSide(color: Colors.red),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.syncErrorDetails,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              farmer.lastSyncError ?? l10n.syncError,
+              style: TextStyle(color: Colors.red[900]),
+            ),
+            if (farmer.syncStatus == 'invalid') ...[
+              const SizedBox(height: 8),
+              ElevatedButton.icon(
+                onPressed: () => context.push(AppRoutes.editFarmer, extra: farmer),
+                icon: const Icon(Icons.edit_note),
+                label: Text(l10n.fixData),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _Section extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -292,6 +351,11 @@ class _SyncStatusBadge extends StatelessWidget {
         color = Colors.blue;
         label = l10n.syncing;
         icon = Icons.sync;
+        break;
+      case 'invalid':
+        color = Colors.deepOrange;
+        label = l10n.syncInvalid;
+        icon = Icons.warning_amber;
         break;
       case 'failed':
       case 'conflict':

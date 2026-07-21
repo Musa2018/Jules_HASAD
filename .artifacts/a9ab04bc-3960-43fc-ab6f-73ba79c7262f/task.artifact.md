@@ -1,9 +1,22 @@
-# Task - Farmers Create Sync Validation Fix
+# Task - Farmers Offline Sync Invalid Data Handling Hardening
 
-- [ ] Create `FarmerValidator` in domain layer for reusable validation logic.
-- [ ] Update `FarmerFormScreen` to use `FarmerValidator` for immediate feedback.
-- [ ] Update `OfflineFirstFarmerRepository` to use `FarmerValidator` before local storage and sync queue.
-- [ ] Add unit tests for validation cases in `offline_first_farmer_repository_test.dart`.
-- [ ] Run `flutter analyze` and tests.
-- [ ] Update `PROJECT_STATUS.md` and `AI_CONTEXT.md`.
-- [ ] Commit and push changes to `farmers` branch.
+- [x] Storage & Persistence Hardening
+    - [x] Update `database.dart` to schema v8 with `lastSyncError` columns.
+    - [x] Implement safe `onUpgrade` logic in `database.dart`.
+    - [x] Update `BackgroundSyncService.addToQueue` to upsert pending/invalid tasks.
+- [x] Domain & Data Layer Alignment
+    - [x] Add `lastSyncError` to `Farmer` domain model and update JSON serialization.
+    - [x] Define `FarmerValidationException` (and base `ValidationException`).
+    - [x] Update `RemoteFarmerRepository` to throw `FarmerValidationException` on 400.
+    - [x] Update `OfflineFirstFarmerRepository` mapping logic (companion/domain).
+- [x] Sync Logic Refinement
+    - [x] Update `BackgroundSyncService` to catch validation exceptions.
+    - [x] Implement `invalid` status logic in `BackgroundSyncService._processItem`.
+    - [x] Ensure `invalid` items are excluded from `processQueue` loop.
+- [x] UI Feedback & Error Recovery
+    - [x] Add localized strings for `invalid` status and error details.
+    - [x] Update `FarmerDetailsScreen` with `invalid` badge and warning banner.
+- [x] Verification & Documentation
+    - [x] Add unit tests for validation failures vs network failures in `background_sync_service_test.dart`.
+    - [x] Run `flutter analyze` and tests.
+    - [x] Update `PROJECT_STATUS.md` and `AI_CONTEXT.md`.

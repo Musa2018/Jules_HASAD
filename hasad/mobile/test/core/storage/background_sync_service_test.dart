@@ -533,4 +533,125 @@ void main() {
         .getSingle();
     expect(f.syncStatus, 'failed');
   });
+
+  test(
+    'processQueue marks item as invalid on FarmerValidationException and stops retrying',
+    () async {
+      const localId = 'invalid-1';
+      final farmer = Farmer(
+        id: localId,
+        idTypeId: 1,
+        idNumber: 'I1',
+        firstNameAr: 'Invalid',
+        fatherNameAr: '',
+        grandfatherNameAr: '',
+        familyNameAr: '',
+        firstNameEn: '',
+        fatherNameEn: '',
+        grandfatherNameEn: '',
+        familyNameEn: '',
+        birthDate: DateTime(1990),
+        gender: Gender.male,
+        phoneNumber: '',
+        familySize: 1,
+        governorateId: 'G1',
+        localityId: 'L1',
+        address: '',
+        rowVersion: '',
+      );
+
+      await db.into(db.farmers).insert(
+        FarmersCompanion.insert(
+          id: localId,
+          idTypeId: const Value(1),
+          idNumber: const Value('I1'),
+          firstNameAr: const Value('Invalid'),
+          fatherNameAr: const Value(''),
+          grandfatherNameAr: const Value(''),
+          familyNameAr: const Value(''),
+          firstNameEn: const Value(''),
+          fatherNameEn: const Value(''),
+          grandfatherNameEn: const Value(''),
+          familyNameEn: const Value(''),
+          birthDate: Value(DateTime(1990)),
+          gender: const Value(1),
+          phoneNumber: const Value(''),
+          familySize: const Value(1),
+          governorateId: const Value('G1'),
+          localityId: const Value('L1'),
+          address: const Value(''),
+          syncStatus: const Value('pending'),
+        ),
+      );
+      await db.into(db.syncQueue).insert(
+        SyncQueueCompanion.insert(
+          id: 'q-invalid',
+          localId: localId,
+          entityType: 'farmer',
+          operation: 'create',
+          data: jsonEncode(farmer.toJson()),
+        ),
+      );
+
+      when(
+        () => mockConnectivity.checkConnectivity(),
+      ).thenAnswer((_) async => [ConnectivityResult.wifi]);
+      when(
+        () => mockFarmerRepo.createFarmer(any()),
+      ).thenThrow(FarmerValidationException(['Gender must be Male or Female.']));
+
+      await syncService.processQueue();
+
+      final f = await (db.select(db.farmers)..where((t) => t.id.equals(localId)))
+          .getSingle();
+      expect(f.syncStatus, 'invalid');
+      expect(f.lastSyncError, contains('Gender must be Male or Female.'));
+
+      final q = await db.select(db.syncQueue).getSingle();
+      expect(q.status, 'invalid');
+
+      // Try again, it should NOT be retried
+      clearInteractions(mockFarmerRepo);
+      await syncService.processQueue();
+      verifyNever(() => mockFarmerRepo.createFarmer(any()));
+    },
+  );
+
+  test('addToQueue upserts existing pending/failed/invalid tasks', () async {
+    const localId = 'upsert-1';
+    final data1 = {'name': 'Initial'};
+    final data2 = {'name': 'Updated'};
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.none]); // No wifi to stop processing
+
+    await syncService.addToQueue(
+      localId: localId,
+      entityType: 'farmer',
+      operation: 'create',
+      data: data1,
+    );
+
+    var items = await db.select(db.syncQueue).get();
+    expect(items.length, 1);
+    expect(jsonDecode(items.first.data)['name'], 'Initial');
+
+    // Manually mark as failed
+    await (db.update(db.syncQueue)..where((t) => t.localId.equals(localId)))
+        .write(const SyncQueueCompanion(status: Value('failed')));
+
+    await syncService.addToQueue(
+      localId: localId,
+      entityType: 'farmer',
+      operation: 'update',
+      data: data2,
+    );
+
+    items = await db.select(db.syncQueue).get();
+    expect(items.length, 1); // Should still be 1
+    expect(items.first.operation, 'update');
+    expect(jsonDecode(items.first.data)['name'], 'Updated');
+    expect(items.first.status, 'pending'); // Reset to pending
+  });
 }

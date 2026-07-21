@@ -15,6 +15,10 @@ class FarmerException implements Exception {
       errors.isEmpty ? 'An error occurred.' : errors.join('\n');
 }
 
+class FarmerValidationException extends FarmerException {
+  FarmerValidationException(super.errors);
+}
+
 abstract class FarmerRepository {
   Future<List<domain.Farmer>> getFarmers({
     int pageNumber = 1,
@@ -152,6 +156,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       address: e.address,
       rowVersion: e.rowVersion,
       syncStatus: e.syncStatus,
+      lastSyncError: e.lastSyncError,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );
@@ -179,6 +184,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       localityId: Value(farmer.localityId),
       address: Value(farmer.address),
       rowVersion: Value(farmer.rowVersion),
+      lastSyncError: Value(farmer.lastSyncError),
       updatedAt: Value(farmer.updatedAt),
     );
   }

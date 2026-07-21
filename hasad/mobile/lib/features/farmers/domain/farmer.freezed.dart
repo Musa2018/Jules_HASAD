@@ -44,6 +44,7 @@ mixin _$Farmer {
   String get address => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
+  String? get lastSyncError => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -84,6 +85,7 @@ abstract class $FarmerCopyWith<$Res> {
     String address,
     String rowVersion,
     String syncStatus,
+    String? lastSyncError,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -126,6 +128,7 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
     Object? address = null,
     Object? rowVersion = null,
     Object? syncStatus = null,
+    Object? lastSyncError = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -219,6 +222,10 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
                 ? _value.syncStatus
                 : syncStatus // ignore: cast_nullable_to_non_nullable
                       as String,
+            lastSyncError: freezed == lastSyncError
+                ? _value.lastSyncError
+                : lastSyncError // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -264,6 +271,7 @@ abstract class _$$FarmerImplCopyWith<$Res> implements $FarmerCopyWith<$Res> {
     String address,
     String rowVersion,
     String syncStatus,
+    String? lastSyncError,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -305,6 +313,7 @@ class __$$FarmerImplCopyWithImpl<$Res>
     Object? address = null,
     Object? rowVersion = null,
     Object? syncStatus = null,
+    Object? lastSyncError = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -398,6 +407,10 @@ class __$$FarmerImplCopyWithImpl<$Res>
             ? _value.syncStatus
             : syncStatus // ignore: cast_nullable_to_non_nullable
                   as String,
+        lastSyncError: freezed == lastSyncError
+            ? _value.lastSyncError
+            : lastSyncError // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -437,6 +450,7 @@ class _$FarmerImpl extends _Farmer {
     required this.address,
     this.rowVersion = '',
     this.syncStatus = 'completed',
+    this.lastSyncError,
     this.createdAt,
     this.updatedAt,
   }) : super._();
@@ -494,13 +508,15 @@ class _$FarmerImpl extends _Farmer {
   @JsonKey()
   final String syncStatus;
   @override
+  final String? lastSyncError;
+  @override
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'Farmer(id: $id, serverId: $serverId, clientId: $clientId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Farmer(id: $id, serverId: $serverId, clientId: $clientId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -549,6 +565,8 @@ class _$FarmerImpl extends _Farmer {
                 other.rowVersion == rowVersion) &&
             (identical(other.syncStatus, syncStatus) ||
                 other.syncStatus == syncStatus) &&
+            (identical(other.lastSyncError, lastSyncError) ||
+                other.lastSyncError == lastSyncError) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -581,6 +599,7 @@ class _$FarmerImpl extends _Farmer {
     address,
     rowVersion,
     syncStatus,
+    lastSyncError,
     createdAt,
     updatedAt,
   ]);
@@ -623,6 +642,7 @@ abstract class _Farmer extends Farmer {
     required final String address,
     final String rowVersion,
     final String syncStatus,
+    final String? lastSyncError,
     final DateTime? createdAt,
     final DateTime? updatedAt,
   }) = _$FarmerImpl;
@@ -674,6 +694,8 @@ abstract class _Farmer extends Farmer {
   String get rowVersion;
   @override
   String get syncStatus;
+  @override
+  String? get lastSyncError;
   @override
   DateTime? get createdAt;
   @override

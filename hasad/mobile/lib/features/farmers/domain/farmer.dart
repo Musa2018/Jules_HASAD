@@ -29,6 +29,7 @@ class Farmer with _$Farmer {
     required String address,
     @Default('') String rowVersion,
     @Default('completed') String syncStatus,
+    String? lastSyncError,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _Farmer;

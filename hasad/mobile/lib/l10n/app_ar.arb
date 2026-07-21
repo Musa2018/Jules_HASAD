@@ -114,5 +114,8 @@
   "userCreatedSuccessfully": "تم إنشاء المستخدم بنجاح.",
   "errorCreatingUser": "فشل إنشاء المستخدم.",
   "noUsers": "لا يوجد مستخدمون.",
-  "noData": "لا توجد بيانات متاحة"
+  "noData": "لا توجد بيانات متاحة",
+  "syncInvalid": "بيانات غير صالحة",
+  "syncErrorDetails": "تفاصيل خطأ المزامنة",
+  "fixData": "تصحيح البيانات"
 }

@@ -7,6 +7,15 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.9 — COMPLETED
+Offline Sync Invalid Data Handling Hardening:
+- **Schema Upgrade (v8)**: Added `lastSyncError` columns to all entities to persist exact backend failure reasons.
+- **Validation-Driven Sync**: Background sync now distinguishes between transient (network) and permanent (business rule) failures. HTTP 400 errors mark items as `invalid` and stop retries.
+- **Task Upsertion**: Enhanced `SyncQueue` logic to update existing pending/invalid tasks instead of creating duplicates, preventing queue bloat.
+- **Error Visibility**: Implemented prominent error banners in `FarmerDetailsScreen` allowing users to see specific backend validation messages and navigate directly to the edit form.
+- **Safe Migration**: Verified safe Drift schema migration from v7 to v8.
+- Tests: Added coverage for validation failure handling, network retry logic, and queue upsertion.
+
 ## Sprint 10.8 — COMPLETED
 Farmers Create Sync Validation Fix:
 - **Two-Level Validation**: Implemented mandatory validation in both `FarmerFormScreen` (UI) and `OfflineFirstFarmerRepository` (Data layer).

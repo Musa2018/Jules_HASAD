@@ -133,6 +133,9 @@ class RemoteFarmerRepository implements FarmerRepository {
 
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
+    if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {
+      throw FarmerValidationException(_errorsFromEnvelope(body));
+    }
     if (body is Map<String, dynamic>) {
       return _errorsFromEnvelope(body);
     }

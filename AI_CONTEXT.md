@@ -36,7 +36,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 ## 3. Current Project Status
 - **Current Branch**: `farmers`
 - **Latest Completed Sprint**: Sprint 10.8 — Farmers Create Sync Validation Fix
-- **Latest Commit Hash**: ` farmers` (Branch: farmers)
+- **Latest Commit Hash**: `3a9af74` (Branch: farmers)
 - **main**: Stable production-ready code.
 - **farmers**: Active development branch for the Farmers module.
 

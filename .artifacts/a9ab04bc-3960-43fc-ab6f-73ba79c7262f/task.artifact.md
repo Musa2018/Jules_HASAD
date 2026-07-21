@@ -1,10 +1,16 @@
-# Task - Implement Sync DTO Mapping Layer
+# Task - Farmer Update Sync Hardening
 
-- [x] Create `farmer_sync_dtos.dart` with mapping logic for Farmer, Farm, and DamageReport.
-- [x] Update `RemoteFarmerRepository` to use `FarmerSyncDto`.
-- [x] Update `RemoteFarmRepository` to use `FarmSyncDto`.
-- [x] Update `RemoteDamageReportRepository` to use `DamageReportSyncDto`.
-- [x] Verify payload normalization (Date formatting, Gender validation).
-- [x] Run `flutter analyze` and tests.
-- [x] Update `PROJECT_STATUS.md` and `CHANGELOG.md`.
-- [x] Commit and push to `farmers` branch.
+- [ ] Domain & DTO Hardening
+    - [ ] Add `serverId`, `syncStatus`, and `lastSyncError` to `Farm`, `DamageReport`, and `DamageItem` domain models.
+    - [ ] Update `farmer_sync_dtos.dart` to use `serverId` for all update operations.
+- [ ] Repository Mapping Refinement
+    - [ ] Update `OfflineFirstFarmRepository` mapping logic.
+    - [ ] Update `OfflineFirstDamageReportRepository` mapping logic.
+- [ ] Metadata Sync Verification
+    - [ ] Ensure `BackgroundSyncService` correctly reconciles metadata for all entities after sync.
+- [ ] Verification & Tests
+    - [ ] Run `build_runner`.
+    - [ ] Update and run `farmer_sync_dtos_test.dart`.
+    - [ ] Run full sync test suite.
+- [ ] Documentation
+    - [ ] Update `PROJECT_STATUS.md` and `CHANGELOG.md`.

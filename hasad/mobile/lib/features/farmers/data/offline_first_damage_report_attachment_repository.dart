@@ -22,10 +22,8 @@ class OfflineFirstDamageReportAttachmentRepository
     await _db
         .into(_db.damageReportAttachments)
         .insert(
-          DamageReportAttachmentsCompanion.insert(
-            id: localId,
-            damageReportId: attachment.damageReportId,
-            localPath: attachment.localPath,
+          _mapToCompanion(attachment).copyWith(
+            id: Value(localId),
             uploadStatus: const Value('pending'),
             syncStatus: const Value('pending'),
           ),
@@ -83,13 +81,28 @@ class OfflineFirstDamageReportAttachmentRepository
         .map(
           (e) => domain.DamageReportAttachment(
             id: e.id,
+            serverId: e.serverId,
             damageReportId: e.damageReportId,
             localPath: e.localPath,
             remotePath: e.remotePath,
             uploadStatus: e.uploadStatus,
             syncStatus: e.syncStatus,
+            lastSyncError: e.lastSyncError,
           ),
         )
         .toList();
+  }
+
+  DamageReportAttachmentsCompanion _mapToCompanion(domain.DamageReportAttachment attachment) {
+    return DamageReportAttachmentsCompanion.insert(
+      id: attachment.id,
+      serverId: Value(attachment.serverId),
+      damageReportId: attachment.damageReportId,
+      localPath: attachment.localPath,
+      remotePath: Value(attachment.remotePath),
+      uploadStatus: Value(attachment.uploadStatus),
+      syncStatus: Value(attachment.syncStatus),
+      lastSyncError: Value(attachment.lastSyncError),
+    );
   }
 }

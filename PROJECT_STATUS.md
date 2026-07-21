@@ -7,6 +7,14 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.14 — COMPLETED
+Entity Metadata Hardening & Update Sync Fix:
+- **Universal Metadata Mapping**: Added `serverId`, `syncStatus`, and `lastSyncError` to `Farm`, `DamageReport`, and `DamageItem` domain models to ensure consistency with the `Farmer` entity.
+- **Authority ID Reconciliation**: Hardened `Update` DTO mapping to use `serverId` for the primary resource identification, resolving `404 Not Found` errors during update synchronization.
+- **Refined Repository Mappings**: Updated offline repositories to correctly map and preserve synchronization metadata from the local database into domain models.
+- **Concurrency Token Flow**: Verified that `rowVersion` (Optimistic Concurrency Token) is correctly passed in `PUT` requests for all entity types.
+- **Regression Tests**: Added unit tests for Update payload generation for all entity types.
+
 ## Sprint 10.13 — COMPLETED
 Sync DTO Mapping Layer Implementation:
 - **Decoupled Sync Payloads**: Implemented `FarmerSyncDto`, `FarmSyncDto`, and `DamageReportSyncDto` to strictly map local domain entities to backend command contracts.

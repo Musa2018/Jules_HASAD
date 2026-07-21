@@ -35,8 +35,8 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 3. Current Project Status
 - **Current Branch**: `farmers`
-- **Latest Completed Sprint**: Sprint 10.13 — Sync DTO Mapping
-- **Latest Commit Hash**: `e92c03b` (Branch: farmers)
+- **Latest Completed Sprint**: Sprint 10.14 — Metadata Hardening
+- **Latest Commit Hash**: ` farmers` (Branch: farmers)
 - **main**: Stable production-ready code.
 - **farmers**: Active development branch for the Farmers module.
 
@@ -57,6 +57,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Sprint 10.11 - Sync Lifecycle Consistency & Soft-Delete**: Standardized sync behavior across all entities. Implemented soft-delete to ensure remote deletion completes before local hard delete. Generalized "Preserve CREATE" logic and unified validation handling with `SyncValidationException`. Migrated Drift to schema **v9**.
 - **Sprint 10.12 - Universal Sync Lifecycle & Soft-Delete Hardening**: Finalized sync logic with robust local cascades for relational data (Damage Reports) and generic validation handling. Implemented immediate lifecycle collapsing for unsynced records and safe local file cleanup for deleted attachments.
 - **Sprint 10.13 - Sync DTO Mapping Layer**: Implemented dedicated DTO mapping for all synchronized entities (Farmers, Farms, DamageReports). Standardized date formatting (`yyyy-MM-dd`) and gender validation to match strict backend command contracts, resolving parsing and payload pollution issues.
+- **Sprint 10.14 - Entity Metadata Hardening & Update Sync Fix**: Added `serverId` and sync metadata to all Farmer-related domain models. Hardened the `Update` flow to correctly use server-assigned Authority IDs, resolving sync failures caused by ClientID/ServerID mismatches during updates.
 
 ## 5. Farmers Module Status
 - **Backend Capabilities**:

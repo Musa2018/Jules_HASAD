@@ -9,6 +9,7 @@ part of 'damage_item.dart';
 _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
     _$DamageItemImpl(
       id: json['id'] as String,
+      serverId: json['serverId'] as String?,
       damageReportId: json['damageReportId'] as String,
       agriculturalSectorId: json['agriculturalSectorId'] as String,
       subSectorId: json['subSectorId'] as String,
@@ -19,11 +20,14 @@ _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
       quantity: (json['quantity'] as num).toDouble(),
       estimatedLoss: (json['estimatedLoss'] as num).toDouble(),
       rowVersion: json['rowVersion'] as String? ?? '',
+      syncStatus: json['syncStatus'] as String? ?? 'completed',
+      lastSyncError: json['lastSyncError'] as String?,
     );
 
 Map<String, dynamic> _$$DamageItemImplToJson(_$DamageItemImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'serverId': instance.serverId,
       'damageReportId': instance.damageReportId,
       'agriculturalSectorId': instance.agriculturalSectorId,
       'subSectorId': instance.subSectorId,
@@ -34,4 +38,6 @@ Map<String, dynamic> _$$DamageItemImplToJson(_$DamageItemImpl instance) =>
       'quantity': instance.quantity,
       'estimatedLoss': instance.estimatedLoss,
       'rowVersion': instance.rowVersion,
+      'syncStatus': instance.syncStatus,
+      'lastSyncError': instance.lastSyncError,
     };

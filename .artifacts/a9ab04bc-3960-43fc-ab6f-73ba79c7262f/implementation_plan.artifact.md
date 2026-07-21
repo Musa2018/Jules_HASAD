@@ -1,55 +1,52 @@
-# Implementation Plan - Sync DTO Mapping Layer
+# Implementation Plan - Sprint 10.14: Entity Metadata Hardening & Update Sync Fix
 
-Implement a dedicated DTO mapping layer for Farmers, Farms, and Damage Reports to ensure synchronization payloads strictly match the backend command contracts.
+Resolve synchronization failures for `Update` operations by ensuring all entities preserve server-side metadata (`serverId`, `rowVersion`) and use strictly mapped DTOs.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> This change strictly decouples the Offline Domain Entities from the Synchronization payloads. `Farmer.toJson()` will no longer be used for API requests.
-
-- **Date Formatting**: `BirthDate` will be formatted as `yyyy-MM-dd` to match .NET `DateOnly`.
-- **Gender Validation**: Payloads will be blocked or defaulted if `Gender.unspecified` is present, as the backend forbids it.
-- **Payload Sanitization**: Metadata like `syncStatus` and `lastSyncError` will be excluded from all sync payloads.
+> I will add `serverId`, `syncStatus`, and `lastSyncError` to the `Farm`, `DamageReport`, and `DamageItem` domain models. This is necessary to correctly map the server's Authority ID during updates, preventing `404 Not Found` errors.
 
 ## Proposed Changes
 
-### 1. Data Layer Mappings
+### 1. Domain Model Refinement
 
-#### [NEW] [farmer_sync_dtos.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_sync_dtos.dart)
-- Create `FarmerSyncDto` with static methods:
-    - `toCreateJson(Farmer farmer)`: Maps to `CreateFarmerCommand`.
-    - `toUpdateJson(Farmer farmer)`: Maps to `UpdateFarmerCommand`.
-- Create `FarmSyncDto` with static methods:
-    - `toCreateJson(Farm farm)`: Maps to `CreateFarmCommand`.
-    - `toUpdateJson(Farm farm)`: Maps to `UpdateFarmCommand`.
-- Create `DamageReportSyncDto` with static methods:
-    - `toCreateJson(DamageReport report)`: Maps to `CreateDamageReportCommand`.
-    - `toUpdateJson(DamageReport report)`: Maps to `UpdateDamageReportCommand`.
+#### [MODIFY] [farm.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/farm.dart)
+#### [MODIFY] [damage_report.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/damage_report.dart)
+#### [MODIFY] [damage_item.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/domain/damage_item.dart)
+- Add `String? serverId`.
+- Add `String? lastSyncError`.
+- Ensure `@Default('completed') String syncStatus` is present.
 
-### 2. Repository Refactoring
+### 2. DTO Mapping Fixes
 
-#### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart)
-- Update `createFarmer` and `updateFarmer` to use `FarmerSyncDto`.
+#### [MODIFY] [farmer_sync_dtos.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_sync_dtos.dart)
+- `FarmSyncDto.toUpdateJson`: Change `'id': farm.id` to `'id': farm.serverId ?? farm.id`.
+- `DamageReportSyncDto.toUpdateJson`: Change `'id': report.id` to `'id': report.serverId ?? report.id`.
+- `DamageReportSyncDto.itemToUpdateJson`: Change `'id': item.id` to `'id': item.serverId ?? item.id`.
 
-#### [MODIFY] [remote_farm_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farm_repository.dart)
-- Update `createFarm` and `updateFarm` to use `FarmSyncDto`.
+### 3. Repository Mapping Updates
 
-#### [MODIFY] [remote_damage_report_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_damage_report_repository.dart)
-- Update `createDamageReport`, `updateDamageReport`, `addDamageItem`, and `updateDamageItem` to use `DamageReportSyncDto`.
+#### [MODIFY] [offline_first_farm_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/offline_first_farm_repository.dart)
+#### [MODIFY] [offline_first_damage_report_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/offline_first_damage_report_repository.dart)
+- Update `_mapToDomain` and `_mapToCompanion` to handle `serverId`, `syncStatus`, and `lastSyncError`.
+- Ensure `lastSyncError` is cleared on `update` (just as implemented for Farmers in 10.10).
 
-### 3. Synchronization Engine
+### 4. Background Sync Service Hardening
 
 #### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
-- Ensure the `data` stored in `SyncQueue` remains the full entity JSON for resilience (so it can be re-mapped if the DTO logic changes), but the Repositories will perform the final DTO mapping before the HTTP call.
+- Ensure successful `create` operations for Farm/Report/Item correctly update the local record with the returned `serverId` and `rowVersion`.
 
 ## Verification Plan
 
 ### Automated Tests
-- **Flutter**:
-    - Update/Add tests in `remote_farmer_repository_test.dart` to verify exact payload generation.
-    - Run `flutter test`.
-- **Backend**:
-    - Run existing command tests to ensure they still accept the new payloads.
+- Run `flutter pub run build_runner build`.
+- Update `farmer_sync_dtos_test.dart` to verify `Update` payloads for all entities.
+- Run the full test suite in `background_sync_service_test.dart`.
 
-### Code Analysis
-- Run `flutter analyze`.
+### Manual Verification Flow
+1. Create a Farm offline.
+2. Sync to server.
+3. Confirm `serverId` is stored in the local DB.
+4. Edit the Farm offline.
+5. Sync again and verify the `PUT` request uses the `serverId`.

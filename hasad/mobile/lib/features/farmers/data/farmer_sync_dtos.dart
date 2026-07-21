@@ -82,7 +82,7 @@ class FarmSyncDto {
 
   static Map<String, dynamic> toUpdateJson(Farm farm) {
     return {
-      'id': farm.id, // Assuming farm.id is already the server ID if it was synced, or handled by repository
+      'id': farm.serverId ?? farm.id,
       'clientId': farm.id,
       'farmerId': farm.farmerId,
       'name': farm.name,
@@ -116,7 +116,7 @@ class DamageReportSyncDto {
 
   static Map<String, dynamic> toUpdateJson(DamageReport report) {
     return {
-      'id': report.id,
+      'id': report.serverId ?? report.id,
       'damageDate': report.damageDate.toIso8601String(),
       'governorateId': report.governorateId,
       'localityId': report.localityId,
@@ -157,7 +157,7 @@ class DamageReportSyncDto {
 
   static Map<String, dynamic> itemToUpdateJson(DamageItem item) {
     return {
-      'id': item.id,
+      'id': item.serverId ?? item.id,
       'agriculturalSectorId': item.agriculturalSectorId,
       'subSectorId': item.subSectorId,
       'cropId': item.cropId,

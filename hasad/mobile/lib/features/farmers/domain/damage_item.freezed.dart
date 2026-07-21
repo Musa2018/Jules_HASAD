@@ -22,6 +22,7 @@ DamageItem _$DamageItemFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$DamageItem {
   String get id => throw _privateConstructorUsedError; // ClientId
+  String? get serverId => throw _privateConstructorUsedError;
   String get damageReportId => throw _privateConstructorUsedError;
   String get agriculturalSectorId => throw _privateConstructorUsedError;
   String get subSectorId => throw _privateConstructorUsedError;
@@ -32,6 +33,8 @@ mixin _$DamageItem {
   double get quantity => throw _privateConstructorUsedError;
   double get estimatedLoss => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
+  String get syncStatus => throw _privateConstructorUsedError;
+  String? get lastSyncError => throw _privateConstructorUsedError;
 
   /// Serializes this DamageItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +55,7 @@ abstract class $DamageItemCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String damageReportId,
     String agriculturalSectorId,
     String subSectorId,
@@ -62,6 +66,8 @@ abstract class $DamageItemCopyWith<$Res> {
     double quantity,
     double estimatedLoss,
     String rowVersion,
+    String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -81,6 +87,7 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? damageReportId = null,
     Object? agriculturalSectorId = null,
     Object? subSectorId = null,
@@ -91,6 +98,8 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
     Object? quantity = null,
     Object? estimatedLoss = null,
     Object? rowVersion = null,
+    Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -98,6 +107,10 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
+            serverId: freezed == serverId
+                ? _value.serverId
+                : serverId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             damageReportId: null == damageReportId
                 ? _value.damageReportId
                 : damageReportId // ignore: cast_nullable_to_non_nullable
@@ -138,6 +151,14 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
                 ? _value.rowVersion
                 : rowVersion // ignore: cast_nullable_to_non_nullable
                       as String,
+            syncStatus: null == syncStatus
+                ? _value.syncStatus
+                : syncStatus // ignore: cast_nullable_to_non_nullable
+                      as String,
+            lastSyncError: freezed == lastSyncError
+                ? _value.lastSyncError
+                : lastSyncError // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -155,6 +176,7 @@ abstract class _$$DamageItemImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String damageReportId,
     String agriculturalSectorId,
     String subSectorId,
@@ -165,6 +187,8 @@ abstract class _$$DamageItemImplCopyWith<$Res>
     double quantity,
     double estimatedLoss,
     String rowVersion,
+    String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -183,6 +207,7 @@ class __$$DamageItemImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? damageReportId = null,
     Object? agriculturalSectorId = null,
     Object? subSectorId = null,
@@ -193,6 +218,8 @@ class __$$DamageItemImplCopyWithImpl<$Res>
     Object? quantity = null,
     Object? estimatedLoss = null,
     Object? rowVersion = null,
+    Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _$DamageItemImpl(
@@ -200,6 +227,10 @@ class __$$DamageItemImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
+        serverId: freezed == serverId
+            ? _value.serverId
+            : serverId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         damageReportId: null == damageReportId
             ? _value.damageReportId
             : damageReportId // ignore: cast_nullable_to_non_nullable
@@ -240,6 +271,14 @@ class __$$DamageItemImplCopyWithImpl<$Res>
             ? _value.rowVersion
             : rowVersion // ignore: cast_nullable_to_non_nullable
                   as String,
+        syncStatus: null == syncStatus
+            ? _value.syncStatus
+            : syncStatus // ignore: cast_nullable_to_non_nullable
+                  as String,
+        lastSyncError: freezed == lastSyncError
+            ? _value.lastSyncError
+            : lastSyncError // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -250,6 +289,7 @@ class __$$DamageItemImplCopyWithImpl<$Res>
 class _$DamageItemImpl implements _DamageItem {
   const _$DamageItemImpl({
     required this.id,
+    this.serverId,
     required this.damageReportId,
     required this.agriculturalSectorId,
     required this.subSectorId,
@@ -260,6 +300,8 @@ class _$DamageItemImpl implements _DamageItem {
     required this.quantity,
     required this.estimatedLoss,
     this.rowVersion = '',
+    this.syncStatus = 'completed',
+    this.lastSyncError,
   });
 
   factory _$DamageItemImpl.fromJson(Map<String, dynamic> json) =>
@@ -268,6 +310,8 @@ class _$DamageItemImpl implements _DamageItem {
   @override
   final String id;
   // ClientId
+  @override
+  final String? serverId;
   @override
   final String damageReportId;
   @override
@@ -289,10 +333,15 @@ class _$DamageItemImpl implements _DamageItem {
   @override
   @JsonKey()
   final String rowVersion;
+  @override
+  @JsonKey()
+  final String syncStatus;
+  @override
+  final String? lastSyncError;
 
   @override
   String toString() {
-    return 'DamageItem(id: $id, damageReportId: $damageReportId, agriculturalSectorId: $agriculturalSectorId, subSectorId: $subSectorId, cropId: $cropId, damageTypeId: $damageTypeId, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion)';
+    return 'DamageItem(id: $id, serverId: $serverId, damageReportId: $damageReportId, agriculturalSectorId: $agriculturalSectorId, subSectorId: $subSectorId, cropId: $cropId, damageTypeId: $damageTypeId, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
   }
 
   @override
@@ -301,6 +350,8 @@ class _$DamageItemImpl implements _DamageItem {
         (other.runtimeType == runtimeType &&
             other is _$DamageItemImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.serverId, serverId) ||
+                other.serverId == serverId) &&
             (identical(other.damageReportId, damageReportId) ||
                 other.damageReportId == damageReportId) &&
             (identical(other.agriculturalSectorId, agriculturalSectorId) ||
@@ -319,7 +370,11 @@ class _$DamageItemImpl implements _DamageItem {
             (identical(other.estimatedLoss, estimatedLoss) ||
                 other.estimatedLoss == estimatedLoss) &&
             (identical(other.rowVersion, rowVersion) ||
-                other.rowVersion == rowVersion));
+                other.rowVersion == rowVersion) &&
+            (identical(other.syncStatus, syncStatus) ||
+                other.syncStatus == syncStatus) &&
+            (identical(other.lastSyncError, lastSyncError) ||
+                other.lastSyncError == lastSyncError));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -327,6 +382,7 @@ class _$DamageItemImpl implements _DamageItem {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    serverId,
     damageReportId,
     agriculturalSectorId,
     subSectorId,
@@ -337,6 +393,8 @@ class _$DamageItemImpl implements _DamageItem {
     quantity,
     estimatedLoss,
     rowVersion,
+    syncStatus,
+    lastSyncError,
   );
 
   /// Create a copy of DamageItem
@@ -356,6 +414,7 @@ class _$DamageItemImpl implements _DamageItem {
 abstract class _DamageItem implements DamageItem {
   const factory _DamageItem({
     required final String id,
+    final String? serverId,
     required final String damageReportId,
     required final String agriculturalSectorId,
     required final String subSectorId,
@@ -366,6 +425,8 @@ abstract class _DamageItem implements DamageItem {
     required final double quantity,
     required final double estimatedLoss,
     final String rowVersion,
+    final String syncStatus,
+    final String? lastSyncError,
   }) = _$DamageItemImpl;
 
   factory _DamageItem.fromJson(Map<String, dynamic> json) =
@@ -373,6 +434,8 @@ abstract class _DamageItem implements DamageItem {
 
   @override
   String get id; // ClientId
+  @override
+  String? get serverId;
   @override
   String get damageReportId;
   @override
@@ -393,6 +456,10 @@ abstract class _DamageItem implements DamageItem {
   double get estimatedLoss;
   @override
   String get rowVersion;
+  @override
+  String get syncStatus;
+  @override
+  String? get lastSyncError;
 
   /// Create a copy of DamageItem
   /// with the given fields replaced by the non-null parameter values.

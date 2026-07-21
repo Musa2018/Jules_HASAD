@@ -22,6 +22,7 @@ Farm _$FarmFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Farm {
   String get id => throw _privateConstructorUsedError; // ClientId
+  String? get serverId => throw _privateConstructorUsedError;
   String get farmerId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get governorateId => throw _privateConstructorUsedError;
@@ -32,6 +33,8 @@ mixin _$Farm {
   double? get longitude => throw _privateConstructorUsedError;
   String get ownershipTypeId => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
+  String get syncStatus => throw _privateConstructorUsedError;
+  String? get lastSyncError => throw _privateConstructorUsedError;
 
   /// Serializes this Farm to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,6 +52,7 @@ abstract class $FarmCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String farmerId,
     String name,
     String governorateId,
@@ -59,6 +63,8 @@ abstract class $FarmCopyWith<$Res> {
     double? longitude,
     String ownershipTypeId,
     String rowVersion,
+    String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -78,6 +84,7 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? farmerId = null,
     Object? name = null,
     Object? governorateId = null,
@@ -88,6 +95,8 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
     Object? longitude = freezed,
     Object? ownershipTypeId = null,
     Object? rowVersion = null,
+    Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -95,6 +104,10 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
+            serverId: freezed == serverId
+                ? _value.serverId
+                : serverId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             farmerId: null == farmerId
                 ? _value.farmerId
                 : farmerId // ignore: cast_nullable_to_non_nullable
@@ -135,6 +148,14 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
                 ? _value.rowVersion
                 : rowVersion // ignore: cast_nullable_to_non_nullable
                       as String,
+            syncStatus: null == syncStatus
+                ? _value.syncStatus
+                : syncStatus // ignore: cast_nullable_to_non_nullable
+                      as String,
+            lastSyncError: freezed == lastSyncError
+                ? _value.lastSyncError
+                : lastSyncError // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -151,6 +172,7 @@ abstract class _$$FarmImplCopyWith<$Res> implements $FarmCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String farmerId,
     String name,
     String governorateId,
@@ -161,6 +183,8 @@ abstract class _$$FarmImplCopyWith<$Res> implements $FarmCopyWith<$Res> {
     double? longitude,
     String ownershipTypeId,
     String rowVersion,
+    String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -177,6 +201,7 @@ class __$$FarmImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? farmerId = null,
     Object? name = null,
     Object? governorateId = null,
@@ -187,6 +212,8 @@ class __$$FarmImplCopyWithImpl<$Res>
     Object? longitude = freezed,
     Object? ownershipTypeId = null,
     Object? rowVersion = null,
+    Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _$FarmImpl(
@@ -194,6 +221,10 @@ class __$$FarmImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
+        serverId: freezed == serverId
+            ? _value.serverId
+            : serverId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         farmerId: null == farmerId
             ? _value.farmerId
             : farmerId // ignore: cast_nullable_to_non_nullable
@@ -234,6 +265,14 @@ class __$$FarmImplCopyWithImpl<$Res>
             ? _value.rowVersion
             : rowVersion // ignore: cast_nullable_to_non_nullable
                   as String,
+        syncStatus: null == syncStatus
+            ? _value.syncStatus
+            : syncStatus // ignore: cast_nullable_to_non_nullable
+                  as String,
+        lastSyncError: freezed == lastSyncError
+            ? _value.lastSyncError
+            : lastSyncError // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -244,6 +283,7 @@ class __$$FarmImplCopyWithImpl<$Res>
 class _$FarmImpl implements _Farm {
   const _$FarmImpl({
     required this.id,
+    this.serverId,
     required this.farmerId,
     required this.name,
     required this.governorateId,
@@ -254,6 +294,8 @@ class _$FarmImpl implements _Farm {
     this.longitude,
     required this.ownershipTypeId,
     this.rowVersion = '',
+    this.syncStatus = 'completed',
+    this.lastSyncError,
   });
 
   factory _$FarmImpl.fromJson(Map<String, dynamic> json) =>
@@ -262,6 +304,8 @@ class _$FarmImpl implements _Farm {
   @override
   final String id;
   // ClientId
+  @override
+  final String? serverId;
   @override
   final String farmerId;
   @override
@@ -283,10 +327,15 @@ class _$FarmImpl implements _Farm {
   @override
   @JsonKey()
   final String rowVersion;
+  @override
+  @JsonKey()
+  final String syncStatus;
+  @override
+  final String? lastSyncError;
 
   @override
   String toString() {
-    return 'Farm(id: $id, farmerId: $farmerId, name: $name, governorateId: $governorateId, localityId: $localityId, landArea: $landArea, landAreaUnit: $landAreaUnit, latitude: $latitude, longitude: $longitude, ownershipTypeId: $ownershipTypeId, rowVersion: $rowVersion)';
+    return 'Farm(id: $id, serverId: $serverId, farmerId: $farmerId, name: $name, governorateId: $governorateId, localityId: $localityId, landArea: $landArea, landAreaUnit: $landAreaUnit, latitude: $latitude, longitude: $longitude, ownershipTypeId: $ownershipTypeId, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
   }
 
   @override
@@ -295,6 +344,8 @@ class _$FarmImpl implements _Farm {
         (other.runtimeType == runtimeType &&
             other is _$FarmImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.serverId, serverId) ||
+                other.serverId == serverId) &&
             (identical(other.farmerId, farmerId) ||
                 other.farmerId == farmerId) &&
             (identical(other.name, name) || other.name == name) &&
@@ -313,7 +364,11 @@ class _$FarmImpl implements _Farm {
             (identical(other.ownershipTypeId, ownershipTypeId) ||
                 other.ownershipTypeId == ownershipTypeId) &&
             (identical(other.rowVersion, rowVersion) ||
-                other.rowVersion == rowVersion));
+                other.rowVersion == rowVersion) &&
+            (identical(other.syncStatus, syncStatus) ||
+                other.syncStatus == syncStatus) &&
+            (identical(other.lastSyncError, lastSyncError) ||
+                other.lastSyncError == lastSyncError));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -321,6 +376,7 @@ class _$FarmImpl implements _Farm {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    serverId,
     farmerId,
     name,
     governorateId,
@@ -331,6 +387,8 @@ class _$FarmImpl implements _Farm {
     longitude,
     ownershipTypeId,
     rowVersion,
+    syncStatus,
+    lastSyncError,
   );
 
   /// Create a copy of Farm
@@ -350,6 +408,7 @@ class _$FarmImpl implements _Farm {
 abstract class _Farm implements Farm {
   const factory _Farm({
     required final String id,
+    final String? serverId,
     required final String farmerId,
     required final String name,
     required final String governorateId,
@@ -360,12 +419,16 @@ abstract class _Farm implements Farm {
     final double? longitude,
     required final String ownershipTypeId,
     final String rowVersion,
+    final String syncStatus,
+    final String? lastSyncError,
   }) = _$FarmImpl;
 
   factory _Farm.fromJson(Map<String, dynamic> json) = _$FarmImpl.fromJson;
 
   @override
   String get id; // ClientId
+  @override
+  String? get serverId;
   @override
   String get farmerId;
   @override
@@ -386,6 +449,10 @@ abstract class _Farm implements Farm {
   String get ownershipTypeId;
   @override
   String get rowVersion;
+  @override
+  String get syncStatus;
+  @override
+  String? get lastSyncError;
 
   /// Create a copy of Farm
   /// with the given fields replaced by the non-null parameter values.

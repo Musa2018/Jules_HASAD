@@ -7,6 +7,7 @@ part 'damage_item.g.dart';
 class DamageItem with _$DamageItem {
   const factory DamageItem({
     required String id, // ClientId
+    String? serverId,
     required String damageReportId,
     required String agriculturalSectorId,
     required String subSectorId,
@@ -17,6 +18,8 @@ class DamageItem with _$DamageItem {
     required double quantity,
     required double estimatedLoss,
     @Default('') String rowVersion,
+    @Default('completed') String syncStatus,
+    String? lastSyncError,
   }) = _DamageItem;
 
   factory DamageItem.fromJson(Map<String, dynamic> json) =>

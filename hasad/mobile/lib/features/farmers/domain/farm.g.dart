@@ -8,6 +8,7 @@ part of 'farm.dart';
 
 _$FarmImpl _$$FarmImplFromJson(Map<String, dynamic> json) => _$FarmImpl(
   id: json['id'] as String,
+  serverId: json['serverId'] as String?,
   farmerId: json['farmerId'] as String,
   name: json['name'] as String,
   governorateId: json['governorateId'] as String,
@@ -18,11 +19,14 @@ _$FarmImpl _$$FarmImplFromJson(Map<String, dynamic> json) => _$FarmImpl(
   longitude: (json['longitude'] as num?)?.toDouble(),
   ownershipTypeId: json['ownershipTypeId'] as String,
   rowVersion: json['rowVersion'] as String? ?? '',
+  syncStatus: json['syncStatus'] as String? ?? 'completed',
+  lastSyncError: json['lastSyncError'] as String?,
 );
 
 Map<String, dynamic> _$$FarmImplToJson(_$FarmImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'serverId': instance.serverId,
       'farmerId': instance.farmerId,
       'name': instance.name,
       'governorateId': instance.governorateId,
@@ -33,4 +37,6 @@ Map<String, dynamic> _$$FarmImplToJson(_$FarmImpl instance) =>
       'longitude': instance.longitude,
       'ownershipTypeId': instance.ownershipTypeId,
       'rowVersion': instance.rowVersion,
+      'syncStatus': instance.syncStatus,
+      'lastSyncError': instance.lastSyncError,
     };

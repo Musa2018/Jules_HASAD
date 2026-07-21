@@ -1,36 +1,37 @@
-# Walkthrough - Sprint 10.12: Universal Sync Lifecycle & Soft-Delete Hardening
+# Walkthrough - Sprint 10.13: Sync DTO Mapping Layer
 
-Finalized the synchronization architecture for the Farmers and Damage Assessment modules, ensuring complete operational consistency and robust data integrity during offline scenarios.
+Successfully decoupled the local domain entities from the API synchronization payloads by implementing a dedicated DTO mapping layer. This resolves critical date formatting and validation issues identified in the previous debug session.
 
 ## Changes Made
 
-### Robust Data Lifecycle
-- **Soft-Delete Implementation**: Standardized the `isPendingDelete` state across all entities (Farmers, Farms, Damage Reports, Items, and Attachments). Records are now preserved locally until the remote deletion is confirmed by the server.
-- **Manual Cascades**: Enhanced `BackgroundSyncService` to handle relational dependencies in Drift. When a `DamageReport` is hard-deleted after sync, its associated `DamageItem` and `Attachment` rows are also cleaned up.
-- **File System Cleanup**: Implemented automatic deletion of local image files on disk when a `DamageReportAttachment` is hard-deleted, preventing storage bloat.
-- **Lifecycle Collapsing**: Implemented immediate removal logic for unsynced records. If a record is created offline and then deleted before its first sync, the system removes both the database row and the queue task immediately (CREATE + DELETE = NO-OP).
+### Decoupled API Mapping
+- **[NEW] [farmer_sync_dtos.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_sync_dtos.dart)**: Centralized mapping logic for all synchronized entities.
+    - `FarmerSyncDto`: Maps local `Farmer` to `CreateFarmerCommand` and `UpdateFarmerCommand`.
+    - `FarmSyncDto`: Maps local `Farm` to `CreateFarmCommand` and `UpdateFarmCommand`.
+    - `DamageReportSyncDto`: Maps local `DamageReport` to `CreateDamageReportCommand` and `UpdateDamageReportCommand`.
 
-### Generic Sync Abstractions
-- **Universal Validation**: Unified error mapping using `SyncValidationException`. All remote repositories now convert backend validation failures (HTTP 400) into this exception, signaling the background engine to stop retrying and alert the user.
-- **Generic operation Collapsing**: The "Preserve CREATE" logic now applies to all HASAD entities, ensuring that offline edits to unsynced records always result in a `POST` rather than a premature `PUT`.
+### Data Normalization
+- **Date Formatting**: Ensured `BirthDate` for Farmers is sent as `yyyy-MM-dd`. Full ISO datetime strings previously caused .NET `DateOnly` parsing failures.
+- **Gender Validation**: The DTO layer now explicitly checks for `Gender.unspecified` and throws a `SyncValidationException` before transmission, as the backend validator strictly requires Male or Female.
+- **Payload Sanitization**: Strictly stripped local metadata (`syncStatus`, `lastSyncError`, etc.) and internal IDs from all payloads to match backend command signatures precisely.
+
+### Repository Refactoring
+- **[MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart)**: Updated to use `FarmerSyncDto`.
+- **[MODIFY] [remote_farm_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farm_repository.dart)**: Updated to use `FarmSyncDto`.
+- **[MODIFY] [remote_damage_report_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_damage_report_repository.dart)**: Updated to use `DamageReportSyncDto`.
 
 ## Verification Results
 
 ### Automated Tests
-- Reached a total of **23 passing tests** across Sync Service and Repositories.
-- [x] **Relational Cascade**: Verified that deleting a report removes its items.
-- [x] **Generic Collapsing**: Confirmed operation preservation for `Farm` and `DamageReport` entities.
-- [x] **List Filtering**: Verified that records marked `isPendingDelete` are correctly excluded from UI lists before sync.
-- [x] **Error Mapping**: Confirmed consistent handling of HTTP 400 across all remote repositories.
+- **[NEW] [farmer_sync_dtos_test.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/test/farmers/farmer_sync_dtos_test.dart)**: Verified exact JSON output for creation and update operations, including date formatting and gender rejection.
+- Ran the full sync test suite: **26 tests passed**.
+- Verified all repository and background sync service scenarios remain stable.
 
 ### Code Analysis
 - Ran `flutter analyze`.
 - **Result**: `No issues found!`.
 
 ## Documentation Updates
-- **ARCHITECTURE.md**: Documented the current "Server Wins" conflict resolution policy and the roadmap for a future Merge UI.
-- **PROJECT_STATUS.md**: Recorded completion of Sprint 10.12.
-- **AI_CONTEXT.md**: Updated latest architecture state and commit hash `2e67bf5`.
-
-## Remaining Risks
-- **Silent Overwrites**: In rare conflict scenarios (409 Conflict), local changes are automatically overwritten by server data. This is documented in the architecture roadmap for future Merge UI implementation.
+- Updated `PROJECT_STATUS.md` with Sprint 10.13 progress.
+- Updated `CHANGELOG.md` with detailed changes.
+- Updated `AI_CONTEXT.md` with the latest architecture state and commit hash `2c3d55d`.

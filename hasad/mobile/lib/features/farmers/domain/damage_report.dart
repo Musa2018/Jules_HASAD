@@ -8,6 +8,7 @@ part 'damage_report.g.dart';
 class DamageReport with _$DamageReport {
   const factory DamageReport({
     required String id, // ClientId
+    String? serverId,
     required String farmId,
     required String farmerId,
     required DateTime damageDate,
@@ -20,6 +21,8 @@ class DamageReport with _$DamageReport {
     required String notes,
     @Default('') String rowVersion,
     @Default([]) List<DamageItem> items,
+    @Default('completed') String syncStatus,
+    String? lastSyncError,
   }) = _DamageReport;
 
   factory DamageReport.fromJson(Map<String, dynamic> json) =>

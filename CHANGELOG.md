@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Sprint 10.14 — Entity Metadata Hardening & Update Sync
+
+#### Added
+- `serverId`, `syncStatus`, and `lastSyncError` to `Farm`, `DamageReport`, and `DamageItem` domain models.
+- Enhanced `Update` scenarios in `farmer_sync_dtos_test.dart` for all entities.
+
+#### Changed
+- Hardened all `toUpdateJson` mappings to use `serverId` as the primary identifier.
+- Updated offline repositories to correctly map and clear synchronization metadata.
+- Improved `BackgroundSyncService` metadata reconciliation logic.
+
 ### Sprint 10.13 — Sync DTO Mapping Layer
 
 #### Added

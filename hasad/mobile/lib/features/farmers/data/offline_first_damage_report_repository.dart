@@ -31,6 +31,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       results.add(
         domain.DamageReport(
           id: r.id,
+          serverId: r.serverId,
           farmId: r.farmId,
           farmerId: r.farmerId,
           damageDate: r.damageDate,
@@ -42,10 +43,13 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
           statusId: r.statusId,
           notes: r.notes,
           rowVersion: r.rowVersion,
+          syncStatus: r.syncStatus,
+          lastSyncError: r.lastSyncError,
           items: items
               .map(
                 (i) => domain.DamageItem(
                   id: i.id,
+                  serverId: i.serverId,
                   damageReportId: i.damageReportId,
                   agriculturalSectorId: i.agriculturalSectorId,
                   subSectorId: i.subSectorId,
@@ -56,6 +60,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
                   quantity: i.quantity,
                   estimatedLoss: i.estimatedLoss,
                   rowVersion: i.rowVersion,
+                  syncStatus: i.syncStatus,
+                  lastSyncError: i.lastSyncError,
                 ),
               )
               .toList(),
@@ -76,6 +82,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
     return domain.DamageReport(
       id: r.id,
+      serverId: r.serverId,
       farmId: r.farmId,
       farmerId: r.farmerId,
       damageDate: r.damageDate,
@@ -87,10 +94,13 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       statusId: r.statusId,
       notes: r.notes,
       rowVersion: r.rowVersion,
+      syncStatus: r.syncStatus,
+      lastSyncError: r.lastSyncError,
       items: items
           .map(
             (i) => domain.DamageItem(
               id: i.id,
+              serverId: i.serverId,
               damageReportId: i.damageReportId,
               agriculturalSectorId: i.agriculturalSectorId,
               subSectorId: i.subSectorId,
@@ -101,9 +111,48 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
               quantity: i.quantity,
               estimatedLoss: i.estimatedLoss,
               rowVersion: i.rowVersion,
+              syncStatus: i.syncStatus,
+              lastSyncError: i.lastSyncError,
             ),
           )
           .toList(),
+    );
+  }
+
+  DamageReportsCompanion _mapReportToCompanion(domain.DamageReport report) {
+    return DamageReportsCompanion.insert(
+      id: report.id,
+      serverId: Value(report.serverId),
+      farmId: report.farmId,
+      farmerId: report.farmerId,
+      damageDate: report.damageDate,
+      documentationDate: report.documentationDate,
+      governorateId: report.governorateId,
+      localityId: report.localityId,
+      latitude: Value(report.latitude),
+      longitude: Value(report.longitude),
+      statusId: report.statusId,
+      notes: report.notes,
+      rowVersion: Value(report.rowVersion),
+      lastSyncError: Value(report.lastSyncError),
+    );
+  }
+
+  DamageItemsCompanion _mapItemToCompanion(domain.DamageItem item) {
+    return DamageItemsCompanion.insert(
+      id: item.id,
+      serverId: Value(item.serverId),
+      damageReportId: item.damageReportId,
+      agriculturalSectorId: item.agriculturalSectorId,
+      subSectorId: item.subSectorId,
+      cropId: item.cropId,
+      damageTypeId: item.damageTypeId,
+      affectedArea: item.affectedArea,
+      damagePercentage: item.damagePercentage,
+      quantity: item.quantity,
+      estimatedLoss: item.estimatedLoss,
+      rowVersion: Value(item.rowVersion),
+      lastSyncError: Value(item.lastSyncError),
     );
   }
 
@@ -117,18 +166,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       await _db
           .into(_db.damageReports)
           .insert(
-            DamageReportsCompanion.insert(
-              id: localId,
-              farmId: report.farmId,
-              farmerId: report.farmerId,
-              damageDate: report.damageDate,
-              documentationDate: report.documentationDate,
-              governorateId: report.governorateId,
-              localityId: report.localityId,
-              latitude: Value(report.latitude),
-              longitude: Value(report.longitude),
-              statusId: report.statusId,
-              notes: report.notes,
+            _mapReportToCompanion(report).copyWith(
+              id: Value(localId),
               syncStatus: const Value('pending'),
             ),
           );
@@ -138,17 +177,9 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         await _db
             .into(_db.damageItems)
             .insert(
-              DamageItemsCompanion.insert(
-                id: itemId,
-                damageReportId: localId,
-                agriculturalSectorId: item.agriculturalSectorId,
-                subSectorId: item.subSectorId,
-                cropId: item.cropId,
-                damageTypeId: item.damageTypeId,
-                affectedArea: item.affectedArea,
-                damagePercentage: item.damagePercentage,
-                quantity: item.quantity,
-                estimatedLoss: item.estimatedLoss,
+              _mapItemToCompanion(item).copyWith(
+                id: Value(itemId),
+                damageReportId: Value(localId),
                 syncStatus: const Value('pending'),
               ),
             );
@@ -179,14 +210,9 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     await (_db.update(
       _db.damageReports,
     )..where((t) => t.id.equals(report.id))).write(
-      DamageReportsCompanion(
-        damageDate: Value(report.damageDate),
-        governorateId: Value(report.governorateId),
-        localityId: Value(report.localityId),
-        latitude: Value(report.latitude),
-        longitude: Value(report.longitude),
-        notes: Value(report.notes),
+      _mapReportToCompanion(report).copyWith(
         syncStatus: const Value('pending'),
+        lastSyncError: const Value(null),
         updatedAt: Value(DateTime.now()),
       ),
     );
@@ -232,17 +258,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     await _db
         .into(_db.damageItems)
         .insert(
-          DamageItemsCompanion.insert(
-            id: localId,
-            damageReportId: item.damageReportId,
-            agriculturalSectorId: item.agriculturalSectorId,
-            subSectorId: item.subSectorId,
-            cropId: item.cropId,
-            damageTypeId: item.damageTypeId,
-            affectedArea: item.affectedArea,
-            damagePercentage: item.damagePercentage,
-            quantity: item.quantity,
-            estimatedLoss: item.estimatedLoss,
+          _mapItemToCompanion(item).copyWith(
+            id: Value(localId),
             syncStatus: const Value('pending'),
           ),
         );
@@ -264,16 +281,9 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     await (_db.update(
       _db.damageItems,
     )..where((t) => t.id.equals(item.id))).write(
-      DamageItemsCompanion(
-        agriculturalSectorId: Value(item.agriculturalSectorId),
-        subSectorId: Value(item.subSectorId),
-        cropId: Value(item.cropId),
-        damageTypeId: Value(item.damageTypeId),
-        affectedArea: Value(item.affectedArea),
-        damagePercentage: Value(item.damagePercentage),
-        quantity: Value(item.quantity),
-        estimatedLoss: Value(item.estimatedLoss),
+      _mapItemToCompanion(item).copyWith(
         syncStatus: const Value('pending'),
+        lastSyncError: const Value(null),
         updatedAt: Value(DateTime.now()),
       ),
     );

@@ -1,35 +1,41 @@
-# Walkthrough - Farmers Sync Hardening Verification & Operation Collapsing Fix
+# Walkthrough - Sprint 10.11: Sync Lifecycle Consistency & Soft-Delete
 
-Successfully verified the end-to-end synchronization lifecycle and resolved a critical bug regarding offline operation collapsing.
+Successfully standardized the synchronization lifecycle across all HASAD entities, implemented a robust soft-delete workflow, and resolved critical offline operation collapsing issues.
 
 ## Changes Made
 
-### Sync Engine Improvements
-- **Operation Collapsing Fix**: Updated `BackgroundSyncService.addToQueue` to preserve the `CREATE` operation if a farmer is edited offline before its initial synchronization. This prevents `404 Not Found` errors that would occur if the app attempted a `PUT` for a record that doesn't yet exist on the server.
-- **Error Recovery Hardening**: Modified `OfflineFirstFarmerRepository.updateFarmer` to explicitly clear the `lastSyncError` when a record is updated. This ensures that after a user "Fixes Data", they start with a clean state for the next sync attempt.
+### standardizing Sync Lifecycle
+- **Universal operation Collapsing**: Implemented generic logic in `BackgroundSyncService` to handle offline edits. If a record is edited offline before its initial sync, the `CREATE` operation is preserved, preventing backend 404s.
+- **Soft-Delete Workflow**: Implemented `isPendingDelete` state across all major entities (Farmers, Farms, DamageReports, DamageItems, and Attachments).
+    - Records are marked as pending delete locally.
+    - Synchronized with the server via remote DELETE call.
+    - Hard-deleted locally only upon successful server confirmation.
+- **Immediate Lifecycle Collapsing**: Unsynced records that are deleted offline are now removed immediately from both the database and the sync queue (CREATE + DELETE = NO-OP), keeping the system clean.
 
-### Lifecycle Verification
-Verified the following production scenarios:
-1. **Invalid Farmer Data Flow**: Correctly transitions to `invalid` status and stores the backend error message without entering infinite retries.
-2. **User Correction Flow**: Successfully transitions from `invalid` → `pending` → `synced` after manual correction and save.
-3. **Offline Create Then Update**: Confirmed that multiple offline edits are collapsed into a single `CREATE` task with the latest payload.
-4. **App Restart Recovery**: Verified that the `BackgroundSyncService` resumes processing the pending queue on application initialization.
-5. **Drift Migration**: Confirmed that the `onUpgrade` logic safely migrates the database from v7 to v8, preserving all existing data while adding the necessary error-tracking columns.
+### Persistence & Error Handling
+- **Drift Schema v9**: Added `isPendingDelete` column to all synced entities with a safe `onUpgrade` path.
+- **Generic Sync Exceptions**: Introduced `SyncException` and `SyncValidationException` as a shared abstraction. All remote repositories now uniformly map HTTP 400 errors to these exceptions, allowing the sync engine to stop redundant retries for business rule violations.
+- **Context Preservation**: Updated repositories to clear `lastSyncError` when a record is manually updated, ensuring a clean slate for the next sync attempt.
 
 ## Verification Results
 
 ### Automated Tests
-- Ran `flutter test` for both Repository and Sync Service.
-- **17/17 tests passed**, including specialized scenarios for:
-    - [x] Operation preservation (`CREATE` staying `CREATE` during offline edits).
-    - [x] Multiple update collapsing (Queue size remains 1 with latest data).
-    - [x] Status reset and error clearing on retry.
-    - [x] All previous validation and status propagation tests.
+- Ran the expanded test suite in `background_sync_service_test.dart` and `offline_first_farmer_repository_test.dart`.
+- **18/18 tests passed**, including specialized scenarios for:
+    - [x] **Soft-Delete**: Remote deletion followed by local hard delete.
+    - [x] **Immediate Deletion**: Removing un-synced CREATE tasks immediately on delete.
+    - [x] **Operation Preservation**: Generic "Preserve CREATE" logic for both Farmers and Farms.
+    - [x] **Validation Consistency**: Uniform handling of HTTP 400 across entities.
 
 ### Code Analysis
 - Ran `flutter analyze` in `hasad/mobile`.
 - **Result**: `No issues found!`.
 
+## Conflict Handling Summary (Current Implementation)
+Currently, HASAD follows a **"Server Wins"** strategy:
+- When a `409 Conflict` (RowVersion mismatch) occurs, the `BackgroundSyncService` automatically fetches the latest server version and overwrites the local record.
+- **Future Work**: This will eventually be replaced by a Merge UI to allow users to resolve conflicts manually.
+
 ## Documentation Updates
-- Updated `PROJECT_STATUS.md` with Sprint 10.10 details.
-- Updated `AI_CONTEXT.md` with latest commit hash `402c246`.
+- Updated `PROJECT_STATUS.md` with Sprint 10.11 completion.
+- Updated `AI_CONTEXT.md` with latest architecture details and commit hash `cf7e613`.

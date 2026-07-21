@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
@@ -123,10 +124,44 @@ class BackgroundSyncService {
     } else if (entityType == 'farm') {
       await (_db.delete(_db.farms)..where((t) => t.id.equals(localId))).go();
     } else if (entityType == 'damage_report') {
-      await (_db.delete(_db.damageReports)..where((t) => t.id.equals(localId))).go();
+      // Manual cascade for Damage Report
+      await _db.transaction(() async {
+        // 1. Delete items
+        await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(localId))).go();
+        
+        // 2. Delete attachments (including local files)
+        final attachments = await (_db.select(_db.damageReportAttachments)
+              ..where((t) => t.damageReportId.equals(localId)))
+            .get();
+        for (var a in attachments) {
+          try {
+            final file = File(a.localPath);
+            if (await file.exists()) {
+              await file.delete();
+            }
+          } catch (_) {
+            // Ignore file deletion errors
+          }
+        }
+        await (_db.delete(_db.damageReportAttachments)..where((t) => t.damageReportId.equals(localId))).go();
+        
+        // 3. Delete report itself
+        await (_db.delete(_db.damageReports)..where((t) => t.id.equals(localId))).go();
+      });
     } else if (entityType == 'damage_item') {
       await (_db.delete(_db.damageItems)..where((t) => t.id.equals(localId))).go();
     } else if (entityType == 'attachment') {
+      final attachment = await (_db.select(_db.damageReportAttachments)
+            ..where((t) => t.id.equals(localId)))
+          .getSingleOrNull();
+      if (attachment != null) {
+        try {
+          final file = File(attachment.localPath);
+          if (await file.exists()) {
+            await file.delete();
+          }
+        } catch (_) {}
+      }
       await (_db.delete(_db.damageReportAttachments)..where((t) => t.id.equals(localId))).go();
     }
   }
@@ -352,6 +387,16 @@ class BackgroundSyncService {
 
   Future<void> _syncAttachment(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
+
+    if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
+      return;
+    }
+
     final attachment = attachment_domain.DamageReportAttachment.fromJson(data);
 
     if (item.operation == 'upload') {

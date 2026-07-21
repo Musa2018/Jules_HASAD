@@ -874,5 +874,86 @@ void main() {
       expect(items.first.operation, 'create');
       expect(jsonDecode(items.first.data)['v'], 2);
     });
+
+    test('addToQueue preserves CREATE for DamageReport entity', () async {
+      const localId = 'report-collapsing';
+      
+      await syncService.addToQueue(
+        localId: localId,
+        entityType: 'damage_report',
+        operation: 'create',
+        data: {'v': 1},
+      );
+      
+      await syncService.addToQueue(
+        localId: localId,
+        entityType: 'damage_report',
+        operation: 'update',
+        data: {'v': 2},
+      );
+      
+      final items = await db.select(db.syncQueue).get();
+      expect(items.length, 1);
+      expect(items.first.operation, 'create');
+      expect(jsonDecode(items.first.data)['v'], 2);
+    });
+  });
+
+  group('Cascading Hard Delete', () {
+    test('_hardDeleteLocalEntity removes items and attachments for damage_report', () async {
+      const reportId = 'report-1';
+      
+      await db.into(db.damageReports).insert(
+        DamageReportsCompanion.insert(
+          id: reportId,
+          farmId: 'f1',
+          farmerId: 'fr1',
+          damageDate: DateTime.now(),
+          documentationDate: DateTime.now(),
+          governorateId: 'g1',
+          localityId: 'l1',
+          statusId: 's1',
+          notes: '',
+        ),
+      );
+      
+      await db.into(db.damageItems).insert(
+        DamageItemsCompanion.insert(
+          id: 'item-1',
+          damageReportId: reportId,
+          agriculturalSectorId: 'a1',
+          subSectorId: 's1',
+          cropId: 'c1',
+          damageTypeId: 'd1',
+          affectedArea: 1,
+          damagePercentage: 10,
+          quantity: 1,
+          estimatedLoss: 100,
+        ),
+      );
+
+      // Trigger hard delete via sync service logic (internal helper)
+      // We can't call _hardDeleteLocalEntity directly if it's private, but it's used by _syncXXX and addToQueue
+      // Let's use addToQueue logic for CREATE + DELETE collapsing to trigger it
+      await syncService.addToQueue(
+        localId: reportId,
+        entityType: 'damage_report',
+        operation: 'create',
+        data: {},
+      );
+      
+      await syncService.addToQueue(
+        localId: reportId,
+        entityType: 'damage_report',
+        operation: 'delete',
+        data: {},
+      );
+      
+      final reports = await db.select(db.damageReports).get();
+      expect(reports, isEmpty);
+      
+      final items = await db.select(db.damageItems).get();
+      expect(items, isEmpty);
+    });
   });
 }

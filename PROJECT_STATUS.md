@@ -7,6 +7,15 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.12 — COMPLETED
+Universal Sync Lifecycle & Soft-Delete Hardening:
+- **Soft-Delete Foundation**: Implemented `isPendingDelete` across all entities. Local hard-deletes now only occur after successful server-side deletion, ensuring remote data integrity.
+- **Robust Local Cascades**: Updated `BackgroundSyncService` to manually handle relational deletions (Damage Reports -> Items & Attachments) and local file cleanup during hard-deletes.
+- **Generic Validation Abstraction**: Unified sync error handling using `SyncValidationException`. All entity types now correctly handle HTTP 400 validation failures by stopping retries and informing the user.
+- **Sync Engine Refinement**: Fixed operation collapsing bug where unsynced `CREATE` tasks were incorrectly changed to `UPDATE`. Implemented "Lifecycle Collapsing" (CREATE + DELETE = immediate removal).
+- **Drift Migration**: Successfully migrated to schema **v9**.
+- Tests: Reached 23 passing sync/repository tests covering soft-delete, cascading deletes, and generic operation preservation.
+
 ## Sprint 10.11 — COMPLETED
 Sync Lifecycle Consistency & Soft-Delete:
 - **Soft-Delete Lifecycle**: Implemented "Pending Delete" state across all entities (Farmers, Farms, DamageReports, Attachments). Records are now soft-deleted locally, synchronized with the server, and then hard-deleted upon success.

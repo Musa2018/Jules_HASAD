@@ -295,4 +295,51 @@ void main() {
       );
     });
   });
+
+  group('Soft Delete', () {
+    test('getFarmers filters out farmers marked as pending delete', () async {
+      when(
+        () => mockSyncService.addToQueue(
+          localId: any(named: 'localId'),
+          entityType: any(named: 'entityType'),
+          operation: any(named: 'operation'),
+          data: any(named: 'data'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final farmer1 = Farmer(
+        id: 'f1',
+        idTypeId: 1,
+        idNumber: '1',
+        firstNameAr: 'N1',
+        fatherNameAr: '',
+        grandfatherNameAr: '',
+        familyNameAr: '',
+        firstNameEn: '',
+        fatherNameEn: '',
+        grandfatherNameEn: '',
+        familyNameEn: '',
+        birthDate: DateTime(1990),
+        gender: Gender.male,
+        phoneNumber: '',
+        familySize: 1,
+        governorateId: 'G1',
+        localityId: 'L1',
+        address: '',
+      );
+      final farmer2 = farmer1.copyWith(id: 'f2', idNumber: '2');
+
+      await repository.createFarmer(farmer1);
+      await repository.createFarmer(farmer2);
+
+      var list = await repository.getFarmers();
+      expect(list.length, 2);
+
+      await repository.deleteFarmer('f1');
+
+      list = await repository.getFarmers();
+      expect(list.length, 1);
+      expect(list.first.id, 'f2');
+    });
+  });
 }

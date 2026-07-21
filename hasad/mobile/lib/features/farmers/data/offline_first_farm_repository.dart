@@ -15,7 +15,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
   Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
     final items =
         await (_db.select(_db.farms)
-              ..where((t) => t.farmerId.equals(farmerId))
+              ..where((t) => t.farmerId.equals(farmerId) & t.isPendingDelete.equals(false))
               ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
             .get();
 
@@ -120,13 +120,26 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Future<void> deleteFarm(String id) async {
-    await (_db.delete(_db.farms)..where((t) => t.id.equals(id))).go();
+    final local = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (local == null) return;
+
+    await (_db.update(_db.farms)..where((t) => t.id.equals(id))).write(
+      const FarmsCompanion(
+        isPendingDelete: Value(true),
+        syncStatus: Value('pending'),
+      ),
+    );
 
     await _syncService.addToQueue(
       localId: id,
       entityType: 'farm',
       operation: 'delete',
-      data: {},
+      data: {
+        'id': local.serverId ?? local.id,
+        'serverId': local.serverId,
+        'clientId': local.id,
+      },
     );
   }
 }

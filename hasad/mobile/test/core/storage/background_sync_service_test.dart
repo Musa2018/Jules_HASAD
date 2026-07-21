@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
@@ -49,6 +50,10 @@ void main() {
     when(
       () => mockConnectivity.onConnectivityChanged,
     ).thenAnswer((_) => const Stream.empty());
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.none]);
 
     syncService = BackgroundSyncService(
       db,
@@ -525,7 +530,7 @@ void main() {
     ).thenAnswer((_) async => [ConnectivityResult.wifi]);
     when(
       () => mockFarmerRepo.createFarmer(any()),
-    ).thenThrow(FarmerException(['NETWORK_ERROR']));
+    ).thenThrow(SyncException(['NETWORK_ERROR']));
 
     await syncService.processQueue();
 
@@ -598,7 +603,7 @@ void main() {
       ).thenAnswer((_) async => [ConnectivityResult.wifi]);
       when(
         () => mockFarmerRepo.createFarmer(any()),
-      ).thenThrow(FarmerValidationException(['Gender must be Male or Female.']));
+      ).thenThrow(SyncValidationException(['Gender must be Male or Female.']));
 
       await syncService.processQueue();
 
@@ -734,5 +739,140 @@ void main() {
 
     final item = await db.select(db.syncQueue).getSingle();
     expect(item.operation, 'update');
+  });
+
+  group('Delete Lifecycle', () {
+    test('processQueue performs remote DELETE then local hard delete', () async {
+      const localId = 'delete-1';
+      const serverId = 'remote-1';
+
+      // 1. Setup local record as pending delete
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              serverId: const Value(serverId),
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('To Delete'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+              isPendingDelete: const Value(true),
+            ),
+          );
+
+      await db.into(db.syncQueue).insert(
+            SyncQueueCompanion.insert(
+              id: 'q-delete',
+              localId: localId,
+              entityType: 'farmer',
+              operation: 'delete',
+              data: jsonEncode({'id': serverId}),
+            ),
+          );
+
+      when(() => mockConnectivity.checkConnectivity()).thenAnswer(
+        (_) async => [ConnectivityResult.wifi],
+      );
+      when(() => mockFarmerRepo.deleteFarmer(serverId)).thenAnswer(
+        (_) async => {},
+      );
+
+      await syncService.processQueue();
+
+      // Verified hard deleted locally
+      final farmers = await db.select(db.farmers).get();
+      expect(farmers, isEmpty);
+
+      final queueItems = await db.select(db.syncQueue).get();
+      expect(queueItems.first.status, 'completed');
+    });
+
+    test('addToQueue removes record immediately when deleting unsynced CREATE', () async {
+      const localId = 'cancel-create-1';
+
+      // 1. Initial CREATE offline
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('New'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+            ),
+          );
+      await syncService.addToQueue(
+        localId: localId,
+        entityType: 'farmer',
+        operation: 'create',
+        data: {'name': 'New'},
+      );
+
+      // 2. DELETE before sync
+      await syncService.addToQueue(
+        localId: localId,
+        entityType: 'farmer',
+        operation: 'delete',
+        data: {},
+      );
+
+      // Verified both record and task removed immediately
+      final farmers = await db.select(db.farmers).get();
+      expect(farmers, isEmpty);
+
+      final queue = await db.select(db.syncQueue).get();
+      expect(queue, isEmpty);
+    });
+  });
+
+  group('Generic Operation Collapsing', () {
+    test('addToQueue preserves CREATE for Farm entity', () async {
+      const localId = 'farm-collapsing';
+      
+      await syncService.addToQueue(
+        localId: localId,
+        entityType: 'farm',
+        operation: 'create',
+        data: {'v': 1},
+      );
+      
+      await syncService.addToQueue(
+        localId: localId,
+        entityType: 'farm',
+        operation: 'update',
+        data: {'v': 2},
+      );
+      
+      final items = await db.select(db.syncQueue).get();
+      expect(items.length, 1);
+      expect(items.first.operation, 'create');
+      expect(jsonDecode(items.first.data)['v'], 2);
+    });
   });
 }

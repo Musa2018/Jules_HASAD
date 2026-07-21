@@ -1,46 +1,70 @@
-# Implementation Plan - HASAD Farmers Sync Hardening Verification & Fix
+# Implementation Plan - Sprint 10.11: Sync Lifecycle Consistency & Soft-Delete
 
-Perform a deep-dive verification of the sync hardening implementation and address a discovered risk regarding operation collapsing in the sync queue.
+Achieve end-to-end synchronization consistency across all HASAD entities by fixing the broken delete lifecycle and generalizing sync logic.
 
 ## User Review Required
 
-> [!WARNING]
-> A bug was identified during research: If a farmer is created offline (pending `create`) and then edited before syncing, the task operation is currently changed to `update`. This would cause a `404 Not Found` on the backend since the record doesn't exist yet. I will apply a fix to preserve the `create` operation in this scenario.
+> [!IMPORTANT]
+> This change involves a Drift database schema upgrade to **v9**. A new `isPendingDelete` column will be added to all tracked entities to support offline deletions without losing data integrity before remote sync.
 
 ## Proposed Changes
 
-### Storage & Sync Logic
+### 1. Storage & Persistence
+
+#### [MODIFY] [database.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/database.dart)
+- Increment `schemaVersion` to **9**.
+- Add `isPendingDelete` boolean column (default `false`) to:
+    - `Farmers`, `Farms`, `DamageReports`, `DamageItems`, `DamageReportAttachments`.
+- Update `onUpgrade` to handle the v9 migration.
 
 #### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
-- Update `addToQueue` logic:
-    - If an existing `pending`/`failed`/`invalid` task is found:
-        - If the existing operation is `create`, keep it as `create` even if the new request is an `update`.
-        - Otherwise, update the operation as requested.
+- Refactor `addToQueue` to handle lifecycle collapsing:
+    - **CREATE + DELETE**: If an existing `pending` CREATE is deleted, remove both the task and the local record immediately (it never reached the server).
+    - **UPDATE + DELETE**: If an existing `pending`/`failed`/`invalid` UPDATE is deleted, change the operation to DELETE.
+- Generalize "CREATE preservation": The existing logic already works for all entities based on `entityType` and `localId`. I will ensure it stays robust.
+
+### 2. Domain & Data Layer
+
+#### [NEW] [sync_exceptions.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/exceptions/sync_exceptions.dart)
+- Define `SyncValidationException` extending a base `SyncException`.
+
+#### [MODIFY] [remote_farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/remote_farmer_repository.dart) (and others)
+- Replace `FarmerValidationException` with the generic `SyncValidationException`.
+- Ensure all remote repositories throw this on HTTP 400.
+
+#### [MODIFY] [farmer_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart) (and others)
+- Update `deleteFarmer`:
+    - Instead of hard delete, update `isPendingDelete = true` and `syncStatus = 'pending'`.
+    - Add `delete` task to `SyncQueue`.
+- Update `getFarmers` (list): Filter out items where `isPendingDelete` is true.
+
+### 3. Sync Engine Hardening
+
+#### [MODIFY] [background_sync_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/storage/background_sync_service.dart)
+- Update `_syncFarmer` (and others) for `delete` operation:
+    - Perform remote DELETE call.
+    - On success: **Hard delete** local record from Drift.
+- Update `_processItem` to handle `SyncValidationException` generically for all entity types.
 
 ## Verification Plan
 
-### Automated Tests (New & Updated)
-- Update `test/core/storage/background_sync_service_test.dart`:
-    - **Scenario: User Correction Flow**:
-        - Start with an `invalid` item.
-        - Call `addToQueue` with updated data.
-        - Verify status resets to `pending`.
-    - **Scenario: Offline Create Then Update (Operation Collapsing)**:
-        - Call `addToQueue` with `create`.
-        - Call `addToQueue` with `update`.
-        - Verify queue item operation remains `create`.
-    - **Scenario: Multiple Offline Updates**:
-        - Call `addToQueue` multiple times.
-        - Verify only 1 row exists in `SyncQueue` with latest data.
+### Automated Tests
+- **Delete Lifecycle Test**:
+    - [x] Synced Farmer → Delete Offline → Sync → Verified Hard Deleted locally.
+    - [x] New Farmer → Delete Offline (Before Sync) → Verified Task and Record removed immediately.
+- **Generic Collapsing Test**:
+    - [x] Farm CREATE → Edit Offline → Verify operation stays CREATE.
+- **Validation Test**:
+    - [x] Any entity → HTTP 400 → Verify INVALID status and no retry.
 
-### Migration Verification
-- Create a scratch script `test/migration_v7_v8_test.dart` to:
-    - Initialize a database at schema v7.
-    - Insert test data.
-    - Trigger upgrade to v8.
-    - Verify `lastSyncError` columns are present and null.
-    - Verify test data is preserved.
+### Manual Verification
+- Verify that deleted farmers disappear from the list immediately (due to `isPendingDelete` filter) but remain in the database until sync.
+- Verify safe migration from v8 to v9.
 
-### Manual Verification Findings
-- Will report on `ValidationFailed` vs `invalid` status alignment.
-- Will report on App Restart recovery behavior.
+## Conflict Handling Review (Documentation)
+Currently, HASAD uses a **"Server Wins"** strategy:
+1. When an `Update` fails with `409 Conflict` (RowVersion mismatch).
+2. `BackgroundSyncService._resolveConflict` is triggered.
+3. It fetches the latest record from the server and overwrites the local Drift record.
+4. **Risk**: The user's local changes are lost without notification.
+5. **Future Work**: Implement a "Conflict Resolution UI" to allow users to merge or choose between local/server versions.

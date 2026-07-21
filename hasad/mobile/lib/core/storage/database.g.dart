@@ -303,6 +303,21 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -352,6 +367,7 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -543,6 +559,15 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         ),
       );
     }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -660,6 +685,10 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}last_sync_error'],
       ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -702,6 +731,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
   final String rowVersion;
   final String syncStatus;
   final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const FarmerLocal({
@@ -729,6 +759,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     required this.rowVersion,
     required this.syncStatus,
     this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -765,6 +796,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     if (!nullToAbsent || lastSyncError != null) {
       map['last_sync_error'] = Variable<String>(lastSyncError);
     }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -804,6 +836,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       lastSyncError: lastSyncError == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -841,6 +874,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -873,6 +907,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -903,6 +938,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     String? rowVersion,
     String? syncStatus,
     Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => FarmerLocal(
@@ -932,6 +968,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     lastSyncError: lastSyncError.present
         ? lastSyncError.value
         : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -993,6 +1030,9 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       lastSyncError: data.lastSyncError.present
           ? data.lastSyncError.value
           : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1025,6 +1065,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1057,6 +1098,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ]);
@@ -1088,6 +1130,7 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
           other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1117,6 +1160,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   final Value<String> rowVersion;
   final Value<String> syncStatus;
   final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -1145,6 +1189,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1174,6 +1219,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1203,6 +1249,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
     Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1232,6 +1279,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1263,6 +1311,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Value<String>? rowVersion,
     Value<String>? syncStatus,
     Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -1292,6 +1341,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
       lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1373,6 +1423,9 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     if (lastSyncError.present) {
       map['last_sync_error'] = Variable<String>(lastSyncError.value);
     }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1412,6 +1465,7 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1582,6 +1636,21 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1621,6 +1690,7 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -1745,6 +1815,15 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         ),
       );
     }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1822,6 +1901,10 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}last_sync_error'],
       ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1854,6 +1937,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
   final String rowVersion;
   final String syncStatus;
   final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const FarmLocal({
@@ -1871,6 +1955,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     required this.rowVersion,
     required this.syncStatus,
     this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -1899,6 +1984,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     if (!nullToAbsent || lastSyncError != null) {
       map['last_sync_error'] = Variable<String>(lastSyncError);
     }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -1930,6 +2016,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       lastSyncError: lastSyncError == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1957,6 +2044,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -1979,6 +2067,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -1999,6 +2088,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     String? rowVersion,
     String? syncStatus,
     Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => FarmLocal(
@@ -2018,6 +2108,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     lastSyncError: lastSyncError.present
         ? lastSyncError.value
         : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -2051,6 +2142,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       lastSyncError: data.lastSyncError.present
           ? data.lastSyncError.value
           : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2073,6 +2167,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2095,6 +2190,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -2116,6 +2212,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
           other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2135,6 +2232,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
   final Value<String> rowVersion;
   final Value<String> syncStatus;
   final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -2153,6 +2251,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2172,6 +2271,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2198,6 +2298,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
     Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -2217,6 +2318,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2238,6 +2340,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Value<String>? rowVersion,
     Value<String>? syncStatus,
     Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -2257,6 +2360,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
       lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -2308,6 +2412,9 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     if (lastSyncError.present) {
       map['last_sync_error'] = Variable<String>(lastSyncError.value);
     }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -2337,6 +2444,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2516,6 +2624,21 @@ class $DamageReportsTable extends DamageReports
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -2556,6 +2679,7 @@ class $DamageReportsTable extends DamageReports
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -2685,6 +2809,15 @@ class $DamageReportsTable extends DamageReports
         ),
       );
     }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -2766,6 +2899,10 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}last_sync_error'],
       ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -2800,6 +2937,7 @@ class DamageReportLocal extends DataClass
   final String rowVersion;
   final String syncStatus;
   final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageReportLocal({
@@ -2818,6 +2956,7 @@ class DamageReportLocal extends DataClass
     required this.rowVersion,
     required this.syncStatus,
     this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -2847,6 +2986,7 @@ class DamageReportLocal extends DataClass
     if (!nullToAbsent || lastSyncError != null) {
       map['last_sync_error'] = Variable<String>(lastSyncError);
     }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -2879,6 +3019,7 @@ class DamageReportLocal extends DataClass
       lastSyncError: lastSyncError == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -2909,6 +3050,7 @@ class DamageReportLocal extends DataClass
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -2932,6 +3074,7 @@ class DamageReportLocal extends DataClass
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -2953,6 +3096,7 @@ class DamageReportLocal extends DataClass
     String? rowVersion,
     String? syncStatus,
     Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageReportLocal(
@@ -2973,6 +3117,7 @@ class DamageReportLocal extends DataClass
     lastSyncError: lastSyncError.present
         ? lastSyncError.value
         : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -3007,6 +3152,9 @@ class DamageReportLocal extends DataClass
       lastSyncError: data.lastSyncError.present
           ? data.lastSyncError.value
           : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -3030,6 +3178,7 @@ class DamageReportLocal extends DataClass
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -3053,6 +3202,7 @@ class DamageReportLocal extends DataClass
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -3075,6 +3225,7 @@ class DamageReportLocal extends DataClass
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
           other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -3095,6 +3246,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> rowVersion;
   final Value<String> syncStatus;
   final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -3114,6 +3266,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3134,6 +3287,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3162,6 +3316,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
     Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -3182,6 +3337,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -3204,6 +3360,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<String>? rowVersion,
     Value<String>? syncStatus,
     Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -3224,6 +3381,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
       lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -3278,6 +3436,9 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (lastSyncError.present) {
       map['last_sync_error'] = Variable<String>(lastSyncError.value);
     }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -3308,6 +3469,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -3478,6 +3640,21 @@ class $DamageItemsTable extends DamageItems
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -3517,6 +3694,7 @@ class $DamageItemsTable extends DamageItems
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -3657,6 +3835,15 @@ class $DamageItemsTable extends DamageItems
         ),
       );
     }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -3734,6 +3921,10 @@ class $DamageItemsTable extends DamageItems
         DriftSqlType.string,
         data['${effectivePrefix}last_sync_error'],
       ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -3766,6 +3957,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
   final String rowVersion;
   final String syncStatus;
   final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageItemLocal({
@@ -3783,6 +3975,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     required this.rowVersion,
     required this.syncStatus,
     this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -3807,6 +4000,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     if (!nullToAbsent || lastSyncError != null) {
       map['last_sync_error'] = Variable<String>(lastSyncError);
     }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -3834,6 +4028,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       lastSyncError: lastSyncError == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -3863,6 +4058,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -3885,6 +4081,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -3905,6 +4102,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     String? rowVersion,
     String? syncStatus,
     Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageItemLocal(
@@ -3924,6 +4122,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     lastSyncError: lastSyncError.present
         ? lastSyncError.value
         : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -3963,6 +4162,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       lastSyncError: data.lastSyncError.present
           ? data.lastSyncError.value
           : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -3985,6 +4187,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -4007,6 +4210,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -4028,6 +4232,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
           other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -4047,6 +4252,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
   final Value<String> rowVersion;
   final Value<String> syncStatus;
   final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -4065,6 +4271,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4084,6 +4291,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4112,6 +4320,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
     Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -4132,6 +4341,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -4153,6 +4363,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Value<String>? rowVersion,
     Value<String>? syncStatus,
     Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -4172,6 +4383,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
       lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -4225,6 +4437,9 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     if (lastSyncError.present) {
       map['last_sync_error'] = Variable<String>(lastSyncError.value);
     }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -4254,6 +4469,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -4356,6 +4572,21 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -4389,6 +4620,7 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     uploadStatus,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -4464,6 +4696,15 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         ),
       );
     }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -4520,6 +4761,10 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         DriftSqlType.string,
         data['${effectivePrefix}last_sync_error'],
       ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4547,6 +4792,7 @@ class DamageReportAttachmentLocal extends DataClass
   final String uploadStatus;
   final String syncStatus;
   final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageReportAttachmentLocal({
@@ -4558,6 +4804,7 @@ class DamageReportAttachmentLocal extends DataClass
     required this.uploadStatus,
     required this.syncStatus,
     this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -4578,6 +4825,7 @@ class DamageReportAttachmentLocal extends DataClass
     if (!nullToAbsent || lastSyncError != null) {
       map['last_sync_error'] = Variable<String>(lastSyncError);
     }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -4601,6 +4849,7 @@ class DamageReportAttachmentLocal extends DataClass
       lastSyncError: lastSyncError == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -4622,6 +4871,7 @@ class DamageReportAttachmentLocal extends DataClass
       uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -4638,6 +4888,7 @@ class DamageReportAttachmentLocal extends DataClass
       'uploadStatus': serializer.toJson<String>(uploadStatus),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -4652,6 +4903,7 @@ class DamageReportAttachmentLocal extends DataClass
     String? uploadStatus,
     String? syncStatus,
     Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageReportAttachmentLocal(
@@ -4665,6 +4917,7 @@ class DamageReportAttachmentLocal extends DataClass
     lastSyncError: lastSyncError.present
         ? lastSyncError.value
         : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -4690,6 +4943,9 @@ class DamageReportAttachmentLocal extends DataClass
       lastSyncError: data.lastSyncError.present
           ? data.lastSyncError.value
           : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -4706,6 +4962,7 @@ class DamageReportAttachmentLocal extends DataClass
           ..write('uploadStatus: $uploadStatus, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -4722,6 +4979,7 @@ class DamageReportAttachmentLocal extends DataClass
     uploadStatus,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -4737,6 +4995,7 @@ class DamageReportAttachmentLocal extends DataClass
           other.uploadStatus == this.uploadStatus &&
           other.syncStatus == this.syncStatus &&
           other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -4751,6 +5010,7 @@ class DamageReportAttachmentsCompanion
   final Value<String> uploadStatus;
   final Value<String> syncStatus;
   final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -4763,6 +5023,7 @@ class DamageReportAttachmentsCompanion
     this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4776,6 +5037,7 @@ class DamageReportAttachmentsCompanion
     this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4791,6 +5053,7 @@ class DamageReportAttachmentsCompanion
     Expression<String>? uploadStatus,
     Expression<String>? syncStatus,
     Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -4804,6 +5067,7 @@ class DamageReportAttachmentsCompanion
       if (uploadStatus != null) 'upload_status': uploadStatus,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -4819,6 +5083,7 @@ class DamageReportAttachmentsCompanion
     Value<String>? uploadStatus,
     Value<String>? syncStatus,
     Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -4832,6 +5097,7 @@ class DamageReportAttachmentsCompanion
       uploadStatus: uploadStatus ?? this.uploadStatus,
       syncStatus: syncStatus ?? this.syncStatus,
       lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -4865,6 +5131,9 @@ class DamageReportAttachmentsCompanion
     if (lastSyncError.present) {
       map['last_sync_error'] = Variable<String>(lastSyncError.value);
     }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -4888,6 +5157,7 @@ class DamageReportAttachmentsCompanion
           ..write('uploadStatus: $uploadStatus, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -5558,6 +5828,7 @@ typedef $$FarmersTableCreateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5588,6 +5859,7 @@ typedef $$FarmersTableUpdateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5719,6 +5991,11 @@ class $$FarmersTableFilterComposer
 
   ColumnFilters<String> get lastSyncError => $composableBuilder(
     column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5862,6 +6139,11 @@ class $$FarmersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5986,6 +6268,11 @@ class $$FarmersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -6048,6 +6335,7 @@ class $$FarmersTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6076,6 +6364,7 @@ class $$FarmersTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6106,6 +6395,7 @@ class $$FarmersTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6134,6 +6424,7 @@ class $$FarmersTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6176,6 +6467,7 @@ typedef $$FarmsTableCreateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6196,6 +6488,7 @@ typedef $$FarmsTableUpdateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6276,6 +6569,11 @@ class $$FarmsTableFilterComposer extends Composer<_$AppDatabase, $FarmsTable> {
 
   ColumnFilters<String> get lastSyncError => $composableBuilder(
     column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6369,6 +6667,11 @@ class $$FarmsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6445,6 +6748,11 @@ class $$FarmsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -6494,6 +6802,7 @@ class $$FarmsTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6512,6 +6821,7 @@ class $$FarmsTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6532,6 +6842,7 @@ class $$FarmsTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6550,6 +6861,7 @@ class $$FarmsTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6593,6 +6905,7 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6614,6 +6927,7 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6700,6 +7014,11 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<String> get lastSyncError => $composableBuilder(
     column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6798,6 +7117,11 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6877,6 +7201,11 @@ class $$DamageReportsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -6934,6 +7263,7 @@ class $$DamageReportsTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6953,6 +7283,7 @@ class $$DamageReportsTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6974,6 +7305,7 @@ class $$DamageReportsTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6993,6 +7325,7 @@ class $$DamageReportsTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7038,6 +7371,7 @@ typedef $$DamageItemsTableCreateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -7058,6 +7392,7 @@ typedef $$DamageItemsTableUpdateCompanionBuilder =
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -7139,6 +7474,11 @@ class $$DamageItemsTableFilterComposer
 
   ColumnFilters<String> get lastSyncError => $composableBuilder(
     column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7232,6 +7572,11 @@ class $$DamageItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -7314,6 +7659,11 @@ class $$DamageItemsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -7366,6 +7716,7 @@ class $$DamageItemsTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7384,6 +7735,7 @@ class $$DamageItemsTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7404,6 +7756,7 @@ class $$DamageItemsTableTableManager
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7422,6 +7775,7 @@ class $$DamageItemsTableTableManager
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7461,6 +7815,7 @@ typedef $$DamageReportAttachmentsTableCreateCompanionBuilder =
       Value<String> uploadStatus,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -7475,6 +7830,7 @@ typedef $$DamageReportAttachmentsTableUpdateCompanionBuilder =
       Value<String> uploadStatus,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -7526,6 +7882,11 @@ class $$DamageReportAttachmentsTableFilterComposer
 
   ColumnFilters<String> get lastSyncError => $composableBuilder(
     column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7589,6 +7950,11 @@ class $$DamageReportAttachmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -7640,6 +8006,11 @@ class $$DamageReportAttachmentsTableAnnotationComposer
 
   GeneratedColumn<String> get lastSyncError => $composableBuilder(
     column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => column,
   );
 
@@ -7704,6 +8075,7 @@ class $$DamageReportAttachmentsTableTableManager
                 Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7716,6 +8088,7 @@ class $$DamageReportAttachmentsTableTableManager
                 uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -7730,6 +8103,7 @@ class $$DamageReportAttachmentsTableTableManager
                 Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -7742,6 +8116,7 @@ class $$DamageReportAttachmentsTableTableManager
                 uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

@@ -18,7 +18,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   ) async {
     final reports =
         await (_db.select(_db.damageReports)
-              ..where((t) => t.farmId.equals(farmId))
+              ..where((t) => t.farmId.equals(farmId) & t.isPendingDelete.equals(false))
               ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]))
             .get();
 
@@ -203,12 +203,26 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<void> deleteDamageReport(String id) async {
-    await (_db.delete(_db.damageReports)..where((t) => t.id.equals(id))).go();
+    final local = await (_db.select(_db.damageReports)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (local == null) return;
+
+    await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+      const DamageReportsCompanion(
+        isPendingDelete: Value(true),
+        syncStatus: Value('pending'),
+      ),
+    );
+
     await _syncService.addToQueue(
       localId: id,
       entityType: 'damage_report',
       operation: 'delete',
-      data: {},
+      data: {
+        'id': local.serverId ?? local.id,
+        'serverId': local.serverId,
+        'clientId': local.id,
+      },
     );
   }
 
@@ -276,12 +290,26 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<void> deleteDamageItem(String id) async {
-    await (_db.delete(_db.damageItems)..where((t) => t.id.equals(id))).go();
+    final local = await (_db.select(_db.damageItems)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (local == null) return;
+
+    await (_db.update(_db.damageItems)..where((t) => t.id.equals(id))).write(
+      const DamageItemsCompanion(
+        isPendingDelete: Value(true),
+        syncStatus: Value('pending'),
+      ),
+    );
+
     await _syncService.addToQueue(
       localId: id,
       entityType: 'damage_item',
       operation: 'delete',
-      data: {},
+      data: {
+        'id': local.serverId ?? local.id,
+        'serverId': local.serverId,
+        'clientId': local.id,
+      },
     );
   }
 }

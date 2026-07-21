@@ -45,14 +45,29 @@ class OfflineFirstDamageReportAttachmentRepository
 
   @override
   Future<void> deleteAttachment(String id) async {
-    await (_db.delete(
-      _db.damageReportAttachments,
-    )..where((t) => t.id.equals(id))).go();
+    final local = await (_db.select(_db.damageReportAttachments)
+          ..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (local == null) return;
+
+    await (_db.update(_db.damageReportAttachments)
+          ..where((t) => t.id.equals(id)))
+        .write(
+      const DamageReportAttachmentsCompanion(
+        isPendingDelete: Value(true),
+        syncStatus: Value('pending'),
+      ),
+    );
+
     await _syncService.addToQueue(
       localId: id,
       entityType: 'attachment',
       operation: 'delete',
-      data: {},
+      data: {
+        'id': local.serverId ?? local.id,
+        'serverId': local.serverId,
+        'clientId': local.id,
+      },
     );
   }
 
@@ -62,7 +77,7 @@ class OfflineFirstDamageReportAttachmentRepository
   ) async {
     final items = await (_db.select(
       _db.damageReportAttachments,
-    )..where((t) => t.damageReportId.equals(reportId))).get();
+    )..where((t) => t.damageReportId.equals(reportId) & t.isPendingDelete.equals(false))).get();
 
     return items
         .map(

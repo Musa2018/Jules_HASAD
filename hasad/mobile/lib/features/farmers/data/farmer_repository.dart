@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
@@ -7,17 +8,6 @@ import 'package:mobile/features/farmers/domain/farmer_validator.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:uuid/uuid.dart';
 
-class FarmerException implements Exception {
-  final List<String> errors;
-  FarmerException(this.errors);
-  @override
-  String toString() =>
-      errors.isEmpty ? 'An error occurred.' : errors.join('\n');
-}
-
-class FarmerValidationException extends FarmerException {
-  FarmerValidationException(super.errors);
-}
 
 abstract class FarmerRepository {
   Future<List<domain.Farmer>> getFarmers({
@@ -64,6 +54,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     // For the list, we currently only show local data or we could merge.
     // For Sprint 10.4, we focus on searchById.
     final query = _db.select(_db.farmers)
+      ..where((t) => t.isPendingDelete.equals(false))
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
       ..limit(pageSize, offset: (pageNumber - 1) * pageSize);
 
@@ -236,13 +227,26 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Future<void> deleteFarmer(String id) async {
-    await (_db.delete(_db.farmers)..where((t) => t.id.equals(id))).go();
+    final local = await (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (local == null) return;
+
+    await (_db.update(_db.farmers)..where((t) => t.id.equals(id))).write(
+      const FarmersCompanion(
+        isPendingDelete: Value(true),
+        syncStatus: Value('pending'),
+      ),
+    );
 
     await _syncService.addToQueue(
       localId: id,
       entityType: 'farmer',
       operation: 'delete',
-      data: {},
+      data: {
+        'id': local.serverId ?? local.id,
+        'serverId': local.serverId,
+        'clientId': local.id,
+      },
     );
   }
 }

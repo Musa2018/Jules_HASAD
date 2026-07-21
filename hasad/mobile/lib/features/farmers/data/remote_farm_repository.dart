@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/domain/farm.dart';
 
@@ -122,6 +123,9 @@ class RemoteFarmRepository implements FarmRepository {
 
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
+    if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {
+      throw SyncValidationException(_errorsFromEnvelope(body));
+    }
     if (body is Map<String, dynamic>) {
       return _errorsFromEnvelope(body);
     }

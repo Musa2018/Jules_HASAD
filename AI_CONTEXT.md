@@ -35,8 +35,8 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 3. Current Project Status
 - **Current Branch**: `farmers`
-- **Latest Completed Sprint**: Sprint 10.10 — Farmers Sync Verification
-- **Latest Commit Hash**: `9b932f7` (Branch: farmers)
+- **Latest Completed Sprint**: Sprint 10.11 — Sync Lifecycle Consistency
+- **Latest Commit Hash**: ` farmers` (Branch: farmers)
 - **main**: Stable production-ready code.
 - **farmers**: Active development branch for the Farmers module.
 
@@ -54,6 +54,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Sprint 10.8 - Farmers Create Sync Validation Fix**: Implemented two-level validation (UI + Repository) using a reusable `FarmerValidator` to enforce business rules (Age 18+, Gender, Family Size, IdType) before data enters the sync pipeline.
 - **Sprint 10.9 - Offline Sync Invalid Data Handling Hardening**: Improved sync robustness by distinguishing transient failures from business validation errors. Implemented Drift schema **v8** with `lastSyncError` columns, "upsert" logic for `SyncQueue` to prevent task duplication, and immediate UI feedback via error banners in `FarmerDetailsScreen`.
 - **Sprint 10.10 - Farmers Sync Verification & Operation Collapsing Fix**: Fixed operation collapsing bug where offline edits to pending `create` tasks were incorrectly changed to `update`. Verified safe migration to schema **v8** and end-to-end sync error recovery lifecycle.
+- **Sprint 10.11 - Sync Lifecycle Consistency & Soft-Delete**: Standardized sync behavior across all entities. Implemented soft-delete to ensure remote deletion completes before local hard delete. Generalized "Preserve CREATE" logic and unified validation handling with `SyncValidationException`. Migrated Drift to schema **v9**.
 
 ## 5. Farmers Module Status
 - **Backend Capabilities**:
@@ -84,9 +85,6 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
 
 ## 8. Pending Work
-- **Business Rules & Validation**:
-  - Jerusalem ID rules refinement.
-  - Passport format validation refinement.
 - **UI/UX**:
   - Conflict resolution comparison screen (handling 409 server responses).
   - Mobile geographic caching for offline reference data support.

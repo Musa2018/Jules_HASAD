@@ -7,6 +7,15 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-21
 
+## Sprint 10.11 — COMPLETED
+Sync Lifecycle Consistency & Soft-Delete:
+- **Soft-Delete Lifecycle**: Implemented "Pending Delete" state across all entities (Farmers, Farms, DamageReports, Attachments). Records are now soft-deleted locally, synchronized with the server, and then hard-deleted upon success.
+- **Universal Operation Collapsing**: Generalised "Preserve CREATE" logic to all entity types. Offline edits to pending `create` tasks now correctly maintain the `create` operation, preventing backend 404s.
+- **Lifecycle Collapsing**: Implemented immediate removal of unsynced records when deleted offline (CREATE + DELETE = NO-OP), keeping the database and sync queue clean.
+- **Generic Sync Abstractions**: Centralized error handling with `SyncException` and `SyncValidationException`. All remote repositories now uniformly map HTTP 400 errors to block retries and inform the user.
+- **Safe Migration**: Successfully migrated Drift schema to **v9**.
+- Tests: Added comprehensive coverage for the new delete lifecycle and generic operation collapsing.
+
 ## Sprint 10.10 — COMPLETED
 Farmers Sync Hardening Verification & Fix:
 - **Operation Collapsing Fix**: Resolved a critical bug where offline edits to a pending `CREATE` operation would change the task to `UPDATE`, causing backend 404s. The system now preserves the `CREATE` operation until the record is successfully born on the server.

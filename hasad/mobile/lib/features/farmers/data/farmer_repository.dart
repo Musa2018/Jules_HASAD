@@ -23,6 +23,7 @@ abstract class FarmerRepository {
   });
   Future<domain.Farmer?> findByIdNumber(String idNumber);
   Future<domain.Farmer> getFarmer(String id);
+  Stream<domain.Farmer?> watchFarmer(String id);
   Future<domain.Farmer> createFarmer(domain.Farmer farmer);
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer);
   Future<void> deleteFarmer(String id);
@@ -110,6 +111,13 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       _db.farmers,
     )..where((t) => t.id.equals(id))).getSingle();
     return _mapToDomain(e);
+  }
+
+  @override
+  Stream<domain.Farmer?> watchFarmer(String id) {
+    return (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
+        .watchSingleOrNull()
+        .map((e) => e != null ? _mapToDomain(e) : null);
   }
 
   domain.Farmer _mapToDomain(FarmerLocal e) {

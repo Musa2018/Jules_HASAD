@@ -7,6 +7,14 @@
 - **Current Branch**: `main`
 - **Last Updated**: 2026-07-15
 
+## Sprint 10.6 — COMPLETED
+Fixed permanent "Awaiting Sync" status and improved UI reactivity:
+- **Background Sync**: Refactored `BackgroundSyncService` with a drain loop to process items added during active sync and added a startup trigger.
+- **Reactivity**: Added `watchFarmer` stream to `FarmerRepository` and `farmerStreamProvider` to enable real-time UI updates when sync completes.
+- **UI**: Updated `FarmerDetailsScreen` to reactively reflect database changes.
+- **Robustness**: Added tests for sync race conditions and startup auto-resume.
+- Tests: Verified with updated `background_sync_service_test.dart` and `offline_first_farmer_repository_test.dart`.
+
 ## Sprint 9.1 — IN PROGRESS
 Implemented User Management and Regional Scoping:
 - **Backend Core**: New `AppRoles` registry and `RoleScopeType` enum (Global, Governorate, Directorate) for multi-level geographic validation.

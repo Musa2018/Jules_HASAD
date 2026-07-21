@@ -57,6 +57,11 @@ final farmerProvider = FutureProvider.autoDispose.family<Farmer, String>((
   return ref.watch(farmerRepositoryProvider).getFarmer(id);
 });
 
+final farmerStreamProvider =
+    StreamProvider.autoDispose.family<Farmer?, String>((ref, id) {
+      return ref.watch(farmerRepositoryProvider).watchFarmer(id);
+    });
+
 final farmsListByFarmerProvider = FutureProvider.autoDispose
     .family<List<Farm>, String>((ref, farmerId) async {
       return ref.watch(farmRepositoryProvider).getFarmsByFarmer(farmerId);

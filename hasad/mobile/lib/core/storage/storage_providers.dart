@@ -30,5 +30,9 @@ final syncServiceProvider = Provider<BackgroundSyncService>((ref) {
     ref.watch(connectivityProvider),
   );
   ref.onDispose(() => service.dispose());
+  // Trigger initialization safely.
+  // We don't await here as it's a synchronous provider,
+  // but it starts the async initialization process.
+  service.initialize();
   return service;
 });

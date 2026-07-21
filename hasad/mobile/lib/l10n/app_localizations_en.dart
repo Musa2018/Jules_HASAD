@@ -356,4 +356,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noUsers => 'There are no users.';
+
+  @override
+  String get noData => 'No data available';
 }

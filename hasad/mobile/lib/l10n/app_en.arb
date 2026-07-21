@@ -145,5 +145,6 @@
   "confirmPassword": "Confirm Password",
   "userCreatedSuccessfully": "User created successfully.",
   "errorCreatingUser": "Failed to create user.",
-  "noUsers": "There are no users."
+  "noUsers": "There are no users.",
+  "noData": "No data available"
 }

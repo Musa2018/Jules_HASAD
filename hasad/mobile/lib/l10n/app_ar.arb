@@ -113,5 +113,6 @@
   "confirmPassword": "تأكيد كلمة المرور",
   "userCreatedSuccessfully": "تم إنشاء المستخدم بنجاح.",
   "errorCreatingUser": "فشل إنشاء المستخدم.",
-  "noUsers": "لا يوجد مستخدمون."
+  "noUsers": "لا يوجد مستخدمون.",
+  "noData": "لا توجد بيانات متاحة"
 }

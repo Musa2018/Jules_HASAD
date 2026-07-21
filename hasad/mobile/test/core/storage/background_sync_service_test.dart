@@ -195,4 +195,194 @@ void main() {
     final queueItem = await db.select(db.syncQueue).getSingle();
     expect(queueItem.status, 'completed');
   });
+
+  test('processQueue handles items added during processing (drain loop)', () async {
+    const localId1 = 'local-1';
+    const localId2 = 'local-2';
+    final farmer1 = Farmer(
+      id: localId1,
+      idTypeId: 1,
+      idNumber: '1',
+      firstNameAr: 'N1',
+      fatherNameAr: '',
+      grandfatherNameAr: '',
+      familyNameAr: '',
+      firstNameEn: '',
+      fatherNameEn: '',
+      grandfatherNameEn: '',
+      familyNameEn: '',
+      birthDate: DateTime(1990),
+      gender: Gender.male,
+      phoneNumber: '',
+      familySize: 1,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: '',
+      rowVersion: '',
+    );
+    final farmer2 = farmer1.copyWith(id: localId2, idNumber: '2');
+
+    // Setup connectivity
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.wifi]);
+
+    // Mock remote calls
+    when(() => mockFarmerRepo.createFarmer(any())).thenAnswer((invocation) async {
+      final f = invocation.positionalArguments[0] as Farmer;
+      if (f.id == localId1) {
+        // While processing first item, add second item to queue
+        await db.into(db.farmers).insert(
+              FarmersCompanion.insert(
+                id: localId2,
+                idTypeId: const Value(1),
+                idNumber: const Value('2'),
+                firstNameAr: const Value('N2'),
+                fatherNameAr: const Value(''),
+                grandfatherNameAr: const Value(''),
+                familyNameAr: const Value(''),
+                firstNameEn: const Value(''),
+                fatherNameEn: const Value(''),
+                grandfatherNameEn: const Value(''),
+                familyNameEn: const Value(''),
+                birthDate: Value(DateTime(1990)),
+                gender: const Value(1),
+                phoneNumber: const Value(''),
+                familySize: const Value(1),
+                governorateId: const Value('G1'),
+                localityId: const Value('L1'),
+                address: const Value(''),
+                syncStatus: const Value('pending'),
+              ),
+            );
+        await db.into(db.syncQueue).insert(
+              SyncQueueCompanion.insert(
+                id: 'queue-2',
+                localId: localId2,
+                entityType: 'farmer',
+                operation: 'create',
+                data: jsonEncode(farmer2.toJson()),
+              ),
+            );
+        return f.copyWith(rowVersion: 'v1');
+      }
+      return f.copyWith(rowVersion: 'v2');
+    });
+
+    // Add first item and start sync
+    await db.into(db.farmers).insert(
+          FarmersCompanion.insert(
+            id: localId1,
+            idTypeId: const Value(1),
+            idNumber: const Value('1'),
+            firstNameAr: const Value('N1'),
+            fatherNameAr: const Value(''),
+            grandfatherNameAr: const Value(''),
+            familyNameAr: const Value(''),
+            firstNameEn: const Value(''),
+            fatherNameEn: const Value(''),
+            grandfatherNameEn: const Value(''),
+            familyNameEn: const Value(''),
+            birthDate: Value(DateTime(1990)),
+            gender: const Value(1),
+            phoneNumber: const Value(''),
+            familySize: const Value(1),
+            governorateId: const Value('G1'),
+            localityId: const Value('L1'),
+            address: const Value(''),
+            syncStatus: const Value('pending'),
+          ),
+        );
+    await db.into(db.syncQueue).insert(
+          SyncQueueCompanion.insert(
+            id: 'queue-1',
+            localId: localId1,
+            entityType: 'farmer',
+            operation: 'create',
+            data: jsonEncode(farmer1.toJson()),
+          ),
+        );
+
+    await syncService.processQueue();
+
+    // Verify both items processed
+    final farmers = await db.select(db.farmers).get();
+    expect(farmers.length, 2);
+    expect(farmers.every((f) => f.syncStatus == 'completed'), true);
+
+    final queueItems = await db.select(db.syncQueue).get();
+    expect(queueItems.length, 2);
+    expect(queueItems.every((q) => q.status == 'completed'), true);
+  });
+
+  test('initialize() triggers processQueue and processes existing items', () async {
+    const localId = 'startup-1';
+    final farmer = Farmer(
+      id: localId,
+      idTypeId: 1,
+      idNumber: 'S1',
+      firstNameAr: 'Startup',
+      fatherNameAr: '',
+      grandfatherNameAr: '',
+      familyNameAr: '',
+      firstNameEn: '',
+      fatherNameEn: '',
+      grandfatherNameEn: '',
+      familyNameEn: '',
+      birthDate: DateTime(1990),
+      gender: Gender.male,
+      phoneNumber: '',
+      familySize: 1,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: '',
+      rowVersion: '',
+    );
+
+    await db.into(db.farmers).insert(
+          FarmersCompanion.insert(
+            id: localId,
+            idTypeId: const Value(1),
+            idNumber: const Value('S1'),
+            firstNameAr: const Value('Startup'),
+            fatherNameAr: const Value(''),
+            grandfatherNameAr: const Value(''),
+            familyNameAr: const Value(''),
+            firstNameEn: const Value(''),
+            fatherNameEn: const Value(''),
+            grandfatherNameEn: const Value(''),
+            familyNameEn: const Value(''),
+            birthDate: Value(DateTime(1990)),
+            gender: const Value(1),
+            phoneNumber: const Value(''),
+            familySize: const Value(1),
+            governorateId: const Value('G1'),
+            localityId: const Value('L1'),
+            address: const Value(''),
+            syncStatus: const Value('pending'),
+          ),
+        );
+    await db.into(db.syncQueue).insert(
+          SyncQueueCompanion.insert(
+            id: 'q-startup',
+            localId: localId,
+            entityType: 'farmer',
+            operation: 'create',
+            data: jsonEncode(farmer.toJson()),
+          ),
+        );
+
+    when(
+      () => mockConnectivity.checkConnectivity(),
+    ).thenAnswer((_) async => [ConnectivityResult.wifi]);
+    when(
+      () => mockFarmerRepo.createFarmer(any()),
+    ).thenAnswer((_) async => farmer.copyWith(rowVersion: 'vs'));
+
+    await syncService.initialize();
+
+    final f = await (db.select(db.farmers)..where((t) => t.id.equals(localId)))
+        .getSingle();
+    expect(f.syncStatus, 'completed');
+  });
 }

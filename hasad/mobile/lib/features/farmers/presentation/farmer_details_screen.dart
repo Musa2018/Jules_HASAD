@@ -17,8 +17,8 @@ class FarmerDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    // We watch the farmerProvider to ensure we have the latest data from the local DB
-    final farmerAsync = ref.watch(farmerProvider(farmer.id));
+    // We watch the farmerStreamProvider to ensure we have the latest data from the local DB reactively
+    final farmerAsync = ref.watch(farmerStreamProvider(farmer.id));
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +31,9 @@ class FarmerDetailsScreen extends ConsumerWidget {
         ],
       ),
       body: farmerAsync.when(
-        data: (latestFarmer) => _FarmerDetailsBody(farmer: latestFarmer),
+        data: (latestFarmer) => latestFarmer != null
+            ? _FarmerDetailsBody(farmer: latestFarmer)
+            : Center(child: Text(l10n.noData)),
         loading: () => _FarmerDetailsBody(farmer: farmer),
         error: (error, stack) => _FarmerDetailsBody(farmer: farmer),
       ),

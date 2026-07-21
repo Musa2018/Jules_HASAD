@@ -168,4 +168,55 @@ void main() {
       ),
     ).called(1);
   });
+
+  test('watchFarmer emits new values when local database is updated', () async {
+    when(
+      () => mockSyncService.addToQueue(
+        localId: any(named: 'localId'),
+        entityType: any(named: 'entityType'),
+        operation: any(named: 'operation'),
+        data: any(named: 'data'),
+      ),
+    ).thenAnswer((_) async {});
+
+    final farmer = Farmer(
+      id: 'watch-1',
+      idTypeId: 1,
+      idNumber: '1',
+      firstNameAr: 'N1',
+      fatherNameAr: '',
+      grandfatherNameAr: '',
+      familyNameAr: '',
+      firstNameEn: '',
+      fatherNameEn: '',
+      grandfatherNameEn: '',
+      familyNameEn: '',
+      birthDate: DateTime(1990),
+      gender: Gender.male,
+      phoneNumber: '',
+      familySize: 1,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: '',
+    );
+
+    // Start watching
+    final stream = repository.watchFarmer('watch-1');
+
+    final expectation = expectLater(
+      stream,
+      emitsInOrder([
+        predicate<Farmer?>((f) => f?.firstNameAr == 'N1'),
+        predicate<Farmer?>((f) => f?.firstNameAr == 'Updated'),
+      ]),
+    );
+
+    // 1. Add it
+    await repository.createFarmer(farmer);
+
+    // 2. Update it
+    await repository.updateFarmer(farmer.copyWith(firstNameAr: 'Updated'));
+
+    await expectation;
+  });
 }

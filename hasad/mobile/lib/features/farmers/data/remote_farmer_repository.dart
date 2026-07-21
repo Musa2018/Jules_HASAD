@@ -61,6 +61,11 @@ class RemoteFarmerRepository implements FarmerRepository {
   }
 
   @override
+  Stream<domain.Farmer?> watchFarmer(String id) {
+    throw UnimplementedError('Remote repository does not support watching.');
+  }
+
+  @override
   Future<domain.Farmer> createFarmer(domain.Farmer farmer) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(

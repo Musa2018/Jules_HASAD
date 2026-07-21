@@ -34,18 +34,23 @@ class BackgroundSyncService {
     this._remoteDamageReportRepository,
     this._remoteAttachmentRepository,
     this._connectivity,
-  ) {
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((
+  );
+
+  Future<void> initialize() async {
+    _connectivitySubscription ??= _connectivity.onConnectivityChanged.listen((
       results,
     ) {
       if (results.any((result) => result != ConnectivityResult.none)) {
         processQueue();
       }
     });
+    // Trigger initial sync on startup
+    await processQueue();
   }
 
   void dispose() {
     _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
   }
 
   Future<void> addToQueue({
@@ -77,29 +82,38 @@ class BackgroundSyncService {
 
     _isProcessing = true;
     try {
-      final now = DateTime.now();
-      final pendingItems =
-          await (_db.select(_db.syncQueue)
-                ..where(
-                  (t) => t.status.equals('pending') | t.status.equals('failed'),
-                )
-                ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
-              .get();
+      while (true) {
+        final now = DateTime.now();
+        final pendingItems = await (_db.select(_db.syncQueue)
+              ..where(
+                (t) => t.status.equals('pending') | t.status.equals('failed'),
+              )
+              ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+            .get();
 
-      for (final item in pendingItems) {
-        if (item.retryCount >= 3) continue;
+        if (pendingItems.isEmpty) break;
 
-        // Simple backoff: 0, 5, 15 minutes
-        if (item.lastAttemptAt != null) {
-          final waitMinutes = item.retryCount == 1
-              ? 5
-              : (item.retryCount == 2 ? 15 : 0);
-          if (now.difference(item.lastAttemptAt!).inMinutes < waitMinutes) {
-            continue;
+        bool itemsProcessedInThisBatch = false;
+
+        for (final item in pendingItems) {
+          if (item.retryCount >= 3) continue;
+
+          // Simple backoff: 0, 5, 15 minutes
+          if (item.lastAttemptAt != null) {
+            final waitMinutes =
+                item.retryCount == 1 ? 5 : (item.retryCount == 2 ? 15 : 0);
+            if (now.difference(item.lastAttemptAt!).inMinutes < waitMinutes) {
+              continue;
+            }
           }
+
+          await _processItem(item);
+          itemsProcessedInThisBatch = true;
         }
 
-        await _processItem(item);
+        // If no items were processed in this pass (all skipped due to backoff or retry limit),
+        // we must break to avoid an infinite loop.
+        if (!itemsProcessedInThisBatch) break;
       }
     } finally {
       _isProcessing = false;

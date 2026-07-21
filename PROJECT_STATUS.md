@@ -5,7 +5,15 @@
 - **Current Version**: v0.7.0-alpha (User Management + Regional Scoping)
 - **Current Sprint**: Sprint 9 — Compensation Workflow (in progress)
 - **Current Branch**: `main`
-- **Last Updated**: 2026-07-15
+- **Last Updated**: 2026-07-21
+
+## Sprint 10.8 — COMPLETED
+Farmers Create Sync Validation Fix:
+- **Two-Level Validation**: Implemented mandatory validation in both `FarmerFormScreen` (UI) and `OfflineFirstFarmerRepository` (Data layer).
+- **Reusable Domain Logic**: Created `FarmerValidator` in the domain layer to centralize rules: IdType required, Gender required (Male/Female), Family Size >= 1, and Age >= 18.
+- **Data Integrity**: Repository rejects invalid data before Drift insertion or SyncQueue addition, throwing `FarmerException`.
+- **UI Feedback**: Form fields provide immediate localized feedback for demographic and identity rules.
+- Tests: Added comprehensive validation tests for all failure cases and verified valid creation enters the sync pipeline.
 
 ## Sprint 10.7 — COMPLETED
 Hardened Farmers synchronization and fixed "Create Farmer" stuck status:

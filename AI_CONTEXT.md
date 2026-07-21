@@ -35,8 +35,8 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 3. Current Project Status
 - **Current Branch**: `farmers`
-- **Latest Completed Sprint**: Sprint 10.7 — Farmers Sync Hardening
-- **Latest Commit Hash**: `69804f7` (Updated during this session)
+- **Latest Completed Sprint**: Sprint 10.8 — Farmers Create Sync Validation Fix
+- **Latest Commit Hash**: ` farmers` (Branch: farmers)
 - **main**: Stable production-ready code.
 - **farmers**: Active development branch for the Farmers module.
 
@@ -51,6 +51,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Sprint 10.5C - Locality Geographic Foundation**: Implemented `Locality` entity, lookup API, and cascading dropdowns (Gov -> Loc).
 - **Sprint 10.6 - Critical Farmers Bug Fix**: Resolved permanent "Awaiting Sync" status via `BackgroundSyncService` drain loop and implemented reactive UI updates using Drift streams.
 - **Sprint 10.7 - Farmers Sync Hardening**: Fixed interrupted sync recovery (stuck "syncing" items), implemented unified status propagation, and optimized creation payloads.
+- **Sprint 10.8 - Farmers Create Sync Validation Fix**: Implemented two-level validation (UI + Repository) using a reusable `FarmerValidator` to enforce business rules (Age 18+, Gender, Family Size, IdType) before data enters the sync pipeline.
 
 ## 5. Farmers Module Status
 - **Backend Capabilities**:
@@ -82,10 +83,8 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 8. Pending Work
 - **Business Rules & Validation**:
-  - Palestinian ID checksum validation.
-  - Jerusalem ID rules implementation.
-  - Passport format validation.
-  - Birth Date validation (Age >= 18).
+  - Jerusalem ID rules refinement.
+  - Passport format validation refinement.
 - **UI/UX**:
   - Conflict resolution comparison screen (handling 409 server responses).
   - Mobile geographic caching for offline reference data support.

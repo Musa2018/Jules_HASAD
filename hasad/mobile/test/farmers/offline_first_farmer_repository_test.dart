@@ -219,4 +219,79 @@ void main() {
 
     await expectation;
   });
+
+  group('Validation', () {
+    final baseFarmer = Farmer(
+      id: '',
+      idTypeId: 1,
+      idNumber: '12345',
+      firstNameAr: 'أحمد',
+      fatherNameAr: 'محمد',
+      grandfatherNameAr: 'علي',
+      familyNameAr: 'محمود',
+      firstNameEn: 'Ahmed',
+      fatherNameEn: 'Mohammed',
+      grandfatherNameEn: 'Ali',
+      familyNameEn: 'Mahmoud',
+      birthDate: DateTime(1985, 5, 10),
+      gender: Gender.male,
+      phoneNumber: '0599',
+      familySize: 5,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: 'Test Address',
+    );
+
+    test('createFarmer throws FarmerException when idTypeId is 0', () async {
+      final invalidFarmer = baseFarmer.copyWith(idTypeId: 0);
+
+      expect(
+        () => repository.createFarmer(invalidFarmer),
+        throwsA(isA<FarmerException>().having(
+            (e) => e.errors, 'errors', contains('IdType is required.'))),
+      );
+
+      final localFarmers = await db.select(db.farmers).get();
+      expect(localFarmers, isEmpty);
+      verifyNever(() => mockSyncService.addToQueue(
+            localId: any(named: 'localId'),
+            entityType: any(named: 'entityType'),
+            operation: any(named: 'operation'),
+            data: any(named: 'data'),
+          ));
+    });
+
+    test('createFarmer throws FarmerException when age is below 18', () async {
+      final underageFarmer = baseFarmer.copyWith(
+        birthDate: DateTime.now().subtract(const Duration(days: 365 * 17)),
+      );
+
+      expect(
+        () => repository.createFarmer(underageFarmer),
+        throwsA(isA<FarmerException>().having((e) => e.errors, 'errors',
+            contains('Farmer must be at least 18 years old.'))),
+      );
+    });
+
+    test('createFarmer throws FarmerException when gender is unspecified',
+        () async {
+      final invalidFarmer = baseFarmer.copyWith(gender: Gender.unspecified);
+
+      expect(
+        () => repository.createFarmer(invalidFarmer),
+        throwsA(isA<FarmerException>().having((e) => e.errors, 'errors',
+            contains('Gender must be Male or Female.'))),
+      );
+    });
+
+    test('createFarmer throws FarmerException when familySize is 0', () async {
+      final invalidFarmer = baseFarmer.copyWith(familySize: 0);
+
+      expect(
+        () => repository.createFarmer(invalidFarmer),
+        throwsA(isA<FarmerException>().having((e) => e.errors, 'errors',
+            contains('Family Size must be at least 1.'))),
+      );
+    });
+  });
 }

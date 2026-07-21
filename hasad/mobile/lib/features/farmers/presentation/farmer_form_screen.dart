@@ -196,6 +196,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                       DropdownMenuItem(value: 3, child: Text(l10n.passport)),
                     ],
                     onChanged: (v) => setState(() => _idTypeId = v ?? 1),
+                    validator: (v) => (v == null || v == 0) ? l10n.requiredField : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -333,6 +334,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                       DropdownMenuItem(value: Gender.female, child: Text(l10n.female)),
                     ],
                     onChanged: (v) => setState(() => _gender = v ?? Gender.unspecified),
+                    validator: (v) => (v == null || v == Gender.unspecified) ? l10n.requiredField : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -348,7 +350,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                     keyboardType: TextInputType.number,
                     validator: (v) {
                       if (v == null || v.isEmpty) return l10n.requiredField;
-                      if (int.tryParse(v) == null) return l10n.invalidFamilySize;
+                      final size = int.tryParse(v);
+                      if (size == null || size < 1) return l10n.invalidFamilySize;
                       return null;
                     },
                   ),

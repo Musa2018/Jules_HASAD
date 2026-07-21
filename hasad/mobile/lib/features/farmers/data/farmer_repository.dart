@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/farmers/domain/farmer_validator.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:uuid/uuid.dart';
 
@@ -41,6 +42,13 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     this._remoteRepository,
     this._connectivity,
   );
+
+  void _validate(domain.Farmer farmer) {
+    final errors = FarmerValidator.validate(farmer);
+    if (errors.isNotEmpty) {
+      throw FarmerException(errors);
+    }
+  }
 
   @override
   Future<List<domain.Farmer>> getFarmers({
@@ -177,6 +185,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Future<domain.Farmer> createFarmer(domain.Farmer farmer) async {
+    _validate(farmer);
     final localId = farmer.id.isEmpty ? const Uuid().v4() : farmer.id;
     final companion = _mapToCompanion(farmer).copyWith(
       id: Value(localId),
@@ -199,6 +208,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
+    _validate(farmer);
     final companion = _mapToCompanion(farmer).copyWith(
       updatedAt: Value(DateTime.now()),
       syncStatus: const Value('pending'),

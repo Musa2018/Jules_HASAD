@@ -47,8 +47,24 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
-- **Sprint 11.5 - Farm Production Acceptance**: Performed a full production audit of the Farm module. Verified end-to-end CRUD, offline sync, authorization scoping, and data integrity. Resolved minor lints and optimized code for Dart 3.8. Certified module as Production Ready for Phase 12.
-- **Sprint 11.4 - Farm Management UI**: Implemented production-grade Farm Management UI. Added card-based list with reactive Drift streams, advanced filtering (Sector, Ownership, Sync, Geography), and soft-delete workflow. Implemented Farm Details screen with reactive data and handled user scoping in both UI and Repository.
+### Sprint 11.6 - Geographic Regression & API Centralization
+- **Regression Fix**: Resolved Governorate dropdown failure caused by missing `Code` field in Backend DTOs.
+- **API Centralization**: Unified geographic lookup APIs into a shared `LocationController` accessible by all authenticated users.
+- **Flutter Refactor**: Fixed syntax and logic errors in `LocationRepository`. Updated paths to use the centralized API and ensured robust JSON parsing for all geographic levels.
+- **Backend Hardening**: Synchronized `GovernorateDto` across `Users` and `Location` features (eventually consolidating them) and added `Code` to projection logic.
+
+### Sprint 11.5 - Farm Production Acceptance
+- **Comprehensive Audit**: Performed complete end-to-end, offline, and authorization audit of the Farm module.
+- **Certification**: Certified the Farm module as Production Ready.
+- **Refinement**: Resolved minor lints and optimized code for Dart 3.8. Certified module as Production Ready for Phase 12.
+
+### Sprint 11.4 - Farm Management UI
+- **Card-Based UI**: Implemented `FarmCard` with comprehensive farm details, reactive sync status, and integrated actions.
+- **Reactive Streams**: Migrated Farm list to `StreamProvider` powered by Drift database streams for real-time updates.
+- **Advanced Filtering**: Implemented search-by-name/basin/parcel and multi-parameter filtering (Sector, Ownership, Sync Status, Geography).
+- **Farm Details**: Created a dedicated details screen with sectioned layout and reactive data binding (preventing stale RowVersion).
+- **Soft Delete Workflow**: Integrated a production-grade soft-delete confirmation and synchronization UI.
+- **Integrated Search**: Enhanced `SearchableLookupField` with async searching for large datasets like Farmers.
 - **Sprint 11.3 - Farm CRUD & Sync Hardening**: Implemented production-grade CRUD for Farms. Updated geographic hierarchy to `Governorate -> Directorate -> Locality`. Implemented full offline geographic caching and cascading lookups in Drift. Hardened sync mechanism with "Server Wins" conflict resolution and detailed logging. Enforced Directorate-based authorization in both Flutter and Backend.
 - **Sprint 11.2 - Database and Lookup Tables (Flutter)**: Upgraded Drift to v10, implemented offline lookups, and refactored Farm feature isolation.
 - **Sprint 11.1 - Backend Farm Foundation**: Redesigned Farm entity, added lookup tables (Ownership, Sector, etc.), implemented Soft Delete, and updated DTOs/Commands.

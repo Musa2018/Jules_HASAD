@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Hasad.Application.Features.Location.Queries.GetGovernorates;
+using Hasad.Application.Features.Location.Queries.GetDirectorates;
 using Hasad.Application.Features.Location.Queries.GetLocalities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +25,13 @@ public class LocationController : ControllerBase
     public async Task<IActionResult> GetGovernorates()
     {
         var result = await _mediator.Send(new GetGovernoratesQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("directorates")]
+    public async Task<IActionResult> GetDirectorates([FromQuery] Guid? governorateId)
+    {
+        var result = await _mediator.Send(new GetDirectoratesQuery(governorateId));
         return Ok(result);
     }
 

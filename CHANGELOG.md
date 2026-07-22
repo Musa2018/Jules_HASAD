@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Sprint 11.6 — Geographic Regression & API Centralization
+
+#### Fixed
+- Governorate dropdown in User Management and Farm modules by adding the missing `Code` field to `GovernorateDto`.
+- Invalid Dart syntax in `location_repository.dart` (`?governorateId`).
+- Authorization issue where geographic data was restricted to `SuperAdmin` by moving lookups to a shared `LocationController`.
+
+#### Changed
+- Centralized geographic lookup APIs to `/api/v1/Location/`.
+- Updated `LocationRepository` in Flutter to use the new centralized API paths.
+- Consolidated redundant geographic queries in the Backend `Application` layer.
+
 ### Sprint 11.5 — Farm Production Acceptance
 
 #### Added

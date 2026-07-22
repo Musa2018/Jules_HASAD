@@ -4,7 +4,7 @@ using Hasad.Application.Features.Users.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hasad.Application.Features.Users.Queries.GetDirectorates;
+namespace Hasad.Application.Features.Location.Queries.GetDirectorates;
 
 public record GetDirectoratesQuery(Guid? GovernorateId = null) : IRequest<Result<List<DirectorateDto>>>;
 

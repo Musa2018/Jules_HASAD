@@ -130,5 +130,6 @@
   "syncInvalid": "بيانات غير صالحة",
   "syncErrorDetails": "تفاصيل خطأ المزامنة",
   "fixData": "تصحيح البيانات",
-  "all": "الكل"
+  "all": "الكل",
+  "directorate": "مديرية"
 }

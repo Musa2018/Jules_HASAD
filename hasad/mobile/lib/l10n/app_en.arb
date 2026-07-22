@@ -162,5 +162,6 @@
   "syncInvalid": "Invalid Data",
   "syncErrorDetails": "Sync Error Details",
   "fixData": "Fix Data",
-  "all": "All"
+  "all": "All",
+  "directorate": "Directorate"
 }

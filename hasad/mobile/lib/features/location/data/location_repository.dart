@@ -25,7 +25,7 @@ class LocationRepositoryImpl implements LocationRepository {
   @override
   Future<List<Directorate>> getDirectorates({String? governorateId}) async {
     return _getMany(
-      '/v1/Users/directorates',
+      '/v1/Location/directorates',
       (json) => Directorate.fromJson(json),
       queryParameters: governorateId != null ? {'governorateId': governorateId} : null,
     );
@@ -37,8 +37,8 @@ class LocationRepositoryImpl implements LocationRepository {
       '/v1/Location/localities',
       (json) => Locality.fromJson(json),
       queryParameters: {
-        'governorateId': ?governorateId,
-        'directorateId': ?directorateId,
+        'governorateId': governorateId,
+        'directorateId': directorateId,
       },
     );
   }

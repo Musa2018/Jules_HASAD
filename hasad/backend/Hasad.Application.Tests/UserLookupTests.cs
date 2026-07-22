@@ -1,5 +1,5 @@
-using Hasad.Application.Features.Users.Queries.GetDirectorates;
-using Hasad.Application.Features.Users.Queries.GetGovernorates;
+using Hasad.Application.Features.Location.Queries.GetDirectorates;
+using Hasad.Application.Features.Location.Queries.GetGovernorates;
 using Hasad.Application.Features.Users.Queries.GetRoles;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
@@ -21,7 +21,7 @@ public class UserLookupTests
     }
 
     [Fact]
-    public async Task GetRoles_ReturnsAllRoles()
+    public void GetRoles_ReturnsAllRoles()
     {
         // For testing purposes, we can't easily mock RoleManager.Roles because it uses IQueryable.
         // In a real project we'd use a wrapper or the real DB.
@@ -47,6 +47,7 @@ public class UserLookupTests
         Assert.True(result.Succeeded);
         Assert.Single(result.Data!);
         Assert.Equal("Gaza", result.Data![0].NameEn);
+        Assert.Equal("GZ", result.Data![0].Code);
     }
 
     [Fact]

@@ -830,12 +830,6 @@ abstract class AppLocalizations {
   /// **'Role'**
   String get role;
 
-  /// No description provided for @directorate.
-  ///
-  /// In en, this message translates to:
-  /// **'Directorate'**
-  String get directorate;
-
   /// No description provided for @active.
   ///
   /// In en, this message translates to:
@@ -895,6 +889,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @directorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Directorate'**
+  String get directorate;
 }
 
 class _AppLocalizationsDelegate

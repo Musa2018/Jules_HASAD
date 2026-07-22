@@ -2,10 +2,17 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.9.0-alpha (Farm Module Certified)
-- **Current Sprint**: Sprint 11.5 — Farm Production Acceptance
+- **Current Version**: v0.9.1-alpha (Geographic Regression Fixed)
+- **Current Sprint**: Sprint 11.6 — Geographic Regression & API Centralization
 - **Current Branch**: `Farms`
-- **Last Updated**: 2026-07-22
+- **Last Updated**: 2026-07-23
+
+## Sprint 11.6 — COMPLETED
+Geographic Regression & API Centralization:
+- **Regression Fix**: Resolved the Governorate dropdown failure by aligning Backend DTOs with Flutter Domain Models (added missing `Code` field).
+- **API Centralization**: Moved and unified geographic lookup endpoints to a shared `LocationController`, improving code reuse and fixing authorization issues for non-admin users.
+- **Flutter Refinement**: Fixed critical syntax errors and incorrect API paths in `LocationRepository`.
+- **Test Coverage**: Added backend tests verifying `Code` field return and authorized access to geographic data.
 
 ## Sprint 11.5 — COMPLETED
 Farm Production Acceptance Audit:

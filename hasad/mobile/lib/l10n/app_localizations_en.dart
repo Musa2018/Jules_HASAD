@@ -379,9 +379,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get role => 'Role';
 
   @override
-  String get directorate => 'Directorate';
-
-  @override
   String get active => 'Active';
 
   @override
@@ -410,4 +407,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get directorate => 'Directorate';
 }

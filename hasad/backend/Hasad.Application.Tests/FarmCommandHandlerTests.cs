@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.Farms.Commands.CreateFarm;
 using Hasad.Application.Features.Farms.Commands.UpdateFarm;
 using Hasad.Application.Features.Farms.Queries.GetFarmById;
@@ -5,12 +6,21 @@ using Hasad.Application.Features.Farms.Queries.GetFarmsByFarmer;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace Hasad.Application.Tests;
 
 public class FarmCommandHandlerTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public FarmCommandHandlerTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+        _currentUserMock.Setup(x => x.UserId).Returns(Guid.NewGuid().ToString());
+    }
+
     private ApplicationDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -33,7 +43,7 @@ public class FarmCommandHandlerTests
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
-        var handler = new CreateFarmCommandHandler(context);
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
         var command = new CreateFarmCommand(
             Guid.NewGuid(),
             farmer.Id,
@@ -85,7 +95,7 @@ public class FarmCommandHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new CreateFarmCommandHandler(context);
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
         var command = new CreateFarmCommand(
             clientId,
             farmer.Id,
@@ -123,7 +133,7 @@ public class FarmCommandHandlerTests
         context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
-        var handler = new UpdateFarmCommandHandler(context);
+        var handler = new UpdateFarmCommandHandler(context, _currentUserMock.Object);
         var command = new UpdateFarmCommand(
             farm.Id,
             farm.ClientId,

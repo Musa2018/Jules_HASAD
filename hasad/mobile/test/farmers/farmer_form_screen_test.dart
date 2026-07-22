@@ -126,8 +126,8 @@ void main() {
   testWidgets('FarmerFormScreen saves edited farmer', (tester) async {
     final farmer = Farmer(
       id: '1',
-      idTypeId: 1,
-      idNumber: '123',
+      idTypeId: 2,
+      idNumber: '123456789',
       firstNameAr: 'أ',
       fatherNameAr: 'ب',
       grandfatherNameAr: 'ج',

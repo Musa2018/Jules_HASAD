@@ -8,14 +8,14 @@ import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
-import 'package:mobile/features/farmers/data/farm_repository.dart';
+import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart' as item_domain;
 import 'package:mobile/features/farmers/domain/damage_report.dart'
     as report_domain;
 import 'package:mobile/features/farmers/domain/damage_report_attachment.dart'
     as attachment_domain;
-import 'package:mobile/features/farmers/domain/farm.dart' as farm_domain;
+import 'package:mobile/features/farms/domain/farm.dart' as farm_domain;
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
 import 'package:uuid/uuid.dart';
 
@@ -498,7 +498,7 @@ class BackgroundSyncService {
         _db.farms,
       )..where((t) => t.id.equals(item.localId))).write(
         FarmsCompanion(
-          serverId: Value(result.id),
+          serverId: Value(result.serverId),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),
@@ -687,15 +687,26 @@ class BackgroundSyncService {
           _db.farms,
         )..where((t) => t.id.equals(item.localId))).write(
           FarmsCompanion(
-            name: Value(remoteFarm.name),
+            serverId: Value(remoteFarm.serverId),
+            farmerId: Value(remoteFarm.farmerId),
+            ownerFarmerId: Value(remoteFarm.ownerFarmerId),
+            localFarmName: Value(remoteFarm.localFarmName),
+            ownershipTypeId: Value(remoteFarm.ownershipTypeId),
+            relationshipToOwnerId: Value(remoteFarm.relationshipToOwnerId),
             governorateId: Value(remoteFarm.governorateId),
+            directorateId: Value(remoteFarm.directorateId),
             localityId: Value(remoteFarm.localityId),
-            landArea: Value(remoteFarm.landArea),
-            landAreaUnit: Value(remoteFarm.landAreaUnit),
+            basin: Value(remoteFarm.basin),
+            parcel: Value(remoteFarm.parcel),
+            area: Value(remoteFarm.area),
+            areaUnitId: Value(remoteFarm.areaUnitId),
+            agriculturalSectorId: Value(remoteFarm.agriculturalSectorId),
+            politicalClassificationId: Value(remoteFarm.politicalClassificationId),
             latitude: Value(remoteFarm.latitude),
             longitude: Value(remoteFarm.longitude),
-            ownershipTypeId: Value(remoteFarm.ownershipTypeId),
+            notes: Value(remoteFarm.notes),
             rowVersion: Value(remoteFarm.rowVersion),
+            updatedAt: Value(remoteFarm.updatedAt),
             syncStatus: const Value('completed'),
           ),
         );

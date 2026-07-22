@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
-import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/farms/presentation/farms_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class FarmsListScreen extends ConsumerWidget {
@@ -16,21 +16,21 @@ class FarmsListScreen extends ConsumerWidget {
     final farmsAsync = ref.watch(farmsListByFarmerProvider(farmer.id));
 
     return Scaffold(
-      appBar: AppBar(title: Text('${l10n.farms}: ${farmer.name}')),
+      appBar: AppBar(title: Text('${l10n.farms}: ${farmer.firstNameAr} ${farmer.familyNameAr}')),
       body: farmsAsync.when(
         data: (farms) {
           if (farms.isEmpty) {
             return Center(
               child: Text(l10n.noFarms),
-            ); // I need to add noFarms to l10n
+            );
           }
           return ListView.builder(
             itemCount: farms.length,
             itemBuilder: (context, index) {
               final farm = farms[index];
               return ListTile(
-                title: Text(farm.name),
-                subtitle: Text('${farm.landArea} ${farm.landAreaUnit}'),
+                title: Text(farm.localFarmName),
+                subtitle: Text('${farm.area} ${farm.areaUnitId}'),
                 trailing: IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () => context.push(
@@ -45,11 +45,11 @@ class FarmsListScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) =>
-            Center(child: Text(l10n.errorLoadingFarms)), // Add to l10n
+            Center(child: Text(l10n.errorLoadingFarms)),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/farms/add', extra: farmer),
-        tooltip: l10n.addFarm, // Add to l10n
+        tooltip: l10n.addFarm,
         child: const Icon(Icons.add),
       ),
     );

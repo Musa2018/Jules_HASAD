@@ -3,9 +3,18 @@
 > Living document — updated at the end of every sprint.
 
 - **Current Version**: v0.7.0-alpha (User Management + Regional Scoping)
-- **Current Sprint**: Sprint 11 — Farm Management (Backend Foundation)
+- **Current Sprint**: Sprint 11 — Farm Management (Offline Database)
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-22
+
+## Sprint 11.2 — COMPLETED
+Farm Offline Database Foundation:
+- **Feature Isolation**: Moved all farm-related logic to a dedicated `lib/features/farms/` folder.
+- **Drift Schema v10**: Upgraded mobile database to support the redesigned `Farms` table and 5 new lookup tables.
+- **Lookup Tables**: Implemented offline storage for `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, and `RelationshipToOwner`.
+- **Repository Implementation**: Implemented `OfflineFirstFarmRepository` and updated `RemoteFarmRepository` with new domain models.
+- **Sync Readiness**: Refactored `FarmSyncDto` to align with the new backend contract, ensuring local metadata is excluded from payloads.
+- **Geographic Hierarchy**: Prepared for the new `Governorate -> Directorate -> Locality` hierarchy.
 
 ## Sprint 11.1 — COMPLETED
 Backend Farm Foundation:

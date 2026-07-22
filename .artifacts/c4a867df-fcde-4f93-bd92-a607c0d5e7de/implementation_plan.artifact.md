@@ -1,109 +1,90 @@
-# Farm (Land) Management Module Implementation Plan
+# Implementation Plan — Sprint 11.2: Database and Lookup Tables (Flutter)
 
-This document outlines the engineering audit, gap analysis, and implementation roadmap for the Farm module, ensuring it meets the high-quality standards established during the Farmers module development.
+This plan focuses on synchronizing the Flutter offline database with the redesigned Farm backend model. It includes implementing lookup tables, updating the `Farms` table, and handling the Drift migration.
 
-## 1. Audit Report
-
-### Current State Assessment
-The existing Farm module is a rudimentary implementation from an earlier sprint (Sprint 7). While basic CRUD and offline sync exist, it lacks the robustness and business depth required for production.
-
-**Backend Status:**
-- `Farm` entity is missing critical agricultural and ownership fields.
-- No Soft Delete support (Global Query Filters).
-- Basic validation only.
-- Relationships (OwnerFarmer) are not enforced or optimized.
-
-**Flutter Status:**
-- `Farm` domain model is out of sync with requirements.
-- UI is basic (rudimentary forms, simple list).
-- Lacks reactive filtering and advanced geographic lookups (Directorates).
-- Under `lib/features/farmers` instead of its own feature folder.
-
-## 2. Gap Analysis
-
-| Category | Missing / Required | Impact |
-| :--- | :--- | :--- |
-| **Domain** | Basin, Parcel, Ownership Details, Agricultural Sector, Political Classification | **High**: Critical for reporting and damage assessment. |
-| **Relationships** | OwnerFarmer (Conditional selection from Farmers table) | **High**: Farms must be linked to both an operator and an owner. |
-| **Geography** | Directorate lookup integration | **Medium**: Required for localized assessment. |
-| **Soft Delete** | Backend Global Query Filters and partial unique indexes | **Medium**: Required for data recovery and ID reuse. |
-| **UI/UX** | Card-based UI, reactive filtering, cascading lookups | **Medium**: Consistency with Farmer module UX. |
-| **Validation** | Conditional OwnerFarmer mandatory rule | **High**: Prevents invalid data entry for non-owned farms. |
-
-## 3. Architecture Recommendations
-
-1.  **Feature Isolation**: Move all farm-related code to `mobile/lib/features/farms/`.
-2.  **Lookup Standardization**: Implement `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, and `RelationshipToOwner` as backend entities with seeding.
-3.  **Owner Selection**: Reuse `FarmerSearchScreen` logic to allow searching and selecting an existing farmer as the owner, with a fallback to create a new farmer.
-4.  **Sync Hardening**: Ensure `FarmSyncDto` strictly maps to the new backend contract.
-
-## 4. Proposed Sprint Roadmap
-
-### Sprint 11.1: Backend Farm Foundation
-- Update `Farm` entity with all missing fields.
-- Implement Soft Delete (`IsDeleted`) with Global Query Filters.
-- Add Partial Unique Index for `ClientId`.
-- **Files**: `Farm.cs`, `ApplicationDbContext.cs`, `FarmsController.cs`.
-
-### Sprint 11.2: Database & Lookup Tables
-- Create entities for `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, and `RelationshipToOwner`.
-- Seed data for all lookups.
-- Migrate Drift schema to **v10** in Flutter.
-- **Files**: New Entities, `database.dart`.
-
-### Sprint 11.3: Farm CRUD & Sync Hardening
-- Update `CreateFarmCommand` and `UpdateFarmCommand` validators.
-- Refactor `OfflineFirstFarmRepository` for new fields.
-- Update `FarmSyncDto` and `RemoteFarmRepository`.
-- **Files**: `CreateFarmCommand.cs`, `OfflineFirstFarmRepository.dart`, `farm_sync_dtos.dart`.
-
-### Sprint 11.4: Farm Card UI & List Redesign
-- Implement `FarmCard` with sync status, location details, and area.
-- Implement `FarmsListScreen` with reactive filtering (name/basin/parcel).
-- **Files**: `farm_card.dart`, `farms_list_screen.dart`.
-
-### Sprint 11.5: Advanced Farm Form
-- Implement cascading lookups (Gov -> Dir -> Loc).
-- Add `OwnerFarmer` search/select workflow.
-- Implement conditional validation (Owner required if Ownership != ملك).
-- **Files**: `farm_form_screen.dart`.
-
-### Sprint 11.6: Conflict & Error Handling
-- Implement conflict resolution UI for Farms (409 Conflict).
-- Harden `lastSyncError` propagation to UI.
-- **Files**: `farm_details_screen.dart`.
-
-### Sprint 11.7: Search First Workflow for Owners
-- Deep integration between Farm creation and Farmer search.
-- Support "Return to Farm" after creating a new Owner Farmer.
-- **Files**: `farmer_search_screen.dart`, `farm_form_screen.dart`.
-
-### Sprint 11.8: Soft Delete Workflow Hardening
-- Verify "Delete then Re-create" scenario for Farms.
-- Filter out pending-delete farms from lookups.
-- **Files**: `OfflineFirstFarmRepository.dart`.
-
-### Sprint 11.9: Production Testing & Documentation
-- Comprehensive regression testing.
-- Update `ARCHITECTURE.md` and `DOMAIN_DOCS.md`.
-
-## 5. Testing Strategy
-
-- **Unit Tests**:
-  - `FarmValidator` tests for conditional rules.
-  - `FarmSyncDto` payload verification.
-- **Integration Tests**:
-  - Offline creation -> Sync -> Server success.
-  - Conflict resolution (Server Wins).
-  - Soft delete local/remote synchronization.
-- **UI Tests**:
-  - Geographic dropdown cascading logic.
-  - Owner selection return value.
-
-## 6. User Review Required
+## User Review Required
 
 > [!IMPORTANT]
-> **Owner Farmer Selection**: The workflow will allow selecting any existing farmer as an owner. If the owner is not in the system, the user will be redirected to the "Create Farmer" form. Upon success, they will be returned to the "Farm" form with the new owner auto-selected.
+> **Feature Migration**: All farm-related files will be moved from `lib/features/farmers/` to a new dedicated feature folder `lib/features/farms/`. This ensures clean separation of concerns as the Farm module grows.
 
 > [!WARNING]
-> **Drift Migration v10**: This migration adds several non-nullable columns with defaults to the `Farms` table. Existing local data will be preserved but initialized with default values.
+> **Drift Migration v10**: This migration will update the `Farms` table. While existing data will be preserved, many new columns are non-nullable and will be initialized with default values (e.g., OwnershipTypeId = 1).
+
+## Proposed Changes
+
+### [Architectural Refinement]
+Record the pending decision to consolidate `AreaUnit` into a universal `MeasurementUnit` entity in `ARCHITECTURE.md` and `AI_CONTEXT.md`. (Already completed in pre-step).
+
+---
+
+### [Domain Layer]
+#### [MOVE] [farm.dart](file:///hasad/mobile/lib/features/farmers/domain/farm.dart) -> `mobile/lib/features/farms/domain/farm.dart`
+Update the `Farm` model with the new fields:
+- `localFarmName` (replacing `name`)
+- `ownerFarmerId`
+- `relationshipToOwnerId`
+- `directorateId`
+- `basin`
+- `parcel`
+- `area` (replacing `landArea`)
+- `areaUnitId` (replacing `landAreaUnit` string)
+- `agriculturalSectorId`
+- `politicalClassificationId`
+- `notes`
+- `isDeleted`, `deletedAt`, `deletedBy` (metadata for soft delete)
+
+#### [NEW] Lookup Models
+Create domain models for lookups:
+- `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, `RelationshipToOwner`.
+
+---
+
+### [Data Layer — Drift Database]
+#### [MODIFY] [database.dart](file:///hasad/mobile/lib/core/storage/database.dart)
+- Define new tables for all 5 lookup entities.
+- Update `Farms` table:
+    - Rename `name` to `localFarmName`.
+    - Rename `landArea` to `area`.
+    - Add `ownerFarmerId`, `relationshipToOwnerId`, `directorateId`, `basin`, `parcel`, `areaUnitId`, `agriculturalSectorId`, `politicalClassificationId`.
+    - Add `isDeleted`, `deletedAt`, `deletedBy`.
+    - Add indices for `farmerId`, `ownerFarmerId`, and geographic fields.
+- **Migration**: Increment `schemaVersion` to **10** and implement `onUpgrade` logic.
+    - Create new lookup tables.
+    - Alter `Farms` table (Drift `m.alterTable` or manual column addition).
+
+---
+
+### [Repository Layer]
+#### [MOVE & MODIFY] `OfflineFirstFarmRepository`
+- Move to `mobile/lib/features/farms/data/`.
+- Update mapping logic to handle all new fields.
+- Ensure `getFarmsByFarmer` filters out `isPendingDelete` or `isDeleted` records.
+
+---
+
+### [Sync Layer]
+#### [MODIFY] `FarmSyncDto`
+- Update `toCreateJson` and `toUpdateJson` to match the new backend contract (Sprint 11.1).
+- Ensure local metadata (syncStatus, isDeleted) is NOT sent to backend.
+
+#### [MODIFY] `BackgroundSyncService`
+- Update `_syncFarm` and `_resolveConflict` for Farms to handle the new fields.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- **Database Tests**:
+    - Verify `schemaVersion` is 10.
+    - Verify all new columns exist in `Farms` table.
+    - Verify lookup tables are created.
+- **Repository Tests**:
+    - Test `createFarm` with the new complex model.
+    - Test `watchFarms` filters out deleted records.
+- **Sync Tests**:
+    - Verify `FarmSyncDto.toCreateJson` produces the exact payload required by backend.
+
+### Manual Verification
+- Run `dart run build_runner build` and ensure no generation errors.
+- Verify app launches and migration runs without crashes.

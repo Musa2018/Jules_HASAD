@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
-import 'package:mobile/features/farmers/data/farm_repository.dart';
-import 'package:mobile/features/farmers/domain/farm.dart' as domain;
+import 'package:mobile/features/farms/data/farm_repository.dart';
+import 'package:mobile/features/farms/domain/farm.dart' as domain;
 import 'package:uuid/uuid.dart';
 
 class OfflineFirstFarmRepository implements FarmRepository {
@@ -13,54 +13,49 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
-    final items =
-        await (_db.select(_db.farms)
-              ..where((t) => t.farmerId.equals(farmerId) & t.isPendingDelete.equals(false))
-              ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
-            .get();
+    final items = await (_db.select(_db.farms)
+          ..where((t) =>
+              t.farmerId.equals(farmerId) & t.isPendingDelete.equals(false))
+          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .get();
 
-    return items
-        .map(
-          (e) => domain.Farm(
-            id: e.id,
-            serverId: e.serverId,
-            farmerId: e.farmerId,
-            name: e.name,
-            governorateId: e.governorateId,
-            localityId: e.localityId,
-            landArea: e.landArea,
-            landAreaUnit: e.landAreaUnit,
-            latitude: e.latitude,
-            longitude: e.longitude,
-            ownershipTypeId: e.ownershipTypeId,
-            rowVersion: e.rowVersion,
-            syncStatus: e.syncStatus,
-            lastSyncError: e.lastSyncError,
-          ),
-        )
-        .toList();
+    return items.map((e) => _mapToDomain(e)).toList();
   }
 
   @override
   Future<domain.Farm> getFarm(String id) async {
-    final e = await (_db.select(
-      _db.farms,
-    )..where((t) => t.id.equals(id))).getSingle();
+    final e = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
+        .getSingle();
+    return _mapToDomain(e);
+  }
+
+  domain.Farm _mapToDomain(FarmLocal e) {
     return domain.Farm(
       id: e.id,
       serverId: e.serverId,
       farmerId: e.farmerId,
-      name: e.name,
+      ownerFarmerId: e.ownerFarmerId,
+      localFarmName: e.localFarmName,
+      ownershipTypeId: e.ownershipTypeId,
+      relationshipToOwnerId: e.relationshipToOwnerId,
       governorateId: e.governorateId,
+      directorateId: e.directorateId,
       localityId: e.localityId,
-      landArea: e.landArea,
-      landAreaUnit: e.landAreaUnit,
+      basin: e.basin,
+      parcel: e.parcel,
+      area: e.area,
+      areaUnitId: e.areaUnitId,
+      agriculturalSectorId: e.agriculturalSectorId,
+      politicalClassificationId: e.politicalClassificationId,
       latitude: e.latitude,
       longitude: e.longitude,
-      ownershipTypeId: e.ownershipTypeId,
+      notes: e.notes,
       rowVersion: e.rowVersion,
       syncStatus: e.syncStatus,
       lastSyncError: e.lastSyncError,
+      isPendingDelete: e.isPendingDelete,
+      createdAt: e.createdAt,
+      updatedAt: e.updatedAt,
     );
   }
 
@@ -69,14 +64,22 @@ class OfflineFirstFarmRepository implements FarmRepository {
       id: farm.id,
       serverId: Value(farm.serverId),
       farmerId: farm.farmerId,
-      name: farm.name,
+      ownerFarmerId: Value(farm.ownerFarmerId),
+      localFarmName: farm.localFarmName,
+      ownershipTypeId: Value(farm.ownershipTypeId),
+      relationshipToOwnerId: Value(farm.relationshipToOwnerId),
       governorateId: farm.governorateId,
+      directorateId: farm.directorateId,
       localityId: farm.localityId,
-      landArea: farm.landArea,
-      landAreaUnit: farm.landAreaUnit,
+      basin: farm.basin,
+      parcel: farm.parcel,
+      area: farm.area,
+      areaUnitId: Value(farm.areaUnitId),
+      agriculturalSectorId: Value(farm.agriculturalSectorId),
+      politicalClassificationId: Value(farm.politicalClassificationId),
       latitude: Value(farm.latitude),
       longitude: Value(farm.longitude),
-      ownershipTypeId: farm.ownershipTypeId,
+      notes: Value(farm.notes),
       rowVersion: Value(farm.rowVersion),
       lastSyncError: Value(farm.lastSyncError),
     );
@@ -88,11 +91,12 @@ class OfflineFirstFarmRepository implements FarmRepository {
     final companion = _mapToCompanion(farm).copyWith(
       id: Value(localId),
       syncStatus: const Value('pending'),
+      createdAt: Value(DateTime.now()),
     );
 
     await _db.into(_db.farms).insert(companion);
 
-    final createdFarm = farm.copyWith(id: localId);
+    final createdFarm = farm.copyWith(id: localId, syncStatus: 'pending');
 
     await _syncService.addToQueue(
       localId: localId,
@@ -121,7 +125,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
       data: farm.toJson(),
     );
 
-    return farm;
+    return farm.copyWith(syncStatus: 'pending', lastSyncError: null);
   }
 
   @override

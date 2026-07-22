@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
-import 'package:mobile/features/farmers/presentation/farms_list_screen.dart';
-import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/farms/presentation/farms_list_screen.dart';
+import 'package:mobile/features/farms/presentation/farms_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
-
 import 'package:mobile/features/farmers/domain/gender.dart';
 
 void main() {
@@ -36,12 +35,17 @@ void main() {
       const Farm(
         id: 'farm-1',
         farmerId: 'farmer-1',
-        name: 'Fruit Garden',
+        localFarmName: 'Fruit Garden',
         governorateId: 'Gaza',
+        directorateId: 'D1',
         localityId: 'City',
-        landArea: 5,
-        landAreaUnit: 'Dunam',
-        ownershipTypeId: 'Owned',
+        basin: 'B1',
+        parcel: 'P1',
+        area: 5,
+        areaUnitId: 1,
+        ownershipTypeId: 1,
+        agriculturalSectorId: 1,
+        politicalClassificationId: 1,
       ),
     ];
 
@@ -61,6 +65,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('Fruit Garden'), findsOneWidget);
-    expect(find.text('5.0 Dunam'), findsOneWidget);
+    expect(find.text('5.0 1'), findsOneWidget); // 1 is areaUnitId for now in UI
   });
 }

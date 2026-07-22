@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
@@ -60,40 +59,6 @@ class FarmerSyncDto {
       'localityId': farmer.localityId,
       'address': farmer.address,
       'rowVersion': farmer.rowVersion,
-    };
-  }
-}
-
-class FarmSyncDto {
-  static Map<String, dynamic> toCreateJson(Farm farm) {
-    return {
-      'clientId': farm.id,
-      'farmerId': farm.farmerId,
-      'name': farm.name,
-      'governorateId': farm.governorateId,
-      'localityId': farm.localityId,
-      'landArea': farm.landArea,
-      'landAreaUnit': farm.landAreaUnit,
-      'latitude': farm.latitude,
-      'longitude': farm.longitude,
-      'ownershipTypeId': farm.ownershipTypeId,
-    };
-  }
-
-  static Map<String, dynamic> toUpdateJson(Farm farm) {
-    return {
-      'id': farm.serverId ?? farm.id,
-      'clientId': farm.id,
-      'farmerId': farm.farmerId,
-      'name': farm.name,
-      'governorateId': farm.governorateId,
-      'localityId': farm.localityId,
-      'landArea': farm.landArea,
-      'landAreaUnit': farm.landAreaUnit,
-      'latitude': farm.latitude,
-      'longitude': farm.longitude,
-      'ownershipTypeId': farm.ownershipTypeId,
-      'rowVersion': farm.rowVersion,
     };
   }
 }

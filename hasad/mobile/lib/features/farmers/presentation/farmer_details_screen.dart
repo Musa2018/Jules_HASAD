@@ -19,7 +19,7 @@ class FarmerDetailsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     // We watch the farmerStreamProvider to ensure we have the latest data from the local DB reactively
     final farmerAsync = ref.watch(farmerStreamProvider(farmer.id));
-    final currentFarmer = farmerAsync.value ?? farmer;
+    final currentFarmer = farmerAsync.asData?.value ?? farmer;
 
     return Scaffold(
       appBar: AppBar(

@@ -22,6 +22,13 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
     - **Current Strategy**: **Server Wins**. The background sync engine automatically fetches the remote authority data and overwrites the local Drift record to resolve the conflict.
     - **Roadmap**: Implement a **Merge UI** in future sprints to allow users to manually compare local changes with server data before resolving conflicts.
 
+## Architectural Decisions
+### ADR 0009: Measurement Units Consolidation (Pending)
+- **Status**: Proposed / Future Target
+- **Decision**: Replace domain-specific lookup tables like `AreaUnit` with a unified `MeasurementUnit` entity.
+- **Reasoning**: Measurement units are cross-domain master data (Land Area, Damage Quantities, Compensation Amounts, Production) and should be managed centrally with category support (LandArea, Weight, Count, Volume, etc.).
+- **Implementation**: Current Sprint 11.2 will continue using `AreaUnit` for the Farm module to maintain focus, with refactoring planned for a future infrastructure sprint.
+
 ## Folder Structure (Mobile)
 - `lib/core`: Cross-cutting logic (Networking, Storage, Config).
 - `lib/features`: Domain-driven feature modules.

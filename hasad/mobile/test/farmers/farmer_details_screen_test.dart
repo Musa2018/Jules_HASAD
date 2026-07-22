@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/farmer_details_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/location/domain/governorate.dart';
+import 'package:mobile/features/location/domain/locality.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -36,7 +39,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          farmerProvider('1').overrideWith((ref) => testFarmer),
+          farmerStreamProvider('1').overrideWith((ref) => Stream.value(testFarmer)),
+          governoratesProvider.overrideWith((ref) => []),
+          localitiesProvider('G1').overrideWith((ref) => []),
         ],
         child: MaterialApp(
           localizationsDelegates: const [
@@ -64,10 +69,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          farmerProvider('1').overrideWith((ref) => Future.delayed(
-            const Duration(seconds: 1),
-            () => testFarmer,
-          )),
+          farmerStreamProvider('1').overrideWith((ref) => const Stream.empty()),
+          governoratesProvider.overrideWith((ref) => []),
+          localitiesProvider('G1').overrideWith((ref) => []),
         ],
         child: MaterialApp(
           localizationsDelegates: const [
@@ -84,16 +88,15 @@ void main() {
 
     // Initial data is shown from the passed 'farmer' object
     expect(find.text('أحمد'), findsOneWidget);
-    
-    // Clear the pending timer
-    await tester.pump(const Duration(seconds: 1));
   });
 
   testWidgets('FarmerDetailsScreen handles error state', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          farmerProvider('1').overrideWith((ref) => throw Exception('Failed to load')),
+          farmerStreamProvider('1').overrideWith((ref) => Stream.error('Error')),
+          governoratesProvider.overrideWith((ref) => []),
+          localitiesProvider('G1').overrideWith((ref) => []),
         ],
         child: MaterialApp(
           localizationsDelegates: const [

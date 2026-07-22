@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
-import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/farms/presentation/farms_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class FarmFormScreen extends ConsumerStatefulWidget {
@@ -27,19 +27,19 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.farm?.name);
+    _nameController = TextEditingController(text: widget.farm?.localFarmName);
     _governorateController = TextEditingController(
       text: widget.farm?.governorateId,
     );
     _localityController = TextEditingController(text: widget.farm?.localityId);
     _areaController = TextEditingController(
-      text: widget.farm?.landArea.toString(),
+      text: widget.farm?.area.toString(),
     );
     _areaUnitController = TextEditingController(
-      text: widget.farm?.landAreaUnit,
+      text: widget.farm?.areaUnitId.toString(),
     );
     _ownershipController = TextEditingController(
-      text: widget.farm?.ownershipTypeId,
+      text: widget.farm?.ownershipTypeId.toString(),
     );
   }
 
@@ -60,12 +60,17 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     final farm = Farm(
       id: widget.farm?.id ?? '',
       farmerId: widget.farmer.id,
-      name: _nameController.text.trim(),
+      localFarmName: _nameController.text.trim(),
       governorateId: _governorateController.text.trim(),
+      directorateId: widget.farm?.directorateId ?? '', // Placeholder
       localityId: _localityController.text.trim(),
-      landArea: double.tryParse(_areaController.text) ?? 0,
-      landAreaUnit: _areaUnitController.text.trim(),
-      ownershipTypeId: _ownershipController.text.trim(),
+      basin: widget.farm?.basin ?? '', // Placeholder
+      parcel: widget.farm?.parcel ?? '', // Placeholder
+      area: double.tryParse(_areaController.text) ?? 0,
+      areaUnitId: int.tryParse(_areaUnitController.text) ?? 1,
+      ownershipTypeId: int.tryParse(_ownershipController.text) ?? 1,
+      agriculturalSectorId: widget.farm?.agriculturalSectorId ?? 1, // Placeholder
+      politicalClassificationId: widget.farm?.politicalClassificationId ?? 1, // Placeholder
       rowVersion: widget.farm?.rowVersion ?? '',
     );
 

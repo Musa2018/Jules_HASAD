@@ -1,4 +1,4 @@
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 
 abstract class FarmRepository {
   Future<List<Farm>> getFarmsByFarmer(String farmerId);

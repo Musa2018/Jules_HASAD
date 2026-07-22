@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
-import 'package:mobile/features/farmers/data/farm_repository.dart';
-import 'package:mobile/features/farmers/data/farmer_sync_dtos.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/data/farm_repository.dart';
+import 'package:mobile/features/farms/data/farm_sync_dtos.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 
 class RemoteFarmRepository implements FarmRepository {
   final Dio _dio;
@@ -66,7 +66,7 @@ class RemoteFarmRepository implements FarmRepository {
   Future<Farm> updateFarm(Farm farm) async {
     try {
       final response = await _dio.put<Map<String, dynamic>>(
-        '/v1/farms/${farm.id}',
+        '/v1/farms/${farm.serverId ?? farm.id}',
         data: FarmSyncDto.toUpdateJson(farm),
       );
       final envelope = response.data;

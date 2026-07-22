@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Sprint 11.2 — Farm Offline Database Foundation
+
+#### Added
+- New feature folder `lib/features/farms/` for better code isolation.
+- Drift schema version **10** with redesigned `Farms` table and new lookup tables.
+- Lookup tables for `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, and `RelationshipToOwner`.
+- `OfflineFirstFarmRepository` and `RemoteFarmRepository` in the new farms feature.
+- `FarmSyncDto` refactored for the new backend contract.
+- Added comprehensive unit and widget tests for the new database schema and feature isolation.
+
+#### Changed
+- `Farm` domain model updated with critical fields: `basin`, `parcel`, `area`, `ownerFarmerId`, `directorateId`, etc.
+- `BackgroundSyncService` updated to handle the new `Farm` schema and conflict resolution.
+- `app_router.dart` and `storage_providers.dart` updated to use the new farms feature paths.
+
 ### Sprint 11.1 — Backend Farm Foundation
 
 #### Added

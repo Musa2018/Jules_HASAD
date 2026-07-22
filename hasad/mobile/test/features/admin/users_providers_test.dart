@@ -1,13 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/network/token_refresher.dart';
 import 'package:mobile/core/storage/secure_storage_service.dart';
 import 'package:mobile/features/admin/data/users_repository.dart';
 import 'package:mobile/features/admin/domain/role.dart';
-import 'package:mobile/features/admin/presentation/users_providers.dart';
+import 'package:mobile/features/admin/presentation/users_providers.dart' as admin;
 import 'package:mobile/features/auth/data/auth_repository.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
+import 'package:mobile/features/location/data/location_repository.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart' as loc;
 import 'package:mocktail/mocktail.dart';
 
 class MockUsersRepository extends Mock implements UsersRepository {}
@@ -17,6 +20,10 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 class MockSecureStorageService extends Mock implements SecureStorageService {}
 
 class MockTokenRefresher extends Mock implements TokenRefresher {}
+
+class MockDio extends Mock implements Dio {}
+
+class MockLocationRepository extends Mock implements LocationRepository {}
 
 class FakeAuthNotifier extends AuthNotifier {
   FakeAuthNotifier({required AuthStatus status, AuthSession? session})
@@ -34,14 +41,17 @@ class FakeAuthNotifier extends AuthNotifier {
 
 void main() {
   late MockUsersRepository mockRepository;
+  late MockLocationRepository mockLocationRepo;
 
   setUp(() {
     mockRepository = MockUsersRepository();
+    mockLocationRepo = MockLocationRepository();
   });
 
   ProviderContainer createContainer({
     AuthStatus status = AuthStatus.authenticated,
     List<String> roles = const ['SuperAdmin'],
+    LocationRepository? locationRepo,
   }) {
     final session = status == AuthStatus.authenticated
         ? AuthSession(
@@ -56,10 +66,12 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
-        usersRepositoryProvider.overrideWithValue(mockRepository),
+        admin.usersRepositoryProvider.overrideWithValue(mockRepository),
+        loc.locationRepositoryProvider.overrideWithValue(locationRepo ?? mockLocationRepo),
         authProvider.overrideWith(
           (ref) => FakeAuthNotifier(status: status, session: session),
         ),
+        apiDioProvider.overrideWithValue(MockDio()),
       ],
     );
     addTearDown(container.dispose);
@@ -71,7 +83,7 @@ void main() {
       final container = createContainer(roles: ['AgriculturalEngineer']);
 
       await expectLater(
-        container.read(rolesProvider.future),
+        container.read(admin.rolesProvider.future),
         throwsA(
           predicate((e) => e.toString().contains('SuperAdmin access required')),
         ),
@@ -85,7 +97,7 @@ void main() {
       ];
       when(() => mockRepository.getRoles()).thenAnswer((_) async => roles);
 
-      final result = await container.read(rolesProvider.future);
+      final result = await container.read(admin.rolesProvider.future);
 
       expect(result, roles);
       verify(() => mockRepository.getRoles()).called(1);
@@ -100,20 +112,20 @@ void main() {
       ];
       when(() => mockRepository.getRoles()).thenAnswer((_) async => roles);
 
-      final result = await container.read(rolesProvider.future);
+      final result = await container.read(admin.rolesProvider.future);
       expect(result, roles);
     });
 
     test('directoratesProvider calls repository with correct ID', () async {
       final container = createContainer();
       when(
-        () => mockRepository.getDirectorates(governorateId: 'g1'),
+        () => mockLocationRepo.getDirectorates(governorateId: 'g1'),
       ).thenAnswer((_) async => []);
 
-      await container.read(directoratesProvider('g1').future);
+      await container.read(admin.directoratesProvider('g1').future);
 
       verify(
-        () => mockRepository.getDirectorates(governorateId: 'g1'),
+        () => mockLocationRepo.getDirectorates(governorateId: 'g1'),
       ).called(1);
     });
 
@@ -130,11 +142,13 @@ void main() {
             password: any(named: 'password'),
             confirmPassword: any(named: 'confirmPassword'),
             role: any(named: 'role'),
+            governorateId: any(named: 'governorateId'),
+            directorateId: any(named: 'directorateId'),
             isActive: any(named: 'isActive'),
           ),
         ).thenAnswer((_) async {});
 
-        final notifier = container.read(userManagementProvider.notifier);
+        final notifier = container.read(admin.userManagementProvider.notifier);
         await notifier.createUser(
           fullName: 'Test',
           userName: 'test',
@@ -146,7 +160,7 @@ void main() {
           isActive: true,
         );
 
-        expect(container.read(userManagementProvider).success, true);
+        expect(container.read(admin.userManagementProvider).success, true);
       },
     );
   });

@@ -33,14 +33,20 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - Three levels: Global, Governorate, Directorate.
   - Regional isolation enforced via geographic IDs in session and commands.
 
-## 3. Current Project Status
+## 3. Architectural Decisions
+### Measurement Unit Consolidation (Pending)
+- **Context**: The system currently uses domain-specific units like `AreaUnit`.
+- **Decision**: Future refactor will replace these with a universal `MeasurementUnit` entity supporting categories (LandArea, Weight, Count, Packaging, Volume, Length).
+- **Status**: Sprint 11.2 will proceed with `AreaUnit` as a Farm-specific lookup, with refactoring deferred to maintain sprint velocity.
+
+## 4. Current Project Status
 - **Current Branch**: `Farms`
-- **Latest Completed Sprint**: Sprint 11.1 — Backend Farm Foundation
-- **Latest Commit Hash**: `3473b76` (Branch: Farms)
+- **Latest Completed Sprint**: Sprint 11.2 — Database and Lookup Tables (Flutter)
+- **Latest Commit Hash**: `3abf9d0` (Branch: Farms)
 - **main**: Stable production-ready code.
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
-## 4. Completed Work (Verified Sprints)
+## 5. Completed Work (Verified Sprints)
 - **Sprint 11.1 - Backend Farm Foundation**: Redesigned Farm entity, added lookup tables (Ownership, Sector, etc.), implemented Soft Delete, and updated DTOs/Commands.
 - **Sprint 11.0 - Farm Module Audit**: Engineering audit and roadmap for the Farm module.
 - **Sprint 9.1 - User Management**: Implemented multi-level regional scoping and administrative user forms.

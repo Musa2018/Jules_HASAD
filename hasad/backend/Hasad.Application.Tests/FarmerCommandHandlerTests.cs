@@ -175,7 +175,7 @@ public class FarmerCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.True(context.Farmers.First().IsDeleted);
+        Assert.True(context.Farmers.IgnoreQueryFilters().First(f => f.Id == farmer.Id).IsDeleted);
     }
 
     [Fact]

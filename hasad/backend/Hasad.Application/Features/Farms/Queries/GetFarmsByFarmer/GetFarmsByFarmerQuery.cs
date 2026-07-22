@@ -21,21 +21,27 @@ public class GetFarmsByFarmerQueryHandler : IRequestHandler<GetFarmsByFarmerQuer
     {
         var farms = await _context.Farms
             .AsNoTracking()
+            .Include(f => f.OwnershipType)
+            .Include(f => f.Locality)
+            .Include(f => f.AreaUnit)
             .Where(f => f.FarmerId == request.FarmerId)
             .Select(f => new FarmDto
             {
                 Id = f.Id,
                 ClientId = f.ClientId,
                 FarmerId = f.FarmerId,
-                Name = f.Name,
-                GovernorateId = f.GovernorateId,
-                LocalityId = f.LocalityId,
-                LandArea = f.LandArea,
-                LandAreaUnit = f.LandAreaUnit,
-                Latitude = f.Latitude,
-                Longitude = f.Longitude,
+                LocalFarmName = f.LocalFarmName,
                 OwnershipTypeId = f.OwnershipTypeId,
-                RowVersion = Convert.ToBase64String(f.RowVersion)
+                OwnershipTypeName = f.OwnershipType != null ? f.OwnershipType.NameAr : null,
+                LocalityId = f.LocalityId,
+                LocalityName = f.Locality != null ? f.Locality.NameAr : null,
+                Basin = f.Basin,
+                Parcel = f.Parcel,
+                Area = f.Area,
+                AreaUnitId = f.AreaUnitId,
+                AreaUnitName = f.AreaUnit != null ? f.AreaUnit.NameAr : null,
+                RowVersion = Convert.ToBase64String(f.RowVersion),
+                CreatedAt = f.CreatedAt
             })
             .ToListAsync(cancellationToken);
 

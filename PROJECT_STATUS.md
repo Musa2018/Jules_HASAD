@@ -3,9 +3,18 @@
 > Living document — updated at the end of every sprint.
 
 - **Current Version**: v0.7.0-alpha (User Management + Regional Scoping)
-- **Current Sprint**: Sprint 11 — Farm Management (Audit & Planning)
+- **Current Sprint**: Sprint 11 — Farm Management (Backend Foundation)
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-22
+
+## Sprint 11.1 — COMPLETED
+Backend Farm Foundation:
+- **Entity Redesign**: Redesigned `Farm` entity with `FarmerId`, `OwnerFarmerId`, and lookup relationships.
+- **Lookup Tables**: Added `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, and `RelationshipToOwner` entities with seed data.
+- **Soft Delete**: Implemented `IsDeleted`, `DeletedAt`, and `DeletedBy` with EF Core Global Query Filters.
+- **DTOs & Commands**: Updated `CreateFarmCommand`, `UpdateFarmCommand`, and `FarmDto` to align with the new business model.
+- **Synchronization**: Ensured `ClientId`, `ServerId`, and `RowVersion` consistency.
+- **Validation**: Added conditional validation for Owner Farmer mandatory rule.
 
 ## Sprint 11.0 — COMPLETED
 Farm Module Engineering Audit:

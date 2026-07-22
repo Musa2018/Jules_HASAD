@@ -35,12 +35,14 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 3. Current Project Status
 - **Current Branch**: `Farms`
-- **Latest Completed Sprint**: Sprint 11.0 — Farm Module Audit
-- **Latest Commit Hash**: `362854b` (Branch: Farms)
+- **Latest Completed Sprint**: Sprint 11.1 — Backend Farm Foundation
+- **Latest Commit Hash**: `3473b76` (Branch: Farms)
 - **main**: Stable production-ready code.
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 4. Completed Work (Verified Sprints)
+- **Sprint 11.1 - Backend Farm Foundation**: Redesigned Farm entity, added lookup tables (Ownership, Sector, etc.), implemented Soft Delete, and updated DTOs/Commands.
+- **Sprint 11.0 - Farm Module Audit**: Engineering audit and roadmap for the Farm module.
 - **Sprint 9.1 - User Management**: Implemented multi-level regional scoping and administrative user forms.
 - **Sprint 10.1 - Farmers Audit**: Engineering audit of existing Farmers implementation against target architecture.
 - **Sprint 10.2 - Farmers Backend Enhancement**: Added `Gender`, `FamilySize`, 8-part names, and enhanced search.

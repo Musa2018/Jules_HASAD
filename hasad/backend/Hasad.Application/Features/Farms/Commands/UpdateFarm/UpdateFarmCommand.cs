@@ -11,14 +11,22 @@ public record UpdateFarmCommand(
     Guid Id,
     Guid ClientId,
     Guid FarmerId,
-    string Name,
-    string GovernorateId,
-    string LocalityId,
-    decimal LandArea,
-    string LandAreaUnit,
+    string LocalFarmName,
+    int OwnershipTypeId,
+    Guid? OwnerFarmerId,
+    int? RelationshipToOwnerId,
+    Guid GovernorateId,
+    Guid DirectorateId,
+    Guid LocalityId,
+    string Basin,
+    string Parcel,
+    decimal Area,
+    int AreaUnitId,
+    int AgriculturalSectorId,
+    int PoliticalClassificationId,
     double? Latitude,
     double? Longitude,
-    string OwnershipTypeId,
+    string? Notes,
     string RowVersion) : IRequest<Result<FarmDto>>;
 
 public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Result<FarmDto>>
@@ -47,14 +55,28 @@ public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Resul
             return Result<FarmDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
-        farm.Name = request.Name;
+        // Validate OwnerFarmer if Ownership is not "ملك" (Id=1)
+        if (request.OwnershipTypeId != 1 && !request.OwnerFarmerId.HasValue)
+        {
+            return Result<FarmDto>.Failure(new[] { "Owner Farmer is required when ownership type is not Owned (ملك)." });
+        }
+
+        farm.LocalFarmName = request.LocalFarmName;
+        farm.OwnershipTypeId = request.OwnershipTypeId;
+        farm.OwnerFarmerId = request.OwnerFarmerId;
+        farm.RelationshipToOwnerId = request.RelationshipToOwnerId;
         farm.GovernorateId = request.GovernorateId;
+        farm.DirectorateId = request.DirectorateId;
         farm.LocalityId = request.LocalityId;
-        farm.LandArea = request.LandArea;
-        farm.LandAreaUnit = request.LandAreaUnit;
+        farm.Basin = request.Basin;
+        farm.Parcel = request.Parcel;
+        farm.Area = request.Area;
+        farm.AreaUnitId = request.AreaUnitId;
+        farm.AgriculturalSectorId = request.AgriculturalSectorId;
+        farm.PoliticalClassificationId = request.PoliticalClassificationId;
         farm.Latitude = request.Latitude;
         farm.Longitude = request.Longitude;
-        farm.OwnershipTypeId = request.OwnershipTypeId;
+        farm.Notes = request.Notes;
         farm.UpdatedAt = DateTime.UtcNow;
 
         try
@@ -71,14 +93,23 @@ public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Resul
             Id = farm.Id,
             ClientId = farm.ClientId,
             FarmerId = farm.FarmerId,
-            Name = farm.Name,
+            LocalFarmName = farm.LocalFarmName,
+            OwnershipTypeId = farm.OwnershipTypeId,
+            OwnerFarmerId = farm.OwnerFarmerId,
+            RelationshipToOwnerId = farm.RelationshipToOwnerId,
             GovernorateId = farm.GovernorateId,
+            DirectorateId = farm.DirectorateId,
             LocalityId = farm.LocalityId,
-            LandArea = farm.LandArea,
-            LandAreaUnit = farm.LandAreaUnit,
+            Basin = farm.Basin,
+            Parcel = farm.Parcel,
+            Area = farm.Area,
+            AreaUnitId = farm.AreaUnitId,
+            AgriculturalSectorId = farm.AgriculturalSectorId,
+            PoliticalClassificationId = farm.PoliticalClassificationId,
             Latitude = farm.Latitude,
             Longitude = farm.Longitude,
-            OwnershipTypeId = farm.OwnershipTypeId,
+            Notes = farm.Notes,
+            CreatedAt = farm.CreatedAt,
             RowVersion = Convert.ToBase64String(farm.RowVersion)
         });
     }
@@ -91,12 +122,21 @@ public class UpdateFarmCommandValidator : AbstractValidator<UpdateFarmCommand>
         RuleFor(v => v.Id).NotEmpty();
         RuleFor(v => v.ClientId).NotEmpty();
         RuleFor(v => v.FarmerId).NotEmpty();
-        RuleFor(v => v.Name).NotEmpty().MaximumLength(200);
-        RuleFor(v => v.GovernorateId).NotEmpty().MaximumLength(50);
-        RuleFor(v => v.LocalityId).NotEmpty().MaximumLength(50);
-        RuleFor(v => v.LandArea).GreaterThan(0);
-        RuleFor(v => v.LandAreaUnit).NotEmpty().MaximumLength(20);
-        RuleFor(v => v.OwnershipTypeId).NotEmpty().MaximumLength(50);
+        RuleFor(v => v.LocalFarmName).NotEmpty().MaximumLength(200);
+        RuleFor(v => v.OwnershipTypeId).NotEmpty();
+        RuleFor(v => v.GovernorateId).NotEmpty();
+        RuleFor(v => v.DirectorateId).NotEmpty();
+        RuleFor(v => v.LocalityId).NotEmpty();
+        RuleFor(v => v.Basin).NotEmpty().MaximumLength(100);
+        RuleFor(v => v.Parcel).NotEmpty().MaximumLength(100);
+        RuleFor(v => v.Area).GreaterThan(0);
+        RuleFor(v => v.AreaUnitId).NotEmpty();
+        RuleFor(v => v.AgriculturalSectorId).NotEmpty();
+        RuleFor(v => v.PoliticalClassificationId).NotEmpty();
         RuleFor(v => v.RowVersion).NotEmpty();
+
+        RuleFor(v => v.OwnerFarmerId).NotEmpty()
+            .When(v => v.OwnershipTypeId != 1)
+            .WithMessage("Owner Farmer is required when ownership type is not Owned (ملك).");
     }
 }

@@ -21,7 +21,6 @@ public class DamageReportCommandHandlerTests
     public async Task CreateDamageReport_Succeeds_WithItems()
     {
         var context = CreateContext();
-        // تم استبدال Name بالحقول الجديدة
         var farmer = new Farmer
         {
             Id = Guid.NewGuid(),
@@ -32,7 +31,7 @@ public class DamageReportCommandHandlerTests
             IdTypeId = 1,
             IdNumber = "123456789"
         };
-        var farm = new Farm { Id = Guid.NewGuid(), FarmerId = farmer.Id, Name = "Farm" };
+        var farm = new Farm { Id = Guid.NewGuid(), FarmerId = farmer.Id, LocalFarmName = "Farm" };
         context.Farmers.Add(farmer);
         context.Farms.Add(farm);
         await context.SaveChangesAsync();
@@ -43,8 +42,8 @@ public class DamageReportCommandHandlerTests
             farm.Id,
             farmer.Id,
             DateTime.UtcNow,
-            "G1",
-            "L1",
+            Guid.NewGuid().ToString(),
+            Guid.NewGuid().ToString(),
             null,
             null,
             "Test Notes",
@@ -73,8 +72,8 @@ public class DamageReportCommandHandlerTests
             FarmId = farmId,
             FarmerId = Guid.NewGuid(),
             DamageDate = DateTime.UtcNow,
-            GovernorateId = "G",
-            LocalityId = "L",
+            GovernorateId = Guid.NewGuid().ToString(),
+            LocalityId = Guid.NewGuid().ToString(),
             StatusId = "Draft",
             RowVersion = new byte[] { 1 }
         });

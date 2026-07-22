@@ -12,6 +12,12 @@ public interface IApplicationDbContext
     DbSet<Directorate> Directorates { get; }
     DbSet<Locality> Localities { get; }
     DbSet<Farmer> Farmers { get; }
+    DbSet<IdType> IdTypes { get; }
+    DbSet<OwnershipType> OwnershipTypes { get; }
+    DbSet<AreaUnit> AreaUnits { get; }
+    DbSet<AgriculturalSector> AgriculturalSectors { get; }
+    DbSet<PoliticalClassification> PoliticalClassifications { get; }
+    DbSet<RelationshipToOwner> RelationshipToOwners { get; }
     DbSet<Farm> Farms { get; }
     DbSet<DamageReport> DamageReports { get; }
     DbSet<Compensation> Compensations { get; }

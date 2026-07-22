@@ -26,7 +26,10 @@ public class DeleteFarmCommandHandler : IRequestHandler<DeleteFarmCommand, Resul
             return Result<Unit>.Failure(new[] { "Farm not found." });
         }
 
-        _context.Farms.Remove(farm);
+        farm.IsDeleted = true;
+        farm.DeletedAt = DateTime.UtcNow;
+        // DeletedBy could be set from a user context service if available
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);

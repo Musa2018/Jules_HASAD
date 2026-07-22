@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Sprint 11.1 — Backend Farm Foundation
+
+#### Added
+- Redesigned `Farm` entity with new business fields (Basin, Parcel, Area, etc.).
+- New lookup entities: `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, `RelationshipToOwner`.
+- Seed data for all new lookup tables.
+- Soft Delete support with Global Query Filters for the `Farm` entity.
+- Updated `CreateFarmCommand`, `UpdateFarmCommand`, and `FarmDto`.
+- `FarmSyncDto` for synchronization optimization.
+- Migration `RedesignFarmModule`.
+
+#### Changed
+- `Farms` database indexes updated for better geographic and relationship filtering.
+- Explicit `DeleteBehavior.Restrict` configured for all Farm relationships to prevent unintended cascades.
+
 ### Sprint 11.0 — Farm Module Engineering Audit
 
 #### Added

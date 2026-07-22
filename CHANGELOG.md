@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Sprint 11.8 — Search-First Owner Selection Workflow
+
+#### Added
+- **Reusable Search-First Selection Pattern**: A new architectural standard for selecting entities.
+- **Actionable SearchableLookupField**: Added support for `onAction` and `actionLabel` to the generic lookup component, enabling "Create New" flows.
+- **Robust Offline Farmer Search**: `OfflineFirstFarmerRepository` now searches across 8 name fields, ID numbers, and phone numbers using optimized SQL-like queries.
+- **Integrated Farmer Creation**: `FarmerFormScreen` now returns the created entity, and `FarmFormScreen` uses this to automatically select new owners without losing form state.
+
+#### Changed
+- `FarmerFormNotifier` now captures the created/updated farmer in its state.
+- `SearchableLookupField` now displays a clear action button when no search results are found.
+
 ### Sprint 11.7 — Shared Reference Data Service
 
 #### Added

@@ -146,11 +146,13 @@ class FarmerFormState {
   final bool isLoading;
   final List<String> errors;
   final bool success;
+  final Farmer? farmer;
 
   const FarmerFormState({
     this.isLoading = false,
     this.errors = const [],
     this.success = false,
+    this.farmer,
   });
 }
 
@@ -162,8 +164,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
   Future<void> createFarmer(Farmer farmer) async {
     state = const FarmerFormState(isLoading: true);
     try {
-      await _repository.createFarmer(farmer);
-      state = const FarmerFormState(success: true);
+      final result = await _repository.createFarmer(farmer);
+      state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
     } catch (_) {
@@ -174,8 +176,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
   Future<void> updateFarmer(Farmer farmer) async {
     state = const FarmerFormState(isLoading: true);
     try {
-      await _repository.updateFarmer(farmer);
-      state = const FarmerFormState(success: true);
+      final result = await _repository.updateFarmer(farmer);
+      state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
     } catch (_) {

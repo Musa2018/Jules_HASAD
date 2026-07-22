@@ -16,6 +16,8 @@ class SearchableLookupField<T> extends StatelessWidget {
   final String? hintText;
   final Future<List<T>> Function(String)? onSearch;
   final bool enabled;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   const SearchableLookupField({
     super.key,
@@ -31,6 +33,8 @@ class SearchableLookupField<T> extends StatelessWidget {
     this.hintText,
     this.onSearch,
     this.enabled = true,
+    this.actionLabel,
+    this.onAction,
   });
 
   @override
@@ -85,6 +89,8 @@ class SearchableLookupField<T> extends StatelessWidget {
           initialValue: value,
           hintText: hintText,
           onSearch: onSearch,
+          actionLabel: actionLabel,
+          onAction: onAction,
           onSelected: (item) {
             onChanged(item);
             state.didChange(item);
@@ -105,6 +111,8 @@ class _SearchSheet<T> extends StatefulWidget {
   final String? hintText;
   final void Function(T?) onSelected;
   final Future<List<T>> Function(String)? onSearch;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   const _SearchSheet({
     required this.title,
@@ -115,6 +123,8 @@ class _SearchSheet<T> extends StatefulWidget {
     required this.onSelected,
     this.initialValue,
     this.onSearch,
+    this.actionLabel,
+    this.onAction,
   });
 
   @override
@@ -242,7 +252,25 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
           else
             Expanded(
               child: _filteredItems.isEmpty
-                ? const Center(child: Text('No results found.'))
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('No results found.'),
+                        if (widget.onAction != null && widget.actionLabel != null) ...[
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.add),
+                            label: Text(widget.actionLabel!),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              widget.onAction!();
+                            },
+                          ),
+                        ],
+                      ],
+                    ),
+                  )
                 : ListView.separated(
                     itemCount: _filteredItems.length,
                     separatorBuilder: (context, index) =>

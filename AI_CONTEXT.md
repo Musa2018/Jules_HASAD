@@ -47,6 +47,12 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 11.8 - Search-First Owner Selection Workflow
+- **Search-First Pattern**: Implemented a reusable `SearchableLookupField` with `onAction` support.
+- **Enhanced Farmer Search**: Upgraded `OfflineFirstFarmerRepository` to support robust 8-part name searching, ID, and phone number matching locally.
+- **Seamless Navigation**: Integrated "Create Farmer" into the Farm Creation flow, allowing immediate selection of newly created farmers while preserving all entered form data.
+- **Architecture**: Formally adopted the **Search-First Selection Pattern** for all major entities.
+
 ### Sprint 11.7 - Shared Reference Data Service (Regression Fix)
 - **Shared Architecture**: Implemented a unified `ReferenceDataController` and `GetReferenceDataQuery` to provide all farm-related lookups (Ownership, Sector, Political, Area, Relationships) in a single request.
 - **Offline-First Lookups**: Implemented `OfflineFirstReferenceDataRepository` in Flutter with Drift caching. Lookups are now fetched once, cached locally, and used for all farm forms, resolving the empty dropdown regression.

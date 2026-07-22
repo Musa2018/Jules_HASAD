@@ -56,8 +56,6 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     String? idNumber,
     String? name,
   }) async {
-    // For the list, we currently only show local data or we could merge.
-    // For Sprint 10.4, we focus on searchById.
     final query = _db.select(_db.farmers)
       ..where((t) => t.isPendingDelete.equals(false))
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
@@ -66,10 +64,19 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     if (idNumber != null && idNumber.isNotEmpty) {
       query.where((t) => t.idNumber.contains(idNumber));
     }
-    
-    // Simplification: name search is complex across 8 fields, 
-    // but we can implement basic contains if needed.
-    // For now, let's just use the existing ordering.
+
+    if (name != null && name.isNotEmpty) {
+      final search = '%$name%';
+      query.where((t) =>
+          t.firstNameAr.like(search) |
+          t.fatherNameAr.like(search) |
+          t.grandfatherNameAr.like(search) |
+          t.familyNameAr.like(search) |
+          t.firstNameEn.like(search) |
+          t.fatherNameEn.like(search) |
+          t.grandfatherNameEn.like(search) |
+          t.familyNameEn.like(search));
+    }
 
     final items = await query.get();
 

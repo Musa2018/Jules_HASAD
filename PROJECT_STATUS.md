@@ -2,19 +2,20 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.9.2-alpha (Reference Data Fixed)
-- **Current Sprint**: Sprint 11.7 — Shared Reference Data Service
+- **Current Version**: v0.9.3-alpha (Search-First Flow Implemented)
+- **Current Sprint**: Sprint 11.8 — Search-First Owner Selection Workflow
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-23
 
-## Sprint 11.7 — COMPLETED
-Shared Reference Data Service (Regression Fix):
-- **Unified Backend API**: Implemented `ReferenceDataController` providing a single-shot `/api/v1/referencedata` endpoint for all farm lookups.
-- **Offline-First Caching**: Implemented `OfflineFirstReferenceDataRepository` with Drift persistence, resolving the empty dropdown issue in the Farm module.
-- **Shared Architecture**: Designed lookups as a reusable reference-data service for both Farm and future modules.
-- **Test Coverage**: Added backend and mobile tests verifying the complete lookup synchronization and caching lifecycle.
+## Sprint 11.8 — COMPLETED
+Search-First Owner Selection Workflow:
+- **Reusable Pattern**: Formally adopted the **Search-First Selection Pattern** for all major entity lookups.
+- **Enhanced Search**: Upgraded `OfflineFirstFarmerRepository` to support comprehensive 8-part name searching (Arabic/English), ID, and phone number matching locally.
+- **Actionable Lookups**: Enhanced `SearchableLookupField` with `onAction` support, allowing seamless "Create New" transitions when results are empty.
+- **Seamless UX**: Integrated "Create Farmer" into the Farm Creation form. Newly created farmers are automatically selected upon return, and all previously entered farm data is preserved.
+- **Hardened Data Layer**: Ensured soft-deleted and pending-delete records are strictly excluded from all search results.
 
-## Sprint 11.6 — COMPLETED
+## Sprint 11.7 — COMPLETED
 Geographic Regression & API Centralization:
 - **Regression Fix**: Resolved the Governorate dropdown failure by aligning Backend DTOs with Flutter Domain Models (added missing `Code` field).
 - **API Centralization**: Moved and unified geographic lookup endpoints to a shared `LocationController`, improving code reuse and fixing authorization issues for non-admin users.

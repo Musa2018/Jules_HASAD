@@ -150,7 +150,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
         ref.invalidate(farmerProvider(widget.farmer!.id));
       }
 
-      Navigator.of(context).pop();
+      final result = ref.read(farmerFormProvider).farmer;
+      Navigator.of(context).pop(result);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }

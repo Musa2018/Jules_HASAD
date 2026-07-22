@@ -30,6 +30,17 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
 - **Reasoning**: Measurement units are cross-domain master data (Land Area, Damage Quantities, Compensation Amounts, Production) and should be managed centrally with category support (LandArea, Weight, Count, Volume, etc.).
 - **Implementation**: Current Sprint 11.2 will continue using `AreaUnit` for the Farm module to maintain focus, with refactoring planned for a future infrastructure sprint.
 
+### ADR 0010: Reusable Search-First Selection Pattern
+- **Status**: Accepted
+- **Decision**: Implement a standardized "Search-First" selection pattern for all major entity lookups (e.g., Farm Owner selection, Damage Report -> Farm).
+- **Requirements**:
+    - **Search-First**: Users MUST search for an existing entity before creating a new one.
+    - **Offline Search**: Search logic MUST be implemented in the `OfflineFirstRepository` using optimized Drift queries (covering names, ID, and phone).
+    - **Create-New Fallback**: If no results are found, the lookup field MUST provide an action to create the new entity.
+    - **Return Selection**: The creation form MUST return the created entity directly via `Navigator.pop(context, entity)`.
+    - **Preserve State**: The parent form MUST receive the returned entity, update the selection, and preserve all other field states without a reset.
+- **Reasoning**: This pattern reduces duplicate data entry, ensures regional scoping is maintained, and provides a seamless user experience for field officers working offline.
+
 ## Folder Structure (Mobile)
 - `lib/core`: Cross-cutting logic (Networking, Storage, Config).
 - `lib/features`: Domain-driven feature modules.

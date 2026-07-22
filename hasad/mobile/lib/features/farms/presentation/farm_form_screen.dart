@@ -427,6 +427,18 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       onSearch: (text) async {
          return await ref.read(farmerRepositoryProvider).getFarmers(name: text, idNumber: text);
       },
+      actionLabel: l10n.addFarmer,
+      onAction: () async {
+        final result = await Navigator.of(context).push<Farmer>(
+          MaterialPageRoute(builder: (context) => const FarmerFormScreen()),
+        );
+        if (result != null) {
+          setState(() {
+            _selectedOwnerFarmer = result;
+            _selectedOwnerFarmerId = result.id;
+          });
+        }
+      },
       itemLabel: (f) => "${f.firstNameAr} ${f.familyNameAr} (${f.idNumber})",
       value: _selectedOwnerFarmer,
       onChanged: (v) => setState(() {

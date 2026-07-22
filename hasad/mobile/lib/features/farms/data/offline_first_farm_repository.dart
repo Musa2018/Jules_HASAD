@@ -5,6 +5,7 @@ import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/domain/farm.dart' as domain;
+import 'package:mobile/features/farms/domain/farm_filter.dart';
 import 'package:mobile/features/farms/domain/farm_validator.dart';
 import 'package:uuid/uuid.dart';
 
@@ -29,17 +30,93 @@ class OfflineFirstFarmRepository implements FarmRepository {
           ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
         .get();
 
-    return items.map((e) => _mapToDomain(e)).toList();
+    return items.map((e) => mapToDomain(e)).toList();
   }
 
   @override
   Future<domain.Farm> getFarm(String id) async {
     final e = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
         .getSingle();
-    return _mapToDomain(e);
+    return mapToDomain(e);
   }
 
-  domain.Farm _mapToDomain(FarmLocal e) {
+  @override
+  Stream<List<domain.Farm>> watchFarms({
+    FarmFilter filter = const FarmFilter(),
+    AuthSession? session,
+  }) {
+    final operatorFarmer = _db.alias(_db.farmers, 'op');
+    final ownerFarmer = _db.alias(_db.farmers, 'ow');
+
+    final query = _db.select(_db.farms).join([
+      leftOuterJoin(operatorFarmer, operatorFarmer.id.equalsExp(_db.farms.farmerId)),
+      leftOuterJoin(ownerFarmer, ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId)),
+    ]);
+
+    query.where(_db.farms.isPendingDelete.equals(false));
+
+    // Enforcement of user scope
+    if (session != null) {
+      final roles = session.roles;
+      if (roles.contains('AgriculturalEngineer') || roles.contains('FieldSurveyor')) {
+        if (session.directorateId != null) {
+          query.where(_db.farms.directorateId.equals(session.directorateId!));
+        }
+      } else if (roles.contains('Director')) {
+        if (session.governorateId != null) {
+          query.where(_db.farms.governorateId.equals(session.governorateId!));
+        }
+      }
+    }
+
+    if (filter.searchText.isNotEmpty) {
+      final search = '%${filter.searchText}%';
+      query.where(
+          _db.farms.localFarmName.like(search) |
+          _db.farms.basin.like(search) |
+          _db.farms.parcel.like(search) |
+          operatorFarmer.firstNameAr.like(search) |
+          operatorFarmer.familyNameAr.like(search) |
+          ownerFarmer.firstNameAr.like(search) |
+          ownerFarmer.familyNameAr.like(search)
+      );
+    }
+
+    if (filter.syncStatus != null) {
+      query.where(_db.farms.syncStatus.equals(filter.syncStatus!));
+    }
+
+    if (filter.governorateId != null) {
+      query.where(_db.farms.governorateId.equals(filter.governorateId!));
+    }
+    if (filter.directorateId != null) {
+      query.where(_db.farms.directorateId.equals(filter.directorateId!));
+    }
+    if (filter.localityId != null) {
+      query.where(_db.farms.localityId.equals(filter.localityId!));
+    }
+    if (filter.ownershipTypeId != null) {
+      query.where(_db.farms.ownershipTypeId.equals(filter.ownershipTypeId!));
+    }
+    if (filter.agriculturalSectorId != null) {
+      query.where(_db.farms.agriculturalSectorId.equals(filter.agriculturalSectorId!));
+    }
+
+    query.orderBy([OrderingTerm.desc(_db.farms.createdAt)]);
+
+    return query.watch().map((rows) {
+      return rows.map((row) => mapToDomain(row.readTable(_db.farms))).toList();
+    });
+  }
+
+  @override
+  Stream<domain.Farm?> watchFarm(String id) {
+    return (_db.select(_db.farms)..where((t) => t.id.equals(id)))
+        .watchSingleOrNull()
+        .map((e) => e != null ? mapToDomain(e) : null);
+  }
+
+  domain.Farm mapToDomain(FarmLocal e) {
     return domain.Farm(
       id: e.id,
       serverId: e.serverId,

@@ -45,6 +45,7 @@ mixin _$Farmer {
   String get rowVersion => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
   String? get lastSyncError => throw _privateConstructorUsedError;
+  bool get isPendingDelete => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -86,6 +87,7 @@ abstract class $FarmerCopyWith<$Res> {
     String rowVersion,
     String syncStatus,
     String? lastSyncError,
+    bool isPendingDelete,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -129,6 +131,7 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
     Object? rowVersion = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? isPendingDelete = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -226,6 +229,10 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
                 ? _value.lastSyncError
                 : lastSyncError // ignore: cast_nullable_to_non_nullable
                       as String?,
+            isPendingDelete: null == isPendingDelete
+                ? _value.isPendingDelete
+                : isPendingDelete // ignore: cast_nullable_to_non_nullable
+                      as bool,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -272,6 +279,7 @@ abstract class _$$FarmerImplCopyWith<$Res> implements $FarmerCopyWith<$Res> {
     String rowVersion,
     String syncStatus,
     String? lastSyncError,
+    bool isPendingDelete,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -314,6 +322,7 @@ class __$$FarmerImplCopyWithImpl<$Res>
     Object? rowVersion = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? isPendingDelete = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -411,6 +420,10 @@ class __$$FarmerImplCopyWithImpl<$Res>
             ? _value.lastSyncError
             : lastSyncError // ignore: cast_nullable_to_non_nullable
                   as String?,
+        isPendingDelete: null == isPendingDelete
+            ? _value.isPendingDelete
+            : isPendingDelete // ignore: cast_nullable_to_non_nullable
+                  as bool,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -451,6 +464,7 @@ class _$FarmerImpl extends _Farmer {
     this.rowVersion = '',
     this.syncStatus = 'completed',
     this.lastSyncError,
+    this.isPendingDelete = false,
     this.createdAt,
     this.updatedAt,
   }) : super._();
@@ -510,13 +524,16 @@ class _$FarmerImpl extends _Farmer {
   @override
   final String? lastSyncError;
   @override
+  @JsonKey()
+  final bool isPendingDelete;
+  @override
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'Farmer(id: $id, serverId: $serverId, clientId: $clientId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Farmer(id: $id, serverId: $serverId, clientId: $clientId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isPendingDelete: $isPendingDelete, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -567,6 +584,8 @@ class _$FarmerImpl extends _Farmer {
                 other.syncStatus == syncStatus) &&
             (identical(other.lastSyncError, lastSyncError) ||
                 other.lastSyncError == lastSyncError) &&
+            (identical(other.isPendingDelete, isPendingDelete) ||
+                other.isPendingDelete == isPendingDelete) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -600,6 +619,7 @@ class _$FarmerImpl extends _Farmer {
     rowVersion,
     syncStatus,
     lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ]);
@@ -643,6 +663,7 @@ abstract class _Farmer extends Farmer {
     final String rowVersion,
     final String syncStatus,
     final String? lastSyncError,
+    final bool isPendingDelete,
     final DateTime? createdAt,
     final DateTime? updatedAt,
   }) = _$FarmerImpl;
@@ -696,6 +717,8 @@ abstract class _Farmer extends Farmer {
   String get syncStatus;
   @override
   String? get lastSyncError;
+  @override
+  bool get isPendingDelete;
   @override
   DateTime? get createdAt;
   @override

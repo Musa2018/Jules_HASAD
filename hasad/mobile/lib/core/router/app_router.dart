@@ -15,6 +15,7 @@ import 'package:mobile/features/farmers/presentation/compensation/compensation_s
 import 'package:mobile/features/farms/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
+import 'package:mobile/features/farms/presentation/farm_details_screen.dart';
 import 'package:mobile/features/farms/presentation/farms_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_details_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_search_screen.dart';
@@ -72,6 +73,9 @@ abstract final class AppRoutes {
 
   /// Edit farm.
   static const editFarm = '/farms/edit';
+
+  /// Farm details.
+  static const farmDetails = '/farms/details';
 
   /// Damage reports list.
   static const damageReports = '/damage-reports';
@@ -199,7 +203,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.farms,
         builder: (context, state) =>
-            FarmsListScreen(farmer: state.extra as Farmer),
+            FarmsListScreen(farmer: state.extra as Farmer?),
+      ),
+      GoRoute(
+        path: AppRoutes.farmDetails,
+        builder: (context, state) =>
+            FarmDetailsScreen(farm: state.extra as Farm),
       ),
       GoRoute(
         path: AppRoutes.addFarm,

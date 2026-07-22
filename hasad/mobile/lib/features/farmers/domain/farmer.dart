@@ -30,6 +30,7 @@ class Farmer with _$Farmer {
     @Default('') String rowVersion,
     @Default('completed') String syncStatus,
     String? lastSyncError,
+    @Default(false) bool isPendingDelete,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _Farmer;

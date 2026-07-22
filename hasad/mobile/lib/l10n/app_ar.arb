@@ -121,7 +121,6 @@
   "fullName": "الاسم الكامل",
   "username": "اسم المستخدم",
   "role": "الصلاحية",
-  "directorate": "المديرية",
   "active": "نشط",
   "confirmPassword": "تأكيد كلمة المرور",
   "userCreatedSuccessfully": "تم إنشاء المستخدم بنجاح.",

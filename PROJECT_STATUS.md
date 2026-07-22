@@ -2,10 +2,19 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.7.5-alpha (Farm CRUD + Offline Geography)
-- **Current Sprint**: Sprint 11.3 — Farm CRUD & Sync Hardening
+- **Current Version**: v0.8.0-alpha (Farm Management UI)
+- **Current Sprint**: Sprint 11.4 — Farm Management UI
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-22
+
+## Sprint 11.4 — COMPLETED
+Farm Management UI:
+- **Card-Based UI**: Implemented `FarmCard` with comprehensive farm details, reactive sync status, and integrated actions.
+- **Reactive Streams**: Migrated Farm list to `StreamProvider` powered by Drift database streams for real-time updates.
+- **Advanced Filtering**: Implemented search-by-name/basin/parcel and multi-parameter filtering (Sector, Ownership, Sync Status, Geography).
+- **Farm Details**: Created a dedicated details screen with sectioned layout and reactive data binding (preventing stale RowVersion).
+- **Soft Delete Workflow**: Integrated a production-grade soft-delete confirmation and synchronization UI.
+- **Integrated Search**: Enhanced `SearchableLookupField` with async searching for large datasets like Farmers.
 
 ## Sprint 11.3 — COMPLETED
 Farm CRUD & Sync Hardening:

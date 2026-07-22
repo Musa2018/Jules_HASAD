@@ -194,6 +194,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       rowVersion: e.rowVersion,
       syncStatus: e.syncStatus,
       lastSyncError: e.lastSyncError,
+      isPendingDelete: e.isPendingDelete,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );

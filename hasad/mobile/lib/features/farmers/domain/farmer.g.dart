@@ -30,6 +30,7 @@ _$FarmerImpl _$$FarmerImplFromJson(Map<String, dynamic> json) => _$FarmerImpl(
   rowVersion: json['rowVersion'] as String? ?? '',
   syncStatus: json['syncStatus'] as String? ?? 'completed',
   lastSyncError: json['lastSyncError'] as String?,
+  isPendingDelete: json['isPendingDelete'] as bool? ?? false,
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -63,6 +64,7 @@ Map<String, dynamic> _$$FarmerImplToJson(_$FarmerImpl instance) =>
       'rowVersion': instance.rowVersion,
       'syncStatus': instance.syncStatus,
       'lastSyncError': instance.lastSyncError,
+      'isPendingDelete': instance.isPendingDelete,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

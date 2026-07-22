@@ -4,6 +4,7 @@ import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/data/farm_sync_dtos.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm_filter.dart';
 
 class RemoteFarmRepository implements FarmRepository {
   final Dio _dio;
@@ -43,6 +44,19 @@ class RemoteFarmRepository implements FarmRepository {
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Stream<Farm?> watchFarm(String id) {
+    throw UnimplementedError('Remote repository does not support watching.');
+  }
+
+  @override
+  Stream<List<Farm>> watchFarms({
+    FarmFilter filter = const FarmFilter(),
+    AuthSession? session,
+  }) {
+    throw UnimplementedError('Remote repository does not support watching.');
   }
 
   @override

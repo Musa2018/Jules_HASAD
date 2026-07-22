@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+### Sprint 11.4 — Farm Management UI
+
+#### Added
+- `FarmCard` widget with detailed farm info and sync status.
+- `FarmDetailsScreen` with reactive data and sectioned UI.
+- Advanced filtering sheet in `FarmsListScreen` supporting geography, sector, and ownership.
+- Dashboard integration for Farms.
+- New unit tests for `FarmValidator` and widget tests for `FarmCard` and `FarmsListScreen`.
+
+#### Changed
+- `FarmsListScreen` refactored to use `StreamProvider` and card-based layout.
+- `HomeScreen` updated with Farms feature card.
+- `FarmerCard` and `Farmer` model updated with `isPendingDelete` support.
+- `FarmerSyncStatusBadge` updated to support `pending_delete` status.
+
 ### Sprint 11.3 — Farm CRUD & Sync Hardening
 
 #### Added

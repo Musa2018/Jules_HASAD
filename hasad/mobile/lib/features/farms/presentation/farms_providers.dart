@@ -6,6 +6,8 @@ import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/data/offline_first_farm_repository.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 
+import 'package:mobile/features/farms/domain/farm_filter.dart';
+
 final farmRepositoryProvider = Provider<FarmRepository>((ref) {
   return OfflineFirstFarmRepository(
     ref.watch(databaseProvider),
@@ -13,10 +15,22 @@ final farmRepositoryProvider = Provider<FarmRepository>((ref) {
   );
 });
 
+final farmFilterProvider = StateProvider<FarmFilter>((ref) => const FarmFilter());
+
+final farmsListStreamProvider = StreamProvider.autoDispose<List<Farm>>((ref) {
+  final filter = ref.watch(farmFilterProvider);
+  final session = ref.watch(authProvider).session;
+  return ref.watch(farmRepositoryProvider).watchFarms(filter: filter, session: session);
+});
+
 final farmsListByFarmerProvider = FutureProvider.autoDispose
     .family<List<Farm>, String>((ref, farmerId) async {
       return ref.watch(farmRepositoryProvider).getFarmsByFarmer(farmerId);
     });
+
+final farmStreamProvider = StreamProvider.autoDispose.family<Farm?, String>((ref, id) {
+  return ref.watch(farmRepositoryProvider).watchFarm(id);
+});
 
 class FarmFormState {
   final bool isLoading;

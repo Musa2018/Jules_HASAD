@@ -1,70 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
-import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farms/domain/farm_filter.dart';
+import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/presentation/farms_list_screen.dart';
 import 'package:mobile/features/farms/presentation/farms_providers.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart';
+import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
-import 'package:mobile/features/farmers/domain/gender.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+class MockFarmRepository extends Mock implements FarmRepository {}
 
 void main() {
-  final farmer = Farmer(
-    id: 'farmer-1',
-    idTypeId: 1,
-    idNumber: '123',
-    firstNameAr: 'أحمد',
-    fatherNameAr: 'محمد',
-    grandfatherNameAr: 'علي',
-    familyNameAr: 'محمود',
-    firstNameEn: 'Ahmed',
-    fatherNameEn: 'Mohammed',
-    grandfatherNameEn: 'Ali',
-    familyNameEn: 'Mahmoud',
-    birthDate: DateTime(1985, 5, 10),
-    gender: Gender.male,
-    phoneNumber: '555',
-    familySize: 5,
-    governorateId: 'G1',
-    localityId: 'L1',
-    address: 'Gaza',
-  );
+  late MockFarmRepository mockRepo;
 
-  testWidgets('FarmsListScreen shows farms for farmer', (tester) async {
+  setUpAll(() {
+    registerFallbackValue(const FarmFilter());
+  });
+
+  setUp(() {
+    mockRepo = MockFarmRepository();
+  });
+
+  Widget createWidget({Stream<List<Farm>>? stream}) {
+    return ProviderScope(
+      overrides: [
+        farmRepositoryProvider.overrideWithValue(mockRepo),
+        if (stream != null)
+          farmsListStreamProvider.overrideWith((ref) => stream),
+        governoratesProvider.overrideWith((ref) => []),
+        ownershipTypesProvider.overrideWith((ref) => []),
+        agriculturalSectorsProvider.overrideWith((ref) => []),
+        areaUnitsProvider.overrideWith((ref) => []),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en'), Locale('ar')],
+        home: const FarmsListScreen(),
+      ),
+    );
+  }
+
+  testWidgets('FarmsListScreen shows empty state', (tester) async {
+    await tester.pumpWidget(createWidget(stream: Stream.value([])));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('No farms found.'), findsOneWidget);
+  });
+
+  testWidgets('FarmsListScreen shows farms', (tester) async {
     final farms = [
       const Farm(
-        id: 'farm-1',
-        farmerId: 'farmer-1',
-        localFarmName: 'Fruit Garden',
-        governorateId: 'Gaza',
-        directorateId: 'D1',
-        localityId: 'City',
+        id: '1',
+        farmerId: 'f1',
+        localFarmName: 'Orange Farm',
+        ownershipTypeId: 1,
+        governorateId: 'g1',
+        directorateId: 'd1',
+        localityId: 'l1',
         basin: 'B1',
         parcel: 'P1',
         area: 5,
         areaUnitId: 1,
-        ownershipTypeId: 1,
         agriculturalSectorId: 1,
         politicalClassificationId: 1,
+        syncStatus: 'completed',
       ),
     ];
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          farmsListByFarmerProvider('farmer-1').overrideWith((ref) => farms),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: FarmsListScreen(farmer: farmer),
-        ),
-      ),
-    );
-
+    await tester.pumpWidget(createWidget(stream: Stream.value(farms)));
+    await tester.pump();
     await tester.pump();
 
-    expect(find.text('Fruit Garden'), findsOneWidget);
-    expect(find.text('5.0 1'), findsOneWidget); // 1 is areaUnitId for now in UI
+    expect(find.text('Orange Farm'), findsOneWidget);
   });
 }

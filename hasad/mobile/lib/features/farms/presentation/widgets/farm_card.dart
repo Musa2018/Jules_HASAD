@@ -1,44 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile/core/router/app_router.dart';
-import 'package:mobile/features/farmers/domain/farmer.dart';
-import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_sync_status_badge.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
+import 'package:mobile/features/farms/presentation/farms_providers.dart';
+import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
-class FarmerCard extends ConsumerWidget {
-  final Farmer farmer;
+class FarmCard extends ConsumerWidget {
+  final Farm farm;
 
-  const FarmerCard({super.key, required this.farmer});
+  const FarmCard({super.key, required this.farm});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final dateFormat = DateFormat.yMd(locale);
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     // Location lookups
     final govAsync = ref.watch(governoratesProvider);
-    final locAsync = ref.watch(localitiesProvider((farmer.governorateId, null)));
+    final dirAsync = ref.watch(directoratesProvider(farm.governorateId));
+    final locAsync = ref.watch(localitiesProvider((farm.governorateId, farm.directorateId)));
 
-    String locationText = farmer.governorateId;
+    // Entity lookups
+    final sectorsAsync = ref.watch(agriculturalSectorsProvider);
+    final areaUnitsAsync = ref.watch(areaUnitsProvider);
+
+    // Names lookups
+    final operatorAsync = ref.watch(farmerProvider(farm.farmerId));
+    final ownerAsync = farm.ownerFarmerId != null ? ref.watch(farmerProvider(farm.ownerFarmerId!)) : const AsyncValue.data(null);
+
+    String locationText = farm.localityId;
     govAsync.whenData((govs) {
-      final gov = govs.where((g) => g.id == farmer.governorateId).firstOrNull;
+      final gov = govs.where((g) => g.id == farm.governorateId).firstOrNull;
       if (gov != null) {
-        String locName = farmer.localityId;
-        locAsync.whenData((locs) {
-          final loc = locs.where((l) => l.id == farmer.localityId).firstOrNull;
-          if (loc != null) {
-            locName = isArabic ? loc.nameAr : loc.nameEn;
+        dirAsync.whenData((dirs) {
+          final dir = dirs.where((d) => d.id == farm.directorateId).firstOrNull;
+          if (dir != null) {
+            locAsync.whenData((locs) {
+              final loc = locs.where((l) => l.id == farm.localityId).firstOrNull;
+              if (loc != null) {
+                locationText = "${isAr ? gov.nameAr : gov.nameEn} / ${isAr ? dir.nameAr : dir.nameEn} / ${isAr ? loc.nameAr : loc.nameEn}";
+              }
+            });
           }
         });
-        locationText = '${isArabic ? gov.nameAr : gov.nameEn} - $locName';
       }
+    });
+
+    String sectorText = farm.agriculturalSectorId.toString();
+    sectorsAsync.whenData((items) {
+      final item = items.where((i) => i.id == farm.agriculturalSectorId).firstOrNull;
+      if (item != null) sectorText = isAr ? item.nameAr : item.nameEn;
+    });
+
+    String areaUnitText = farm.areaUnitId.toString();
+    areaUnitsAsync.whenData((items) {
+      final item = items.where((i) => i.id == farm.areaUnitId).firstOrNull;
+      if (item != null) areaUnitText = isAr ? item.nameAr : item.nameEn;
     });
 
     return Card(
@@ -46,7 +68,7 @@ class FarmerCard extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () => context.push(AppRoutes.farmerDetails, extra: farmer),
+        onTap: () => context.push(AppRoutes.farmDetails, extra: farm),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -58,32 +80,59 @@ class FarmerCard extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      farmer.fullName,
+                      farm.localFarmName,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
-                            decoration: farmer.isPendingDelete ? TextDecoration.lineThrough : null,
+                            decoration: farm.isPendingDelete ? TextDecoration.lineThrough : null,
                           ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   FarmerSyncStatusBadge(
-                    status: farmer.isPendingDelete ? 'pending_delete' : farmer.syncStatus,
+                    status: farm.isPendingDelete ? 'pending_delete' : farm.syncStatus,
                   ),
                 ],
               ),
               const Divider(height: 24),
               _InfoRow(
-                icon: Icons.badge_outlined,
-                label: l10n.idNumber,
-                value: farmer.idNumber,
+                icon: Icons.person_outline,
+                label: l10n.farmerName,
+                value: operatorAsync.when(
+                  data: (f) => f?.fullName ?? farm.farmerId,
+                  loading: () => "...",
+                  error: (_, __) => farm.farmerId,
+                ),
               ),
+              if (farm.ownerFarmerId != null) ...[
+                const SizedBox(height: 8),
+                _InfoRow(
+                  icon: Icons.person_search_outlined,
+                  label: l10n.ownerFarmer,
+                  value: ownerAsync.when(
+                    data: (f) => f?.fullName ?? farm.ownerFarmerId!,
+                    loading: () => "...",
+                    error: (_, __) => farm.ownerFarmerId!,
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
-              _InfoRow(
-                icon: Icons.phone_android_outlined,
-                label: l10n.phoneNumber,
-                value: farmer.phoneNumber,
+              Row(
+                children: [
+                  Expanded(
+                    child: _InfoRow(
+                      icon: Icons.square_foot_outlined,
+                      label: l10n.landArea,
+                      value: "${farm.area} $areaUnitText",
+                    ),
+                  ),
+                  Expanded(
+                    child: _InfoRow(
+                      icon: Icons.agriculture_outlined,
+                      label: l10n.agriculturalSector,
+                      value: sectorText,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               _InfoRow(
@@ -92,37 +141,24 @@ class FarmerCard extends ConsumerWidget {
                 value: locationText,
               ),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _InfoRow(
-                      icon: farmer.gender == Gender.male ? Icons.male : (farmer.gender == Gender.female ? Icons.female : Icons.person_outline),
-                      label: l10n.gender,
-                      value: _getGenderLabel(context, farmer.gender),
-                    ),
-                  ),
-                  Expanded(
-                    child: _InfoRow(
-                      icon: Icons.cake_outlined,
-                      label: l10n.dateOfBirth,
-                      value: dateFormat.format(farmer.birthDate),
-                    ),
-                  ),
-                ],
+              _InfoRow(
+                icon: Icons.grid_3x3_outlined,
+                label: "${l10n.basin} / ${l10n.parcel}",
+                value: "${farm.basin} / ${farm.parcel}",
               ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton.icon(
-                    onPressed: () => context.push(AppRoutes.farmerDetails, extra: farmer),
+                    onPressed: () => context.push(AppRoutes.farmDetails, extra: farm),
                     icon: const Icon(Icons.visibility_outlined, size: 18),
-                    label: Text(l10n.search), // Using "Search" as proxy for "View" if no "View" key
+                    label: Text(l10n.search), // Using search as "view"
                   ),
                   TextButton.icon(
-                    onPressed: () => context.push(AppRoutes.editFarmer, extra: farmer),
+                    onPressed: () => context.push(AppRoutes.editFarm, extra: farm),
                     icon: const Icon(Icons.edit_outlined, size: 18),
-                    label: Text(l10n.editFarmer),
+                    label: Text(l10n.editFarm),
                   ),
                   TextButton.icon(
                     onPressed: () => _confirmDelete(context, ref),
@@ -153,7 +189,7 @@ class FarmerCard extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              ref.read(farmerFormProvider.notifier).deleteFarmer(farmer.id);
+              ref.read(farmFormProvider.notifier).deleteFarm(farm.id);
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
@@ -162,18 +198,6 @@ class FarmerCard extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  String _getGenderLabel(BuildContext context, Gender gender) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (gender) {
-      case Gender.male:
-        return l10n.male;
-      case Gender.female:
-        return l10n.female;
-      case Gender.unspecified:
-        return l10n.unspecified;
-    }
   }
 }
 

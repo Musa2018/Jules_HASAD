@@ -37,8 +37,8 @@ class LocationRepositoryImpl implements LocationRepository {
       '/v1/Location/localities',
       (json) => Locality.fromJson(json),
       queryParameters: {
-        if (governorateId != null) 'governorateId': governorateId,
-        if (directorateId != null) 'directorateId': directorateId,
+        'governorateId': ?governorateId,
+        'directorateId': ?directorateId,
       },
     );
   }

@@ -98,9 +98,9 @@ class FarmCard extends ConsumerWidget {
                 icon: Icons.person_outline,
                 label: l10n.farmerName,
                 value: operatorAsync.when(
-                  data: (f) => f?.fullName ?? farm.farmerId,
+                  data: (f) => f.fullName,
                   loading: () => "...",
-                  error: (_, __) => farm.farmerId,
+                  error: (_, _) => farm.farmerId,
                 ),
               ),
               if (farm.ownerFarmerId != null) ...[
@@ -111,7 +111,7 @@ class FarmCard extends ConsumerWidget {
                   value: ownerAsync.when(
                     data: (f) => f?.fullName ?? farm.ownerFarmerId!,
                     loading: () => "...",
-                    error: (_, __) => farm.ownerFarmerId!,
+                    error: (_, _) => farm.ownerFarmerId!,
                   ),
                 ),
               ],

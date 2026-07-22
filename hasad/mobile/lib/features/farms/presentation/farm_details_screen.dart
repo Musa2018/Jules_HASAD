@@ -145,9 +145,9 @@ class FarmDetailsScreen extends ConsumerWidget {
     return _DetailRow(
       label: label,
       value: farmerAsync.when(
-        data: (f) => f?.fullName ?? id,
+        data: (f) => f.fullName,
         loading: () => "...",
-        error: (_, __) => id,
+        error: (_, _) => id,
       ),
     );
   }
@@ -163,7 +163,7 @@ class FarmDetailsScreen extends ConsumerWidget {
           return item != null ? (isAr ? item.nameAr : item.nameEn) : id.toString();
         },
         loading: () => "...",
-        error: (_, __) => id.toString(),
+        error: (_, _) => id.toString(),
       ),
     );
   }
@@ -179,7 +179,7 @@ class FarmDetailsScreen extends ConsumerWidget {
           return item != null ? (isAr ? item.nameAr : item.nameEn) : id.toString();
         },
         loading: () => "...",
-        error: (_, __) => id.toString(),
+        error: (_, _) => id.toString(),
       ),
     );
   }
@@ -193,7 +193,7 @@ class FarmDetailsScreen extends ConsumerWidget {
         return item != null ? (isAr ? item.nameAr : item.nameEn) : unitId.toString();
       },
       loading: () => "...",
-      error: (_, __) => unitId.toString(),
+      error: (_, _) => unitId.toString(),
     );
     return _DetailRow(label: label, value: "$area $unitText");
   }
@@ -209,7 +209,7 @@ class FarmDetailsScreen extends ConsumerWidget {
           return item != null ? (isAr ? item.nameAr : item.nameEn) : id.toString();
         },
         loading: () => "...",
-        error: (_, __) => id.toString(),
+        error: (_, _) => id.toString(),
       ),
     );
   }
@@ -230,7 +230,7 @@ class FarmDetailsScreen extends ConsumerWidget {
               return item != null ? (isAr ? item.nameAr : item.nameEn) : farm.governorateId;
             },
             loading: () => "...",
-            error: (_, __) => farm.governorateId,
+            error: (_, _) => farm.governorateId,
           ),
         ),
         _DetailRow(
@@ -241,7 +241,7 @@ class FarmDetailsScreen extends ConsumerWidget {
               return item != null ? (isAr ? item.nameAr : item.nameEn) : farm.directorateId;
             },
             loading: () => "...",
-            error: (_, __) => farm.directorateId,
+            error: (_, _) => farm.directorateId,
           ),
         ),
         _DetailRow(
@@ -252,7 +252,7 @@ class FarmDetailsScreen extends ConsumerWidget {
               return item != null ? (isAr ? item.nameAr : item.nameEn) : farm.localityId;
             },
             loading: () => "...",
-            error: (_, __) => farm.localityId,
+            error: (_, _) => farm.localityId,
           ),
         ),
       ],

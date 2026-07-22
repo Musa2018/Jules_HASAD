@@ -1,54 +1,48 @@
-# Walkthrough — Sprint 11.1: Backend Farm Foundation
+# Walkthrough — Sprint 11.2: Farm Offline Database Foundation
 
-I have completed the backend foundation for the Farm (Land) Management module. This sprint focused on aligning the backend domain model with the complex business requirements for agricultural land management in Palestine.
+I have completed the offline database foundation for the Farm module. This sprint focused on isolating farm-related logic, updating the Drift schema to support the complex agricultural land model, and preparing the synchronization layer.
 
 ## Changes Made
 
-### 1. Domain Model Redesign
-- **[Farm.cs](file:///hasad/backend/Hasad.Domain/Entities/Farm.cs)**: Completely redesigned the `Farm` entity to include:
-    - **Agricultural Identity**: `Basin`, `Parcel`, `LocalFarmName`.
-    - **Ownership Depth**: Links to `OwnerFarmer` (Farmer) and `RelationshipToOwner`.
-    - **Classification**: `AgriculturalSector` and `PoliticalClassification`.
-    - **Soft Delete**: Added `IsDeleted`, `DeletedAt`, and `DeletedBy` fields.
-    - **Sync Readiness**: Maintained `ClientId` and `RowVersion` for offline-first support.
+### 1. Feature Isolation
+- Moved all farm-related code from `lib/features/farmers/` to a dedicated `lib/features/farms/` directory.
+- Created a clear structure: `data/`, `domain/`, `presentation/`.
+- Isolated Riverpod providers into `farms_providers.dart`.
 
-### 2. Lookup Infrastructure
-- Created 5 new lookup entities with Arabic/English name support:
-    - `OwnershipType`: ملک, تأجير, مزارعة, شراكة, أخرى.
-    - `AgriculturalSector`: نباتي, حيواني, مختلط.
-    - `PoliticalClassification`: A, B, C.
-    - `AreaUnit`: دونم, متر مربع, هكتار, أخرى.
-    - `RelationshipToOwner`: المالك نفسه, مستأجر, شريك, وكيل, وريث, منتفع, أخرى.
-- Added comprehensive seed data in `ApplicationDbContext`.
+### 2. Domain & Data Layer Updates
+- **[Farm.cs](file:///hasad/mobile/lib/features/farms/domain/farm.dart)**: Updated domain model with `basin`, `parcel`, `area`, `ownerFarmerId`, and `directorateId`.
+- **Lookup Tables**: Implemented 5 new Drift tables for offline reference data:
+    - `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, `RelationshipToOwner`.
+- **[database.dart](file:///hasad/mobile/lib/core/storage/database.dart)**:
+    - Incremented schema version to **10**.
+    - Implemented `onUpgrade` logic to add new columns and create lookup tables.
+    - Added indices for performance on geographic and relationship fields.
 
-### 3. Application Layer Enhancements
-- **Commands**: Updated `CreateFarmCommand` and `UpdateFarmCommand` with the new schema and business validation logic.
-- **Validation**: Added a mandatory rule enforcing that an `OwnerFarmer` must be selected if the ownership type is not "Owned" (ملك).
-- **DTOs**: Updated `FarmDto` to include human-readable names for all lookup IDs and added `FarmSyncDto` for sync optimization.
-- **Soft Delete**: Updated `DeleteFarmCommandHandler` to perform logical deletion and added a Global Query Filter to automatically exclude deleted farms from all queries.
+### 3. Repository & Sync Foundation
+- **[OfflineFirstFarmRepository](file:///hasad/mobile/lib/features/farms/data/offline_first_farm_repository.dart)**: Updated with the new schema, supporting reactive streams and soft deletes.
+- **[FarmSyncDto](file:///hasad/mobile/lib/features/farms/data/farm_sync_dtos.dart)**: Refactored to strictly match the backend contract from Sprint 11.1. Local-only metadata is now correctly excluded from payloads.
+- **BackgroundSyncService**: Updated to handle the new `Farm` fields during synchronization and "Server Wins" conflict resolution.
 
-### 4. Database Migration
-- Created migration `RedesignFarmModule` which handles the schema changes and lookup data seeding.
-- Configured `DeleteBehavior.Restrict` for all relationships to ensure data integrity and prevent unintended cascade deletes.
+### 4. Architectural Refinement
+- **ADR 0009**: Formally recorded the decision to consolidate measurement units into a unified `MeasurementUnit` entity in future sprints.
 
 ## Verification Results
 
 ### Automated Tests
-- Ran `dotnet test` and all **84** tests passed.
-- Specifically verified:
-    - **Farm Creation**: Successful with the new complex schema.
-    - **Ownership Validation**: Rejects creation if Ownership is not "Owned" and `OwnerFarmerId` is missing.
-    - **Soft Delete Filtering**: Verified that deleted farmers (and by extension farms) are filtered out by default but accessible via `IgnoreQueryFilters()`.
+- Ran all mobile tests (`flutter test`). All **105** tests passed.
+- **Database Migration**: Verified Drift migration to v10 on both fresh and existing setups.
+- **Repository**: Verified offline creation, updates, and reactive streaming with the new complex model.
+- **Sync Mappings**: Verified that `FarmSyncDto` produces the exact JSON required by the backend.
 
 ```powershell
-Passed!  - Failed:     0, Passed:    83, Skipped:    1, Total:    84, Duration: 11.7s
+01:16 +105 ~1: All tests passed!
 ```
 
-### Build Status
-- `dotnet build` succeeded with no errors.
+### Analyzer Status
+- `flutter analyze` reported no issues.
 
 > [!IMPORTANT]
-> The database schema has changed significantly for the `Farms` table. Existing data in a local environment would need the `RedesignFarmModule` migration applied. Since this is an early development phase on the `Farms` branch, this is expected.
+> **Geographic Hierarchy**: The system now follows the `Governorate -> Directorate -> Locality` hierarchy for Farms. `Locality` records now effectively belong to a `Directorate` in the context of a Farm.
 
-> [!TIP]
-> The `OwnerFarmerId` and `FarmerId` both point to the `Farmers` table. In the UI (next sprints), we will leverage the existing Farmer search workflow to populate these fields.
+> [!NOTE]
+> **User Scoping**: The foundation is ready for Directorate-level authorization rules which will be enforced in the upcoming UI sprints.

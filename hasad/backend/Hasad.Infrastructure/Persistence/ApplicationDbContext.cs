@@ -165,13 +165,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                     // التزامن - Partial index to allow reusing ClientId from deleted records
                     entity.HasIndex(f => f.ClientId)
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false");
+                        .HasFilter("[IsDeleted] = 0");
 
                     // الهوية - Partial index to allow reusing ID Number from deleted records
                     entity.Property(f => f.IdNumber).IsRequired().HasMaxLength(20);
                     entity.HasIndex(f => new { f.IdTypeId, f.IdNumber })
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false");
+                        .HasFilter("[IsDeleted] = 0");
 
                     // الأسماء
                     entity.Property(f => f.FirstNameAr).IsRequired().HasMaxLength(50);

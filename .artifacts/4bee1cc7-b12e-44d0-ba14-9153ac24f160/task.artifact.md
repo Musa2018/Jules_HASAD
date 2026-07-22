@@ -1,0 +1,4 @@
+- `[x]` Update Migration file `20260722071132_RedesignFarmModule.cs`
+- `[x]` Update Migration Designer file `20260722071132_RedesignFarmModule.Designer.cs`
+- `[x]` Update `ApplicationDbContextModelSnapshot.cs`
+- `[x]` Verify by running the API

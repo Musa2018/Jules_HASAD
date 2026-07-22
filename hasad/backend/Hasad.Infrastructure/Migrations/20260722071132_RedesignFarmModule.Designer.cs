@@ -721,11 +721,11 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasIndex("ClientId")
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false");
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("IdTypeId", "IdNumber")
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false");
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("Farmers");
                 });

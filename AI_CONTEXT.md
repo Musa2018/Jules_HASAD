@@ -34,11 +34,11 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - Regional isolation enforced via geographic IDs in session and commands.
 
 ## 3. Current Project Status
-- **Current Branch**: `farmers`
-- **Latest Completed Sprint**: Sprint 10.17 — Soft Delete Fix
-- **Latest Commit Hash**: ` farmers` (Branch: farmers)
+- **Current Branch**: `Farms`
+- **Latest Completed Sprint**: Sprint 11.0 — Farm Module Audit
+- **Latest Commit Hash**: `362854b` (Branch: Farms)
 - **main**: Stable production-ready code.
-- **farmers**: Active development branch for the Farmers module.
+- **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 4. Completed Work (Verified Sprints)
 - **Sprint 9.1 - User Management**: Implemented multi-level regional scoping and administrative user forms.

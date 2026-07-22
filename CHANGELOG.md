@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Sprint 11.0 — Farm Module Engineering Audit
+
+#### Added
+- Comprehensive engineering audit of the Farm (Land) Management module.
+- Implementation roadmap for Sprints 11.1 through 11.9.
+- Gap analysis and architectural recommendations.
+
 ### Sprint 10.17 — Farmer Soft Delete Workflow Fix
 
 #### Fixed

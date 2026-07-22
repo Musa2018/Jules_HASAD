@@ -7428,6 +7428,992 @@ class RelationshipToOwnersCompanion
   }
 }
 
+class $GovernoratesTable extends Governorates
+    with TableInfo<$GovernoratesTable, GovernorateLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GovernoratesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, nameAr, nameEn, code];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'governorates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GovernorateLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GovernorateLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GovernorateLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+    );
+  }
+
+  @override
+  $GovernoratesTable createAlias(String alias) {
+    return $GovernoratesTable(attachedDatabase, alias);
+  }
+}
+
+class GovernorateLocal extends DataClass
+    implements Insertable<GovernorateLocal> {
+  final String id;
+  final String nameAr;
+  final String nameEn;
+  final String code;
+  const GovernorateLocal({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+    required this.code,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    map['code'] = Variable<String>(code);
+    return map;
+  }
+
+  GovernoratesCompanion toCompanion(bool nullToAbsent) {
+    return GovernoratesCompanion(
+      id: Value(id),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+      code: Value(code),
+    );
+  }
+
+  factory GovernorateLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GovernorateLocal(
+      id: serializer.fromJson<String>(json['id']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+      code: serializer.fromJson<String>(json['code']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+      'code': serializer.toJson<String>(code),
+    };
+  }
+
+  GovernorateLocal copyWith({
+    String? id,
+    String? nameAr,
+    String? nameEn,
+    String? code,
+  }) => GovernorateLocal(
+    id: id ?? this.id,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+    code: code ?? this.code,
+  );
+  GovernorateLocal copyWithCompanion(GovernoratesCompanion data) {
+    return GovernorateLocal(
+      id: data.id.present ? data.id.value : this.id,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      code: data.code.present ? data.code.value : this.code,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GovernorateLocal(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('code: $code')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, nameAr, nameEn, code);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GovernorateLocal &&
+          other.id == this.id &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn &&
+          other.code == this.code);
+}
+
+class GovernoratesCompanion extends UpdateCompanion<GovernorateLocal> {
+  final Value<String> id;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  final Value<String> code;
+  final Value<int> rowid;
+  const GovernoratesCompanion({
+    this.id = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.code = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GovernoratesCompanion.insert({
+    required String id,
+    required String nameAr,
+    required String nameEn,
+    required String code,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       nameAr = Value(nameAr),
+       nameEn = Value(nameEn),
+       code = Value(code);
+  static Insertable<GovernorateLocal> custom({
+    Expression<String>? id,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+    Expression<String>? code,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+      if (code != null) 'code': code,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GovernoratesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+    Value<String>? code,
+    Value<int>? rowid,
+  }) {
+    return GovernoratesCompanion(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+      code: code ?? this.code,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GovernoratesCompanion(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('code: $code, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DirectoratesTable extends Directorates
+    with TableInfo<$DirectoratesTable, DirectorateLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DirectoratesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _governorateIdMeta = const VerificationMeta(
+    'governorateId',
+  );
+  @override
+  late final GeneratedColumn<String> governorateId = GeneratedColumn<String>(
+    'governorate_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, nameAr, nameEn, governorateId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'directorates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DirectorateLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('governorate_id')) {
+      context.handle(
+        _governorateIdMeta,
+        governorateId.isAcceptableOrUnknown(
+          data['governorate_id']!,
+          _governorateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_governorateIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DirectorateLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DirectorateLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+      governorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}governorate_id'],
+      )!,
+    );
+  }
+
+  @override
+  $DirectoratesTable createAlias(String alias) {
+    return $DirectoratesTable(attachedDatabase, alias);
+  }
+}
+
+class DirectorateLocal extends DataClass
+    implements Insertable<DirectorateLocal> {
+  final String id;
+  final String nameAr;
+  final String nameEn;
+  final String governorateId;
+  const DirectorateLocal({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+    required this.governorateId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    map['governorate_id'] = Variable<String>(governorateId);
+    return map;
+  }
+
+  DirectoratesCompanion toCompanion(bool nullToAbsent) {
+    return DirectoratesCompanion(
+      id: Value(id),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+      governorateId: Value(governorateId),
+    );
+  }
+
+  factory DirectorateLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DirectorateLocal(
+      id: serializer.fromJson<String>(json['id']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+      governorateId: serializer.fromJson<String>(json['governorateId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+      'governorateId': serializer.toJson<String>(governorateId),
+    };
+  }
+
+  DirectorateLocal copyWith({
+    String? id,
+    String? nameAr,
+    String? nameEn,
+    String? governorateId,
+  }) => DirectorateLocal(
+    id: id ?? this.id,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+    governorateId: governorateId ?? this.governorateId,
+  );
+  DirectorateLocal copyWithCompanion(DirectoratesCompanion data) {
+    return DirectorateLocal(
+      id: data.id.present ? data.id.value : this.id,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      governorateId: data.governorateId.present
+          ? data.governorateId.value
+          : this.governorateId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DirectorateLocal(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('governorateId: $governorateId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, nameAr, nameEn, governorateId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DirectorateLocal &&
+          other.id == this.id &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn &&
+          other.governorateId == this.governorateId);
+}
+
+class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
+  final Value<String> id;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  final Value<String> governorateId;
+  final Value<int> rowid;
+  const DirectoratesCompanion({
+    this.id = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.governorateId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DirectoratesCompanion.insert({
+    required String id,
+    required String nameAr,
+    required String nameEn,
+    required String governorateId,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       nameAr = Value(nameAr),
+       nameEn = Value(nameEn),
+       governorateId = Value(governorateId);
+  static Insertable<DirectorateLocal> custom({
+    Expression<String>? id,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+    Expression<String>? governorateId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+      if (governorateId != null) 'governorate_id': governorateId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DirectoratesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+    Value<String>? governorateId,
+    Value<int>? rowid,
+  }) {
+    return DirectoratesCompanion(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+      governorateId: governorateId ?? this.governorateId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (governorateId.present) {
+      map['governorate_id'] = Variable<String>(governorateId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DirectoratesCompanion(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalitiesTable extends Localities
+    with TableInfo<$LocalitiesTable, LocalityLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalitiesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _governorateIdMeta = const VerificationMeta(
+    'governorateId',
+  );
+  @override
+  late final GeneratedColumn<String> governorateId = GeneratedColumn<String>(
+    'governorate_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _directorateIdMeta = const VerificationMeta(
+    'directorateId',
+  );
+  @override
+  late final GeneratedColumn<String> directorateId = GeneratedColumn<String>(
+    'directorate_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    nameAr,
+    nameEn,
+    governorateId,
+    directorateId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'localities';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalityLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('governorate_id')) {
+      context.handle(
+        _governorateIdMeta,
+        governorateId.isAcceptableOrUnknown(
+          data['governorate_id']!,
+          _governorateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_governorateIdMeta);
+    }
+    if (data.containsKey('directorate_id')) {
+      context.handle(
+        _directorateIdMeta,
+        directorateId.isAcceptableOrUnknown(
+          data['directorate_id']!,
+          _directorateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_directorateIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalityLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalityLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+      governorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}governorate_id'],
+      )!,
+      directorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}directorate_id'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalitiesTable createAlias(String alias) {
+    return $LocalitiesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalityLocal extends DataClass implements Insertable<LocalityLocal> {
+  final String id;
+  final String nameAr;
+  final String nameEn;
+  final String governorateId;
+  final String directorateId;
+  const LocalityLocal({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+    required this.governorateId,
+    required this.directorateId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    map['governorate_id'] = Variable<String>(governorateId);
+    map['directorate_id'] = Variable<String>(directorateId);
+    return map;
+  }
+
+  LocalitiesCompanion toCompanion(bool nullToAbsent) {
+    return LocalitiesCompanion(
+      id: Value(id),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+      governorateId: Value(governorateId),
+      directorateId: Value(directorateId),
+    );
+  }
+
+  factory LocalityLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalityLocal(
+      id: serializer.fromJson<String>(json['id']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+      governorateId: serializer.fromJson<String>(json['governorateId']),
+      directorateId: serializer.fromJson<String>(json['directorateId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+      'governorateId': serializer.toJson<String>(governorateId),
+      'directorateId': serializer.toJson<String>(directorateId),
+    };
+  }
+
+  LocalityLocal copyWith({
+    String? id,
+    String? nameAr,
+    String? nameEn,
+    String? governorateId,
+    String? directorateId,
+  }) => LocalityLocal(
+    id: id ?? this.id,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+    governorateId: governorateId ?? this.governorateId,
+    directorateId: directorateId ?? this.directorateId,
+  );
+  LocalityLocal copyWithCompanion(LocalitiesCompanion data) {
+    return LocalityLocal(
+      id: data.id.present ? data.id.value : this.id,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      governorateId: data.governorateId.present
+          ? data.governorateId.value
+          : this.governorateId,
+      directorateId: data.directorateId.present
+          ? data.directorateId.value
+          : this.directorateId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalityLocal(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('directorateId: $directorateId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, nameAr, nameEn, governorateId, directorateId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalityLocal &&
+          other.id == this.id &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn &&
+          other.governorateId == this.governorateId &&
+          other.directorateId == this.directorateId);
+}
+
+class LocalitiesCompanion extends UpdateCompanion<LocalityLocal> {
+  final Value<String> id;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  final Value<String> governorateId;
+  final Value<String> directorateId;
+  final Value<int> rowid;
+  const LocalitiesCompanion({
+    this.id = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.governorateId = const Value.absent(),
+    this.directorateId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalitiesCompanion.insert({
+    required String id,
+    required String nameAr,
+    required String nameEn,
+    required String governorateId,
+    required String directorateId,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       nameAr = Value(nameAr),
+       nameEn = Value(nameEn),
+       governorateId = Value(governorateId),
+       directorateId = Value(directorateId);
+  static Insertable<LocalityLocal> custom({
+    Expression<String>? id,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+    Expression<String>? governorateId,
+    Expression<String>? directorateId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+      if (governorateId != null) 'governorate_id': governorateId,
+      if (directorateId != null) 'directorate_id': directorateId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalitiesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+    Value<String>? governorateId,
+    Value<String>? directorateId,
+    Value<int>? rowid,
+  }) {
+    return LocalitiesCompanion(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+      governorateId: governorateId ?? this.governorateId,
+      directorateId: directorateId ?? this.directorateId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (governorateId.present) {
+      map['governorate_id'] = Variable<String>(governorateId.value);
+    }
+    if (directorateId.present) {
+      map['directorate_id'] = Variable<String>(directorateId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalitiesCompanion(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('directorateId: $directorateId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7446,6 +8432,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AreaUnitsTable areaUnits = $AreaUnitsTable(this);
   late final $RelationshipToOwnersTable relationshipToOwners =
       $RelationshipToOwnersTable(this);
+  late final $GovernoratesTable governorates = $GovernoratesTable(this);
+  late final $DirectoratesTable directorates = $DirectoratesTable(this);
+  late final $LocalitiesTable localities = $LocalitiesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7462,6 +8451,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     politicalClassifications,
     areaUnits,
     relationshipToOwners,
+    governorates,
+    directorates,
+    localities,
   ];
 }
 
@@ -11101,6 +12093,574 @@ typedef $$RelationshipToOwnersTableProcessedTableManager =
       RelationshipToOwner,
       PrefetchHooks Function()
     >;
+typedef $$GovernoratesTableCreateCompanionBuilder =
+    GovernoratesCompanion Function({
+      required String id,
+      required String nameAr,
+      required String nameEn,
+      required String code,
+      Value<int> rowid,
+    });
+typedef $$GovernoratesTableUpdateCompanionBuilder =
+    GovernoratesCompanion Function({
+      Value<String> id,
+      Value<String> nameAr,
+      Value<String> nameEn,
+      Value<String> code,
+      Value<int> rowid,
+    });
+
+class $$GovernoratesTableFilterComposer
+    extends Composer<_$AppDatabase, $GovernoratesTable> {
+  $$GovernoratesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GovernoratesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GovernoratesTable> {
+  $$GovernoratesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GovernoratesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GovernoratesTable> {
+  $$GovernoratesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+}
+
+class $$GovernoratesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GovernoratesTable,
+          GovernorateLocal,
+          $$GovernoratesTableFilterComposer,
+          $$GovernoratesTableOrderingComposer,
+          $$GovernoratesTableAnnotationComposer,
+          $$GovernoratesTableCreateCompanionBuilder,
+          $$GovernoratesTableUpdateCompanionBuilder,
+          (
+            GovernorateLocal,
+            BaseReferences<_$AppDatabase, $GovernoratesTable, GovernorateLocal>,
+          ),
+          GovernorateLocal,
+          PrefetchHooks Function()
+        > {
+  $$GovernoratesTableTableManager(_$AppDatabase db, $GovernoratesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GovernoratesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GovernoratesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GovernoratesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GovernoratesCompanion(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                code: code,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String nameAr,
+                required String nameEn,
+                required String code,
+                Value<int> rowid = const Value.absent(),
+              }) => GovernoratesCompanion.insert(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                code: code,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GovernoratesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GovernoratesTable,
+      GovernorateLocal,
+      $$GovernoratesTableFilterComposer,
+      $$GovernoratesTableOrderingComposer,
+      $$GovernoratesTableAnnotationComposer,
+      $$GovernoratesTableCreateCompanionBuilder,
+      $$GovernoratesTableUpdateCompanionBuilder,
+      (
+        GovernorateLocal,
+        BaseReferences<_$AppDatabase, $GovernoratesTable, GovernorateLocal>,
+      ),
+      GovernorateLocal,
+      PrefetchHooks Function()
+    >;
+typedef $$DirectoratesTableCreateCompanionBuilder =
+    DirectoratesCompanion Function({
+      required String id,
+      required String nameAr,
+      required String nameEn,
+      required String governorateId,
+      Value<int> rowid,
+    });
+typedef $$DirectoratesTableUpdateCompanionBuilder =
+    DirectoratesCompanion Function({
+      Value<String> id,
+      Value<String> nameAr,
+      Value<String> nameEn,
+      Value<String> governorateId,
+      Value<int> rowid,
+    });
+
+class $$DirectoratesTableFilterComposer
+    extends Composer<_$AppDatabase, $DirectoratesTable> {
+  $$DirectoratesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DirectoratesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DirectoratesTable> {
+  $$DirectoratesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DirectoratesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DirectoratesTable> {
+  $$DirectoratesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => column,
+  );
+}
+
+class $$DirectoratesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DirectoratesTable,
+          DirectorateLocal,
+          $$DirectoratesTableFilterComposer,
+          $$DirectoratesTableOrderingComposer,
+          $$DirectoratesTableAnnotationComposer,
+          $$DirectoratesTableCreateCompanionBuilder,
+          $$DirectoratesTableUpdateCompanionBuilder,
+          (
+            DirectorateLocal,
+            BaseReferences<_$AppDatabase, $DirectoratesTable, DirectorateLocal>,
+          ),
+          DirectorateLocal,
+          PrefetchHooks Function()
+        > {
+  $$DirectoratesTableTableManager(_$AppDatabase db, $DirectoratesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DirectoratesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DirectoratesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DirectoratesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+                Value<String> governorateId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DirectoratesCompanion(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                governorateId: governorateId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String nameAr,
+                required String nameEn,
+                required String governorateId,
+                Value<int> rowid = const Value.absent(),
+              }) => DirectoratesCompanion.insert(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                governorateId: governorateId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DirectoratesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DirectoratesTable,
+      DirectorateLocal,
+      $$DirectoratesTableFilterComposer,
+      $$DirectoratesTableOrderingComposer,
+      $$DirectoratesTableAnnotationComposer,
+      $$DirectoratesTableCreateCompanionBuilder,
+      $$DirectoratesTableUpdateCompanionBuilder,
+      (
+        DirectorateLocal,
+        BaseReferences<_$AppDatabase, $DirectoratesTable, DirectorateLocal>,
+      ),
+      DirectorateLocal,
+      PrefetchHooks Function()
+    >;
+typedef $$LocalitiesTableCreateCompanionBuilder =
+    LocalitiesCompanion Function({
+      required String id,
+      required String nameAr,
+      required String nameEn,
+      required String governorateId,
+      required String directorateId,
+      Value<int> rowid,
+    });
+typedef $$LocalitiesTableUpdateCompanionBuilder =
+    LocalitiesCompanion Function({
+      Value<String> id,
+      Value<String> nameAr,
+      Value<String> nameEn,
+      Value<String> governorateId,
+      Value<String> directorateId,
+      Value<int> rowid,
+    });
+
+class $$LocalitiesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalitiesTable> {
+  $$LocalitiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalitiesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalitiesTable> {
+  $$LocalitiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalitiesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalitiesTable> {
+  $$LocalitiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => column,
+  );
+}
+
+class $$LocalitiesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalitiesTable,
+          LocalityLocal,
+          $$LocalitiesTableFilterComposer,
+          $$LocalitiesTableOrderingComposer,
+          $$LocalitiesTableAnnotationComposer,
+          $$LocalitiesTableCreateCompanionBuilder,
+          $$LocalitiesTableUpdateCompanionBuilder,
+          (
+            LocalityLocal,
+            BaseReferences<_$AppDatabase, $LocalitiesTable, LocalityLocal>,
+          ),
+          LocalityLocal,
+          PrefetchHooks Function()
+        > {
+  $$LocalitiesTableTableManager(_$AppDatabase db, $LocalitiesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalitiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalitiesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalitiesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+                Value<String> governorateId = const Value.absent(),
+                Value<String> directorateId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalitiesCompanion(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                governorateId: governorateId,
+                directorateId: directorateId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String nameAr,
+                required String nameEn,
+                required String governorateId,
+                required String directorateId,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalitiesCompanion.insert(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                governorateId: governorateId,
+                directorateId: directorateId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalitiesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalitiesTable,
+      LocalityLocal,
+      $$LocalitiesTableFilterComposer,
+      $$LocalitiesTableOrderingComposer,
+      $$LocalitiesTableAnnotationComposer,
+      $$LocalitiesTableCreateCompanionBuilder,
+      $$LocalitiesTableUpdateCompanionBuilder,
+      (
+        LocalityLocal,
+        BaseReferences<_$AppDatabase, $LocalitiesTable, LocalityLocal>,
+      ),
+      LocalityLocal,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -11133,4 +12693,10 @@ class $AppDatabaseManager {
       $$AreaUnitsTableTableManager(_db, _db.areaUnits);
   $$RelationshipToOwnersTableTableManager get relationshipToOwners =>
       $$RelationshipToOwnersTableTableManager(_db, _db.relationshipToOwners);
+  $$GovernoratesTableTableManager get governorates =>
+      $$GovernoratesTableTableManager(_db, _db.governorates);
+  $$DirectoratesTableTableManager get directorates =>
+      $$DirectoratesTableTableManager(_db, _db.directorates);
+  $$LocalitiesTableTableManager get localities =>
+      $$LocalitiesTableTableManager(_db, _db.localities);
 }

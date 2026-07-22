@@ -6,7 +6,7 @@ import 'package:mobile/features/location/domain/locality.dart';
 abstract class LocationRepository {
   Future<List<Governorate>> getGovernorates();
   Future<List<Directorate>> getDirectorates({String? governorateId});
-  Future<List<Locality>> getLocalities({String? governorateId});
+  Future<List<Locality>> getLocalities({String? governorateId, String? directorateId});
 }
 
 class LocationRepositoryImpl implements LocationRepository {
@@ -32,11 +32,14 @@ class LocationRepositoryImpl implements LocationRepository {
   }
 
   @override
-  Future<List<Locality>> getLocalities({String? governorateId}) async {
+  Future<List<Locality>> getLocalities({String? governorateId, String? directorateId}) async {
     return _getMany(
       '/v1/Location/localities',
       (json) => Locality.fromJson(json),
-      queryParameters: governorateId != null ? {'governorateId': governorateId} : null,
+      queryParameters: {
+        if (governorateId != null) 'governorateId': governorateId,
+        if (directorateId != null) 'directorateId': directorateId,
+      },
     );
   }
 

@@ -2,7 +2,27 @@
 
 ## [Unreleased]
 
-### Sprint 11.2 — Farm Offline Database Foundation
+### Sprint 11.3 — Farm CRUD & Sync Hardening
+
+#### Added
+- Full offline-first CRUD for Farms in `OfflineFirstFarmRepository`.
+- `FarmValidator` for centralized business rule enforcement (Ownership, Geography, User Scope).
+- `Governorates`, `Directorates`, and `Localities` Drift tables for offline geographic support.
+- `OfflineFirstLocationRepository` with cascading lookup caching.
+- Asynchronous search support in `SearchableLookupField` for large datasets like Farmers.
+- Detailed sync logging for Farms in `BackgroundSyncService`.
+
+#### Changed
+- Geographic hierarchy updated to `Governorate -> Directorate -> Locality` globally.
+- `Locality` domain model and backend entity updated with `DirectorateId`.
+- `BackgroundSyncService` hardened with "Server Wins" policy for Farm conflict resolution.
+- `FarmFormScreen` redesigned with sectioned layout, cascading lookups, and owner farmer selection.
+- `localitiesProvider` updated to support `directorateId` filtering and multi-parameter inputs.
+- Drift schema version upgraded to **11**.
+
+#### Fixed
+- Bug in `BackgroundSyncService` where `SyncConflictException` was not correctly triggering the conflict resolution flow.
+- Scoping issue where Engineers could theoretically manage farms outside their assigned directorate.
 
 #### Added
 - New feature folder `lib/features/farms/` for better code isolation.

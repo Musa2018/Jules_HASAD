@@ -8,5 +8,6 @@ namespace Hasad.Application.Features.Location.Models
         public string NameAr { get; set; } = string.Empty;
         public string NameEn { get; set; } = string.Empty;
         public Guid GovernorateId { get; set; }
+        public Guid DirectorateId { get; set; }
     }
 }

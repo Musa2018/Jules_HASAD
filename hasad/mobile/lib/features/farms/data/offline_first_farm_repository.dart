@@ -1,8 +1,11 @@
 import 'package:drift/drift.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/domain/farm.dart' as domain;
+import 'package:mobile/features/farms/domain/farm_validator.dart';
 import 'package:uuid/uuid.dart';
 
 class OfflineFirstFarmRepository implements FarmRepository {
@@ -10,6 +13,13 @@ class OfflineFirstFarmRepository implements FarmRepository {
   final BackgroundSyncService _syncService;
 
   OfflineFirstFarmRepository(this._db, this._syncService);
+
+  void _validate(domain.Farm farm, AuthSession? session) {
+    final errors = FarmValidator.validate(farm, session: session);
+    if (errors.isNotEmpty) {
+      throw FarmException(errors);
+    }
+  }
 
   @override
   Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
@@ -86,7 +96,8 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<domain.Farm> createFarm(domain.Farm farm) async {
+  Future<domain.Farm> createFarm(domain.Farm farm, {AuthSession? session}) async {
+    _validate(farm, session);
     final localId = farm.id.isEmpty ? const Uuid().v4() : farm.id;
     final companion = _mapToCompanion(farm).copyWith(
       id: Value(localId),
@@ -109,7 +120,8 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<domain.Farm> updateFarm(domain.Farm farm) async {
+  Future<domain.Farm> updateFarm(domain.Farm farm, {AuthSession? session}) async {
+    _validate(farm, session);
     await (_db.update(_db.farms)..where((t) => t.id.equals(farm.id))).write(
       _mapToCompanion(farm).copyWith(
         syncStatus: const Value('pending'),
@@ -129,10 +141,20 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<void> deleteFarm(String id) async {
+  Future<void> deleteFarm(String id, {AuthSession? session}) async {
     final local = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     if (local == null) return;
+
+    if (session != null) {
+      final isEngineer = session.roles.contains('AgriculturalEngineer');
+      final isSurveyor = session.roles.contains('FieldSurveyor');
+      if (isEngineer || isSurveyor) {
+        if (local.directorateId != session.directorateId) {
+          throw FarmException(['Access Denied: You can only delete farms within your assigned directorate.']);
+        }
+      }
+    }
 
     await (_db.update(_db.farms)..where((t) => t.id.equals(id))).write(
       const FarmsCompanion(

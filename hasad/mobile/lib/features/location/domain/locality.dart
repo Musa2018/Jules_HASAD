@@ -10,6 +10,7 @@ class Locality with _$Locality {
     required String nameAr,
     required String nameEn,
     required String governorateId,
+    required String directorateId,
   }) = _Locality;
 
   factory Locality.fromJson(Map<String, dynamic> json) =>

@@ -31,10 +31,12 @@ public record CreateFarmCommand(
 public class CreateFarmCommandHandler : IRequestHandler<CreateFarmCommand, Result<FarmDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public CreateFarmCommandHandler(IApplicationDbContext context)
+    public CreateFarmCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<FarmDto>> Handle(CreateFarmCommand request, CancellationToken cancellationToken)
@@ -47,6 +49,22 @@ public class CreateFarmCommandHandler : IRequestHandler<CreateFarmCommand, Resul
         if (existing != null)
         {
             return Result<FarmDto>.Success(MapToDto(existing));
+        }
+
+        // Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (request.DirectorateId != _currentUser.DirectorateId)
+            {
+                return Result<FarmDto>.Failure(new[] { "Access Denied: You can only manage farms within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (request.GovernorateId != _currentUser.GovernorateId)
+            {
+                return Result<FarmDto>.Failure(new[] { "Access Denied: You can only manage farms within your assigned governorate." });
+            }
         }
 
         // Validate Farmer

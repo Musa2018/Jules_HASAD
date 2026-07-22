@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
+import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/data/farm_sync_dtos.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
@@ -45,7 +46,7 @@ class RemoteFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<Farm> createFarm(Farm farm) async {
+  Future<Farm> createFarm(Farm farm, {AuthSession? session}) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/farms',
@@ -63,7 +64,7 @@ class RemoteFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<Farm> updateFarm(Farm farm) async {
+  Future<Farm> updateFarm(Farm farm, {AuthSession? session}) async {
     try {
       final response = await _dio.put<Map<String, dynamic>>(
         '/v1/farms/${farm.serverId ?? farm.id}',
@@ -86,7 +87,7 @@ class RemoteFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<void> deleteFarm(String id) async {
+  Future<void> deleteFarm(String id, {AuthSession? session}) async {
     try {
       final response = await _dio.delete<Map<String, dynamic>>('/v1/farms/$id');
       final envelope = response.data;

@@ -32,10 +32,12 @@ public record UpdateFarmCommand(
 public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Result<FarmDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public UpdateFarmCommandHandler(IApplicationDbContext context)
+    public UpdateFarmCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<FarmDto>> Handle(UpdateFarmCommand request, CancellationToken cancellationToken)
@@ -46,6 +48,22 @@ public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Resul
         if (farm == null)
         {
             return Result<FarmDto>.Failure(new[] { "Farm not found." });
+        }
+
+        // Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (farm.DirectorateId != _currentUser.DirectorateId || request.DirectorateId != _currentUser.DirectorateId)
+            {
+                return Result<FarmDto>.Failure(new[] { "Access Denied: You can only manage farms within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (farm.GovernorateId != _currentUser.GovernorateId || request.GovernorateId != _currentUser.GovernorateId)
+            {
+                return Result<FarmDto>.Failure(new[] { "Access Denied: You can only manage farms within your assigned governorate." });
+            }
         }
 
         // Optimistic concurrency check

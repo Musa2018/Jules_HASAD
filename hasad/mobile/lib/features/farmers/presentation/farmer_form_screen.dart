@@ -161,7 +161,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     final state = ref.watch(farmerFormProvider);
     final govAsync = ref.watch(governoratesProvider);
     final locAsync = _selectedGovernorateId != null
-        ? ref.watch(localitiesProvider(_selectedGovernorateId))
+        ? ref.watch(localitiesProvider((_selectedGovernorateId, null)))
         : const AsyncValue<List<Locality>>.data([]);
 
     return Scaffold(

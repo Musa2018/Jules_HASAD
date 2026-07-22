@@ -131,12 +131,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
             entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
 
+            entity.HasOne(e => e.Directorate)
+                .WithMany()
+                .HasForeignKey(e => e.DirectorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Governorate)
                 .WithMany(g => g.Localities)
                 .HasForeignKey(e => e.GovernorateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.GovernorateId);
+            entity.HasIndex(e => e.DirectorateId);
         });
 
         builder.Entity<ApplicationUser>(entity =>

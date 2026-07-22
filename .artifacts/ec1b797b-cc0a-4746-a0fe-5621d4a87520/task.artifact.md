@@ -1,0 +1,2 @@
+- [x] Clean up unused imports in `test/farmers/farmer_details_screen_test.dart`
+- [x] Verify fix with `flutter analyze`

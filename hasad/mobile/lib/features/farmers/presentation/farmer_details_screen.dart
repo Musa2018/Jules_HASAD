@@ -58,7 +58,7 @@ class _FarmerDetailsBody extends ConsumerWidget {
 
     // Location lookups
     final govAsync = ref.watch(governoratesProvider);
-    final locAsync = ref.watch(localitiesProvider(farmer.governorateId));
+    final locAsync = ref.watch(localitiesProvider((farmer.governorateId, null)));
 
     String govName = farmer.governorateId;
     govAsync.whenData((govs) {

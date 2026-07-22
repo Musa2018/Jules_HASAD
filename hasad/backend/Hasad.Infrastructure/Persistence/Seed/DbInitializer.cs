@@ -142,7 +142,7 @@ public static class DbInitializer
 
                 if (existingDir == null)
                 {
-                    context.Directorates.Add(new Directorate
+                    existingDir = new Directorate
                     {
                         Id = Guid.NewGuid(),
                         NameAr = dirNameAr,
@@ -150,34 +150,40 @@ public static class DbInitializer
                         GovernorateId = governorate.Id,
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow
-                    });
+                    };
+                    context.Directorates.Add(existingDir);
                 }
                 else
                 {
                     existingDir.NameAr = dirNameAr;
                 }
-            }
 
-            foreach (var (locNameAr, locNameEn) in localities)
-            {
-                var existingLoc = governorate.Localities
-                    .FirstOrDefault(l => l.NameEn == locNameEn);
-
-                if (existingLoc == null)
+                // Temporary logic for seeding localities to directorates:
+                // If a locality matches keywords for a directorate, link them.
+                // In a real scenario, this would be a specific mapping provided in the dataset.
+                foreach (var (locNameAr, locNameEn) in localities)
                 {
-                    context.Localities.Add(new Locality
+                    var existingLoc = governorate.Localities
+                        .FirstOrDefault(l => l.NameEn == locNameEn);
+
+                    if (existingLoc == null)
                     {
-                        Id = Guid.NewGuid(),
-                        NameAr = locNameAr,
-                        NameEn = locNameEn,
-                        GovernorateId = governorate.Id,
-                        IsActive = true,
-                        CreatedAt = DateTime.UtcNow
-                    });
-                }
-                else
-                {
-                    existingLoc.NameAr = locNameAr;
+                        context.Localities.Add(new Locality
+                        {
+                            Id = Guid.NewGuid(),
+                            NameAr = locNameAr,
+                            NameEn = locNameEn,
+                            GovernorateId = governorate.Id,
+                            DirectorateId = existingDir.Id, // Assign to the current directorate in this loop
+                            IsActive = true,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                    else
+                    {
+                        existingLoc.NameAr = locNameAr;
+                        existingLoc.DirectorateId = existingDir.Id;
+                    }
                 }
             }
         }

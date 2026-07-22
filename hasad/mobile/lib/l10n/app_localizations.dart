@@ -566,6 +566,18 @@ abstract class AppLocalizations {
   /// **'Farmer created successfully'**
   String get farmerCreatedSuccessfully;
 
+  /// No description provided for @farmCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm created successfully'**
+  String get farmCreatedSuccessfully;
+
+  /// No description provided for @farmUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm updated successfully'**
+  String get farmUpdatedSuccessfully;
+
   /// No description provided for @enterFarmerIdToContinue.
   ///
   /// In en, this message translates to:
@@ -613,6 +625,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unit'**
   String get unit;
+
+  /// No description provided for @basin.
+  ///
+  /// In en, this message translates to:
+  /// **'Basin'**
+  String get basin;
+
+  /// No description provided for @parcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel'**
+  String get parcel;
+
+  /// No description provided for @farmInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm Information'**
+  String get farmInfoSection;
+
+  /// No description provided for @areaAndSectorSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Area and Sector'**
+  String get areaAndSectorSection;
+
+  /// No description provided for @invalidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid value'**
+  String get invalidValue;
+
+  /// No description provided for @agriculturalSector.
+  ///
+  /// In en, this message translates to:
+  /// **'Agricultural Sector'**
+  String get agriculturalSector;
+
+  /// No description provided for @politicalClassification.
+  ///
+  /// In en, this message translates to:
+  /// **'Political Classification'**
+  String get politicalClassification;
+
+  /// No description provided for @ownershipSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Ownership'**
+  String get ownershipSection;
+
+  /// No description provided for @relationshipToOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship to Owner'**
+  String get relationshipToOwner;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @ownerFarmer.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner Farmer'**
+  String get ownerFarmer;
 
   /// No description provided for @ownershipType.
   ///

@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/farmer_details_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
-import 'package:mobile/features/location/domain/governorate.dart';
-import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -41,7 +39,7 @@ void main() {
         overrides: [
           farmerStreamProvider('1').overrideWith((ref) => Stream.value(testFarmer)),
           governoratesProvider.overrideWith((ref) => []),
-          localitiesProvider('G1').overrideWith((ref) => []),
+          localitiesProvider(('G1', null)).overrideWith((ref) => []),
         ],
         child: MaterialApp(
           localizationsDelegates: const [
@@ -71,7 +69,7 @@ void main() {
         overrides: [
           farmerStreamProvider('1').overrideWith((ref) => const Stream.empty()),
           governoratesProvider.overrideWith((ref) => []),
-          localitiesProvider('G1').overrideWith((ref) => []),
+          localitiesProvider(('G1', null)).overrideWith((ref) => []),
         ],
         child: MaterialApp(
           localizationsDelegates: const [
@@ -96,7 +94,7 @@ void main() {
         overrides: [
           farmerStreamProvider('1').overrideWith((ref) => Stream.error('Error')),
           governoratesProvider.overrideWith((ref) => []),
-          localitiesProvider('G1').overrideWith((ref) => []),
+          localitiesProvider(('G1', null)).overrideWith((ref) => []),
         ],
         child: MaterialApp(
           localizationsDelegates: const [

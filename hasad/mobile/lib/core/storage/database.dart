@@ -138,6 +138,37 @@ class RelationshipToOwners extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('GovernorateLocal')
+class Governorates extends Table {
+  TextColumn get id => text()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  TextColumn get code => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('DirectorateLocal')
+class Directorates extends Table {
+  TextColumn get id => text()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  TextColumn get governorateId => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('LocalityLocal')
+class Localities extends Table {
+  TextColumn get id => text()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  TextColumn get governorateId => text()();
+  TextColumn get directorateId => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DataClassName('DamageReportLocal')
 class DamageReports extends Table {
   TextColumn get id => text()(); // ClientId
@@ -251,6 +282,9 @@ class SyncQueue extends Table {
     PoliticalClassifications,
     AreaUnits,
     RelationshipToOwners,
+    Governorates,
+    Directorates,
+    Localities,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -258,7 +292,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -357,6 +391,11 @@ class AppDatabase extends _$AppDatabase {
 
         // Note: 'name' and 'landArea' and 'landAreaUnit' from old schema will remain but be unused.
         // We could use m.alterTable(farms) but adding columns is safer for now.
+      }
+      if (from < 11) {
+        await m.createTable(governorates);
+        await m.createTable(directorates);
+        await m.createTable(localities);
       }
     },
     beforeOpen: (details) async {

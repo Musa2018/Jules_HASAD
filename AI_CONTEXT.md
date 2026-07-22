@@ -41,12 +41,14 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 4. Current Project Status
 - **Current Branch**: `Farms`
-- **Latest Completed Sprint**: Sprint 11.2 — Database and Lookup Tables (Flutter)
-- **Latest Commit Hash**: `3abf9d0` (Branch: Farms)
+- **Latest Completed Sprint**: Sprint 11.3 — Farm CRUD & Sync Hardening
+- **Latest Commit Hash**: [TBD]
 - **main**: Stable production-ready code.
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
+- **Sprint 11.3 - Farm CRUD & Sync Hardening**: Implemented production-grade CRUD for Farms. Updated geographic hierarchy to `Governorate -> Directorate -> Locality`. Implemented full offline geographic caching and cascading lookups in Drift. Hardened sync mechanism with "Server Wins" conflict resolution and detailed logging. Enforced Directorate-based authorization in both Flutter and Backend.
+- **Sprint 11.2 - Database and Lookup Tables (Flutter)**: Upgraded Drift to v10, implemented offline lookups, and refactored Farm feature isolation.
 - **Sprint 11.1 - Backend Farm Foundation**: Redesigned Farm entity, added lookup tables (Ownership, Sector, etc.), implemented Soft Delete, and updated DTOs/Commands.
 - **Sprint 11.0 - Farm Module Audit**: Engineering audit and roadmap for the Farm module.
 - **Sprint 9.1 - User Management**: Implemented multi-level regional scoping and administrative user forms.
@@ -85,17 +87,20 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 ## 6. Geographic Architecture
 - **Entities**:
   - `Governorate`: Main administrative regions (16 Palestinian governorates).
-  - `Locality`: Cities and villages linked to a governorate (Governorate 1 -> * Localities).
+  - `Directorate`: Sub-administrative regions under a governorate.
+  - `Locality`: Cities and villages linked to a directorate (Governorate -> Directorate -> Locality).
 - **API**:
   - `GET /api/v1/Location/governorates`: Fetch active governorates.
-  - `GET /api/v1/Location/localities?governorateId={id}`: Filtered locality lookup.
+  - `GET /api/v1/Users/directorates?governorateId={id}`: Filtered directorate lookup.
+  - `GET /api/v1/Location/localities?directorateId={id}`: Filtered locality lookup.
 - **Mobile**:
-  - Shared `location` feature providers (`governoratesProvider`, `localitiesProvider(govId)`).
-  - Used by both Admin and Farmers modules.
+  - Offline-first `LocationRepository` with Drift caching for all geographic levels.
+  - Shared `location` feature providers (`governoratesProvider`, `directoratesProvider(govId)`, `localitiesProvider(params)`).
+  - Cascading lookup support in `SearchableLookupField`.
 
 ## 7. Offline Architecture Status
 - **Farmer Data**: Strictly **Offline-First**. All writes (Create/Update) happen in Drift first, then added to `SyncQueue`.
-- **Location Data**: Treated as **Reference Data**. Currently retrieved online via shared providers to ensure data accuracy.
+- **Location Data**: **Offline-First**. Retrieved from Drift with automatic remote synchronization/caching.
 - **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
 
 ## 8. Pending Work

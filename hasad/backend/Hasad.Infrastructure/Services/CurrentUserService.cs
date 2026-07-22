@@ -15,4 +15,9 @@ public class CurrentUserService : ICurrentUserService
 
     public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
     public string? UserName => _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+
+    public Guid? GovernorateId => Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirstValue("governorate_id"), out var id) ? id : null;
+    public Guid? DirectorateId => Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirstValue("directorate_id"), out var id) ? id : null;
+
+    public bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
 }

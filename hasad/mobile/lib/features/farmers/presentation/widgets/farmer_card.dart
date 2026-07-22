@@ -24,7 +24,7 @@ class FarmerCard extends ConsumerWidget {
 
     // Location lookups
     final govAsync = ref.watch(governoratesProvider);
-    final locAsync = ref.watch(localitiesProvider(farmer.governorateId));
+    final locAsync = ref.watch(localitiesProvider((farmer.governorateId, null)));
 
     String locationText = farmer.governorateId;
     govAsync.whenData((govs) {

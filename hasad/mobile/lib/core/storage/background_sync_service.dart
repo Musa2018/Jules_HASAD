@@ -260,9 +260,6 @@ class BackgroundSyncService {
       await _db
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'completed'));
-      // Note: Synced status (completed) is usually handled inside _syncXXX 
-      // because it also needs to update serverId/rowVersion.
-      // But we call it here as a fallback if not already handled.
       await _updateEntitySyncStatus(item.entityType, item.localId, 'completed');
     } on SyncValidationException catch (e) {
       await _db.update(_db.syncQueue).replace(
@@ -274,6 +271,12 @@ class BackgroundSyncService {
         'invalid',
         error: e.toString(),
       );
+    } on SyncConflictException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
+      await _resolveConflict(item);
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
         await _db.update(_db.syncQueue).replace(
@@ -481,12 +484,20 @@ class BackgroundSyncService {
   Future<void> _syncFarm(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
 
+    if (DebugLogger.enableSyncDebug) {
+      DebugLogger.logHeader('FARM SYNC');
+      DebugLogger.log('Operation: ${item.operation}');
+      DebugLogger.log('Payload:');
+      DebugLogger.logJson(data);
+    }
+
     if (item.operation == 'delete') {
       final serverId = data['serverId'] ?? data['id'];
       if (serverId != null) {
         await _remoteFarmRepository.deleteFarm(serverId.toString());
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
+      if (DebugLogger.enableSyncDebug) DebugLogger.logFooter();
       return;
     }
 
@@ -516,6 +527,7 @@ class BackgroundSyncService {
         ),
       );
     }
+    if (DebugLogger.enableSyncDebug) DebugLogger.logFooter();
   }
 
   Future<void> _syncDamageReport(SyncQueueData item) async {

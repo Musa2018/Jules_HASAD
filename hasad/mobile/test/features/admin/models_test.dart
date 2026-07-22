@@ -14,11 +14,12 @@ void main() {
     });
 
     test('Governorate.fromJson parses correctly', () {
-      final json = {'id': 'g1', 'nameAr': 'غزة', 'nameEn': 'Gaza'};
+      final json = {'id': 'g1', 'nameAr': 'غزة', 'nameEn': 'Gaza', 'code': 'GZ'};
       final gov = Governorate.fromJson(json);
       expect(gov.id, 'g1');
       expect(gov.nameAr, 'غزة');
       expect(gov.nameEn, 'Gaza');
+      expect(gov.code, 'GZ');
     });
 
     test('Directorate.fromJson parses correctly', () {

@@ -18,6 +18,7 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
 ## Offline First Strategy
 - **Local First**: Data is saved to SQLite via Drift first. Every record has a client-generated UUID for backend idempotency.
 - **Sync Queue**: Operations are queued in a persistent local table and processed by `BackgroundSyncService` when connectivity is detected, using an exponential backoff retry policy.
+- **Geographic Caching**: Reference data (Governorates, Directorates, Localities) is synchronized to local Drift tables to support offline CRUD validation and cascading lookups.
 - **Conflict Resolution**: **Optimistic Concurrency** via `RowVersion` tokens. The server returns `409 Conflict` if the record has been modified by another user.
     - **Current Strategy**: **Server Wins**. The background sync engine automatically fetches the remote authority data and overwrites the local Drift record to resolve the conflict.
     - **Roadmap**: Implement a **Merge UI** in future sprints to allow users to manually compare local changes with server data before resolving conflicts.
@@ -46,5 +47,8 @@ Users are categorized into three scope levels which define their data access and
 1. **Global**: Access to system-wide data (e.g., SuperAdmin, Finance). No geographic assignment required.
 2. **Governorate**: Tied to a specific Governorate. Can access all data within that governorate.
 3. **Directorate**: Tied to a specific Directorate within a Governorate. Restricted to local data entry and assessment.
+
+Geographic Hierarchy:
+Governorate -> Directorate -> Locality -> Farm
 
 These rules are enforced in the Backend via `RoleScopeType` validation and in the Flutter app via dynamic UI forms and regional filtering.

@@ -22,6 +22,7 @@ DamageReport _$DamageReportFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$DamageReport {
   String get id => throw _privateConstructorUsedError; // ClientId
+  String? get serverId => throw _privateConstructorUsedError;
   String get farmId => throw _privateConstructorUsedError;
   String get farmerId => throw _privateConstructorUsedError;
   DateTime get damageDate => throw _privateConstructorUsedError;
@@ -34,6 +35,8 @@ mixin _$DamageReport {
   String get notes => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
   List<DamageItem> get items => throw _privateConstructorUsedError;
+  String get syncStatus => throw _privateConstructorUsedError;
+  String? get lastSyncError => throw _privateConstructorUsedError;
 
   /// Serializes this DamageReport to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -54,6 +57,7 @@ abstract class $DamageReportCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String farmId,
     String farmerId,
     DateTime damageDate,
@@ -66,6 +70,8 @@ abstract class $DamageReportCopyWith<$Res> {
     String notes,
     String rowVersion,
     List<DamageItem> items,
+    String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -85,6 +91,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? farmId = null,
     Object? farmerId = null,
     Object? damageDate = null,
@@ -97,6 +104,8 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? notes = null,
     Object? rowVersion = null,
     Object? items = null,
+    Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -104,6 +113,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
+            serverId: freezed == serverId
+                ? _value.serverId
+                : serverId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             farmId: null == farmId
                 ? _value.farmId
                 : farmId // ignore: cast_nullable_to_non_nullable
@@ -152,6 +165,14 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.items
                 : items // ignore: cast_nullable_to_non_nullable
                       as List<DamageItem>,
+            syncStatus: null == syncStatus
+                ? _value.syncStatus
+                : syncStatus // ignore: cast_nullable_to_non_nullable
+                      as String,
+            lastSyncError: freezed == lastSyncError
+                ? _value.lastSyncError
+                : lastSyncError // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -169,6 +190,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String farmId,
     String farmerId,
     DateTime damageDate,
@@ -181,6 +203,8 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String notes,
     String rowVersion,
     List<DamageItem> items,
+    String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -199,6 +223,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? farmId = null,
     Object? farmerId = null,
     Object? damageDate = null,
@@ -211,6 +236,8 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? notes = null,
     Object? rowVersion = null,
     Object? items = null,
+    Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _$DamageReportImpl(
@@ -218,6 +245,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
+        serverId: freezed == serverId
+            ? _value.serverId
+            : serverId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         farmId: null == farmId
             ? _value.farmId
             : farmId // ignore: cast_nullable_to_non_nullable
@@ -266,6 +297,14 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value._items
             : items // ignore: cast_nullable_to_non_nullable
                   as List<DamageItem>,
+        syncStatus: null == syncStatus
+            ? _value.syncStatus
+            : syncStatus // ignore: cast_nullable_to_non_nullable
+                  as String,
+        lastSyncError: freezed == lastSyncError
+            ? _value.lastSyncError
+            : lastSyncError // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -276,6 +315,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
 class _$DamageReportImpl implements _DamageReport {
   const _$DamageReportImpl({
     required this.id,
+    this.serverId,
     required this.farmId,
     required this.farmerId,
     required this.damageDate,
@@ -288,6 +328,8 @@ class _$DamageReportImpl implements _DamageReport {
     required this.notes,
     this.rowVersion = '',
     final List<DamageItem> items = const [],
+    this.syncStatus = 'completed',
+    this.lastSyncError,
   }) : _items = items;
 
   factory _$DamageReportImpl.fromJson(Map<String, dynamic> json) =>
@@ -296,6 +338,8 @@ class _$DamageReportImpl implements _DamageReport {
   @override
   final String id;
   // ClientId
+  @override
+  final String? serverId;
   @override
   final String farmId;
   @override
@@ -329,8 +373,14 @@ class _$DamageReportImpl implements _DamageReport {
   }
 
   @override
+  @JsonKey()
+  final String syncStatus;
+  @override
+  final String? lastSyncError;
+
+  @override
   String toString() {
-    return 'DamageReport(id: $id, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, governorateId: $governorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items)';
+    return 'DamageReport(id: $id, serverId: $serverId, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, governorateId: $governorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
   }
 
   @override
@@ -339,6 +389,8 @@ class _$DamageReportImpl implements _DamageReport {
         (other.runtimeType == runtimeType &&
             other is _$DamageReportImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.serverId, serverId) ||
+                other.serverId == serverId) &&
             (identical(other.farmId, farmId) || other.farmId == farmId) &&
             (identical(other.farmerId, farmerId) ||
                 other.farmerId == farmerId) &&
@@ -359,7 +411,11 @@ class _$DamageReportImpl implements _DamageReport {
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.rowVersion, rowVersion) ||
                 other.rowVersion == rowVersion) &&
-            const DeepCollectionEquality().equals(other._items, _items));
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.syncStatus, syncStatus) ||
+                other.syncStatus == syncStatus) &&
+            (identical(other.lastSyncError, lastSyncError) ||
+                other.lastSyncError == lastSyncError));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -367,6 +423,7 @@ class _$DamageReportImpl implements _DamageReport {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    serverId,
     farmId,
     farmerId,
     damageDate,
@@ -379,6 +436,8 @@ class _$DamageReportImpl implements _DamageReport {
     notes,
     rowVersion,
     const DeepCollectionEquality().hash(_items),
+    syncStatus,
+    lastSyncError,
   );
 
   /// Create a copy of DamageReport
@@ -398,6 +457,7 @@ class _$DamageReportImpl implements _DamageReport {
 abstract class _DamageReport implements DamageReport {
   const factory _DamageReport({
     required final String id,
+    final String? serverId,
     required final String farmId,
     required final String farmerId,
     required final DateTime damageDate,
@@ -410,6 +470,8 @@ abstract class _DamageReport implements DamageReport {
     required final String notes,
     final String rowVersion,
     final List<DamageItem> items,
+    final String syncStatus,
+    final String? lastSyncError,
   }) = _$DamageReportImpl;
 
   factory _DamageReport.fromJson(Map<String, dynamic> json) =
@@ -417,6 +479,8 @@ abstract class _DamageReport implements DamageReport {
 
   @override
   String get id; // ClientId
+  @override
+  String? get serverId;
   @override
   String get farmId;
   @override
@@ -441,6 +505,10 @@ abstract class _DamageReport implements DamageReport {
   String get rowVersion;
   @override
   List<DamageItem> get items;
+  @override
+  String get syncStatus;
+  @override
+  String? get lastSyncError;
 
   /// Create a copy of DamageReport
   /// with the given fields replaced by the non-null parameter values.

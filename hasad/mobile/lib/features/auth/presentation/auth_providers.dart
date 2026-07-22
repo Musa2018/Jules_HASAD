@@ -5,6 +5,7 @@ import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/network/auth_interceptor.dart';
 import 'package:mobile/core/network/token_refresher.dart';
 import 'package:mobile/core/storage/secure_storage_service.dart';
+import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/auth/data/auth_repository.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 
@@ -46,8 +47,54 @@ final apiDioProvider = Provider((ref) {
       ref.watch(baseDioProvider),
     ),
   );
+  if (DebugLogger.enableSyncDebug) {
+    dio.interceptors.add(SyncDebugInterceptor());
+  }
   return dio;
 });
+
+class SyncDebugInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    DebugLogger.logHeader('HTTP REQUEST');
+    DebugLogger.log('URL: ${options.uri}');
+    DebugLogger.log('Method: ${options.method}');
+    final headers = Map<String, dynamic>.from(options.headers);
+    if (headers.containsKey('Authorization')) {
+      headers['Authorization'] = '[MASKED]';
+    }
+    DebugLogger.log('Headers: $headers');
+    if (options.data != null) {
+      DebugLogger.log('Body:');
+      DebugLogger.logJson(options.data);
+    }
+    DebugLogger.logFooter();
+    super.onRequest(options, handler);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    DebugLogger.logHeader('HTTP RESPONSE');
+    DebugLogger.log('Status: ${response.statusCode} ${response.statusMessage}');
+    DebugLogger.log('Body:');
+    DebugLogger.logJson(response.data);
+    DebugLogger.logFooter();
+    super.onResponse(response, handler);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    DebugLogger.logHeader('HTTP ERROR');
+    DebugLogger.log('Status: ${err.response?.statusCode}');
+    DebugLogger.log('Message: ${err.message}');
+    if (err.response?.data != null) {
+      DebugLogger.log('Response Body:');
+      DebugLogger.logJson(err.response?.data);
+    }
+    DebugLogger.logFooter();
+    super.onError(err, handler);
+  }
+}
 
 /// High-level authentication lifecycle states.
 enum AuthStatus {

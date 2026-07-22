@@ -5,7 +5,101 @@
 - **Current Version**: v0.7.0-alpha (User Management + Regional Scoping)
 - **Current Sprint**: Sprint 9 — Compensation Workflow (in progress)
 - **Current Branch**: `main`
-- **Last Updated**: 2026-07-15
+- **Last Updated**: 2026-07-21
+
+## Sprint 10.17 — COMPLETED
+Farmer Soft Delete Workflow Fix:
+- **Filtered Lookups**: Updated `OfflineFirstFarmerRepository` to exclude soft-deleted records from the "search by ID" flow, enabling the creation of new farmers using the same ID number as a deleted record.
+- **Global Query Filter**: Implemented an EF Core Global Query Filter on the backend for the `Farmer` entity to transparently ignore deleted records in standard queries.
+- **Partial Unique Indexes**: Updated backend database indexes for `IdNumber` and `ClientId` to be partial, enforcing uniqueness only among active (non-deleted) records.
+- **Workflow Verification**: Added `soft_delete_workflow_test.dart` verifying the complete "Delete then Re-create" scenario.
+
+## Sprint 10.16 — COMPLETED
+Farmer Management UI Redesign:
+- **Card-Based Interface**: Replaced the simple list view with a detailed `FarmerCard` UI showing essential demographics, location, and reactive sync status.
+- **Advanced Offline Filtering**: Implemented a real-time search and filter system powered by Drift database streams, supporting search by name/ID/phone and filtering by gender and sync status.
+- **Synchronized Soft-Delete**: Integrated a secure soft-delete workflow that marks local records as pending and queues remote deletion, preserving data integrity.
+- **Reactive Data Binding**: Refactored the list provider to use `StreamProvider`, ensuring the UI automatically reflects background synchronization progress and local edits.
+
+## Sprint 10.15 — COMPLETED
+Farmer Update Sync Reliability:
+- **Reactive Data Flow**: Fixed a critical bug in `FarmerDetailsScreen` where stale constructor data was being passed to the Edit form instead of the reactive database stream.
+- **RowVersion Persistence**: Ensured `rowVersion` (Concurrency Token) is correctly propagated to the edit form, resolving "RowVersion is required" sync failures.
+- **Repository Safety**: Added a guard in `RemoteFarmerRepository` to prevent sending updates with empty concurrency tokens.
+
+## Sprint 10.14 — COMPLETED
+Entity Metadata Hardening & Update Sync Fix:
+- **Universal Metadata Mapping**: Added `serverId`, `syncStatus`, and `lastSyncError` to `Farm`, `DamageReport`, and `DamageItem` domain models to ensure consistency with the `Farmer` entity.
+- **Authority ID Reconciliation**: Hardened `Update` DTO mapping to use `serverId` for the primary resource identification, resolving `404 Not Found` errors during update synchronization.
+- **Refined Repository Mappings**: Updated offline repositories to correctly map and preserve synchronization metadata from the local database into domain models.
+- **Concurrency Token Flow**: Verified that `rowVersion` (Optimistic Concurrency Token) is correctly passed in `PUT` requests for all entity types.
+- **Regression Tests**: Added unit tests for Update payload generation for all entity types.
+
+## Sprint 10.13 — COMPLETED
+Sync DTO Mapping Layer Implementation:
+- **Decoupled Sync Payloads**: Implemented `FarmerSyncDto`, `FarmSyncDto`, and `DamageReportSyncDto` to strictly map local domain entities to backend command contracts.
+- **Date Normalization**: Ensured `BirthDate` for Farmers is sent in `yyyy-MM-dd` format to match .NET `DateOnly`, resolving parsing errors.
+- **Gender Validation Hardening**: DTO layer now enforces `Gender` rules (Male/Female) and blocks `unspecified` values before transmission.
+- **Payload Sanitization**: Cleaned all sync payloads of local-only metadata (`syncStatus`, `lastSyncError`, etc.), preventing payload pollution and backend binding issues.
+- Tests: Added `farmer_sync_dtos_test.dart` to verify exact JSON output for all sync operations.
+
+## Sprint 10.12 — COMPLETED
+Universal Sync Lifecycle & Soft-Delete Hardening:
+- **Soft-Delete Foundation**: Implemented `isPendingDelete` across all entities. Local hard-deletes now only occur after successful server-side deletion, ensuring remote data integrity.
+- **Robust Local Cascades**: Updated `BackgroundSyncService` to manually handle relational deletions (Damage Reports -> Items & Attachments) and local file cleanup during hard-deletes.
+- **Generic Validation Abstraction**: Unified sync error handling using `SyncValidationException`. All entity types now correctly handle HTTP 400 validation failures by stopping retries and informing the user.
+- **Sync Engine Refinement**: Fixed operation collapsing bug where unsynced `CREATE` tasks were incorrectly changed to `UPDATE`. Implemented "Lifecycle Collapsing" (CREATE + DELETE = immediate removal).
+- **Drift Migration**: Successfully migrated to schema **v9**.
+- Tests: Reached 23 passing sync/repository tests covering soft-delete, cascading deletes, and generic operation preservation.
+
+## Sprint 10.11 — COMPLETED
+Sync Lifecycle Consistency & Soft-Delete:
+- **Soft-Delete Lifecycle**: Implemented "Pending Delete" state across all entities (Farmers, Farms, DamageReports, Attachments). Records are now soft-deleted locally, synchronized with the server, and then hard-deleted upon success.
+- **Universal Operation Collapsing**: Generalised "Preserve CREATE" logic to all entity types. Offline edits to pending `create` tasks now correctly maintain the `create` operation, preventing backend 404s.
+- **Lifecycle Collapsing**: Implemented immediate removal of unsynced records when deleted offline (CREATE + DELETE = NO-OP), keeping the database and sync queue clean.
+- **Generic Sync Abstractions**: Centralized error handling with `SyncException` and `SyncValidationException`. All remote repositories now uniformly map HTTP 400 errors to block retries and inform the user.
+- **Safe Migration**: Successfully migrated Drift schema to **v9**.
+- Tests: Added comprehensive coverage for the new delete lifecycle and generic operation collapsing.
+
+## Sprint 10.10 — COMPLETED
+Farmers Sync Hardening Verification & Fix:
+- **Operation Collapsing Fix**: Resolved a critical bug where offline edits to a pending `CREATE` operation would change the task to `UPDATE`, causing backend 404s. The system now preserves the `CREATE` operation until the record is successfully born on the server.
+- **Error Recovery Hardening**: Ensured `lastSyncError` is cleared when a record is updated after user correction, providing a clean slate for retry.
+- **Lifecycle Verification**: Verified the complete sync lifecycle including Invalid data flow, User correction flow, Offline Create-Update collapsing, and App Restart recovery.
+- Tests: Added 3 new test scenarios to `BackgroundSyncService` covering operation preservation, multiple update collapsing, and retry status resets.
+
+## Sprint 10.9 — COMPLETED
+Offline Sync Invalid Data Handling Hardening:
+- **Schema Upgrade (v8)**: Added `lastSyncError` columns to all entities to persist exact backend failure reasons.
+- **Validation-Driven Sync**: Background sync now distinguishes between transient (network) and permanent (business rule) failures. HTTP 400 errors mark items as `invalid` and stop retries.
+- **Task Upsertion**: Enhanced `SyncQueue` logic to update existing pending/invalid tasks instead of creating duplicates, preventing queue bloat.
+- **Error Visibility**: Implemented prominent error banners in `FarmerDetailsScreen` allowing users to see specific backend validation messages and navigate directly to the edit form.
+- **Safe Migration**: Verified safe Drift schema migration from v7 to v8.
+- Tests: Added coverage for validation failure handling, network retry logic, and queue upsertion.
+
+## Sprint 10.8 — COMPLETED
+Farmers Create Sync Validation Fix:
+- **Two-Level Validation**: Implemented mandatory validation in both `FarmerFormScreen` (UI) and `OfflineFirstFarmerRepository` (Data layer).
+- **Reusable Domain Logic**: Created `FarmerValidator` in the domain layer to centralize rules: IdType required, Gender required (Male/Female), Family Size >= 1, and Age >= 18.
+- **Data Integrity**: Repository rejects invalid data before Drift insertion or SyncQueue addition, throwing `FarmerException`.
+- **UI Feedback**: Form fields provide immediate localized feedback for demographic and identity rules.
+- Tests: Added comprehensive validation tests for all failure cases and verified valid creation enters the sync pipeline.
+
+## Sprint 10.7 — COMPLETED
+Hardened Farmers synchronization and fixed "Create Farmer" stuck status:
+- **Interrupted Sync Recovery**: Enhanced `BackgroundSyncService` to recover items stuck in `syncing` status using a 5-minute timeout or startup trigger.
+- **Unified Propagation**: Centralized `syncStatus` updates from `SyncQueue` to entity tables (e.g., `Farmers`), ensuring the UI (badge) accurately reflects states like `syncing`, `failed`, or `conflict`.
+- **Payload Optimization**: Fixed `RemoteFarmerRepository.createFarmer` to remove generated database `id` from POST requests, relying on `clientId` for idempotency as per backend requirements.
+- **Robustness**: Added tests for recovery of stuck items and real-time status propagation through the sync lifecycle.
+- Tests: Verified with all `background_sync_service_test.dart` scenarios passing.
+
+## Sprint 10.6 — COMPLETED
+Fixed permanent "Awaiting Sync" status and improved UI reactivity:
+- **Background Sync**: Refactored `BackgroundSyncService` with a drain loop to process items added during active sync and added a startup trigger.
+- **Reactivity**: Added `watchFarmer` stream to `FarmerRepository` and `farmerStreamProvider` to enable real-time UI updates when sync completes.
+- **UI**: Updated `FarmerDetailsScreen` to reactively reflect database changes.
+- **Robustness**: Added tests for sync race conditions and startup auto-resume.
+- Tests: Verified with updated `background_sync_service_test.dart` and `offline_first_farmer_repository_test.dart`.
 
 ## Sprint 9.1 — IN PROGRESS
 Implemented User Management and Regional Scoping:

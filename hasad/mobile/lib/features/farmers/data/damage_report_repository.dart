@@ -1,14 +1,6 @@
 import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart';
 
-class DamageReportException implements Exception {
-  final List<String> errors;
-  DamageReportException(this.errors);
-  @override
-  String toString() =>
-      errors.isEmpty ? 'An error occurred.' : errors.join('\n');
-}
-
 abstract class DamageReportRepository {
   Future<List<DamageReport>> getDamageReportsByFarm(String farmId);
   Future<DamageReport> getDamageReport(String id);

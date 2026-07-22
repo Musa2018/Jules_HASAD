@@ -6,11 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile/core/network/connectivity_provider.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/core/router/app_router.dart';
-import 'package:mobile/features/admin/domain/directorate.dart';
-import 'package:mobile/features/admin/domain/governorate.dart';
 import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
+import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class UsersScreen extends ConsumerStatefulWidget {

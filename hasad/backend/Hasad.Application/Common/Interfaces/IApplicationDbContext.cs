@@ -10,6 +10,7 @@ public interface IApplicationDbContext
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<Governorate> Governorates { get; }
     DbSet<Directorate> Directorates { get; }
+    DbSet<Locality> Localities { get; }
     DbSet<Farmer> Farmers { get; }
     DbSet<Farm> Farms { get; }
     DbSet<DamageReport> DamageReports { get; }

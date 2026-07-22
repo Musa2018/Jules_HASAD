@@ -7,6 +7,7 @@ part 'farm.g.dart';
 class Farm with _$Farm {
   const factory Farm({
     required String id, // ClientId
+    String? serverId,
     required String farmerId,
     required String name,
     required String governorateId,
@@ -17,6 +18,8 @@ class Farm with _$Farm {
     double? longitude,
     required String ownershipTypeId,
     @Default('') String rowVersion,
+    @Default('completed') String syncStatus,
+    String? lastSyncError,
   }) = _Farm;
 
   factory Farm.fromJson(Map<String, dynamic> json) => _$FarmFromJson(json);

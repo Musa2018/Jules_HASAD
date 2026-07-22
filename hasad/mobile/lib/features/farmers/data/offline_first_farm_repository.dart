@@ -15,7 +15,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
   Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
     final items =
         await (_db.select(_db.farms)
-              ..where((t) => t.farmerId.equals(farmerId))
+              ..where((t) => t.farmerId.equals(farmerId) & t.isPendingDelete.equals(false))
               ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
             .get();
 
@@ -23,6 +23,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
         .map(
           (e) => domain.Farm(
             id: e.id,
+            serverId: e.serverId,
             farmerId: e.farmerId,
             name: e.name,
             governorateId: e.governorateId,
@@ -33,6 +34,8 @@ class OfflineFirstFarmRepository implements FarmRepository {
             longitude: e.longitude,
             ownershipTypeId: e.ownershipTypeId,
             rowVersion: e.rowVersion,
+            syncStatus: e.syncStatus,
+            lastSyncError: e.lastSyncError,
           ),
         )
         .toList();
@@ -45,6 +48,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
     )..where((t) => t.id.equals(id))).getSingle();
     return domain.Farm(
       id: e.id,
+      serverId: e.serverId,
       farmerId: e.farmerId,
       name: e.name,
       governorateId: e.governorateId,
@@ -55,14 +59,15 @@ class OfflineFirstFarmRepository implements FarmRepository {
       longitude: e.longitude,
       ownershipTypeId: e.ownershipTypeId,
       rowVersion: e.rowVersion,
+      syncStatus: e.syncStatus,
+      lastSyncError: e.lastSyncError,
     );
   }
 
-  @override
-  Future<domain.Farm> createFarm(domain.Farm farm) async {
-    final localId = farm.id.isEmpty ? const Uuid().v4() : farm.id;
-    final companion = FarmsCompanion.insert(
-      id: localId,
+  FarmsCompanion _mapToCompanion(domain.Farm farm) {
+    return FarmsCompanion.insert(
+      id: farm.id,
+      serverId: Value(farm.serverId),
       farmerId: farm.farmerId,
       name: farm.name,
       governorateId: farm.governorateId,
@@ -73,6 +78,15 @@ class OfflineFirstFarmRepository implements FarmRepository {
       longitude: Value(farm.longitude),
       ownershipTypeId: farm.ownershipTypeId,
       rowVersion: Value(farm.rowVersion),
+      lastSyncError: Value(farm.lastSyncError),
+    );
+  }
+
+  @override
+  Future<domain.Farm> createFarm(domain.Farm farm) async {
+    final localId = farm.id.isEmpty ? const Uuid().v4() : farm.id;
+    final companion = _mapToCompanion(farm).copyWith(
+      id: Value(localId),
       syncStatus: const Value('pending'),
     );
 
@@ -93,17 +107,9 @@ class OfflineFirstFarmRepository implements FarmRepository {
   @override
   Future<domain.Farm> updateFarm(domain.Farm farm) async {
     await (_db.update(_db.farms)..where((t) => t.id.equals(farm.id))).write(
-      FarmsCompanion(
-        name: Value(farm.name),
-        governorateId: Value(farm.governorateId),
-        localityId: Value(farm.localityId),
-        landArea: Value(farm.landArea),
-        landAreaUnit: Value(farm.landAreaUnit),
-        latitude: Value(farm.latitude),
-        longitude: Value(farm.longitude),
-        ownershipTypeId: Value(farm.ownershipTypeId),
-        rowVersion: Value(farm.rowVersion),
+      _mapToCompanion(farm).copyWith(
         syncStatus: const Value('pending'),
+        lastSyncError: const Value(null),
         updatedAt: Value(DateTime.now()),
       ),
     );
@@ -120,13 +126,26 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Future<void> deleteFarm(String id) async {
-    await (_db.delete(_db.farms)..where((t) => t.id.equals(id))).go();
+    final local = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (local == null) return;
+
+    await (_db.update(_db.farms)..where((t) => t.id.equals(id))).write(
+      const FarmsCompanion(
+        isPendingDelete: Value(true),
+        syncStatus: Value('pending'),
+      ),
+    );
 
     await _syncService.addToQueue(
       localId: id,
       entityType: 'farm',
       operation: 'delete',
-      data: {},
+      data: {
+        'id': local.serverId ?? local.id,
+        'serverId': local.serverId,
+        'clientId': local.id,
+      },
     );
   }
 }

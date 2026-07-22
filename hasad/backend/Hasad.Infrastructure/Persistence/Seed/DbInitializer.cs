@@ -89,31 +89,32 @@ public static class DbInitializer
     /// </summary>
     public static async Task SeedGeographicsAsync(ApplicationDbContext context)
     {
-        var geographics = new List<(string Code, string NameAr, string NameEn, (string NameAr, string NameEn)[] Directorates)>
+        var geographics = new List<(string Code, string NameAr, string NameEn, (string NameAr, string NameEn)[] Directorates, (string NameAr, string NameEn)[] Localities)>
         {
-            ("JN", "جنين", "Jenin", new[] { ("مديرية جنين", "Jenin Directorate") }),
-            ("TB", "طوباس", "Tubas", new[] { ("مديرية طوباس", "Tubas Directorate") }),
-            ("TK", "طولكرم", "Tulkarm", new[] { ("مديرية طولكرم", "Tulkarm Directorate") }),
-            ("NB", "نابلس", "Nablus", new[] { ("مديرية نابلس", "Nablus Directorate") }),
-            ("QL", "قلقيلية", "Qalqilya", new[] { ("مديرية قلقيلية", "Qalqilya Directorate") }),
-            ("SL", "سلفيت", "Salfit", new[] { ("مديرية سلفيت", "Salfit Directorate") }),
-            ("RM", "رام الله والبيرة", "Ramallah & Al-Bireh", new[] { ("مديرية رام الله", "Ramallah Directorate") }),
-            ("JR", "أريحا", "Jericho", new[] { ("مديرية أريحا", "Jericho Directorate") }),
-            ("JS", "القدس", "Jerusalem", new[] { ("مديرية القدس", "Jerusalem Directorate") }),
-            ("BT", "بيت لحم", "Bethlehem", new[] { ("مديرية بيت لحم", "Bethlehem Directorate") }),
-            ("HB", "الخليل", "Hebron", new[] { ("مديرية شمال الخليل", "North Hebron"), ("مديرية جنوب الخليل", "South Hebron"), ("مديرية الخليل", "Hebron Directorate") }),
-            ("NG", "شمال غزة", "North Gaza", new[] { ("مديرية شمال غزة", "North Gaza Directorate") }),
-            ("GZ", "غزة", "Gaza", new[] { ("مديرية غزة", "Gaza Directorate") }),
-            ("DB", "دير البلح", "Deir al-Balah", new[] { ("مديرية الوسطى", "Central Directorate") }),
-            ("KY", "خانيونس", "Khan Yunis", new[] { ("مديرية خانيونس", "Khan Yunis Directorate") }),
-            ("RF", "رفح", "Rafah", new[] { ("مديرية رفح", "Rafah Directorate") })
+            ("JN", "جنين", "Jenin", new[] { ("مديرية جنين", "Jenin Directorate") }, new[] { ("مدينة جنين", "Jenin City"), ("قباطية", "Qabatiya"), ("اليامون", "Ya'bad") }),
+            ("TB", "طوباس", "Tubas", new[] { ("مديرية طوباس", "Tubas Directorate") }, new[] { ("طوباس", "Tubas"), ("طمون", "Tammun"), ("عقابا", "Aqqaba") }),
+            ("TK", "طولكرم", "Tulkarm", new[] { ("مديرية طولكرم", "Tulkarm Directorate") }, new[] { ("طولكرم", "Tulkarm City"), ("عتيل", "Attil"), ("دير الغصون", "Deir al-Ghusun") }),
+            ("NB", "نابلس", "Nablus", new[] { ("مديرية نابلس", "Nablus Directorate") }, new[] { ("مدينة نابلس", "Nablus City"), ("عصيرة الشمالية", "Asira al-Shamaliya"), ("بيتا", "Beita") }),
+            ("QL", "قلقيلية", "Qalqilya", new[] { ("مديرية قلقيلية", "Qalqilya Directorate") }, new[] { ("قلقيلية", "Qalqilya City"), ("عزون", "Azzun"), ("حبلة", "Habla") }),
+            ("SL", "سلفيت", "Salfit", new[] { ("مديرية سلفيت", "Salfit Directorate") }, new[] { ("سلفيت", "Salfit City"), ("بديا", "Biddya"), ("الزاوية", "Zawiya") }),
+            ("RM", "رام الله والبيرة", "Ramallah & Al-Bireh", new[] { ("مديرية رام الله", "Ramallah Directorate") }, new[] { ("رام الله", "Ramallah City"), ("البيرة", "Al-Bireh"), ("بيتونيا", "Beituniya") }),
+            ("JR", "أريحا", "Jericho", new[] { ("مديرية أريحا", "Jericho Directorate") }, new[] { ("أريحا", "Jericho City"), ("العوجا", "Al-Auja"), ("الجفتلك", "Al-Jiftlik") }),
+            ("JS", "القدس", "Jerusalem", new[] { ("مديرية القدس", "Jerusalem Directorate") }, new[] { ("القدس", "Jerusalem City"), ("العيزرية", "Al-Eizariya"), ("أبو ديس", "Abu Dis") }),
+            ("BT", "بيت لحم", "Bethlehem", new[] { ("مديرية بيت لحم", "Bethlehem Directorate") }, new[] { ("بيت لحم", "Bethlehem City"), ("بيت جالا", "Beit Jala"), ("بيت ساحور", "Beit Sahour") }),
+            ("HB", "الخليل", "Hebron", new[] { ("مديرية شمال الخليل", "North Hebron"), ("مديرية جنوب الخليل", "South Hebron"), ("مديرية الخليل", "Hebron Directorate") }, new[] { ("مدينة الخليل", "Hebron City"), ("حلحول", "Halhul"), ("دورا", "Dura"), ("يطا", "Yatta") }),
+            ("NG", "شمال غزة", "North Gaza", new[] { ("مديرية شمال غزة", "North Gaza Directorate") }, new[] { ("جباليا", "Jabalia"), ("بيت لاهيا", "Beit Lahiya"), ("بيت حانون", "Beit Hanoun") }),
+            ("GZ", "غزة", "Gaza", new[] { ("مديرية غزة", "Gaza Directorate") }, new[] { ("مدينة غزة", "Gaza City"), ("المغراقة", "Al-Mughraqa") }),
+            ("DB", "دير البلح", "Deir al-Balah", new[] { ("مديرية الوسطى", "Central Directorate") }, new[] { ("دير البلح", "Deir al-Balah City"), ("النصيرات", "Nuseirat"), ("البريج", "Maghazi") }),
+            ("KY", "خانيونس", "Khan Yunis", new[] { ("مديرية خانيونس", "Khan Yunis Directorate") }, new[] { ("خانيونس", "Khan Yunis City"), ("بني سهيلا", "Bani Suheila"), ("عبسان الكبيرة", "Abasan al-Kabira") }),
+            ("RF", "رفح", "Rafah", new[] { ("مديرية رفح", "Rafah Directorate") }, new[] { ("رفح", "Rafah City"), ("شوكة الصوفي", "Al-Shoka") })
         };
 
         var existingGovernorates = await context.Governorates
             .Include(g => g.Directorates)
+            .Include(g => g.Localities)
             .ToDictionaryAsync(g => g.Code);
 
-        foreach (var (code, nameAr, nameEn, directorates) in geographics)
+        foreach (var (code, nameAr, nameEn, directorates, localities) in geographics)
         {
             if (!existingGovernorates.TryGetValue(code, out var governorate))
             {
@@ -130,7 +131,6 @@ public static class DbInitializer
             }
             else
             {
-                // Optionally update names if they changed
                 governorate.NameAr = nameAr;
                 governorate.NameEn = nameEn;
             }
@@ -155,6 +155,29 @@ public static class DbInitializer
                 else
                 {
                     existingDir.NameAr = dirNameAr;
+                }
+            }
+
+            foreach (var (locNameAr, locNameEn) in localities)
+            {
+                var existingLoc = governorate.Localities
+                    .FirstOrDefault(l => l.NameEn == locNameEn);
+
+                if (existingLoc == null)
+                {
+                    context.Localities.Add(new Locality
+                    {
+                        Id = Guid.NewGuid(),
+                        NameAr = locNameAr,
+                        NameEn = locNameEn,
+                        GovernorateId = governorate.Id,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+                else
+                {
+                    existingLoc.NameAr = locNameAr;
                 }
             }
         }

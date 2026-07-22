@@ -84,7 +84,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get farmerName => 'اسم المزارع';
 
   @override
-  String get nationalId => 'رقم الهوية';
+  String get nationalId => 'هوية فلسطينية';
+
+  @override
+  String get jerusalemId => 'هوية القدس';
+
+  @override
+  String get passport => 'جواز سفر';
 
   @override
   String get phoneNumber => 'رقم الهاتف';
@@ -115,6 +121,132 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get requiredField => 'هذا الحقل مطلوب.';
+
+  @override
+  String get searchFarmer => 'بحث عن مزارع';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get farmerDetails => 'تفاصيل المزارع';
+
+  @override
+  String get identitySection => 'الهوية';
+
+  @override
+  String get idType => 'نوع الهوية';
+
+  @override
+  String get idNumber => 'رقم الهوية';
+
+  @override
+  String get arabicNameSection => 'الاسم بالعربية';
+
+  @override
+  String get englishNameSection => 'الاسم بالإنجليزية';
+
+  @override
+  String get firstName => 'الاسم الأول';
+
+  @override
+  String get secondName => 'اسم الأب';
+
+  @override
+  String get thirdName => 'اسم الجد';
+
+  @override
+  String get fourthName => 'اسم العائلة';
+
+  @override
+  String get demographicsSection => 'البيانات الديموغرافية';
+
+  @override
+  String get dateOfBirth => 'تاريخ الميلاد';
+
+  @override
+  String get gender => 'الجنس';
+
+  @override
+  String get familySize => 'عدد أفراد الأسرة';
+
+  @override
+  String get mobileNumber => 'رقم الجوال';
+
+  @override
+  String get locationSection => 'الموقع';
+
+  @override
+  String get village => 'التجمع/القرية';
+
+  @override
+  String get auditSection => 'معلومات التدقيق';
+
+  @override
+  String get createdAt => 'تاريخ الإنشاء';
+
+  @override
+  String get updatedAt => 'تاريخ التعديل';
+
+  @override
+  String get syncStatus => 'حالة المزامنة';
+
+  @override
+  String get synced => 'تمت المزامنة';
+
+  @override
+  String get pendingSync => 'بانتظار المزامنة';
+
+  @override
+  String get syncing => 'جاري المزامنة...';
+
+  @override
+  String get syncError => 'خطأ في المزامنة';
+
+  @override
+  String get male => 'ذكر';
+
+  @override
+  String get female => 'أنثى';
+
+  @override
+  String get unspecified => 'غير محدد';
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get invalidPhone => 'رقم هاتف غير صحيح';
+
+  @override
+  String get invalidFamilySize => 'عدد أفراد أسرة غير صحيح';
+
+  @override
+  String get invalidPalestinianId => 'رقم هوية فلسطينية غير صحيح';
+
+  @override
+  String get mustBeNumeric => 'يجب أن يتكون من أرقام فقط';
+
+  @override
+  String get mustBeAlphanumeric => 'يجب أن يتكون من أحرف وأرقام فقط';
+
+  @override
+  String get mustBe18 => 'يجب أن يكون عمر المزارع 18 عاماً على الأقل';
+
+  @override
+  String get cannotBeInFuture => 'لا يمكن أن يكون التاريخ في المستقبل';
+
+  @override
+  String get selectIdType => 'اختر نوع الهوية';
+
+  @override
+  String get farmerUpdatedSuccessfully => 'تم تحديث بيانات المزارع بنجاح';
+
+  @override
+  String get farmerCreatedSuccessfully => 'تم إنشاء المزارع بنجاح';
+
+  @override
+  String get enterFarmerIdToContinue => 'أدخل رقم هوية المزارع للمتابعة';
 
   @override
   String get addFarm => 'إضافة مزرعة';
@@ -224,4 +356,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noUsers => 'لا يوجد مستخدمون.';
+
+  @override
+  String get noData => 'لا توجد بيانات متاحة';
+
+  @override
+  String get syncInvalid => 'بيانات غير صالحة';
+
+  @override
+  String get syncErrorDetails => 'تفاصيل خطأ المزامنة';
+
+  @override
+  String get fixData => 'تصحيح البيانات';
+
+  @override
+  String get all => 'الكل';
 }

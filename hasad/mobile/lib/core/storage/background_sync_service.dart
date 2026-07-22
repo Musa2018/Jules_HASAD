@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
 import 'package:mobile/features/farmers/data/farm_repository.dart';
@@ -34,18 +37,23 @@ class BackgroundSyncService {
     this._remoteDamageReportRepository,
     this._remoteAttachmentRepository,
     this._connectivity,
-  ) {
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((
+  );
+
+  Future<void> initialize() async {
+    _connectivitySubscription ??= _connectivity.onConnectivityChanged.listen((
       results,
     ) {
       if (results.any((result) => result != ConnectivityResult.none)) {
         processQueue();
       }
     });
+    // Trigger initial sync on startup
+    await processQueue();
   }
 
   void dispose() {
     _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
   }
 
   Future<void> addToQueue({
@@ -54,19 +62,109 @@ class BackgroundSyncService {
     required String operation,
     required Map<String, dynamic> data,
   }) async {
-    await _db
-        .into(_db.syncQueue)
-        .insert(
-          SyncQueueCompanion.insert(
-            id: const Uuid().v4(),
-            localId: localId,
-            entityType: entityType,
-            operation: operation,
-            data: jsonEncode(data),
-            createdAt: Value(DateTime.now()),
-          ),
-        );
+    final existing = await (_db.select(_db.syncQueue)
+          ..where(
+            (t) =>
+                t.localId.equals(localId) & t.entityType.equals(entityType),
+          )
+          ..where(
+            (t) =>
+                t.status.equals('pending') |
+                t.status.equals('failed') |
+                t.status.equals('invalid'),
+          ))
+        .getSingleOrNull();
+
+    if (existing != null) {
+      // COLLAPSING RULES
+      
+      // 1. DELETE after CREATE (not yet synced) -> Remove both record and task
+      if (existing.operation == 'create' && operation == 'delete') {
+        await (_db.delete(_db.syncQueue)..where((t) => t.id.equals(existing.id))).go();
+        await _hardDeleteLocalEntity(entityType, localId);
+        return;
+      }
+
+      // 2. Preserve 'create' operation during offline edits to avoid 404s
+      final finalOperation =
+          existing.operation == 'create' && operation == 'update'
+              ? 'create'
+              : operation;
+
+      await (_db.update(_db.syncQueue)
+            ..where((t) => t.id.equals(existing.id)))
+          .write(
+            SyncQueueCompanion(
+              operation: Value(finalOperation),
+              data: Value(jsonEncode(data)),
+              status: const Value('pending'),
+              retryCount: const Value(0),
+              lastError: const Value(null),
+              lastAttemptAt: const Value(null),
+              createdAt: Value(DateTime.now()),
+            ),
+          );
+    } else {
+      await _db.into(_db.syncQueue).insert(
+        SyncQueueCompanion.insert(
+          id: const Uuid().v4(),
+          localId: localId,
+          entityType: entityType,
+          operation: operation,
+          data: jsonEncode(data),
+          createdAt: Value(DateTime.now()),
+        ),
+      );
+    }
     processQueue();
+  }
+
+  Future<void> _hardDeleteLocalEntity(String entityType, String localId) async {
+    if (entityType == 'farmer') {
+      await (_db.delete(_db.farmers)..where((t) => t.id.equals(localId))).go();
+    } else if (entityType == 'farm') {
+      await (_db.delete(_db.farms)..where((t) => t.id.equals(localId))).go();
+    } else if (entityType == 'damage_report') {
+      // Manual cascade for Damage Report
+      await _db.transaction(() async {
+        // 1. Delete items
+        await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(localId))).go();
+        
+        // 2. Delete attachments (including local files)
+        final attachments = await (_db.select(_db.damageReportAttachments)
+              ..where((t) => t.damageReportId.equals(localId)))
+            .get();
+        for (var a in attachments) {
+          try {
+            final file = File(a.localPath);
+            if (await file.exists()) {
+              await file.delete();
+            }
+          } catch (_) {
+            // Ignore file deletion errors
+          }
+        }
+        await (_db.delete(_db.damageReportAttachments)..where((t) => t.damageReportId.equals(localId))).go();
+        
+        // 3. Delete report itself
+        await (_db.delete(_db.damageReports)..where((t) => t.id.equals(localId))).go();
+      });
+    } else if (entityType == 'damage_item') {
+      await (_db.delete(_db.damageItems)..where((t) => t.id.equals(localId))).go();
+    } else if (entityType == 'attachment') {
+      final attachment = await (_db.select(_db.damageReportAttachments)
+            ..where((t) => t.id.equals(localId)))
+          .getSingleOrNull();
+      if (attachment != null) {
+        try {
+          final file = File(attachment.localPath);
+          if (await file.exists()) {
+            await file.delete();
+          }
+        } catch (_) {}
+      }
+      await (_db.delete(_db.damageReportAttachments)..where((t) => t.id.equals(localId))).go();
+    }
   }
 
   Future<void> processQueue() async {
@@ -77,29 +175,52 @@ class BackgroundSyncService {
 
     _isProcessing = true;
     try {
-      final now = DateTime.now();
-      final pendingItems =
-          await (_db.select(_db.syncQueue)
-                ..where(
-                  (t) => t.status.equals('pending') | t.status.equals('failed'),
-                )
-                ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
-              .get();
+      bool isStartup = true;
+      while (true) {
+        final now = DateTime.now();
+        final pendingItems = await (_db.select(_db.syncQueue)
+              ..where(
+                (t) {
+                  final isPendingOrFailed =
+                      t.status.equals('pending') | t.status.equals('failed');
+                  // On startup, we include all 'syncing' items for recovery.
+                  // During session, we only include 'syncing' items that are "stuck" (> 5 mins).
+                  final isStuckSyncing = t.status.equals('syncing') &
+                      (isStartup
+                          ? const Constant(true)
+                          : t.lastAttemptAt.isSmallerThanValue(
+                            now.subtract(const Duration(minutes: 5)),
+                          ));
+                  return isPendingOrFailed | isStuckSyncing;
+                },
+              )
+              ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+            .get();
+        isStartup = false;
 
-      for (final item in pendingItems) {
-        if (item.retryCount >= 3) continue;
+        if (pendingItems.isEmpty) break;
 
-        // Simple backoff: 0, 5, 15 minutes
-        if (item.lastAttemptAt != null) {
-          final waitMinutes = item.retryCount == 1
-              ? 5
-              : (item.retryCount == 2 ? 15 : 0);
-          if (now.difference(item.lastAttemptAt!).inMinutes < waitMinutes) {
-            continue;
+        bool itemsProcessedInThisBatch = false;
+
+        for (final item in pendingItems) {
+          if (item.retryCount >= 3) continue;
+
+          // Simple backoff: 0, 5, 15 minutes
+          if (item.lastAttemptAt != null) {
+            final waitMinutes =
+                item.retryCount == 1 ? 5 : (item.retryCount == 2 ? 15 : 0);
+            if (now.difference(item.lastAttemptAt!).inMinutes < waitMinutes) {
+              continue;
+            }
           }
+
+          await _processItem(item);
+          itemsProcessedInThisBatch = true;
         }
 
-        await _processItem(item);
+        // If no items were processed in this pass (all skipped due to backoff or retry limit),
+        // we must break to avoid an infinite loop.
+        if (!itemsProcessedInThisBatch) break;
       }
     } finally {
       _isProcessing = false;
@@ -109,9 +230,20 @@ class BackgroundSyncService {
   Future<void> _processItem(SyncQueueData item) async {
     final now = DateTime.now();
     try {
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.logHeader('Sync Processing');
+        DebugLogger.log('Entity Type: ${item.entityType}');
+        DebugLogger.log('Operation: ${item.operation}');
+        DebugLogger.log('Queue Item ID: ${item.id}');
+        DebugLogger.log('Local ID: ${item.localId}');
+        DebugLogger.log('Retry Count: ${item.retryCount}');
+        DebugLogger.logFooter();
+      }
+
       await _db
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'syncing', lastAttemptAt: Value(now)));
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'syncing');
 
       if (item.entityType == 'farmer') {
         await _syncFarmer(item);
@@ -128,78 +260,161 @@ class BackgroundSyncService {
       await _db
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'completed'));
+      // Note: Synced status (completed) is usually handled inside _syncXXX 
+      // because it also needs to update serverId/rowVersion.
+      // But we call it here as a fallback if not already handled.
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'completed');
+    } on SyncValidationException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(status: 'invalid', lastError: Value(e.toString())),
+      );
+      await _updateEntitySyncStatus(
+        item.entityType,
+        item.localId,
+        'invalid',
+        error: e.toString(),
+      );
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(status: 'conflict', lastError: Value(e.toString())),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
         await _resolveConflict(item);
       } else {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(
-                status: 'failed',
-                retryCount: item.retryCount + 1,
-                lastError: Value(e.toString()),
-              ),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
       }
     } on FarmException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(status: 'conflict', lastError: Value(e.toString())),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
         await _resolveConflict(item);
       } else {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(
-                status: 'failed',
-                retryCount: item.retryCount + 1,
-                lastError: Value(e.toString()),
-              ),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
       }
     } on DamageReportException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(status: 'conflict', lastError: Value(e.toString())),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
         await _resolveConflict(item);
       } else {
-        await _db
-            .update(_db.syncQueue)
-            .replace(
-              item.copyWith(
-                status: 'failed',
-                retryCount: item.retryCount + 1,
-                lastError: Value(e.toString()),
-              ),
-            );
+        await _db.update(_db.syncQueue).replace(
+          item.copyWith(
+            status: 'failed',
+            retryCount: item.retryCount + 1,
+            lastError: Value(e.toString()),
+          ),
+        );
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
       }
-    } catch (e) {
-      await _db
-          .update(_db.syncQueue)
-          .replace(
-            item.copyWith(
-              status: 'failed',
-              retryCount: item.retryCount + 1,
-              lastError: Value(e.toString()),
-            ),
-          );
+    } on SyncException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+    } catch (e, stackTrace) {
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.logHeader('SYNC ERROR TRACE');
+        DebugLogger.log('Exception Type: ${e.runtimeType}');
+        DebugLogger.log('Message: $e');
+        DebugLogger.log('Stack Trace:\n$stackTrace');
+        DebugLogger.logFooter();
+      }
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+    }
+  }
+
+  Future<void> _updateEntitySyncStatus(
+    String entityType,
+    String localId,
+    String status, {
+    String? error,
+  }) async {
+    if (entityType == 'farmer') {
+      await (_db.update(_db.farmers)..where((t) => t.id.equals(localId))).write(
+        FarmersCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
+      );
+    } else if (entityType == 'farm') {
+      await (_db.update(_db.farms)..where((t) => t.id.equals(localId))).write(
+        FarmsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
+      );
+    } else if (entityType == 'damage_report') {
+      await (_db.update(
+        _db.damageReports,
+      )..where((t) => t.id.equals(localId))).write(
+        DamageReportsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
+      );
+    } else if (entityType == 'damage_item') {
+      await (_db.update(
+        _db.damageItems,
+      )..where((t) => t.id.equals(localId))).write(
+        DamageItemsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
+      );
+    } else if (entityType == 'attachment') {
+      await (_db.update(
+        _db.damageReportAttachments,
+      )..where((t) => t.id.equals(localId))).write(
+        DamageReportAttachmentsCompanion(
+          syncStatus: Value(status),
+          lastSyncError: Value(error),
+        ),
+      );
     }
   }
 
   Future<void> _syncAttachment(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
+
+    if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
+      return;
+    }
+
     final attachment = attachment_domain.DamageReportAttachment.fromJson(data);
 
     if (item.operation == 'upload') {
@@ -214,15 +429,27 @@ class BackgroundSyncService {
           remotePath: Value(result.remotePath),
           uploadStatus: const Value('completed'),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'delete') {
       await _remoteAttachmentRepository.deleteAttachment(item.localId);
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
 
   Future<void> _syncFarmer(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
+
+    if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        await _remoteFarmerRepository.deleteFarmer(serverId.toString());
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
+      return;
+    }
+
     final farmer = domain.Farmer.fromJson(data);
 
     if (item.operation == 'create') {
@@ -234,6 +461,7 @@ class BackgroundSyncService {
           serverId: Value(result.id),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'update') {
@@ -244,20 +472,24 @@ class BackgroundSyncService {
         FarmersCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
-    } else if (item.operation == 'delete') {
-      final localFarmer = await (_db.select(
-        _db.farmers,
-      )..where((t) => t.id.equals(item.localId))).getSingleOrNull();
-      if (localFarmer?.serverId != null) {
-        await _remoteFarmerRepository.deleteFarmer(localFarmer!.serverId!);
-      }
     }
   }
 
   Future<void> _syncFarm(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
+
+    if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        await _remoteFarmRepository.deleteFarm(serverId.toString());
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
+      return;
+    }
+
     final farm = farm_domain.Farm.fromJson(data);
 
     if (item.operation == 'create') {
@@ -269,6 +501,7 @@ class BackgroundSyncService {
           serverId: Value(result.id),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'update') {
@@ -279,20 +512,24 @@ class BackgroundSyncService {
         FarmsCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
-    } else if (item.operation == 'delete') {
-      final localFarm = await (_db.select(
-        _db.farms,
-      )..where((t) => t.id.equals(item.localId))).getSingleOrNull();
-      if (localFarm?.serverId != null) {
-        await _remoteFarmRepository.deleteFarm(localFarm!.serverId!);
-      }
     }
   }
 
   Future<void> _syncDamageReport(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
+
+    if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        await _remoteDamageReportRepository.deleteDamageReport(serverId.toString());
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
+      return;
+    }
+
     final report = report_domain.DamageReport.fromJson(data);
 
     if (item.operation == 'create') {
@@ -307,6 +544,7 @@ class BackgroundSyncService {
             serverId: Value(result.id),
             rowVersion: Value(result.rowVersion),
             syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
           ),
         );
         for (var i in result.items) {
@@ -317,6 +555,7 @@ class BackgroundSyncService {
               serverId: Value(i.id),
               rowVersion: Value(i.rowVersion),
               syncStatus: const Value('completed'),
+              lastSyncError: const Value(null),
             ),
           );
         }
@@ -331,22 +570,24 @@ class BackgroundSyncService {
         DamageReportsCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
-    } else if (item.operation == 'delete') {
-      final localReport = await (_db.select(
-        _db.damageReports,
-      )..where((t) => t.id.equals(item.localId))).getSingleOrNull();
-      if (localReport?.serverId != null) {
-        await _remoteDamageReportRepository.deleteDamageReport(
-          localReport!.serverId!,
-        );
-      }
     }
   }
 
   Future<void> _syncDamageItem(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
+
+    if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        await _remoteDamageReportRepository.deleteDamageItem(serverId.toString());
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
+      return;
+    }
+
     final damageItem = item_domain.DamageItem.fromJson(data);
 
     if (item.operation == 'create') {
@@ -360,6 +601,7 @@ class BackgroundSyncService {
           serverId: Value(result.id),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
     } else if (item.operation == 'update') {
@@ -372,17 +614,9 @@ class BackgroundSyncService {
         DamageItemsCompanion(
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
         ),
       );
-    } else if (item.operation == 'delete') {
-      final localItem = await (_db.select(
-        _db.damageItems,
-      )..where((t) => t.id.equals(item.localId))).getSingleOrNull();
-      if (localItem?.serverId != null) {
-        await _remoteDamageReportRepository.deleteDamageItem(
-          localItem!.serverId!,
-        );
-      }
     }
   }
 
@@ -401,11 +635,26 @@ class BackgroundSyncService {
           _db.farmers,
         )..where((t) => t.id.equals(item.localId))).write(
           FarmersCompanion(
-            name: Value(remoteFarmer.name),
-            nationalId: Value(remoteFarmer.nationalId),
+            serverId: Value(remoteFarmer.serverId),
+            idTypeId: Value(remoteFarmer.idTypeId),
+            idNumber: Value(remoteFarmer.idNumber),
+            firstNameAr: Value(remoteFarmer.firstNameAr),
+            fatherNameAr: Value(remoteFarmer.fatherNameAr),
+            grandfatherNameAr: Value(remoteFarmer.grandfatherNameAr),
+            familyNameAr: Value(remoteFarmer.familyNameAr),
+            firstNameEn: Value(remoteFarmer.firstNameEn),
+            fatherNameEn: Value(remoteFarmer.fatherNameEn),
+            grandfatherNameEn: Value(remoteFarmer.grandfatherNameEn),
+            familyNameEn: Value(remoteFarmer.familyNameEn),
+            birthDate: Value(remoteFarmer.birthDate),
+            gender: Value(remoteFarmer.gender.index),
             phoneNumber: Value(remoteFarmer.phoneNumber),
+            familySize: Value(remoteFarmer.familySize),
+            governorateId: Value(remoteFarmer.governorateId),
+            localityId: Value(remoteFarmer.localityId),
             address: Value(remoteFarmer.address),
             rowVersion: Value(remoteFarmer.rowVersion),
+            updatedAt: Value(remoteFarmer.updatedAt),
             syncStatus: const Value('completed'),
           ),
         );
@@ -413,7 +662,16 @@ class BackgroundSyncService {
         await _db
             .update(_db.syncQueue)
             .replace(item.copyWith(status: 'completed'));
-      } catch (e) {
+      } on SyncException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+    } catch (e) {
         // Log failure to resolve
       }
     } else if (item.entityType == 'farm') {
@@ -445,7 +703,16 @@ class BackgroundSyncService {
         await _db
             .update(_db.syncQueue)
             .replace(item.copyWith(status: 'completed'));
-      } catch (e) {
+      } on SyncException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+    } catch (e) {
         // Log
       }
     } else if (item.entityType == 'damage_report') {
@@ -500,7 +767,16 @@ class BackgroundSyncService {
         await _db
             .update(_db.syncQueue)
             .replace(item.copyWith(status: 'completed'));
-      } catch (e) {
+      } on SyncException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+    } catch (e) {
         // Log
       }
     } else if (item.entityType == 'damage_item') {
@@ -535,7 +811,16 @@ class BackgroundSyncService {
         await _db
             .update(_db.syncQueue)
             .replace(item.copyWith(status: 'completed'));
-      } catch (e) {
+      } on SyncException catch (e) {
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+    } catch (e) {
         // Log
       }
     }

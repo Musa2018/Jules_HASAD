@@ -18,7 +18,9 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
 ## Offline First Strategy
 - **Local First**: Data is saved to SQLite via Drift first. Every record has a client-generated UUID for backend idempotency.
 - **Sync Queue**: Operations are queued in a persistent local table and processed by `BackgroundSyncService` when connectivity is detected, using an exponential backoff retry policy.
-- **Conflict Resolution**: **Optimistic Concurrency** via `RowVersion` tokens. The server returns `409 Conflict` if the record has been modified by another user. Default resolution is **Server Wins**, where the sync engine fetches remote authority data to resolve the local conflict.
+- **Conflict Resolution**: **Optimistic Concurrency** via `RowVersion` tokens. The server returns `409 Conflict` if the record has been modified by another user.
+    - **Current Strategy**: **Server Wins**. The background sync engine automatically fetches the remote authority data and overwrites the local Drift record to resolve the conflict.
+    - **Roadmap**: Implement a **Merge UI** in future sprints to allow users to manually compare local changes with server data before resolving conflicts.
 
 ## Folder Structure (Mobile)
 - `lib/core`: Cross-cutting logic (Networking, Storage, Config).

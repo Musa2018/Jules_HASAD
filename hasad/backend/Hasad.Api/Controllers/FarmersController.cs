@@ -72,6 +72,19 @@ public class FarmersController : ControllerBase
     public async Task<IActionResult> DeleteFarmer(Guid id)
     {
         var result = await _mediator.Send(new DeleteFarmerCommand(id));
-        return result.Succeeded ? Ok(result) : BadRequest(result);
+
+        if (!result.Succeeded)
+        {
+            // نتحقق إذا كان سبب الفشل هو عدم وجود المزارع لنرجع 404
+            if (result.Errors.Any(e => e.Contains("not found")))
+            {
+                return NotFound(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        // عند النجاح نرجع 204 No Content
+        return NoContent();
     }
 }

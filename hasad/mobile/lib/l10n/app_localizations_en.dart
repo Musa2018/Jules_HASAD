@@ -87,6 +87,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nationalId => 'National ID';
 
   @override
+  String get jerusalemId => 'Jerusalem ID';
+
+  @override
+  String get passport => 'Passport';
+
+  @override
   String get phoneNumber => 'Phone Number';
 
   @override
@@ -115,6 +121,132 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requiredField => 'This field is required.';
+
+  @override
+  String get searchFarmer => 'Search Farmer';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get farmerDetails => 'Farmer Details';
+
+  @override
+  String get identitySection => 'Identity';
+
+  @override
+  String get idType => 'ID Type';
+
+  @override
+  String get idNumber => 'ID Number';
+
+  @override
+  String get arabicNameSection => 'Arabic Name';
+
+  @override
+  String get englishNameSection => 'English Name';
+
+  @override
+  String get firstName => 'First Name';
+
+  @override
+  String get secondName => 'Second Name';
+
+  @override
+  String get thirdName => 'Third Name';
+
+  @override
+  String get fourthName => 'Fourth Name';
+
+  @override
+  String get demographicsSection => 'Demographics';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get familySize => 'Family Size';
+
+  @override
+  String get mobileNumber => 'Mobile Number';
+
+  @override
+  String get locationSection => 'Location';
+
+  @override
+  String get village => 'Locality/Village';
+
+  @override
+  String get auditSection => 'Audit Info';
+
+  @override
+  String get createdAt => 'Created At';
+
+  @override
+  String get updatedAt => 'Updated At';
+
+  @override
+  String get syncStatus => 'Sync Status';
+
+  @override
+  String get synced => 'Synced';
+
+  @override
+  String get pendingSync => 'Awaiting Sync';
+
+  @override
+  String get syncing => 'Syncing...';
+
+  @override
+  String get syncError => 'Sync Error';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get unspecified => 'Unspecified';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get invalidPhone => 'Invalid phone number';
+
+  @override
+  String get invalidFamilySize => 'Invalid family size';
+
+  @override
+  String get invalidPalestinianId => 'Invalid Palestinian ID';
+
+  @override
+  String get mustBeNumeric => 'Must be numeric only';
+
+  @override
+  String get mustBeAlphanumeric => 'Must be alphanumeric only';
+
+  @override
+  String get mustBe18 => 'Farmer must be at least 18 years old';
+
+  @override
+  String get cannotBeInFuture => 'Date cannot be in the future';
+
+  @override
+  String get selectIdType => 'Select ID Type';
+
+  @override
+  String get farmerUpdatedSuccessfully => 'Farmer updated successfully';
+
+  @override
+  String get farmerCreatedSuccessfully => 'Farmer created successfully';
+
+  @override
+  String get enterFarmerIdToContinue => 'Enter Farmer ID to continue';
 
   @override
   String get addFarm => 'Add Farm';
@@ -224,4 +356,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noUsers => 'There are no users.';
+
+  @override
+  String get noData => 'No data available';
+
+  @override
+  String get syncInvalid => 'Invalid Data';
+
+  @override
+  String get syncErrorDetails => 'Sync Error Details';
+
+  @override
+  String get fixData => 'Fix Data';
+
+  @override
+  String get all => 'All';
 }

@@ -18,15 +18,20 @@ public class DeleteFarmerCommandHandler : IRequestHandler<DeleteFarmerCommand, R
 
     public async Task<Result<Unit>> Handle(DeleteFarmerCommand request, CancellationToken cancellationToken)
     {
+        // جلب المزارع من قاعدة البيانات
         var farmer = await _context.Farmers
             .FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken);
 
+        // التحقق من وجود المزارع
         if (farmer == null)
         {
             return Result<Unit>.Failure(new[] { "Farmer not found." });
         }
 
-        _context.Farmers.Remove(farmer);
+        // تنفيذ الحذف المنطقي (Soft Delete)
+        farmer.IsDeleted = true;
+
+        // حفظ التغييرات (EF Core سيقوم بعمل UPDATE وليس DELETE)
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);

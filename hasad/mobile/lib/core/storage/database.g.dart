@@ -28,27 +28,157 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _idTypeIdMeta = const VerificationMeta(
+    'idTypeId',
+  );
   @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
+  late final GeneratedColumn<int> idTypeId = GeneratedColumn<int>(
+    'id_type_id',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 200),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
   );
-  static const VerificationMeta _nationalIdMeta = const VerificationMeta(
-    'nationalId',
+  static const VerificationMeta _idNumberMeta = const VerificationMeta(
+    'idNumber',
   );
   @override
-  late final GeneratedColumn<String> nationalId = GeneratedColumn<String>(
-    'national_id',
+  late final GeneratedColumn<String> idNumber = GeneratedColumn<String>(
+    'id_number',
     aliasedName,
     false,
     additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 20),
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _firstNameArMeta = const VerificationMeta(
+    'firstNameAr',
+  );
+  @override
+  late final GeneratedColumn<String> firstNameAr = GeneratedColumn<String>(
+    'first_name_ar',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _fatherNameArMeta = const VerificationMeta(
+    'fatherNameAr',
+  );
+  @override
+  late final GeneratedColumn<String> fatherNameAr = GeneratedColumn<String>(
+    'father_name_ar',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _grandfatherNameArMeta = const VerificationMeta(
+    'grandfatherNameAr',
+  );
+  @override
+  late final GeneratedColumn<String> grandfatherNameAr =
+      GeneratedColumn<String>(
+        'grandfather_name_ar',
+        aliasedName,
+        false,
+        additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
+  static const VerificationMeta _familyNameArMeta = const VerificationMeta(
+    'familyNameAr',
+  );
+  @override
+  late final GeneratedColumn<String> familyNameAr = GeneratedColumn<String>(
+    'family_name_ar',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _firstNameEnMeta = const VerificationMeta(
+    'firstNameEn',
+  );
+  @override
+  late final GeneratedColumn<String> firstNameEn = GeneratedColumn<String>(
+    'first_name_en',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _fatherNameEnMeta = const VerificationMeta(
+    'fatherNameEn',
+  );
+  @override
+  late final GeneratedColumn<String> fatherNameEn = GeneratedColumn<String>(
+    'father_name_en',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _grandfatherNameEnMeta = const VerificationMeta(
+    'grandfatherNameEn',
+  );
+  @override
+  late final GeneratedColumn<String> grandfatherNameEn =
+      GeneratedColumn<String>(
+        'grandfather_name_en',
+        aliasedName,
+        false,
+        additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
+  static const VerificationMeta _familyNameEnMeta = const VerificationMeta(
+    'familyNameEn',
+  );
+  @override
+  late final GeneratedColumn<String> familyNameEn = GeneratedColumn<String>(
+    'family_name_en',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _birthDateMeta = const VerificationMeta(
+    'birthDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> birthDate = GeneratedColumn<DateTime>(
+    'birth_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _genderMeta = const VerificationMeta('gender');
+  @override
+  late final GeneratedColumn<int> gender = GeneratedColumn<int>(
+    'gender',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _phoneNumberMeta = const VerificationMeta(
     'phoneNumber',
@@ -60,7 +190,46 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     false,
     additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 20),
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _familySizeMeta = const VerificationMeta(
+    'familySize',
+  );
+  @override
+  late final GeneratedColumn<int> familySize = GeneratedColumn<int>(
+    'family_size',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _governorateIdMeta = const VerificationMeta(
+    'governorateId',
+  );
+  @override
+  late final GeneratedColumn<String> governorateId = GeneratedColumn<String>(
+    'governorate_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _localityIdMeta = const VerificationMeta(
+    'localityId',
+  );
+  @override
+  late final GeneratedColumn<String> localityId = GeneratedColumn<String>(
+    'locality_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _addressMeta = const VerificationMeta(
     'address',
@@ -72,7 +241,32 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     false,
     additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 500),
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 200),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _nationalIdMeta = const VerificationMeta(
+    'nationalId',
+  );
+  @override
+  late final GeneratedColumn<String> nationalId = GeneratedColumn<String>(
+    'national_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 20),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _rowVersionMeta = const VerificationMeta(
     'rowVersion',
@@ -98,6 +292,32 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -110,17 +330,46 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     serverId,
+    idTypeId,
+    idNumber,
+    firstNameAr,
+    fatherNameAr,
+    grandfatherNameAr,
+    familyNameAr,
+    firstNameEn,
+    fatherNameEn,
+    grandfatherNameEn,
+    familyNameEn,
+    birthDate,
+    gender,
+    phoneNumber,
+    familySize,
+    governorateId,
+    localityId,
+    address,
     name,
     nationalId,
-    phoneNumber,
-    address,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -145,21 +394,101 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
       );
     }
-    if (data.containsKey('name')) {
+    if (data.containsKey('id_type_id')) {
       context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+        _idTypeIdMeta,
+        idTypeId.isAcceptableOrUnknown(data['id_type_id']!, _idTypeIdMeta),
       );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
     }
-    if (data.containsKey('national_id')) {
+    if (data.containsKey('id_number')) {
       context.handle(
-        _nationalIdMeta,
-        nationalId.isAcceptableOrUnknown(data['national_id']!, _nationalIdMeta),
+        _idNumberMeta,
+        idNumber.isAcceptableOrUnknown(data['id_number']!, _idNumberMeta),
       );
-    } else if (isInserting) {
-      context.missing(_nationalIdMeta);
+    }
+    if (data.containsKey('first_name_ar')) {
+      context.handle(
+        _firstNameArMeta,
+        firstNameAr.isAcceptableOrUnknown(
+          data['first_name_ar']!,
+          _firstNameArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('father_name_ar')) {
+      context.handle(
+        _fatherNameArMeta,
+        fatherNameAr.isAcceptableOrUnknown(
+          data['father_name_ar']!,
+          _fatherNameArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('grandfather_name_ar')) {
+      context.handle(
+        _grandfatherNameArMeta,
+        grandfatherNameAr.isAcceptableOrUnknown(
+          data['grandfather_name_ar']!,
+          _grandfatherNameArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('family_name_ar')) {
+      context.handle(
+        _familyNameArMeta,
+        familyNameAr.isAcceptableOrUnknown(
+          data['family_name_ar']!,
+          _familyNameArMeta,
+        ),
+      );
+    }
+    if (data.containsKey('first_name_en')) {
+      context.handle(
+        _firstNameEnMeta,
+        firstNameEn.isAcceptableOrUnknown(
+          data['first_name_en']!,
+          _firstNameEnMeta,
+        ),
+      );
+    }
+    if (data.containsKey('father_name_en')) {
+      context.handle(
+        _fatherNameEnMeta,
+        fatherNameEn.isAcceptableOrUnknown(
+          data['father_name_en']!,
+          _fatherNameEnMeta,
+        ),
+      );
+    }
+    if (data.containsKey('grandfather_name_en')) {
+      context.handle(
+        _grandfatherNameEnMeta,
+        grandfatherNameEn.isAcceptableOrUnknown(
+          data['grandfather_name_en']!,
+          _grandfatherNameEnMeta,
+        ),
+      );
+    }
+    if (data.containsKey('family_name_en')) {
+      context.handle(
+        _familyNameEnMeta,
+        familyNameEn.isAcceptableOrUnknown(
+          data['family_name_en']!,
+          _familyNameEnMeta,
+        ),
+      );
+    }
+    if (data.containsKey('birth_date')) {
+      context.handle(
+        _birthDateMeta,
+        birthDate.isAcceptableOrUnknown(data['birth_date']!, _birthDateMeta),
+      );
+    }
+    if (data.containsKey('gender')) {
+      context.handle(
+        _genderMeta,
+        gender.isAcceptableOrUnknown(data['gender']!, _genderMeta),
+      );
     }
     if (data.containsKey('phone_number')) {
       context.handle(
@@ -169,16 +498,45 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
           _phoneNumberMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_phoneNumberMeta);
+    }
+    if (data.containsKey('family_size')) {
+      context.handle(
+        _familySizeMeta,
+        familySize.isAcceptableOrUnknown(data['family_size']!, _familySizeMeta),
+      );
+    }
+    if (data.containsKey('governorate_id')) {
+      context.handle(
+        _governorateIdMeta,
+        governorateId.isAcceptableOrUnknown(
+          data['governorate_id']!,
+          _governorateIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('locality_id')) {
+      context.handle(
+        _localityIdMeta,
+        localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
     }
     if (data.containsKey('address')) {
       context.handle(
         _addressMeta,
         address.isAcceptableOrUnknown(data['address']!, _addressMeta),
       );
-    } else if (isInserting) {
-      context.missing(_addressMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    }
+    if (data.containsKey('national_id')) {
+      context.handle(
+        _nationalIdMeta,
+        nationalId.isAcceptableOrUnknown(data['national_id']!, _nationalIdMeta),
+      );
     }
     if (data.containsKey('row_version')) {
       context.handle(
@@ -192,10 +550,34 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
       );
     }
     return context;
@@ -215,6 +597,74 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}server_id'],
       ),
+      idTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id_type_id'],
+      )!,
+      idNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id_number'],
+      )!,
+      firstNameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name_ar'],
+      )!,
+      fatherNameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}father_name_ar'],
+      )!,
+      grandfatherNameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}grandfather_name_ar'],
+      )!,
+      familyNameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_name_ar'],
+      )!,
+      firstNameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name_en'],
+      )!,
+      fatherNameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}father_name_en'],
+      )!,
+      grandfatherNameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}grandfather_name_en'],
+      )!,
+      familyNameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_name_en'],
+      )!,
+      birthDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}birth_date'],
+      ),
+      gender: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}gender'],
+      )!,
+      phoneNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone_number'],
+      )!,
+      familySize: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}family_size'],
+      )!,
+      governorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}governorate_id'],
+      )!,
+      localityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locality_id'],
+      )!,
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -222,14 +672,6 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
       nationalId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}national_id'],
-      )!,
-      phoneNumber: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}phone_number'],
-      )!,
-      address: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}address'],
       )!,
       rowVersion: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -239,10 +681,22 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
     );
   }
 
@@ -255,23 +709,59 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
 class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
   final String id;
   final String? serverId;
+  final int idTypeId;
+  final String idNumber;
+  final String firstNameAr;
+  final String fatherNameAr;
+  final String grandfatherNameAr;
+  final String familyNameAr;
+  final String firstNameEn;
+  final String fatherNameEn;
+  final String grandfatherNameEn;
+  final String familyNameEn;
+  final DateTime? birthDate;
+  final int gender;
+  final String phoneNumber;
+  final int familySize;
+  final String governorateId;
+  final String localityId;
+  final String address;
   final String name;
   final String nationalId;
-  final String phoneNumber;
-  final String address;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
+  final DateTime? updatedAt;
   const FarmerLocal({
     required this.id,
     this.serverId,
+    required this.idTypeId,
+    required this.idNumber,
+    required this.firstNameAr,
+    required this.fatherNameAr,
+    required this.grandfatherNameAr,
+    required this.familyNameAr,
+    required this.firstNameEn,
+    required this.fatherNameEn,
+    required this.grandfatherNameEn,
+    required this.familyNameEn,
+    this.birthDate,
+    required this.gender,
+    required this.phoneNumber,
+    required this.familySize,
+    required this.governorateId,
+    required this.localityId,
+    required this.address,
     required this.name,
     required this.nationalId,
-    required this.phoneNumber,
-    required this.address,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
+    this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -280,13 +770,37 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     if (!nullToAbsent || serverId != null) {
       map['server_id'] = Variable<String>(serverId);
     }
+    map['id_type_id'] = Variable<int>(idTypeId);
+    map['id_number'] = Variable<String>(idNumber);
+    map['first_name_ar'] = Variable<String>(firstNameAr);
+    map['father_name_ar'] = Variable<String>(fatherNameAr);
+    map['grandfather_name_ar'] = Variable<String>(grandfatherNameAr);
+    map['family_name_ar'] = Variable<String>(familyNameAr);
+    map['first_name_en'] = Variable<String>(firstNameEn);
+    map['father_name_en'] = Variable<String>(fatherNameEn);
+    map['grandfather_name_en'] = Variable<String>(grandfatherNameEn);
+    map['family_name_en'] = Variable<String>(familyNameEn);
+    if (!nullToAbsent || birthDate != null) {
+      map['birth_date'] = Variable<DateTime>(birthDate);
+    }
+    map['gender'] = Variable<int>(gender);
+    map['phone_number'] = Variable<String>(phoneNumber);
+    map['family_size'] = Variable<int>(familySize);
+    map['governorate_id'] = Variable<String>(governorateId);
+    map['locality_id'] = Variable<String>(localityId);
+    map['address'] = Variable<String>(address);
     map['name'] = Variable<String>(name);
     map['national_id'] = Variable<String>(nationalId);
-    map['phone_number'] = Variable<String>(phoneNumber);
-    map['address'] = Variable<String>(address);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
     return map;
   }
 
@@ -296,13 +810,37 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       serverId: serverId == null && nullToAbsent
           ? const Value.absent()
           : Value(serverId),
+      idTypeId: Value(idTypeId),
+      idNumber: Value(idNumber),
+      firstNameAr: Value(firstNameAr),
+      fatherNameAr: Value(fatherNameAr),
+      grandfatherNameAr: Value(grandfatherNameAr),
+      familyNameAr: Value(familyNameAr),
+      firstNameEn: Value(firstNameEn),
+      fatherNameEn: Value(fatherNameEn),
+      grandfatherNameEn: Value(grandfatherNameEn),
+      familyNameEn: Value(familyNameEn),
+      birthDate: birthDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(birthDate),
+      gender: Value(gender),
+      phoneNumber: Value(phoneNumber),
+      familySize: Value(familySize),
+      governorateId: Value(governorateId),
+      localityId: Value(localityId),
+      address: Value(address),
       name: Value(name),
       nationalId: Value(nationalId),
-      phoneNumber: Value(phoneNumber),
-      address: Value(address),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
     );
   }
 
@@ -314,13 +852,31 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     return FarmerLocal(
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
+      idTypeId: serializer.fromJson<int>(json['idTypeId']),
+      idNumber: serializer.fromJson<String>(json['idNumber']),
+      firstNameAr: serializer.fromJson<String>(json['firstNameAr']),
+      fatherNameAr: serializer.fromJson<String>(json['fatherNameAr']),
+      grandfatherNameAr: serializer.fromJson<String>(json['grandfatherNameAr']),
+      familyNameAr: serializer.fromJson<String>(json['familyNameAr']),
+      firstNameEn: serializer.fromJson<String>(json['firstNameEn']),
+      fatherNameEn: serializer.fromJson<String>(json['fatherNameEn']),
+      grandfatherNameEn: serializer.fromJson<String>(json['grandfatherNameEn']),
+      familyNameEn: serializer.fromJson<String>(json['familyNameEn']),
+      birthDate: serializer.fromJson<DateTime?>(json['birthDate']),
+      gender: serializer.fromJson<int>(json['gender']),
+      phoneNumber: serializer.fromJson<String>(json['phoneNumber']),
+      familySize: serializer.fromJson<int>(json['familySize']),
+      governorateId: serializer.fromJson<String>(json['governorateId']),
+      localityId: serializer.fromJson<String>(json['localityId']),
+      address: serializer.fromJson<String>(json['address']),
       name: serializer.fromJson<String>(json['name']),
       nationalId: serializer.fromJson<String>(json['nationalId']),
-      phoneNumber: serializer.fromJson<String>(json['phoneNumber']),
-      address: serializer.fromJson<String>(json['address']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
   }
   @override
@@ -329,56 +885,156 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
+      'idTypeId': serializer.toJson<int>(idTypeId),
+      'idNumber': serializer.toJson<String>(idNumber),
+      'firstNameAr': serializer.toJson<String>(firstNameAr),
+      'fatherNameAr': serializer.toJson<String>(fatherNameAr),
+      'grandfatherNameAr': serializer.toJson<String>(grandfatherNameAr),
+      'familyNameAr': serializer.toJson<String>(familyNameAr),
+      'firstNameEn': serializer.toJson<String>(firstNameEn),
+      'fatherNameEn': serializer.toJson<String>(fatherNameEn),
+      'grandfatherNameEn': serializer.toJson<String>(grandfatherNameEn),
+      'familyNameEn': serializer.toJson<String>(familyNameEn),
+      'birthDate': serializer.toJson<DateTime?>(birthDate),
+      'gender': serializer.toJson<int>(gender),
+      'phoneNumber': serializer.toJson<String>(phoneNumber),
+      'familySize': serializer.toJson<int>(familySize),
+      'governorateId': serializer.toJson<String>(governorateId),
+      'localityId': serializer.toJson<String>(localityId),
+      'address': serializer.toJson<String>(address),
       'name': serializer.toJson<String>(name),
       'nationalId': serializer.toJson<String>(nationalId),
-      'phoneNumber': serializer.toJson<String>(phoneNumber),
-      'address': serializer.toJson<String>(address),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
   }
 
   FarmerLocal copyWith({
     String? id,
     Value<String?> serverId = const Value.absent(),
+    int? idTypeId,
+    String? idNumber,
+    String? firstNameAr,
+    String? fatherNameAr,
+    String? grandfatherNameAr,
+    String? familyNameAr,
+    String? firstNameEn,
+    String? fatherNameEn,
+    String? grandfatherNameEn,
+    String? familyNameEn,
+    Value<DateTime?> birthDate = const Value.absent(),
+    int? gender,
+    String? phoneNumber,
+    int? familySize,
+    String? governorateId,
+    String? localityId,
+    String? address,
     String? name,
     String? nationalId,
-    String? phoneNumber,
-    String? address,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
+    Value<DateTime?> updatedAt = const Value.absent(),
   }) => FarmerLocal(
     id: id ?? this.id,
     serverId: serverId.present ? serverId.value : this.serverId,
+    idTypeId: idTypeId ?? this.idTypeId,
+    idNumber: idNumber ?? this.idNumber,
+    firstNameAr: firstNameAr ?? this.firstNameAr,
+    fatherNameAr: fatherNameAr ?? this.fatherNameAr,
+    grandfatherNameAr: grandfatherNameAr ?? this.grandfatherNameAr,
+    familyNameAr: familyNameAr ?? this.familyNameAr,
+    firstNameEn: firstNameEn ?? this.firstNameEn,
+    fatherNameEn: fatherNameEn ?? this.fatherNameEn,
+    grandfatherNameEn: grandfatherNameEn ?? this.grandfatherNameEn,
+    familyNameEn: familyNameEn ?? this.familyNameEn,
+    birthDate: birthDate.present ? birthDate.value : this.birthDate,
+    gender: gender ?? this.gender,
+    phoneNumber: phoneNumber ?? this.phoneNumber,
+    familySize: familySize ?? this.familySize,
+    governorateId: governorateId ?? this.governorateId,
+    localityId: localityId ?? this.localityId,
+    address: address ?? this.address,
     name: name ?? this.name,
     nationalId: nationalId ?? this.nationalId,
-    phoneNumber: phoneNumber ?? this.phoneNumber,
-    address: address ?? this.address,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
   FarmerLocal copyWithCompanion(FarmersCompanion data) {
     return FarmerLocal(
       id: data.id.present ? data.id.value : this.id,
       serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      idTypeId: data.idTypeId.present ? data.idTypeId.value : this.idTypeId,
+      idNumber: data.idNumber.present ? data.idNumber.value : this.idNumber,
+      firstNameAr: data.firstNameAr.present
+          ? data.firstNameAr.value
+          : this.firstNameAr,
+      fatherNameAr: data.fatherNameAr.present
+          ? data.fatherNameAr.value
+          : this.fatherNameAr,
+      grandfatherNameAr: data.grandfatherNameAr.present
+          ? data.grandfatherNameAr.value
+          : this.grandfatherNameAr,
+      familyNameAr: data.familyNameAr.present
+          ? data.familyNameAr.value
+          : this.familyNameAr,
+      firstNameEn: data.firstNameEn.present
+          ? data.firstNameEn.value
+          : this.firstNameEn,
+      fatherNameEn: data.fatherNameEn.present
+          ? data.fatherNameEn.value
+          : this.fatherNameEn,
+      grandfatherNameEn: data.grandfatherNameEn.present
+          ? data.grandfatherNameEn.value
+          : this.grandfatherNameEn,
+      familyNameEn: data.familyNameEn.present
+          ? data.familyNameEn.value
+          : this.familyNameEn,
+      birthDate: data.birthDate.present ? data.birthDate.value : this.birthDate,
+      gender: data.gender.present ? data.gender.value : this.gender,
+      phoneNumber: data.phoneNumber.present
+          ? data.phoneNumber.value
+          : this.phoneNumber,
+      familySize: data.familySize.present
+          ? data.familySize.value
+          : this.familySize,
+      governorateId: data.governorateId.present
+          ? data.governorateId.value
+          : this.governorateId,
+      localityId: data.localityId.present
+          ? data.localityId.value
+          : this.localityId,
+      address: data.address.present ? data.address.value : this.address,
       name: data.name.present ? data.name.value : this.name,
       nationalId: data.nationalId.present
           ? data.nationalId.value
           : this.nationalId,
-      phoneNumber: data.phoneNumber.present
-          ? data.phoneNumber.value
-          : this.phoneNumber,
-      address: data.address.present ? data.address.value : this.address,
       rowVersion: data.rowVersion.present
           ? data.rowVersion.value
           : this.rowVersion,
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -387,105 +1043,245 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     return (StringBuffer('FarmerLocal(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
+          ..write('idTypeId: $idTypeId, ')
+          ..write('idNumber: $idNumber, ')
+          ..write('firstNameAr: $firstNameAr, ')
+          ..write('fatherNameAr: $fatherNameAr, ')
+          ..write('grandfatherNameAr: $grandfatherNameAr, ')
+          ..write('familyNameAr: $familyNameAr, ')
+          ..write('firstNameEn: $firstNameEn, ')
+          ..write('fatherNameEn: $fatherNameEn, ')
+          ..write('grandfatherNameEn: $grandfatherNameEn, ')
+          ..write('familyNameEn: $familyNameEn, ')
+          ..write('birthDate: $birthDate, ')
+          ..write('gender: $gender, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('familySize: $familySize, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('localityId: $localityId, ')
+          ..write('address: $address, ')
           ..write('name: $name, ')
           ..write('nationalId: $nationalId, ')
-          ..write('phoneNumber: $phoneNumber, ')
-          ..write('address: $address, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
-          ..write('createdAt: $createdAt')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     serverId,
+    idTypeId,
+    idNumber,
+    firstNameAr,
+    fatherNameAr,
+    grandfatherNameAr,
+    familyNameAr,
+    firstNameEn,
+    fatherNameEn,
+    grandfatherNameEn,
+    familyNameEn,
+    birthDate,
+    gender,
+    phoneNumber,
+    familySize,
+    governorateId,
+    localityId,
+    address,
     name,
     nationalId,
-    phoneNumber,
-    address,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
-  );
+    updatedAt,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is FarmerLocal &&
           other.id == this.id &&
           other.serverId == this.serverId &&
+          other.idTypeId == this.idTypeId &&
+          other.idNumber == this.idNumber &&
+          other.firstNameAr == this.firstNameAr &&
+          other.fatherNameAr == this.fatherNameAr &&
+          other.grandfatherNameAr == this.grandfatherNameAr &&
+          other.familyNameAr == this.familyNameAr &&
+          other.firstNameEn == this.firstNameEn &&
+          other.fatherNameEn == this.fatherNameEn &&
+          other.grandfatherNameEn == this.grandfatherNameEn &&
+          other.familyNameEn == this.familyNameEn &&
+          other.birthDate == this.birthDate &&
+          other.gender == this.gender &&
+          other.phoneNumber == this.phoneNumber &&
+          other.familySize == this.familySize &&
+          other.governorateId == this.governorateId &&
+          other.localityId == this.localityId &&
+          other.address == this.address &&
           other.name == this.name &&
           other.nationalId == this.nationalId &&
-          other.phoneNumber == this.phoneNumber &&
-          other.address == this.address &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
-          other.createdAt == this.createdAt);
+          other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   final Value<String> id;
   final Value<String?> serverId;
+  final Value<int> idTypeId;
+  final Value<String> idNumber;
+  final Value<String> firstNameAr;
+  final Value<String> fatherNameAr;
+  final Value<String> grandfatherNameAr;
+  final Value<String> familyNameAr;
+  final Value<String> firstNameEn;
+  final Value<String> fatherNameEn;
+  final Value<String> grandfatherNameEn;
+  final Value<String> familyNameEn;
+  final Value<DateTime?> birthDate;
+  final Value<int> gender;
+  final Value<String> phoneNumber;
+  final Value<int> familySize;
+  final Value<String> governorateId;
+  final Value<String> localityId;
+  final Value<String> address;
   final Value<String> name;
   final Value<String> nationalId;
-  final Value<String> phoneNumber;
-  final Value<String> address;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
   final Value<int> rowid;
   const FarmersCompanion({
     this.id = const Value.absent(),
     this.serverId = const Value.absent(),
+    this.idTypeId = const Value.absent(),
+    this.idNumber = const Value.absent(),
+    this.firstNameAr = const Value.absent(),
+    this.fatherNameAr = const Value.absent(),
+    this.grandfatherNameAr = const Value.absent(),
+    this.familyNameAr = const Value.absent(),
+    this.firstNameEn = const Value.absent(),
+    this.fatherNameEn = const Value.absent(),
+    this.grandfatherNameEn = const Value.absent(),
+    this.familyNameEn = const Value.absent(),
+    this.birthDate = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.familySize = const Value.absent(),
+    this.governorateId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.address = const Value.absent(),
     this.name = const Value.absent(),
     this.nationalId = const Value.absent(),
-    this.phoneNumber = const Value.absent(),
-    this.address = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FarmersCompanion.insert({
     required String id,
     this.serverId = const Value.absent(),
-    required String name,
-    required String nationalId,
-    required String phoneNumber,
-    required String address,
+    this.idTypeId = const Value.absent(),
+    this.idNumber = const Value.absent(),
+    this.firstNameAr = const Value.absent(),
+    this.fatherNameAr = const Value.absent(),
+    this.grandfatherNameAr = const Value.absent(),
+    this.familyNameAr = const Value.absent(),
+    this.firstNameEn = const Value.absent(),
+    this.fatherNameEn = const Value.absent(),
+    this.grandfatherNameEn = const Value.absent(),
+    this.familyNameEn = const Value.absent(),
+    this.birthDate = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.familySize = const Value.absent(),
+    this.governorateId = const Value.absent(),
+    this.localityId = const Value.absent(),
+    this.address = const Value.absent(),
+    this.name = const Value.absent(),
+    this.nationalId = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       name = Value(name),
-       nationalId = Value(nationalId),
-       phoneNumber = Value(phoneNumber),
-       address = Value(address);
+  }) : id = Value(id);
   static Insertable<FarmerLocal> custom({
     Expression<String>? id,
     Expression<String>? serverId,
+    Expression<int>? idTypeId,
+    Expression<String>? idNumber,
+    Expression<String>? firstNameAr,
+    Expression<String>? fatherNameAr,
+    Expression<String>? grandfatherNameAr,
+    Expression<String>? familyNameAr,
+    Expression<String>? firstNameEn,
+    Expression<String>? fatherNameEn,
+    Expression<String>? grandfatherNameEn,
+    Expression<String>? familyNameEn,
+    Expression<DateTime>? birthDate,
+    Expression<int>? gender,
+    Expression<String>? phoneNumber,
+    Expression<int>? familySize,
+    Expression<String>? governorateId,
+    Expression<String>? localityId,
+    Expression<String>? address,
     Expression<String>? name,
     Expression<String>? nationalId,
-    Expression<String>? phoneNumber,
-    Expression<String>? address,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (serverId != null) 'server_id': serverId,
+      if (idTypeId != null) 'id_type_id': idTypeId,
+      if (idNumber != null) 'id_number': idNumber,
+      if (firstNameAr != null) 'first_name_ar': firstNameAr,
+      if (fatherNameAr != null) 'father_name_ar': fatherNameAr,
+      if (grandfatherNameAr != null) 'grandfather_name_ar': grandfatherNameAr,
+      if (familyNameAr != null) 'family_name_ar': familyNameAr,
+      if (firstNameEn != null) 'first_name_en': firstNameEn,
+      if (fatherNameEn != null) 'father_name_en': fatherNameEn,
+      if (grandfatherNameEn != null) 'grandfather_name_en': grandfatherNameEn,
+      if (familyNameEn != null) 'family_name_en': familyNameEn,
+      if (birthDate != null) 'birth_date': birthDate,
+      if (gender != null) 'gender': gender,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (familySize != null) 'family_size': familySize,
+      if (governorateId != null) 'governorate_id': governorateId,
+      if (localityId != null) 'locality_id': localityId,
+      if (address != null) 'address': address,
       if (name != null) 'name': name,
       if (nationalId != null) 'national_id': nationalId,
-      if (phoneNumber != null) 'phone_number': phoneNumber,
-      if (address != null) 'address': address,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -493,25 +1289,61 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   FarmersCompanion copyWith({
     Value<String>? id,
     Value<String?>? serverId,
+    Value<int>? idTypeId,
+    Value<String>? idNumber,
+    Value<String>? firstNameAr,
+    Value<String>? fatherNameAr,
+    Value<String>? grandfatherNameAr,
+    Value<String>? familyNameAr,
+    Value<String>? firstNameEn,
+    Value<String>? fatherNameEn,
+    Value<String>? grandfatherNameEn,
+    Value<String>? familyNameEn,
+    Value<DateTime?>? birthDate,
+    Value<int>? gender,
+    Value<String>? phoneNumber,
+    Value<int>? familySize,
+    Value<String>? governorateId,
+    Value<String>? localityId,
+    Value<String>? address,
     Value<String>? name,
     Value<String>? nationalId,
-    Value<String>? phoneNumber,
-    Value<String>? address,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
+    Value<DateTime?>? updatedAt,
     Value<int>? rowid,
   }) {
     return FarmersCompanion(
       id: id ?? this.id,
       serverId: serverId ?? this.serverId,
+      idTypeId: idTypeId ?? this.idTypeId,
+      idNumber: idNumber ?? this.idNumber,
+      firstNameAr: firstNameAr ?? this.firstNameAr,
+      fatherNameAr: fatherNameAr ?? this.fatherNameAr,
+      grandfatherNameAr: grandfatherNameAr ?? this.grandfatherNameAr,
+      familyNameAr: familyNameAr ?? this.familyNameAr,
+      firstNameEn: firstNameEn ?? this.firstNameEn,
+      fatherNameEn: fatherNameEn ?? this.fatherNameEn,
+      grandfatherNameEn: grandfatherNameEn ?? this.grandfatherNameEn,
+      familyNameEn: familyNameEn ?? this.familyNameEn,
+      birthDate: birthDate ?? this.birthDate,
+      gender: gender ?? this.gender,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      familySize: familySize ?? this.familySize,
+      governorateId: governorateId ?? this.governorateId,
+      localityId: localityId ?? this.localityId,
+      address: address ?? this.address,
       name: name ?? this.name,
       nationalId: nationalId ?? this.nationalId,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      address: address ?? this.address,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -525,17 +1357,62 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     if (serverId.present) {
       map['server_id'] = Variable<String>(serverId.value);
     }
+    if (idTypeId.present) {
+      map['id_type_id'] = Variable<int>(idTypeId.value);
+    }
+    if (idNumber.present) {
+      map['id_number'] = Variable<String>(idNumber.value);
+    }
+    if (firstNameAr.present) {
+      map['first_name_ar'] = Variable<String>(firstNameAr.value);
+    }
+    if (fatherNameAr.present) {
+      map['father_name_ar'] = Variable<String>(fatherNameAr.value);
+    }
+    if (grandfatherNameAr.present) {
+      map['grandfather_name_ar'] = Variable<String>(grandfatherNameAr.value);
+    }
+    if (familyNameAr.present) {
+      map['family_name_ar'] = Variable<String>(familyNameAr.value);
+    }
+    if (firstNameEn.present) {
+      map['first_name_en'] = Variable<String>(firstNameEn.value);
+    }
+    if (fatherNameEn.present) {
+      map['father_name_en'] = Variable<String>(fatherNameEn.value);
+    }
+    if (grandfatherNameEn.present) {
+      map['grandfather_name_en'] = Variable<String>(grandfatherNameEn.value);
+    }
+    if (familyNameEn.present) {
+      map['family_name_en'] = Variable<String>(familyNameEn.value);
+    }
+    if (birthDate.present) {
+      map['birth_date'] = Variable<DateTime>(birthDate.value);
+    }
+    if (gender.present) {
+      map['gender'] = Variable<int>(gender.value);
+    }
+    if (phoneNumber.present) {
+      map['phone_number'] = Variable<String>(phoneNumber.value);
+    }
+    if (familySize.present) {
+      map['family_size'] = Variable<int>(familySize.value);
+    }
+    if (governorateId.present) {
+      map['governorate_id'] = Variable<String>(governorateId.value);
+    }
+    if (localityId.present) {
+      map['locality_id'] = Variable<String>(localityId.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
     if (nationalId.present) {
       map['national_id'] = Variable<String>(nationalId.value);
-    }
-    if (phoneNumber.present) {
-      map['phone_number'] = Variable<String>(phoneNumber.value);
-    }
-    if (address.present) {
-      map['address'] = Variable<String>(address.value);
     }
     if (rowVersion.present) {
       map['row_version'] = Variable<String>(rowVersion.value);
@@ -543,8 +1420,17 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -557,13 +1443,31 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     return (StringBuffer('FarmersCompanion(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
+          ..write('idTypeId: $idTypeId, ')
+          ..write('idNumber: $idNumber, ')
+          ..write('firstNameAr: $firstNameAr, ')
+          ..write('fatherNameAr: $fatherNameAr, ')
+          ..write('grandfatherNameAr: $grandfatherNameAr, ')
+          ..write('familyNameAr: $familyNameAr, ')
+          ..write('firstNameEn: $firstNameEn, ')
+          ..write('fatherNameEn: $fatherNameEn, ')
+          ..write('grandfatherNameEn: $grandfatherNameEn, ')
+          ..write('familyNameEn: $familyNameEn, ')
+          ..write('birthDate: $birthDate, ')
+          ..write('gender: $gender, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('familySize: $familySize, ')
+          ..write('governorateId: $governorateId, ')
+          ..write('localityId: $localityId, ')
+          ..write('address: $address, ')
           ..write('name: $name, ')
           ..write('nationalId: $nationalId, ')
-          ..write('phoneNumber: $phoneNumber, ')
-          ..write('address: $address, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -721,6 +1625,32 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -759,6 +1689,8 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     ownershipTypeId,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -874,6 +1806,24 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -947,6 +1897,14 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -978,6 +1936,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
   final String ownershipTypeId;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const FarmLocal({
@@ -994,6 +1954,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     required this.ownershipTypeId,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -1019,6 +1981,10 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     map['ownership_type_id'] = Variable<String>(ownershipTypeId);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -1047,6 +2013,10 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       ownershipTypeId: Value(ownershipTypeId),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1073,6 +2043,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       ownershipTypeId: serializer.fromJson<String>(json['ownershipTypeId']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -1094,6 +2066,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       'ownershipTypeId': serializer.toJson<String>(ownershipTypeId),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -1113,6 +2087,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     String? ownershipTypeId,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => FarmLocal(
@@ -1129,6 +2105,10 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     ownershipTypeId: ownershipTypeId ?? this.ownershipTypeId,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -1159,6 +2139,12 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1180,6 +2166,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           ..write('ownershipTypeId: $ownershipTypeId, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1201,6 +2189,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     ownershipTypeId,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -1221,6 +2211,8 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           other.ownershipTypeId == this.ownershipTypeId &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1239,6 +2231,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
   final Value<String> ownershipTypeId;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -1256,6 +2250,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     this.ownershipTypeId = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1274,6 +2270,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     required String ownershipTypeId,
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1299,6 +2297,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Expression<String>? ownershipTypeId,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1317,6 +2317,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       if (ownershipTypeId != null) 'ownership_type_id': ownershipTypeId,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1337,6 +2339,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Value<String>? ownershipTypeId,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -1355,6 +2359,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       ownershipTypeId: ownershipTypeId ?? this.ownershipTypeId,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1403,6 +2409,12 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1431,6 +2443,8 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
           ..write('ownershipTypeId: $ownershipTypeId, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1599,6 +2613,32 @@ class $DamageReportsTable extends DamageReports
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1638,6 +2678,8 @@ class $DamageReportsTable extends DamageReports
     notes,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -1758,6 +2800,24 @@ class $DamageReportsTable extends DamageReports
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1835,6 +2895,14 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1868,6 +2936,8 @@ class DamageReportLocal extends DataClass
   final String notes;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageReportLocal({
@@ -1885,6 +2955,8 @@ class DamageReportLocal extends DataClass
     required this.notes,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -1911,6 +2983,10 @@ class DamageReportLocal extends DataClass
     map['notes'] = Variable<String>(notes);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -1940,6 +3016,10 @@ class DamageReportLocal extends DataClass
       notes: Value(notes),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1969,6 +3049,8 @@ class DamageReportLocal extends DataClass
       notes: serializer.fromJson<String>(json['notes']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -1991,6 +3073,8 @@ class DamageReportLocal extends DataClass
       'notes': serializer.toJson<String>(notes),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -2011,6 +3095,8 @@ class DamageReportLocal extends DataClass
     String? notes,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageReportLocal(
@@ -2028,6 +3114,10 @@ class DamageReportLocal extends DataClass
     notes: notes ?? this.notes,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -2059,6 +3149,12 @@ class DamageReportLocal extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2081,6 +3177,8 @@ class DamageReportLocal extends DataClass
           ..write('notes: $notes, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -2103,6 +3201,8 @@ class DamageReportLocal extends DataClass
     notes,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -2124,6 +3224,8 @@ class DamageReportLocal extends DataClass
           other.notes == this.notes &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -2143,6 +3245,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> notes;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -2161,6 +3265,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.notes = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2180,6 +3286,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     required String notes,
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -2207,6 +3315,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<String>? notes,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -2226,6 +3336,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (notes != null) 'notes': notes,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -2247,6 +3359,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<String>? notes,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -2266,6 +3380,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       notes: notes ?? this.notes,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -2317,6 +3433,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -2346,6 +3468,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('notes: $notes, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2505,6 +3629,32 @@ class $DamageItemsTable extends DamageItems
     requiredDuringInsert: false,
     defaultValue: const Constant('completed'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -2543,6 +3693,8 @@ class $DamageItemsTable extends DamageItems
     estimatedLoss,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -2674,6 +3826,24 @@ class $DamageItemsTable extends DamageItems
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -2747,6 +3917,14 @@ class $DamageItemsTable extends DamageItems
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -2778,6 +3956,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
   final double estimatedLoss;
   final String rowVersion;
   final String syncStatus;
+  final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageItemLocal({
@@ -2794,6 +3974,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     required this.estimatedLoss,
     required this.rowVersion,
     required this.syncStatus,
+    this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -2815,6 +3997,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     map['estimated_loss'] = Variable<double>(estimatedLoss);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -2839,6 +4025,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       estimatedLoss: Value(estimatedLoss),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -2867,6 +4057,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       estimatedLoss: serializer.fromJson<double>(json['estimatedLoss']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -2888,6 +4080,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       'estimatedLoss': serializer.toJson<double>(estimatedLoss),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -2907,6 +4101,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     double? estimatedLoss,
     String? rowVersion,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageItemLocal(
@@ -2923,6 +4119,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     estimatedLoss: estimatedLoss ?? this.estimatedLoss,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -2959,6 +4159,12 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -2980,6 +4186,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           ..write('estimatedLoss: $estimatedLoss, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -3001,6 +4209,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     estimatedLoss,
     rowVersion,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -3021,6 +4231,8 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           other.estimatedLoss == this.estimatedLoss &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -3039,6 +4251,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
   final Value<double> estimatedLoss;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -3056,6 +4270,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     this.estimatedLoss = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3074,6 +4290,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     required double estimatedLoss,
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3101,6 +4319,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Expression<double>? estimatedLoss,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -3120,6 +4340,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       if (estimatedLoss != null) 'estimated_loss': estimatedLoss,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -3140,6 +4362,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Value<double>? estimatedLoss,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -3158,6 +4382,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       estimatedLoss: estimatedLoss ?? this.estimatedLoss,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -3208,6 +4434,12 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -3236,6 +4468,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
           ..write('estimatedLoss: $estimatedLoss, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -3327,6 +4561,32 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     requiredDuringInsert: false,
     defaultValue: const Constant('pending'),
   );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPendingDeleteMeta = const VerificationMeta(
+    'isPendingDelete',
+  );
+  @override
+  late final GeneratedColumn<bool> isPendingDelete = GeneratedColumn<bool>(
+    'is_pending_delete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pending_delete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -3359,6 +4619,8 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     remotePath,
     uploadStatus,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   ];
@@ -3425,6 +4687,24 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_pending_delete')) {
+      context.handle(
+        _isPendingDeleteMeta,
+        isPendingDelete.isAcceptableOrUnknown(
+          data['is_pending_delete']!,
+          _isPendingDeleteMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -3477,6 +4757,14 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
+      isPendingDelete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pending_delete'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -3503,6 +4791,8 @@ class DamageReportAttachmentLocal extends DataClass
   final String? remotePath;
   final String uploadStatus;
   final String syncStatus;
+  final String? lastSyncError;
+  final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const DamageReportAttachmentLocal({
@@ -3513,6 +4803,8 @@ class DamageReportAttachmentLocal extends DataClass
     this.remotePath,
     required this.uploadStatus,
     required this.syncStatus,
+    this.lastSyncError,
+    required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
   });
@@ -3530,6 +4822,10 @@ class DamageReportAttachmentLocal extends DataClass
     }
     map['upload_status'] = Variable<String>(uploadStatus);
     map['sync_status'] = Variable<String>(syncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
+    map['is_pending_delete'] = Variable<bool>(isPendingDelete);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -3550,6 +4846,10 @@ class DamageReportAttachmentLocal extends DataClass
           : Value(remotePath),
       uploadStatus: Value(uploadStatus),
       syncStatus: Value(syncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
+      isPendingDelete: Value(isPendingDelete),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -3570,6 +4870,8 @@ class DamageReportAttachmentLocal extends DataClass
       remotePath: serializer.fromJson<String?>(json['remotePath']),
       uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+      isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -3585,6 +4887,8 @@ class DamageReportAttachmentLocal extends DataClass
       'remotePath': serializer.toJson<String?>(remotePath),
       'uploadStatus': serializer.toJson<String>(uploadStatus),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
+      'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -3598,6 +4902,8 @@ class DamageReportAttachmentLocal extends DataClass
     Value<String?> remotePath = const Value.absent(),
     String? uploadStatus,
     String? syncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
+    bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => DamageReportAttachmentLocal(
@@ -3608,6 +4914,10 @@ class DamageReportAttachmentLocal extends DataClass
     remotePath: remotePath.present ? remotePath.value : this.remotePath,
     uploadStatus: uploadStatus ?? this.uploadStatus,
     syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
+    isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -3630,6 +4940,12 @@ class DamageReportAttachmentLocal extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
+      isPendingDelete: data.isPendingDelete.present
+          ? data.isPendingDelete.value
+          : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -3645,6 +4961,8 @@ class DamageReportAttachmentLocal extends DataClass
           ..write('remotePath: $remotePath, ')
           ..write('uploadStatus: $uploadStatus, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -3660,6 +4978,8 @@ class DamageReportAttachmentLocal extends DataClass
     remotePath,
     uploadStatus,
     syncStatus,
+    lastSyncError,
+    isPendingDelete,
     createdAt,
     updatedAt,
   );
@@ -3674,6 +4994,8 @@ class DamageReportAttachmentLocal extends DataClass
           other.remotePath == this.remotePath &&
           other.uploadStatus == this.uploadStatus &&
           other.syncStatus == this.syncStatus &&
+          other.lastSyncError == this.lastSyncError &&
+          other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -3687,6 +5009,8 @@ class DamageReportAttachmentsCompanion
   final Value<String?> remotePath;
   final Value<String> uploadStatus;
   final Value<String> syncStatus;
+  final Value<String?> lastSyncError;
+  final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -3698,6 +5022,8 @@ class DamageReportAttachmentsCompanion
     this.remotePath = const Value.absent(),
     this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3710,6 +5036,8 @@ class DamageReportAttachmentsCompanion
     this.remotePath = const Value.absent(),
     this.uploadStatus = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3724,6 +5052,8 @@ class DamageReportAttachmentsCompanion
     Expression<String>? remotePath,
     Expression<String>? uploadStatus,
     Expression<String>? syncStatus,
+    Expression<String>? lastSyncError,
+    Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -3736,6 +5066,8 @@ class DamageReportAttachmentsCompanion
       if (remotePath != null) 'remote_path': remotePath,
       if (uploadStatus != null) 'upload_status': uploadStatus,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -3750,6 +5082,8 @@ class DamageReportAttachmentsCompanion
     Value<String?>? remotePath,
     Value<String>? uploadStatus,
     Value<String>? syncStatus,
+    Value<String?>? lastSyncError,
+    Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -3762,6 +5096,8 @@ class DamageReportAttachmentsCompanion
       remotePath: remotePath ?? this.remotePath,
       uploadStatus: uploadStatus ?? this.uploadStatus,
       syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
+      isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -3792,6 +5128,12 @@ class DamageReportAttachmentsCompanion
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
+    if (isPendingDelete.present) {
+      map['is_pending_delete'] = Variable<bool>(isPendingDelete.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -3814,6 +5156,8 @@ class DamageReportAttachmentsCompanion
           ..write('remotePath: $remotePath, ')
           ..write('uploadStatus: $uploadStatus, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -4462,26 +5806,62 @@ typedef $$FarmersTableCreateCompanionBuilder =
     FarmersCompanion Function({
       required String id,
       Value<String?> serverId,
-      required String name,
-      required String nationalId,
-      required String phoneNumber,
-      required String address,
+      Value<int> idTypeId,
+      Value<String> idNumber,
+      Value<String> firstNameAr,
+      Value<String> fatherNameAr,
+      Value<String> grandfatherNameAr,
+      Value<String> familyNameAr,
+      Value<String> firstNameEn,
+      Value<String> fatherNameEn,
+      Value<String> grandfatherNameEn,
+      Value<String> familyNameEn,
+      Value<DateTime?> birthDate,
+      Value<int> gender,
+      Value<String> phoneNumber,
+      Value<int> familySize,
+      Value<String> governorateId,
+      Value<String> localityId,
+      Value<String> address,
+      Value<String> name,
+      Value<String> nationalId,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
       Value<int> rowid,
     });
 typedef $$FarmersTableUpdateCompanionBuilder =
     FarmersCompanion Function({
       Value<String> id,
       Value<String?> serverId,
+      Value<int> idTypeId,
+      Value<String> idNumber,
+      Value<String> firstNameAr,
+      Value<String> fatherNameAr,
+      Value<String> grandfatherNameAr,
+      Value<String> familyNameAr,
+      Value<String> firstNameEn,
+      Value<String> fatherNameEn,
+      Value<String> grandfatherNameEn,
+      Value<String> familyNameEn,
+      Value<DateTime?> birthDate,
+      Value<int> gender,
+      Value<String> phoneNumber,
+      Value<int> familySize,
+      Value<String> governorateId,
+      Value<String> localityId,
+      Value<String> address,
       Value<String> name,
       Value<String> nationalId,
-      Value<String> phoneNumber,
-      Value<String> address,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
+      Value<DateTime?> updatedAt,
       Value<int> rowid,
     });
 
@@ -4504,13 +5884,63 @@ class $$FarmersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
+  ColumnFilters<int> get idTypeId => $composableBuilder(
+    column: $table.idTypeId,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get nationalId => $composableBuilder(
-    column: $table.nationalId,
+  ColumnFilters<String> get idNumber => $composableBuilder(
+    column: $table.idNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstNameAr => $composableBuilder(
+    column: $table.firstNameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fatherNameAr => $composableBuilder(
+    column: $table.fatherNameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get grandfatherNameAr => $composableBuilder(
+    column: $table.grandfatherNameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyNameAr => $composableBuilder(
+    column: $table.familyNameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstNameEn => $composableBuilder(
+    column: $table.firstNameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fatherNameEn => $composableBuilder(
+    column: $table.fatherNameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get grandfatherNameEn => $composableBuilder(
+    column: $table.grandfatherNameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyNameEn => $composableBuilder(
+    column: $table.familyNameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get birthDate => $composableBuilder(
+    column: $table.birthDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get gender => $composableBuilder(
+    column: $table.gender,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4519,8 +5949,33 @@ class $$FarmersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get familySize => $composableBuilder(
+    column: $table.familySize,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get address => $composableBuilder(
     column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nationalId => $composableBuilder(
+    column: $table.nationalId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4534,8 +5989,23 @@ class $$FarmersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4559,13 +6029,63 @@ class $$FarmersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
+  ColumnOrderings<int> get idTypeId => $composableBuilder(
+    column: $table.idTypeId,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nationalId => $composableBuilder(
-    column: $table.nationalId,
+  ColumnOrderings<String> get idNumber => $composableBuilder(
+    column: $table.idNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstNameAr => $composableBuilder(
+    column: $table.firstNameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fatherNameAr => $composableBuilder(
+    column: $table.fatherNameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get grandfatherNameAr => $composableBuilder(
+    column: $table.grandfatherNameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyNameAr => $composableBuilder(
+    column: $table.familyNameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstNameEn => $composableBuilder(
+    column: $table.firstNameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fatherNameEn => $composableBuilder(
+    column: $table.fatherNameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get grandfatherNameEn => $composableBuilder(
+    column: $table.grandfatherNameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyNameEn => $composableBuilder(
+    column: $table.familyNameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get birthDate => $composableBuilder(
+    column: $table.birthDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get gender => $composableBuilder(
+    column: $table.gender,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4574,8 +6094,33 @@ class $$FarmersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get familySize => $composableBuilder(
+    column: $table.familySize,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get address => $composableBuilder(
     column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nationalId => $composableBuilder(
+    column: $table.nationalId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4589,8 +6134,23 @@ class $$FarmersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -4610,6 +6170,81 @@ class $$FarmersTableAnnotationComposer
   GeneratedColumn<String> get serverId =>
       $composableBuilder(column: $table.serverId, builder: (column) => column);
 
+  GeneratedColumn<int> get idTypeId =>
+      $composableBuilder(column: $table.idTypeId, builder: (column) => column);
+
+  GeneratedColumn<String> get idNumber =>
+      $composableBuilder(column: $table.idNumber, builder: (column) => column);
+
+  GeneratedColumn<String> get firstNameAr => $composableBuilder(
+    column: $table.firstNameAr,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fatherNameAr => $composableBuilder(
+    column: $table.fatherNameAr,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get grandfatherNameAr => $composableBuilder(
+    column: $table.grandfatherNameAr,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get familyNameAr => $composableBuilder(
+    column: $table.familyNameAr,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get firstNameEn => $composableBuilder(
+    column: $table.firstNameEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fatherNameEn => $composableBuilder(
+    column: $table.fatherNameEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get grandfatherNameEn => $composableBuilder(
+    column: $table.grandfatherNameEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get familyNameEn => $composableBuilder(
+    column: $table.familyNameEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get birthDate =>
+      $composableBuilder(column: $table.birthDate, builder: (column) => column);
+
+  GeneratedColumn<int> get gender =>
+      $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get familySize => $composableBuilder(
+    column: $table.familySize,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get governorateId => $composableBuilder(
+    column: $table.governorateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localityId => $composableBuilder(
+    column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
@@ -4617,14 +6252,6 @@ class $$FarmersTableAnnotationComposer
     column: $table.nationalId,
     builder: (column) => column,
   );
-
-  GeneratedColumn<String> get phoneNumber => $composableBuilder(
-    column: $table.phoneNumber,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get address =>
-      $composableBuilder(column: $table.address, builder: (column) => column);
 
   GeneratedColumn<String> get rowVersion => $composableBuilder(
     column: $table.rowVersion,
@@ -4636,8 +6263,21 @@ class $$FarmersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
 class $$FarmersTableTableManager
@@ -4673,48 +6313,120 @@ class $$FarmersTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
+                Value<int> idTypeId = const Value.absent(),
+                Value<String> idNumber = const Value.absent(),
+                Value<String> firstNameAr = const Value.absent(),
+                Value<String> fatherNameAr = const Value.absent(),
+                Value<String> grandfatherNameAr = const Value.absent(),
+                Value<String> familyNameAr = const Value.absent(),
+                Value<String> firstNameEn = const Value.absent(),
+                Value<String> fatherNameEn = const Value.absent(),
+                Value<String> grandfatherNameEn = const Value.absent(),
+                Value<String> familyNameEn = const Value.absent(),
+                Value<DateTime?> birthDate = const Value.absent(),
+                Value<int> gender = const Value.absent(),
+                Value<String> phoneNumber = const Value.absent(),
+                Value<int> familySize = const Value.absent(),
+                Value<String> governorateId = const Value.absent(),
+                Value<String> localityId = const Value.absent(),
+                Value<String> address = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> nationalId = const Value.absent(),
-                Value<String> phoneNumber = const Value.absent(),
-                Value<String> address = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FarmersCompanion(
                 id: id,
                 serverId: serverId,
+                idTypeId: idTypeId,
+                idNumber: idNumber,
+                firstNameAr: firstNameAr,
+                fatherNameAr: fatherNameAr,
+                grandfatherNameAr: grandfatherNameAr,
+                familyNameAr: familyNameAr,
+                firstNameEn: firstNameEn,
+                fatherNameEn: fatherNameEn,
+                grandfatherNameEn: grandfatherNameEn,
+                familyNameEn: familyNameEn,
+                birthDate: birthDate,
+                gender: gender,
+                phoneNumber: phoneNumber,
+                familySize: familySize,
+                governorateId: governorateId,
+                localityId: localityId,
+                address: address,
                 name: name,
                 nationalId: nationalId,
-                phoneNumber: phoneNumber,
-                address: address,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
                 Value<String?> serverId = const Value.absent(),
-                required String name,
-                required String nationalId,
-                required String phoneNumber,
-                required String address,
+                Value<int> idTypeId = const Value.absent(),
+                Value<String> idNumber = const Value.absent(),
+                Value<String> firstNameAr = const Value.absent(),
+                Value<String> fatherNameAr = const Value.absent(),
+                Value<String> grandfatherNameAr = const Value.absent(),
+                Value<String> familyNameAr = const Value.absent(),
+                Value<String> firstNameEn = const Value.absent(),
+                Value<String> fatherNameEn = const Value.absent(),
+                Value<String> grandfatherNameEn = const Value.absent(),
+                Value<String> familyNameEn = const Value.absent(),
+                Value<DateTime?> birthDate = const Value.absent(),
+                Value<int> gender = const Value.absent(),
+                Value<String> phoneNumber = const Value.absent(),
+                Value<int> familySize = const Value.absent(),
+                Value<String> governorateId = const Value.absent(),
+                Value<String> localityId = const Value.absent(),
+                Value<String> address = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> nationalId = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FarmersCompanion.insert(
                 id: id,
                 serverId: serverId,
+                idTypeId: idTypeId,
+                idNumber: idNumber,
+                firstNameAr: firstNameAr,
+                fatherNameAr: fatherNameAr,
+                grandfatherNameAr: grandfatherNameAr,
+                familyNameAr: familyNameAr,
+                firstNameEn: firstNameEn,
+                fatherNameEn: fatherNameEn,
+                grandfatherNameEn: grandfatherNameEn,
+                familyNameEn: familyNameEn,
+                birthDate: birthDate,
+                gender: gender,
+                phoneNumber: phoneNumber,
+                familySize: familySize,
+                governorateId: governorateId,
+                localityId: localityId,
+                address: address,
                 name: name,
                 nationalId: nationalId,
-                phoneNumber: phoneNumber,
-                address: address,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -4754,6 +6466,8 @@ typedef $$FarmsTableCreateCompanionBuilder =
       required String ownershipTypeId,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -4773,6 +6487,8 @@ typedef $$FarmsTableUpdateCompanionBuilder =
       Value<String> ownershipTypeId,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -4848,6 +6564,16 @@ class $$FarmsTableFilterComposer extends Composer<_$AppDatabase, $FarmsTable> {
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4936,6 +6662,16 @@ class $$FarmsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5007,6 +6743,16 @@ class $$FarmsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -5055,6 +6801,8 @@ class $$FarmsTableTableManager
                 Value<String> ownershipTypeId = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5072,6 +6820,8 @@ class $$FarmsTableTableManager
                 ownershipTypeId: ownershipTypeId,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5091,6 +6841,8 @@ class $$FarmsTableTableManager
                 required String ownershipTypeId,
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5108,6 +6860,8 @@ class $$FarmsTableTableManager
                 ownershipTypeId: ownershipTypeId,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5150,6 +6904,8 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       required String notes,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5170,6 +6926,8 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<String> notes,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5251,6 +7009,16 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5344,6 +7112,16 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5418,6 +7196,16 @@ class $$DamageReportsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -5474,6 +7262,8 @@ class $$DamageReportsTableTableManager
                 Value<String> notes = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5492,6 +7282,8 @@ class $$DamageReportsTableTableManager
                 notes: notes,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5512,6 +7304,8 @@ class $$DamageReportsTableTableManager
                 required String notes,
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5530,6 +7324,8 @@ class $$DamageReportsTableTableManager
                 notes: notes,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5574,6 +7370,8 @@ typedef $$DamageItemsTableCreateCompanionBuilder =
       required double estimatedLoss,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5593,6 +7391,8 @@ typedef $$DamageItemsTableUpdateCompanionBuilder =
       Value<double> estimatedLoss,
       Value<String> rowVersion,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5669,6 +7469,16 @@ class $$DamageItemsTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5757,6 +7567,16 @@ class $$DamageItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5834,6 +7654,16 @@ class $$DamageItemsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -5885,6 +7715,8 @@ class $$DamageItemsTableTableManager
                 Value<double> estimatedLoss = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5902,6 +7734,8 @@ class $$DamageItemsTableTableManager
                 estimatedLoss: estimatedLoss,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5921,6 +7755,8 @@ class $$DamageItemsTableTableManager
                 required double estimatedLoss,
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5938,6 +7774,8 @@ class $$DamageItemsTableTableManager
                 estimatedLoss: estimatedLoss,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5976,6 +7814,8 @@ typedef $$DamageReportAttachmentsTableCreateCompanionBuilder =
       Value<String?> remotePath,
       Value<String> uploadStatus,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -5989,6 +7829,8 @@ typedef $$DamageReportAttachmentsTableUpdateCompanionBuilder =
       Value<String?> remotePath,
       Value<String> uploadStatus,
       Value<String> syncStatus,
+      Value<String?> lastSyncError,
+      Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -6035,6 +7877,16 @@ class $$DamageReportAttachmentsTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6093,6 +7945,16 @@ class $$DamageReportAttachmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6139,6 +8001,16 @@ class $$DamageReportAttachmentsTableAnnotationComposer
 
   GeneratedColumn<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isPendingDelete => $composableBuilder(
+    column: $table.isPendingDelete,
     builder: (column) => column,
   );
 
@@ -6202,6 +8074,8 @@ class $$DamageReportAttachmentsTableTableManager
                 Value<String?> remotePath = const Value.absent(),
                 Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6213,6 +8087,8 @@ class $$DamageReportAttachmentsTableTableManager
                 remotePath: remotePath,
                 uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6226,6 +8102,8 @@ class $$DamageReportAttachmentsTableTableManager
                 Value<String?> remotePath = const Value.absent(),
                 Value<String> uploadStatus = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -6237,6 +8115,8 @@ class $$DamageReportAttachmentsTableTableManager
                 remotePath: remotePath,
                 uploadStatus: uploadStatus,
                 syncStatus: syncStatus,
+                lastSyncError: lastSyncError,
+                isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

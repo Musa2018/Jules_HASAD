@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
+import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/features/farmers/data/farmer_sync_dtos.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 class RemoteFarmerRepository implements FarmerRepository {
   final Dio _dio;
@@ -11,16 +15,23 @@ class RemoteFarmerRepository implements FarmerRepository {
   Future<List<domain.Farmer>> getFarmers({
     int pageNumber = 1,
     int pageSize = 10,
+    String? idNumber,
+    String? name,
   }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
         '/v1/farmers',
-        queryParameters: {'pageNumber': pageNumber, 'pageSize': pageSize},
+        queryParameters: {
+          'pageNumber': pageNumber,
+          'pageSize': pageSize,
+          'idNumber': idNumber,
+          'name': name,
+        },
       );
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
-        throw FarmerException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
 
       final items = data['items'] as List;
@@ -28,8 +39,14 @@ class RemoteFarmerRepository implements FarmerRepository {
           .map((e) => domain.Farmer.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
-      throw FarmerException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Future<domain.Farmer?> findByIdNumber(String idNumber) async {
+    final results = await getFarmers(idNumber: idNumber, pageSize: 1);
+    return results.isEmpty ? null : results.first;
   }
 
   @override
@@ -39,73 +56,84 @@ class RemoteFarmerRepository implements FarmerRepository {
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
-        throw FarmerException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
       return domain.Farmer.fromJson(data);
     } on DioException catch (e) {
-      throw FarmerException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Stream<domain.Farmer?> watchFarmer(String id) {
+    throw UnimplementedError('Remote repository does not support watching.');
+  }
+
+  @override
+  Stream<List<domain.Farmer>> watchFarmers({
+    FarmerFilter filter = const FarmerFilter(),
+  }) {
+    throw UnimplementedError('Remote repository does not support watching.');
   }
 
   @override
   Future<domain.Farmer> createFarmer(domain.Farmer farmer) async {
     try {
+      final fullPayload = FarmerSyncDto.toCreateJson(farmer);
+
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.logHeader('FARMER CREATE PAYLOAD');
+        DebugLogger.logJson(fullPayload);
+        DebugLogger.logFooter();
+      }
+
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/farmers',
-        data: {
-          'clientId': farmer.id, // Mobile 'id' is used as 'clientId' on backend
-          'name': farmer.name,
-          'nationalId': farmer.nationalId,
-          'phoneNumber': farmer.phoneNumber,
-          'address': farmer.address,
-        },
+        data: fullPayload,
       );
       final envelope = response.data;
-      final data = envelope?['data'];
-      if (envelope?['succeeded'] != true || data == null) {
-        throw FarmerException(_errorsFromEnvelope(envelope));
+      final responseData = envelope?['data'];
+      if (envelope?['succeeded'] != true || responseData == null) {
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
-      return domain.Farmer.fromJson(data);
+      return domain.Farmer.fromJson(responseData);
     } on DioException catch (e) {
-      throw FarmerException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 
   @override
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
+    if (farmer.rowVersion.isEmpty) {
+      throw SyncException(['RowVersion is required for updates.']);
+    }
+
     try {
-      // For updates, we need the authority ID (serverId in mobile, Id in backend)
-      // but the repository interface currently only gives us the Farmer object.
-      // We assume farmer.id is the serverId if it's an existing record being updated from remote.
-      // Wait, in OfflineFirstFarmerRepository, we update with local id.
-      // The background sync service handles the mapping.
+      final fullPayload = FarmerSyncDto.toUpdateJson(farmer);
+
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.logHeader('FARMER UPDATE PAYLOAD');
+        DebugLogger.logJson(fullPayload);
+        DebugLogger.logFooter();
+      }
 
       final response = await _dio.put<Map<String, dynamic>>(
-        '/v1/farmers/${farmer.id}',
-        data: {
-          'id': farmer.id,
-          'clientId':
-              farmer.id, // This is a bit redundant if they are same, but safe
-          'name': farmer.name,
-          'nationalId': farmer.nationalId,
-          'phoneNumber': farmer.phoneNumber,
-          'address': farmer.address,
-          'rowVersion': farmer.rowVersion,
-        },
+        '/v1/farmers/${farmer.serverId ?? farmer.id}',
+        data: fullPayload,
       );
       final envelope = response.data;
       final data = envelope?['data'];
       if (envelope?['succeeded'] != true || data == null) {
-        throw FarmerException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
       return domain.Farmer.fromJson(data);
     } on DioException catch (e) {
       if (e.response?.statusCode == 409) {
-        throw FarmerException([
+        throw SyncConflictException([
           'CONFLICT: The record has been modified by another user.',
         ]);
       }
-      throw FarmerException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 
@@ -117,15 +145,18 @@ class RemoteFarmerRepository implements FarmerRepository {
       );
       final envelope = response.data;
       if (envelope?['succeeded'] != true) {
-        throw FarmerException(_errorsFromEnvelope(envelope));
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
     } on DioException catch (e) {
-      throw FarmerException(_errorsFromDio(e));
+      throw SyncException(_errorsFromDio(e));
     }
   }
 
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
+    if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {
+      throw SyncValidationException(_errorsFromEnvelope(body));
+    }
     if (body is Map<String, dynamic>) {
       return _errorsFromEnvelope(body);
     }

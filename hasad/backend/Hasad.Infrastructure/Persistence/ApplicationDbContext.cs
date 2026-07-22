@@ -1,5 +1,6 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Domain.Entities;
+using Hasad.Domain.Enums;
 using Hasad.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -27,8 +28,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Directorates for geographic assignment.</summary>
     public DbSet<Directorate> Directorates => Set<Directorate>();
 
+    /// <summary>Localities for geographic assignment.</summary>
+    public DbSet<Locality> Localities => Set<Locality>();
+
     /// <summary>Registered farmers.</summary>
     public DbSet<Farmer> Farmers => Set<Farmer>();
+
+   /// <summary>Types of identification for farmers.</summary>
+   public DbSet<IdType> IdTypes => Set<IdType>();
 
     /// <summary>Registered farms.</summary>
     public DbSet<Farm> Farms => Set<Farm>();
@@ -65,6 +72,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasIndex(t => new { t.UserId, t.FamilyId });
         });
 
+        // --- 1. إعدادات جدول أنواع الهويات وحقن البيانات الأساسية ---
+                builder.Entity<IdType>(entity =>
+                {
+                    entity.HasKey(e => e.Id);
+                    entity.Property(e => e.NameAr).IsRequired().HasMaxLength(50);
+                    entity.Property(e => e.NameEn).IsRequired().HasMaxLength(50);
+
+                    // حقن البيانات (Seed Data) ليتم إنشاؤها فوراً مع التهجير
+                    entity.HasData(
+                        new IdType { Id = 1, NameAr = "هوية فلسطينية", NameEn = "Palestinian ID" },
+                        new IdType { Id = 2, NameAr = "هوية القدس", NameEn = "Jerusalem ID" },
+                        new IdType { Id = 3, NameAr = "جواز سفر", NameEn = "Passport" }
+                    );
+                });
+
+
+
         builder.Entity<Governorate>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -86,6 +110,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
+        builder.Entity<Locality>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+
+            entity.HasOne(e => e.Governorate)
+                .WithMany(g => g.Localities)
+                .HasForeignKey(e => e.GovernorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.GovernorateId);
+        });
+
         builder.Entity<ApplicationUser>(entity =>
         {
             entity.Property(u => u.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
@@ -103,20 +141,56 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         });
 
         builder.Entity<Farmer>(entity =>
-        {
-            entity.HasKey(f => f.Id);
-            entity.Property(f => f.Name).IsRequired().HasMaxLength(200);
-            entity.Property(f => f.NationalId).IsRequired().HasMaxLength(20);
-            entity.Property(f => f.PhoneNumber).IsRequired().HasMaxLength(20);
-            entity.Property(f => f.Address).HasMaxLength(500);
-            entity.Property(f => f.RowVersion).IsRowVersion();
+                {
+                    entity.HasKey(f => f.Id);
 
-            // A national ID uniquely identifies one farmer record.
-            entity.HasIndex(f => f.NationalId).IsUnique();
+                    // Global query filter for soft delete
+                    entity.HasQueryFilter(f => !f.IsDeleted);
 
-            // ClientId is used for idempotency during synchronization.
-            entity.HasIndex(f => f.ClientId).IsUnique();
-        });
+                    // التزامن - Partial index to allow reusing ClientId from deleted records
+                    entity.HasIndex(f => f.ClientId)
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    // الهوية - Partial index to allow reusing ID Number from deleted records
+                    entity.Property(f => f.IdNumber).IsRequired().HasMaxLength(20);
+                    entity.HasIndex(f => new { f.IdTypeId, f.IdNumber })
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    // الأسماء
+                    entity.Property(f => f.FirstNameAr).IsRequired().HasMaxLength(50);
+                    entity.Property(f => f.FatherNameAr).IsRequired().HasMaxLength(50);
+                    entity.Property(f => f.GrandfatherNameAr).IsRequired().HasMaxLength(50);
+                    entity.Property(f => f.FamilyNameAr).IsRequired().HasMaxLength(50);
+
+                    entity.Property(f => f.FirstNameEn).IsRequired().HasMaxLength(50);
+                    entity.Property(f => f.FatherNameEn).IsRequired().HasMaxLength(50);
+                    entity.Property(f => f.GrandfatherNameEn).IsRequired().HasMaxLength(50);
+                    entity.Property(f => f.FamilyNameEn).IsRequired().HasMaxLength(50);
+
+                    // الجغرافيا والديموغرافيا
+                    entity.Property(f => f.BirthDate).IsRequired();
+                    entity.Property(f => f.Gender).IsRequired().HasDefaultValue(Gender.Unspecified);
+                    entity.Property(f => f.PhoneNumber).IsRequired().HasMaxLength(20);
+                    entity.Property(f => f.FamilySize).IsRequired().HasDefaultValue(1);
+                    entity.Property(f => f.Address).HasMaxLength(500);
+
+                    // توافق جغرافي مع Farm و DamageReport
+                    entity.Property(f => f.GovernorateId).IsRequired().HasMaxLength(50);
+                    entity.Property(f => f.LocalityId).IsRequired().HasMaxLength(50);
+
+                    // إعدادات أخرى
+                    entity.Property(f => f.SyncStatus).IsRequired().HasDefaultValue(0);
+                    entity.Property(f => f.CreatedAt).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+                    entity.Property(f => f.RowVersion).IsRowVersion();
+
+                    // العلاقات
+                    entity.HasOne(f => f.IdType)
+                        .WithMany(t => t.Farmers)
+                        .HasForeignKey(f => f.IdTypeId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
 
         builder.Entity<Farm>(entity =>
         {

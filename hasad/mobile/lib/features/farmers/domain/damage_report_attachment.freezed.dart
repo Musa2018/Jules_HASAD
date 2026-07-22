@@ -24,11 +24,13 @@ DamageReportAttachment _$DamageReportAttachmentFromJson(
 /// @nodoc
 mixin _$DamageReportAttachment {
   String get id => throw _privateConstructorUsedError; // ClientId
+  String? get serverId => throw _privateConstructorUsedError;
   String get damageReportId => throw _privateConstructorUsedError;
   String get localPath => throw _privateConstructorUsedError;
   String? get remotePath => throw _privateConstructorUsedError;
   String get uploadStatus => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
+  String? get lastSyncError => throw _privateConstructorUsedError;
 
   /// Serializes this DamageReportAttachment to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,11 +51,13 @@ abstract class $DamageReportAttachmentCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String damageReportId,
     String localPath,
     String? remotePath,
     String uploadStatus,
     String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -76,11 +80,13 @@ class _$DamageReportAttachmentCopyWithImpl<
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? damageReportId = null,
     Object? localPath = null,
     Object? remotePath = freezed,
     Object? uploadStatus = null,
     Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -88,6 +94,10 @@ class _$DamageReportAttachmentCopyWithImpl<
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
+            serverId: freezed == serverId
+                ? _value.serverId
+                : serverId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             damageReportId: null == damageReportId
                 ? _value.damageReportId
                 : damageReportId // ignore: cast_nullable_to_non_nullable
@@ -108,6 +118,10 @@ class _$DamageReportAttachmentCopyWithImpl<
                 ? _value.syncStatus
                 : syncStatus // ignore: cast_nullable_to_non_nullable
                       as String,
+            lastSyncError: freezed == lastSyncError
+                ? _value.lastSyncError
+                : lastSyncError // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -125,11 +139,13 @@ abstract class _$$DamageReportAttachmentImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String? serverId,
     String damageReportId,
     String localPath,
     String? remotePath,
     String uploadStatus,
     String syncStatus,
+    String? lastSyncError,
   });
 }
 
@@ -149,11 +165,13 @@ class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? serverId = freezed,
     Object? damageReportId = null,
     Object? localPath = null,
     Object? remotePath = freezed,
     Object? uploadStatus = null,
     Object? syncStatus = null,
+    Object? lastSyncError = freezed,
   }) {
     return _then(
       _$DamageReportAttachmentImpl(
@@ -161,6 +179,10 @@ class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
+        serverId: freezed == serverId
+            ? _value.serverId
+            : serverId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         damageReportId: null == damageReportId
             ? _value.damageReportId
             : damageReportId // ignore: cast_nullable_to_non_nullable
@@ -181,6 +203,10 @@ class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
             ? _value.syncStatus
             : syncStatus // ignore: cast_nullable_to_non_nullable
                   as String,
+        lastSyncError: freezed == lastSyncError
+            ? _value.lastSyncError
+            : lastSyncError // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -191,11 +217,13 @@ class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
 class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   const _$DamageReportAttachmentImpl({
     required this.id,
+    this.serverId,
     required this.damageReportId,
     required this.localPath,
     this.remotePath,
     this.uploadStatus = 'pending',
     this.syncStatus = 'pending',
+    this.lastSyncError,
   });
 
   factory _$DamageReportAttachmentImpl.fromJson(Map<String, dynamic> json) =>
@@ -204,6 +232,8 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   @override
   final String id;
   // ClientId
+  @override
+  final String? serverId;
   @override
   final String damageReportId;
   @override
@@ -216,10 +246,12 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   @override
   @JsonKey()
   final String syncStatus;
+  @override
+  final String? lastSyncError;
 
   @override
   String toString() {
-    return 'DamageReportAttachment(id: $id, damageReportId: $damageReportId, localPath: $localPath, remotePath: $remotePath, uploadStatus: $uploadStatus, syncStatus: $syncStatus)';
+    return 'DamageReportAttachment(id: $id, serverId: $serverId, damageReportId: $damageReportId, localPath: $localPath, remotePath: $remotePath, uploadStatus: $uploadStatus, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
   }
 
   @override
@@ -228,6 +260,8 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
         (other.runtimeType == runtimeType &&
             other is _$DamageReportAttachmentImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.serverId, serverId) ||
+                other.serverId == serverId) &&
             (identical(other.damageReportId, damageReportId) ||
                 other.damageReportId == damageReportId) &&
             (identical(other.localPath, localPath) ||
@@ -237,7 +271,9 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
             (identical(other.uploadStatus, uploadStatus) ||
                 other.uploadStatus == uploadStatus) &&
             (identical(other.syncStatus, syncStatus) ||
-                other.syncStatus == syncStatus));
+                other.syncStatus == syncStatus) &&
+            (identical(other.lastSyncError, lastSyncError) ||
+                other.lastSyncError == lastSyncError));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -245,11 +281,13 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    serverId,
     damageReportId,
     localPath,
     remotePath,
     uploadStatus,
     syncStatus,
+    lastSyncError,
   );
 
   /// Create a copy of DamageReportAttachment
@@ -273,11 +311,13 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
 abstract class _DamageReportAttachment implements DamageReportAttachment {
   const factory _DamageReportAttachment({
     required final String id,
+    final String? serverId,
     required final String damageReportId,
     required final String localPath,
     final String? remotePath,
     final String uploadStatus,
     final String syncStatus,
+    final String? lastSyncError,
   }) = _$DamageReportAttachmentImpl;
 
   factory _DamageReportAttachment.fromJson(Map<String, dynamic> json) =
@@ -285,6 +325,8 @@ abstract class _DamageReportAttachment implements DamageReportAttachment {
 
   @override
   String get id; // ClientId
+  @override
+  String? get serverId;
   @override
   String get damageReportId;
   @override
@@ -295,6 +337,8 @@ abstract class _DamageReportAttachment implements DamageReportAttachment {
   String get uploadStatus;
   @override
   String get syncStatus;
+  @override
+  String? get lastSyncError;
 
   /// Create a copy of DamageReportAttachment
   /// with the given fields replaced by the non-null parameter values.

@@ -3,6 +3,10 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/admin/data/users_repository.dart';
+import 'package:mobile/features/location/data/location_repository.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockLocationRepository extends Mock implements LocationRepository {}
 
 class _FixedAdapter implements HttpClientAdapter {
   final Map<String, dynamic> body;
@@ -32,10 +36,11 @@ class _FixedAdapter implements HttpClientAdapter {
 UsersRepositoryImpl _repositoryFor(
   Map<String, dynamic> body, {
   int statusCode = 200,
+  LocationRepository? locationRepo,
 }) {
   final dio = Dio(BaseOptions(baseUrl: 'https://test.local'))
     ..httpClientAdapter = _FixedAdapter(body, statusCode: statusCode);
-  return UsersRepositoryImpl(dio);
+  return UsersRepositoryImpl(dio, locationRepo ?? MockLocationRepository());
 }
 
 void main() {
@@ -170,7 +175,7 @@ void main() {
           },
         ),
       );
-      final repository = UsersRepositoryImpl(dio);
+      final repository = UsersRepositoryImpl(dio, MockLocationRepository());
 
       expect(
         () => repository.getRoles(),

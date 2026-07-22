@@ -11,10 +11,33 @@ part 'database.g.dart';
 class Farmers extends Table {
   TextColumn get id => text()(); // local UUID (ClientId)
   TextColumn get serverId => text().nullable()(); // Authority ID from server
-  TextColumn get name => text().withLength(max: 200)();
-  TextColumn get nationalId => text().withLength(max: 20)();
-  TextColumn get phoneNumber => text().withLength(max: 20)();
-  TextColumn get address => text().withLength(max: 500)();
+  IntColumn get idTypeId => integer().withDefault(const Constant(1))();
+  TextColumn get idNumber => text().withLength(max: 20).withDefault(const Constant(''))();
+  
+  // Names
+  TextColumn get firstNameAr => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get fatherNameAr => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get grandfatherNameAr => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get familyNameAr => text().withLength(max: 50).withDefault(const Constant(''))();
+  
+  TextColumn get firstNameEn => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get fatherNameEn => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get grandfatherNameEn => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get familyNameEn => text().withLength(max: 50).withDefault(const Constant(''))();
+
+  DateTimeColumn get birthDate => dateTime().nullable()();
+  IntColumn get gender => integer().withDefault(const Constant(0))();
+  TextColumn get phoneNumber => text().withLength(max: 20).withDefault(const Constant(''))();
+  IntColumn get familySize => integer().withDefault(const Constant(1))();
+
+  TextColumn get governorateId => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get localityId => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get address => text().withLength(max: 500).withDefault(const Constant(''))();
+
+  // Deprecated field - kept temporarily for migration safety if needed, or we can use onUpgrade to drop/ignore.
+  // Actually, standard Drift migration adding columns is safer.
+  TextColumn get name => text().withLength(max: 200).withDefault(const Constant(''))();
+  TextColumn get nationalId => text().withLength(max: 20).withDefault(const Constant(''))();
 
   // Optimistic concurrency token
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
@@ -22,7 +45,10 @@ class Farmers extends Table {
   // Sync Status: pending, syncing, completed, failed, conflict
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
+  BoolColumn get isPendingDelete => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -45,6 +71,8 @@ class Farms extends Table {
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
+  BoolColumn get isPendingDelete => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -74,6 +102,8 @@ class DamageReports extends Table {
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
+  BoolColumn get isPendingDelete => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -100,6 +130,8 @@ class DamageItems extends Table {
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
+  TextColumn get lastSyncError => text().nullable()();
+  BoolColumn get isPendingDelete => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -120,6 +152,8 @@ class DamageReportAttachments extends Table {
     const Constant('pending'),
   )(); // pending, uploading, completed, failed
   TextColumn get syncStatus => text().withDefault(const Constant('pending'))();
+  TextColumn get lastSyncError => text().nullable()();
+  BoolColumn get isPendingDelete => boolean().withDefault(const Constant(false))();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
@@ -161,7 +195,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -198,6 +232,39 @@ class AppDatabase extends _$AppDatabase {
           damageReportAttachments,
           damageReportAttachments.updatedAt,
         );
+      }
+      if (from < 7) {
+        // Enhance Farmers table for Sprint 10.3
+        await m.addColumn(farmers, farmers.idTypeId);
+        await m.addColumn(farmers, farmers.idNumber);
+        await m.addColumn(farmers, farmers.firstNameAr);
+        await m.addColumn(farmers, farmers.fatherNameAr);
+        await m.addColumn(farmers, farmers.grandfatherNameAr);
+        await m.addColumn(farmers, farmers.familyNameAr);
+        await m.addColumn(farmers, farmers.firstNameEn);
+        await m.addColumn(farmers, farmers.fatherNameEn);
+        await m.addColumn(farmers, farmers.grandfatherNameEn);
+        await m.addColumn(farmers, farmers.familyNameEn);
+        await m.addColumn(farmers, farmers.birthDate);
+        await m.addColumn(farmers, farmers.gender);
+        await m.addColumn(farmers, farmers.familySize);
+        await m.addColumn(farmers, farmers.governorateId);
+        await m.addColumn(farmers, farmers.localityId);
+        await m.addColumn(farmers, farmers.updatedAt);
+      }
+      if (from < 8) {
+        await m.addColumn(farmers, farmers.lastSyncError);
+        await m.addColumn(farms, farms.lastSyncError);
+        await m.addColumn(damageReports, damageReports.lastSyncError);
+        await m.addColumn(damageItems, damageItems.lastSyncError);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.lastSyncError);
+      }
+      if (from < 9) {
+        await m.addColumn(farmers, farmers.isPendingDelete);
+        await m.addColumn(farms, farms.isPendingDelete);
+        await m.addColumn(damageReports, damageReports.isPendingDelete);
+        await m.addColumn(damageItems, damageItems.isPendingDelete);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.isPendingDelete);
       }
     },
     beforeOpen: (details) async {

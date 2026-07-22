@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:mobile/features/admin/domain/directorate.dart';
-import 'package:mobile/features/admin/domain/governorate.dart';
 import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/admin/domain/user.dart';
+import 'package:mobile/features/location/data/location_repository.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
+import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/shared/domain/paginated_list.dart';
 
 class UsersException implements Exception {
@@ -59,8 +60,9 @@ abstract class UsersRepository {
 
 class UsersRepositoryImpl implements UsersRepository {
   final Dio _dio;
+  final LocationRepository _locationRepository;
 
-  UsersRepositoryImpl(this._dio);
+  UsersRepositoryImpl(this._dio, this._locationRepository);
 
   @override
   Future<PaginatedList<User>> getUsers({
@@ -108,21 +110,12 @@ class UsersRepositoryImpl implements UsersRepository {
 
   @override
   Future<List<Governorate>> getGovernorates() async {
-    return _getMany(
-      '/v1/Users/governorates',
-      (json) => Governorate.fromJson(json),
-    );
+    return _locationRepository.getGovernorates();
   }
 
   @override
   Future<List<Directorate>> getDirectorates({String? governorateId}) async {
-    return _getMany(
-      '/v1/Users/directorates',
-      (json) => Directorate.fromJson(json),
-      queryParameters: governorateId != null
-          ? {'governorateId': governorateId}
-          : null,
-    );
+    return _locationRepository.getDirectorates(governorateId: governorateId);
   }
 
   @override

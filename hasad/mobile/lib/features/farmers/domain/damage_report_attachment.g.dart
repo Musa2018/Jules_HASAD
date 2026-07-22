@@ -10,20 +10,24 @@ _$DamageReportAttachmentImpl _$$DamageReportAttachmentImplFromJson(
   Map<String, dynamic> json,
 ) => _$DamageReportAttachmentImpl(
   id: json['id'] as String,
+  serverId: json['serverId'] as String?,
   damageReportId: json['damageReportId'] as String,
   localPath: json['localPath'] as String,
   remotePath: json['remotePath'] as String?,
   uploadStatus: json['uploadStatus'] as String? ?? 'pending',
   syncStatus: json['syncStatus'] as String? ?? 'pending',
+  lastSyncError: json['lastSyncError'] as String?,
 );
 
 Map<String, dynamic> _$$DamageReportAttachmentImplToJson(
   _$DamageReportAttachmentImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
+  'serverId': instance.serverId,
   'damageReportId': instance.damageReportId,
   'localPath': instance.localPath,
   'remotePath': instance.remotePath,
   'uploadStatus': instance.uploadStatus,
   'syncStatus': instance.syncStatus,
+  'lastSyncError': instance.lastSyncError,
 };

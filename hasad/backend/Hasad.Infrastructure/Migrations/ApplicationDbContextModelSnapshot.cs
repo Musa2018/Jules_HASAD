@@ -478,18 +478,87 @@ namespace Hasad.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<DateOnly>("BirthDate")
+                        .HasColumnType("date");
+
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("NationalId")
+                    b.Property<string>("FamilyNameAr")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FamilyNameEn")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("FamilySize")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("FatherNameAr")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FatherNameEn")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FirstNameAr")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FirstNameEn")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Gender")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("GovernorateId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("GrandfatherNameAr")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("GrandfatherNameEn")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("IdNumber")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("IdTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LocalityId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -502,12 +571,20 @@ namespace Hasad.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<int>("SyncStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId")
                         .IsUnique();
 
-                    b.HasIndex("NationalId")
+                    b.HasIndex("IdTypeId", "IdNumber")
                         .IsUnique();
 
                     b.ToTable("Farmers");
@@ -546,6 +623,84 @@ namespace Hasad.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Governorates");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.IdType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "هوية فلسطينية",
+                            NameEn = "Palestinian ID"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "هوية القدس",
+                            NameEn = "Jerusalem ID"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "جواز سفر",
+                            NameEn = "Passport"
+                        });
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.Locality", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("GovernorateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GovernorateId");
+
+                    b.ToTable("Localities");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.RefreshToken", b =>
@@ -902,6 +1057,28 @@ namespace Hasad.Infrastructure.Migrations
                     b.Navigation("Farmer");
                 });
 
+            modelBuilder.Entity("Hasad.Domain.Entities.Farmer", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.IdType", "IdType")
+                        .WithMany("Farmers")
+                        .HasForeignKey("IdTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("IdType");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.Locality", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.Governorate", "Governorate")
+                        .WithMany("Localities")
+                        .HasForeignKey("GovernorateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Governorate");
+                });
+
             modelBuilder.Entity("Hasad.Domain.Identity.ApplicationUser", b =>
                 {
                     b.HasOne("Hasad.Domain.Entities.Directorate", "Directorate")
@@ -985,6 +1162,13 @@ namespace Hasad.Infrastructure.Migrations
             modelBuilder.Entity("Hasad.Domain.Entities.Governorate", b =>
                 {
                     b.Navigation("Directorates");
+
+                    b.Navigation("Localities");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.IdType", b =>
+                {
+                    b.Navigation("Farmers");
                 });
 #pragma warning restore 612, 618
         }

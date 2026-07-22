@@ -9,6 +9,7 @@ part of 'damage_report.dart';
 _$DamageReportImpl _$$DamageReportImplFromJson(Map<String, dynamic> json) =>
     _$DamageReportImpl(
       id: json['id'] as String,
+      serverId: json['serverId'] as String?,
       farmId: json['farmId'] as String,
       farmerId: json['farmerId'] as String,
       damageDate: DateTime.parse(json['damageDate'] as String),
@@ -25,11 +26,14 @@ _$DamageReportImpl _$$DamageReportImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => DamageItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      syncStatus: json['syncStatus'] as String? ?? 'completed',
+      lastSyncError: json['lastSyncError'] as String?,
     );
 
 Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'serverId': instance.serverId,
       'farmId': instance.farmId,
       'farmerId': instance.farmerId,
       'damageDate': instance.damageDate.toIso8601String(),
@@ -42,4 +46,6 @@ Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
       'notes': instance.notes,
       'rowVersion': instance.rowVersion,
       'items': instance.items,
+      'syncStatus': instance.syncStatus,
+      'lastSyncError': instance.lastSyncError,
     };

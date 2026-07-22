@@ -2,6 +2,61 @@
 
 ## [Unreleased]
 
+### Sprint 10.17 — Farmer Soft Delete Workflow Fix
+
+#### Fixed
+- Issue where soft-deleted farmers blocked the creation of new farmers with the same ID number.
+- Farmer creation form pre-filling with deleted farmer data.
+
+#### Added
+- EF Core Global Query Filter for `Farmer` entity.
+- Partial unique indexes for `Farmer` (`IdNumber` and `ClientId`) on the backend.
+- `soft_delete_workflow_test.dart` for regression testing.
+
+### Sprint 10.16 — Farmer Management UI Redesign
+
+#### Added
+- `FarmerCard` widget with comprehensive farmer details and action buttons.
+- `FarmerFiltersSection` with search-by-name/ID/phone and filter chips for gender/sync status.
+- `FarmerFilter` model and reactive `watchFarmers` repository method.
+
+#### Changed
+- `FarmersListScreen` redesigned with a modern card-based layout and sticky filters.
+- `farmersListProvider` refactored from `FutureProvider` to `StreamProvider` for real-time updates.
+- Standardized soft-delete confirmation and synchronization workflow.
+
+### Sprint 10.15 — Farmer Update Sync Reliability
+
+#### Fixed
+- `FarmerDetailsScreen` stale data bug: navigation actions (Edit, Farms) now use the latest reactive data from the database stream.
+- Missing `RowVersion` in update payloads: guaranteed that the latest concurrency token is sent to the backend.
+
+#### Added
+- Safety guard in `RemoteFarmerRepository.updateFarmer` for missing `rowVersion`.
+
+### Sprint 10.14 — Entity Metadata Hardening & Update Sync
+
+#### Added
+- `serverId`, `syncStatus`, and `lastSyncError` to `Farm`, `DamageReport`, and `DamageItem` domain models.
+- Enhanced `Update` scenarios in `farmer_sync_dtos_test.dart` for all entities.
+
+#### Changed
+- Hardened all `toUpdateJson` mappings to use `serverId` as the primary identifier.
+- Updated offline repositories to correctly map and clear synchronization metadata.
+- Improved `BackgroundSyncService` metadata reconciliation logic.
+
+### Sprint 10.13 — Sync DTO Mapping Layer
+
+#### Added
+- `FarmerSyncDto`, `FarmSyncDto`, and `DamageReportSyncDto` for strict API contract mapping.
+- Date normalization for `DateOnly` fields (`yyyy-MM-dd`).
+- Gender validation in the DTO layer to prevent invalid data transmission.
+- `farmer_sync_dtos_test.dart` with comprehensive payload verification.
+
+#### Changed
+- `RemoteFarmerRepository`, `RemoteFarmRepository`, and `RemoteDamageReportRepository` now use the DTO layer instead of `toJson()`.
+- Unified sync exception handling across all remote repositories.
+
 ### Sprint 4 — CI/CD Hardening
 
 #### Changed

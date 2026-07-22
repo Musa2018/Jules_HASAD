@@ -22,10 +22,8 @@ class OfflineFirstDamageReportAttachmentRepository
     await _db
         .into(_db.damageReportAttachments)
         .insert(
-          DamageReportAttachmentsCompanion.insert(
-            id: localId,
-            damageReportId: attachment.damageReportId,
-            localPath: attachment.localPath,
+          _mapToCompanion(attachment).copyWith(
+            id: Value(localId),
             uploadStatus: const Value('pending'),
             syncStatus: const Value('pending'),
           ),
@@ -45,14 +43,29 @@ class OfflineFirstDamageReportAttachmentRepository
 
   @override
   Future<void> deleteAttachment(String id) async {
-    await (_db.delete(
-      _db.damageReportAttachments,
-    )..where((t) => t.id.equals(id))).go();
+    final local = await (_db.select(_db.damageReportAttachments)
+          ..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (local == null) return;
+
+    await (_db.update(_db.damageReportAttachments)
+          ..where((t) => t.id.equals(id)))
+        .write(
+      const DamageReportAttachmentsCompanion(
+        isPendingDelete: Value(true),
+        syncStatus: Value('pending'),
+      ),
+    );
+
     await _syncService.addToQueue(
       localId: id,
       entityType: 'attachment',
       operation: 'delete',
-      data: {},
+      data: {
+        'id': local.serverId ?? local.id,
+        'serverId': local.serverId,
+        'clientId': local.id,
+      },
     );
   }
 
@@ -62,19 +75,34 @@ class OfflineFirstDamageReportAttachmentRepository
   ) async {
     final items = await (_db.select(
       _db.damageReportAttachments,
-    )..where((t) => t.damageReportId.equals(reportId))).get();
+    )..where((t) => t.damageReportId.equals(reportId) & t.isPendingDelete.equals(false))).get();
 
     return items
         .map(
           (e) => domain.DamageReportAttachment(
             id: e.id,
+            serverId: e.serverId,
             damageReportId: e.damageReportId,
             localPath: e.localPath,
             remotePath: e.remotePath,
             uploadStatus: e.uploadStatus,
             syncStatus: e.syncStatus,
+            lastSyncError: e.lastSyncError,
           ),
         )
         .toList();
+  }
+
+  DamageReportAttachmentsCompanion _mapToCompanion(domain.DamageReportAttachment attachment) {
+    return DamageReportAttachmentsCompanion.insert(
+      id: attachment.id,
+      serverId: Value(attachment.serverId),
+      damageReportId: attachment.damageReportId,
+      localPath: attachment.localPath,
+      remotePath: Value(attachment.remotePath),
+      uploadStatus: Value(attachment.uploadStatus),
+      syncStatus: Value(attachment.syncStatus),
+      lastSyncError: Value(attachment.lastSyncError),
+    );
   }
 }

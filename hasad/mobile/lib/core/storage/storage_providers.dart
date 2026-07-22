@@ -16,15 +16,23 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 
 final connectivityProvider = Provider<Connectivity>((ref) => Connectivity());
 
+final remoteFarmerRepositoryProvider = Provider<RemoteFarmerRepository>((ref) {
+  return RemoteFarmerRepository(ref.watch(apiDioProvider));
+});
+
 final syncServiceProvider = Provider<BackgroundSyncService>((ref) {
   final service = BackgroundSyncService(
     ref.watch(databaseProvider),
-    RemoteFarmerRepository(ref.watch(apiDioProvider)),
+    ref.watch(remoteFarmerRepositoryProvider),
     RemoteFarmRepository(ref.watch(apiDioProvider)),
     RemoteDamageReportRepository(ref.watch(apiDioProvider)),
     RemoteDamageReportAttachmentRepository(ref.watch(apiDioProvider)),
     ref.watch(connectivityProvider),
   );
   ref.onDispose(() => service.dispose());
+  // Trigger initialization safely.
+  // We don't await here as it's a synchronous provider,
+  // but it starts the async initialization process.
+  service.initialize();
   return service;
 });

@@ -21,7 +21,17 @@ public class DamageReportCommandHandlerTests
     public async Task CreateDamageReport_Succeeds_WithItems()
     {
         var context = CreateContext();
-        var farmer = new Farmer { Id = Guid.NewGuid(), Name = "Farmer" };
+        // تم استبدال Name بالحقول الجديدة
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            FirstNameAr = "مزارع",
+            FatherNameAr = "اختبار",
+            GrandfatherNameAr = "في",
+            FamilyNameAr = "النظام",
+            IdTypeId = 1,
+            IdNumber = "123456789"
+        };
         var farm = new Farm { Id = Guid.NewGuid(), FarmerId = farmer.Id, Name = "Farm" };
         context.Farmers.Add(farmer);
         context.Farms.Add(farm);

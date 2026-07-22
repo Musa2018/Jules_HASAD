@@ -7,12 +7,27 @@ import 'package:mobile/features/farmers/presentation/farms_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
+import 'package:mobile/features/farmers/domain/gender.dart';
+
 void main() {
-  const farmer = Farmer(
+  final farmer = Farmer(
     id: 'farmer-1',
-    name: 'John Doe',
-    nationalId: '123',
+    idTypeId: 1,
+    idNumber: '123',
+    firstNameAr: 'أحمد',
+    fatherNameAr: 'محمد',
+    grandfatherNameAr: 'علي',
+    familyNameAr: 'محمود',
+    firstNameEn: 'Ahmed',
+    fatherNameEn: 'Mohammed',
+    grandfatherNameEn: 'Ali',
+    familyNameEn: 'Mahmoud',
+    birthDate: DateTime(1985, 5, 10),
+    gender: Gender.male,
     phoneNumber: '555',
+    familySize: 5,
+    governorateId: 'G1',
+    localityId: 'L1',
     address: 'Gaza',
   );
 
@@ -35,7 +50,7 @@ void main() {
         overrides: [
           farmsListByFarmerProvider('farmer-1').overrideWith((ref) => farms),
         ],
-        child: const MaterialApp(
+        child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: FarmsListScreen(farmer: farmer),

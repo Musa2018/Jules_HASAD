@@ -2,10 +2,17 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.9.1-alpha (Geographic Regression Fixed)
-- **Current Sprint**: Sprint 11.6 — Geographic Regression & API Centralization
+- **Current Version**: v0.9.2-alpha (Reference Data Fixed)
+- **Current Sprint**: Sprint 11.7 — Shared Reference Data Service
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-23
+
+## Sprint 11.7 — COMPLETED
+Shared Reference Data Service (Regression Fix):
+- **Unified Backend API**: Implemented `ReferenceDataController` providing a single-shot `/api/v1/referencedata` endpoint for all farm lookups.
+- **Offline-First Caching**: Implemented `OfflineFirstReferenceDataRepository` with Drift persistence, resolving the empty dropdown issue in the Farm module.
+- **Shared Architecture**: Designed lookups as a reusable reference-data service for both Farm and future modules.
+- **Test Coverage**: Added backend and mobile tests verifying the complete lookup synchronization and caching lifecycle.
 
 ## Sprint 11.6 — COMPLETED
 Geographic Regression & API Centralization:

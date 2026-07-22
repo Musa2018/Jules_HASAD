@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Sprint 11.7 — Shared Reference Data Service
+
+#### Added
+- Unified `ReferenceDataController` and `GetReferenceDataQuery` in the backend to serve all farm-related lookups in one request.
+- `ReferenceData` domain model and `ReferenceDataRepository` in Flutter.
+- `OfflineFirstReferenceDataRepository` with Drift caching for OwnershipTypes, AgriculturalSectors, PoliticalClassifications, AreaUnits, and RelationshipToOwners.
+- Automatic lookup synchronization on first access.
+
+#### Fixed
+- Regression where Farm creation dropdowns (Ownership, Sector, etc.) were empty due to missing API and local caching logic.
+
 ### Sprint 11.6 — Geographic Regression & API Centralization
 
 #### Fixed

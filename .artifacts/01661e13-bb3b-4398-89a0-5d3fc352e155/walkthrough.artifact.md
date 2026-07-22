@@ -1,21 +1,38 @@
-# Walkthrough - Fix missing 'directorate' localization
+# Walkthrough - Fix Governorate Dropdown Regression
 
-I have added the missing `directorate` key to the localization files to resolve the compilation errors in `create_user_screen.dart`.
+I have resolved the regression in the User Management and Farm modules where the Governorate dropdown was failing to load.
 
-## Changes
+## Root Cause Resolution
 
-### Localization
+The primary cause was a data mismatch: the Flutter domain model required a `code` field for Governorates, which was missing from the Backend `GovernorateDto` and query projections. This caused a parsing failure in the mobile app. Additionally, geographic APIs were scattered and restricted, causing authorization issues for non-admin users.
 
-#### [app_en.arb](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/l10n/app_en.arb)
-- Added `"directorate": "Directorate"`
+## Changes Made
 
-#### [app_ar.arb](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/l10n/app_ar.arb)
-- Added `"directorate": "مديرية"`
+### Backend: Geographic Centralization
+
+- **Governorate Alignment**: Updated [GovernorateDto.cs](file:///hasad/backend/Hasad.Application/Features/Users/Models/GovernorateDto.cs) to include the `Code` property.
+- **Unified Queries**: Consolidated geographic lookups into the shared `Location` feature.
+- **Shared Controller**: Updated [LocationController.cs](file:///hasad/backend/Hasad.Api/Controllers/LocationController.cs) to provide `governorates`, `directorates`, and `localities` to all authenticated users.
+- **Cleanup**: Removed redundant geographic handlers from the `Users` feature to maintain DRY principles.
+
+### Flutter: Location Layer Refinement
+
+- **Repository Fix**: Repaired critical syntax errors and logic in [location_repository.dart](file:///hasad/mobile/lib/features/location/data/location_repository.dart).
+- **API Path Alignment**: Switched all geographic calls to use the new centralized `/api/v1/Location/` endpoints.
+- **Robust Parsing**: Ensured `Governorate` parsing correctly handles the newly added `Code` field.
 
 ## Verification Results
 
-### Automated Tests
-- Ran `flutter gen-l10n` to regenerate the localization classes. The command completed successfully, ensuring the `directorate` getter is now available in `AppLocalizations`.
+### Backend Tests
+- Added test cases to `LocationLookupTests.cs` and `UserLookupTests.cs` to verify that `Code` is correctly returned.
+- Verified that all 84 backend tests pass (`dotnet test`).
 
-### Manual Verification
-- The compilation errors in `lib/features/admin/presentation/create_user_screen.dart` should now be resolved as the getter `l10n.directorate` is defined.
+### Flutter Verification
+- Ran `flutter analyze` — **No issues found**.
+- Ran `flutter test` — **111 tests passed**.
+
+## Version Control
+- **Commit Hash**: `3b78e5a`
+- **Branch**: `Farms`
+- Changes have been pushed to the remote repository.
+

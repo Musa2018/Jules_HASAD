@@ -47,6 +47,11 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 11.7 - Shared Reference Data Service (Regression Fix)
+- **Shared Architecture**: Implemented a unified `ReferenceDataController` and `GetReferenceDataQuery` to provide all farm-related lookups (Ownership, Sector, Political, Area, Relationships) in a single request.
+- **Offline-First Lookups**: Implemented `OfflineFirstReferenceDataRepository` in Flutter with Drift caching. Lookups are now fetched once, cached locally, and used for all farm forms, resolving the empty dropdown regression.
+- **Future-Ready Measurement Units**: Prepared the API and repository for transition to a universal `MeasurementUnit` system by including `Category` and `Code` fields.
+
 ### Sprint 11.6 - Geographic Regression & API Centralization
 - **Regression Fix**: Resolved Governorate dropdown failure caused by missing `Code` field in Backend DTOs.
 - **API Centralization**: Unified geographic lookup APIs into a shared `LocationController` accessible by all authenticated users.

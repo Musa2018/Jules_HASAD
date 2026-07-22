@@ -2,10 +2,17 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.8.0-alpha (Farm Management UI)
-- **Current Sprint**: Sprint 11.4 — Farm Management UI
+- **Current Version**: v0.9.0-alpha (Farm Module Certified)
+- **Current Sprint**: Sprint 11.5 — Farm Production Acceptance
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-22
+
+## Sprint 11.5 — COMPLETED
+Farm Production Acceptance Audit:
+- **Comprehensive Audit**: Performed complete end-to-end, offline, and authorization audit of the Farm module.
+- **Certification**: Certified the Farm module as Production Ready.
+- **Refinement**: Resolved minor linting issues and optimized code for Dart 3.8 features.
+- **Test Coverage**: Verified 111 passing tests across the module.
 
 ## Sprint 11.4 — COMPLETED
 Farm Management UI:

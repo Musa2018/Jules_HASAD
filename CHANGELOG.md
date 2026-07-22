@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Sprint 11.5 — Farm Production Acceptance
+
+#### Added
+- Production Readiness Report certifying the Farm module for production use.
+- Optimized `LocationRepository` using Dart 3.8 null-aware map elements.
+
+#### Fixed
+- Minor linting warnings in `FarmDetailsScreen` and `FarmCard` regarding unnecessary null-aware operators.
+- Unused parameter naming conventions in `AsyncValue` handlers.
+
 ### Sprint 11.4 — Farm Management UI
 
 #### Added

@@ -168,5 +168,15 @@
   "syncErrorDetails": "Sync Error Details",
   "fixData": "Fix Data",
   "all": "All",
-  "directorate": "Directorate"
+  "directorate": "Directorate",
+  "status_Draft": "Draft",
+  "status_TechReview": "Technical Review",
+  "status_ArchiveDir": "Directorate Archive",
+  "status_DirManager": "Directorate Manager",
+  "status_MinTechReview": "Ministry Technical Review",
+  "status_LegalReview": "Legal Review",
+  "status_ProcReview": "Procedural Review",
+  "status_MinArchive": "Ministry Archive",
+  "status_GenManager": "General Manager",
+  "status_Completed": "Completed"
 }

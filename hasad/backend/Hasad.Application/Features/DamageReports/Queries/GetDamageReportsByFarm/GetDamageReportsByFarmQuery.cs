@@ -1,6 +1,7 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.DamageReports.Models;
+using Hasad.Domain.Constants;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,14 +25,14 @@ public class GetDamageReportsByFarmQueryHandler : IRequestHandler<GetDamageRepor
         var query = _context.DamageReports.AsNoTracking();
 
         // Authorization filtering
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
             if (_currentUser.DirectorateId.HasValue)
             {
                 query = query.Where(r => r.DirectorateId == _currentUser.DirectorateId.Value);
             }
         }
-        else if (_currentUser.IsInRole("Director"))
+        else if (_currentUser.IsInRole(AppRoles.Director))
         {
             if (_currentUser.GovernorateId.HasValue)
             {

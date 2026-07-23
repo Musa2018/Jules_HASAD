@@ -2,6 +2,7 @@ using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.DamageReports.Models;
+using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -132,7 +133,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             LocalityId = request.LocalityId,
             Latitude = request.Latitude,
             Longitude = request.Longitude,
-            StatusId = "Submitted",
+            StatusId = DamageReportStatus.Draft,
             Notes = request.Notes,
             CreatedAt = DateTime.UtcNow,
             Items = request.Items.Select(i => new DamageItem

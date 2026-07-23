@@ -18,9 +18,16 @@ public static class AppRoles
     public const string MinistryReviewer = "MinistryReviewer";
     public const string GeneralManager = "GeneralManager";
 
+    // Ministerial Workflow Roles (Sprint 13.1)
+    public const string LegalReviewer = "LegalReviewer";
+    public const string ProceduralReviewer = "ProceduralReviewer";
+    public const string MinistryTechReviewer = "MinistryTechReviewer";
+    public const string ChiefArchiveOfficer = "ChiefArchiveOfficer";
+    public const string DirectorateManager = "DirectorateManager";
+
     public static RoleScopeType GetScopeType(string roleName) => roleName switch
     {
-        Director or Supervisor => RoleScopeType.Governorate,
+        Director or Supervisor or DirectorateManager => RoleScopeType.Governorate,
         AgriculturalEngineer or FieldSurveyor or TechnicalReviewer or ArchiveOfficer => RoleScopeType.Directorate,
         _ => RoleScopeType.Global
     };
@@ -30,6 +37,8 @@ public static class AppRoles
         SuperAdmin, Administrator, AgriculturalEngineer,
         FieldSurveyor, Farmer, ReadOnly, Director, Finance,
         Supervisor, TechnicalReviewer, ArchiveOfficer,
-        MinistryReviewer, GeneralManager
+        MinistryReviewer, GeneralManager,
+        LegalReviewer, ProceduralReviewer, MinistryTechReviewer,
+        ChiefArchiveOfficer, DirectorateManager
     };
 }

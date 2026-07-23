@@ -5,6 +5,31 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/generated/l10n/app_localizations.dart';
+
+String _getStatusLabel(BuildContext context, String status) {
+  final l10n = AppLocalizations.of(context)!;
+  switch (status) {
+    case 'Draft': return l10n.status_Draft;
+    case 'TechReview': return l10n.status_TechReview;
+    case 'ArchiveDir': return l10n.status_ArchiveDir;
+    case 'DirManager': return l10n.status_DirManager;
+    case 'MinTechReview': return l10n.status_MinTechReview;
+    case 'LegalReview': return l10n.status_LegalReview;
+    case 'ProcReview': return l10n.status_ProcReview;
+    case 'MinArchive': return l10n.status_MinArchive;
+    case 'GenManager': return l10n.status_GenManager;
+    case 'Completed': return l10n.status_Completed;
+    // Legacy mapping for audit history
+    case 'Submitted': return l10n.status_TechReview;
+    case 'TechnicalReview': return l10n.status_ArchiveDir;
+    case 'SupervisorReview': return l10n.status_DirManager;
+    case 'MinistryReview': return l10n.status_MinTechReview;
+    case 'Archive': return l10n.status_MinArchive;
+    case 'Approved': return l10n.status_Completed;
+    default: return status;
+  }
+}
 
 class DamageReportDetailsScreen extends ConsumerWidget {
   final DamageReport report;
@@ -56,6 +81,9 @@ class _HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final statusLabel = _getStatusLabel(context, report.statusId);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -63,7 +91,7 @@ class _HeaderSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "حالة التقرير: ${report.statusId}",
+              "حالة التقرير: ${_getStatusLabel(context, report.statusId)}",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: _getStatusColor(report.statusId),
@@ -87,8 +115,13 @@ class _HeaderSection extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Draft': return Colors.grey;
-      case 'Submitted': return Colors.blue;
-      case 'Approved': return Colors.green;
+      case 'TechReview':
+      case 'MinTechReview':
+      case 'Submitted': 
+        return Colors.blue;
+      case 'Completed':
+      case 'Approved':
+        return Colors.green;
       case 'Rejected': return Colors.red;
       default: return Colors.black;
     }
@@ -158,9 +191,15 @@ class _HistorySection extends ConsumerWidget {
                   itemCount: history.length,
                   itemBuilder: (context, index) {
                     final item = history[index];
+                    final header = _HeaderSection(report: DamageReport(
+                      id: '', farmId: '', farmerId: '', damageDate: DateTime.now(), documentationDate: DateTime.now(),
+                      governorateId: '', directorateId: '', localityId: '', statusId: '', notes: ''
+                    )); // Dummy to access helpers, or better move helpers to shared
+                    
+                    // Actually, I'll use a local function or move the label logic
                     return ListTile(
                       leading: const Icon(Icons.history),
-                      title: Text("من ${item.fromStatus} إلى ${item.toStatus}"),
+                      title: Text("من ${_getStatusLabel(context, item.fromStatus)} إلى ${_getStatusLabel(context, item.toStatus)}"),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -192,46 +231,62 @@ class _WorkflowActionBar extends ConsumerWidget {
     // Determine allowed actions based on role and current status
     final List<Widget> actions = [];
 
-    if (status == "Draft") {
+    if (status == 'Draft') {
       if (auth.hasRole("AgriculturalEngineer") || auth.hasRole("FieldSurveyor")) {
         actions.add(_ActionButton(
           label: "إرسال للمراجعة",
           icon: Icons.send,
           color: Colors.blue,
-          onPressed: () => _handleTransition(context, ref, "Submitted"),
+          onPressed: () => _handleTransition(context, ref, 'TechReview'),
         ));
       }
-    } else if (status == "Submitted") {
+    } else if (status == 'TechReview') {
       if (auth.hasRole("TechnicalReviewer")) {
         actions.add(_ActionButton(
-          label: "تحويل للمراجعة الفنية",
+          label: "تحويل للأرشفة",
           icon: Icons.verified_user,
           color: Colors.green,
-          onPressed: () => _handleTransition(context, ref, "TechnicalReview"),
+          onPressed: () => _handleTransition(context, ref, 'ArchiveDir'),
         ));
         actions.add(_ActionButton(
           label: "إرجاع للتعديل",
           icon: Icons.assignment_return,
           color: Colors.orange,
-          onPressed: () => _handleTransition(context, ref, "Draft", needsComment: true),
+          onPressed: () => _handleTransition(context, ref, 'Draft', needsComment: true),
         ));
       }
-    } else if (status == "TechnicalReview") {
-       if (auth.hasRole("TechnicalReviewer")) {
+    } else if (status == 'ArchiveDir') {
+       if (auth.hasRole("ArchiveOfficer")) {
          actions.add(_ActionButton(
-           label: "توصية بالاعتماد",
+           label: "تحويل للمدير",
            icon: Icons.check_circle,
            color: Colors.green,
-           onPressed: () => _handleTransition(context, ref, "SupervisorReview"),
+           onPressed: () => _handleTransition(context, ref, 'DirManager'),
          ));
           actions.add(_ActionButton(
-          label: "إرجاع للتعديل",
+          label: "إرجاع للمراجعة",
           icon: Icons.assignment_return,
           color: Colors.orange,
-          onPressed: () => _handleTransition(context, ref, "Draft", needsComment: true),
+          onPressed: () => _handleTransition(context, ref, 'TechReview', needsComment: true),
+        ));
+       }
+    } else if (status == 'DirManager') {
+       if (auth.hasRole("DirectorateManager") || auth.hasRole("Director") || auth.hasRole("Supervisor")) {
+         actions.add(_ActionButton(
+           label: "اعتماد المديرية",
+           icon: Icons.approval,
+           color: Colors.green,
+           onPressed: () => _handleTransition(context, ref, 'MinTechReview'),
+         ));
+          actions.add(_ActionButton(
+          label: "إرجاع للأرشفة",
+          icon: Icons.assignment_return,
+          color: Colors.orange,
+          onPressed: () => _handleTransition(context, ref, 'ArchiveDir', needsComment: true),
         ));
        }
     }
+    // ... add more as roles are assigned to users
     // ... add more for other states
 
     if (actions.isEmpty) return const SizedBox.shrink();

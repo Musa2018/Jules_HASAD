@@ -2,6 +2,7 @@ using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.DamageReports.Models;
+using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -57,14 +58,14 @@ public class UploadAttachmentCommandHandler : IRequestHandler<UploadAttachmentCo
         }
 
         // Authorization Inheritance (Rule 4)
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
             if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<AttachmentDto>.Failure(new[] { "Access Denied: You can only upload attachments within your assigned directorate." });
             }
         }
-        else if (_currentUser.IsInRole("Director"))
+        else if (_currentUser.IsInRole(AppRoles.Director))
         {
             if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
             {

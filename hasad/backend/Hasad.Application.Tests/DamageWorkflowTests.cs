@@ -13,7 +13,6 @@ namespace Hasad.Application.Tests;
 public class DamageWorkflowTests
 {
     private readonly Mock<ICurrentUserService> _currentUserMock;
-    private readonly IDamageWorkflowService _workflowService;
 
     public DamageWorkflowTests()
     {
@@ -34,90 +33,119 @@ public class DamageWorkflowTests
         var context = CreateContext();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
-        var result = service.IsTransitionValid("Draft", "Submitted", AppRoles.AgriculturalEngineer);
+        var result = service.IsTransitionValid(DamageReportStatus.Draft, DamageReportStatus.TechReview, AppRoles.AgriculturalEngineer);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void IsTransitionValid_FarmerCannotSubmit()
+    public void IsTransitionValid_LegalReviewer_CanMoveToProcReview()
     {
         var context = CreateContext();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
-        var result = service.IsTransitionValid("Draft", "Submitted", AppRoles.Farmer);
+        var result = service.IsTransitionValid(DamageReportStatus.LegalReview, DamageReportStatus.ProcReview, AppRoles.LegalReviewer);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void CanTransition_Fails_WhenReturningWithoutComment()
+    {
+        var context = CreateContext();
+        var directorateId = Guid.NewGuid();
+        var service = new DamageWorkflowService(context, _currentUserMock.Object);
+
+        _currentUserMock.Setup(x => x.UserId).Returns("user1");
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
+
+        var report = new DamageReport
+        {
+            StatusId = DamageReportStatus.TechReview,
+            DirectorateId = directorateId
+        };
+
+        // Attempting to return TechReview -> Draft without comment
+        var result = service.CanTransition(report, DamageReportStatus.Draft, null);
 
         Assert.False(result);
     }
 
     [Fact]
-    public async Task TransitionAsync_CreatesHistoryRecord()
+    public void CanTransition_Succeeds_WhenReturningWithComment()
     {
         var context = CreateContext();
-        _currentUserMock.Setup(x => x.UserId).Returns("user-1");
+        var directorateId = Guid.NewGuid();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
-        var report = new DamageReport { Id = Guid.NewGuid(), StatusId = "Draft", GovernorateId = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid() };
+        _currentUserMock.Setup(x => x.UserId).Returns("user1");
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
+
+        var report = new DamageReport
+        {
+            StatusId = DamageReportStatus.TechReview,
+            DirectorateId = directorateId
+        };
+
+        var result = service.CanTransition(report, DamageReportStatus.Draft, "Correction needed");
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void CanTransition_Fails_WhenOutsideScope()
+    {
+        var context = CreateContext();
+        var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
+        var service = new DamageWorkflowService(context, _currentUserMock.Object);
+
+        _currentUserMock.Setup(x => x.UserId).Returns("user1");
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
+
+        var report = new DamageReport
+        {
+            StatusId = DamageReportStatus.TechReview,
+            DirectorateId = otherDirectorateId
+        };
+
+        var result = service.CanTransition(report, DamageReportStatus.ArchiveDir, null);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task Handle_TransitionCommand_SucceedsForValidFlow()
+    {
+        var context = CreateContext();
+        var directorateId = Guid.NewGuid();
+        var service = new DamageWorkflowService(context, _currentUserMock.Object);
+        var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object);
+
+        _currentUserMock.Setup(x => x.UserId).Returns("eng1");
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
+
+        var report = new DamageReport
+        {
+            Id = Guid.NewGuid(),
+            StatusId = DamageReportStatus.Draft,
+            DirectorateId = directorateId,
+            GovernorateId = Guid.NewGuid(),
+            LocalityId = Guid.NewGuid()
+        };
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
-        await service.TransitionAsync(report, "Submitted", "Test Comment");
-        await context.SaveChangesAsync();
-
-        var history = await context.DamageWorkflowHistories.FirstOrDefaultAsync();
-        Assert.NotNull(history);
-        Assert.Equal("Draft", history.FromStatus);
-        Assert.Equal("Submitted", history.ToStatus);
-        Assert.Equal("Test Comment", history.Comment);
-        Assert.Equal("user-1", history.ChangedByUserId);
-        Assert.Equal("Submitted", report.StatusId);
-    }
-
-    [Fact]
-    public async Task Handle_TransitionCommand_FailsIfInvalidTransition()
-    {
-        var context = CreateContext();
-        var service = new DamageWorkflowService(context, _currentUserMock.Object);
-        var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object);
-
-        var reportId = Guid.NewGuid();
-        context.DamageReports.Add(new DamageReport { Id = reportId, StatusId = "Draft", GovernorateId = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid() });
-        await context.SaveChangesAsync();
-
-        _currentUserMock.Setup(x => x.IsInRole(It.IsAny<string>())).Returns(false);
-        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
-
-        // Engineer cannot move from Draft to Approved directly
-        var command = new TransitionDamageReportCommand(reportId, "Approved");
-
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        Assert.False(result.Succeeded);
-        Assert.Contains("Invalid transition", result.Errors[0]);
-    }
-
-    [Fact]
-    public async Task Handle_TransitionCommand_SucceedsForGMOverride()
-    {
-        var context = CreateContext();
-        var service = new DamageWorkflowService(context, _currentUserMock.Object);
-        var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object);
-
-        var reportId = Guid.NewGuid();
-        context.DamageReports.Add(new DamageReport { Id = reportId, StatusId = "Draft", GovernorateId = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid() });
-        await context.SaveChangesAsync();
-
-        _currentUserMock.Setup(x => x.IsInRole(AppRoles.GeneralManager)).Returns(true);
-
-        var command = new TransitionDamageReportCommand(reportId, "Approved", "GM Override", true);
+        var command = new TransitionDamageReportCommand(report.Id, DamageReportStatus.TechReview);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        var report = await context.DamageReports.FindAsync(reportId);
-        Assert.Equal("Approved", report!.StatusId);
-
-        var history = await context.DamageWorkflowHistories.FirstAsync();
-        Assert.True(history.IsOverride);
+        var updatedReport = await context.DamageReports.FindAsync(report.Id);
+        Assert.Equal(DamageReportStatus.TechReview, updatedReport!.StatusId);
     }
 }

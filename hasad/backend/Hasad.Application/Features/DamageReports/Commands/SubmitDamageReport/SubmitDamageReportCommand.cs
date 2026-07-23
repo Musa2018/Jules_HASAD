@@ -1,5 +1,6 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
+using Hasad.Domain.Constants;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +35,7 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
             return Result<Guid>.Failure(new[] { "Damage report not found." });
         }
 
-        if (report.StatusId != "Draft")
+        if (report.StatusId != DamageReportStatus.Draft)
         {
             return Result<Guid>.Failure(new[] { "Only draft reports can be submitted." });
         }
@@ -45,14 +46,14 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
         }
 
         // Scope validation
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
             if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<Guid>.Failure(new[] { "Access denied. Report is outside your assigned directorate scope." });
             }
         }
-        else if (_currentUser.IsInRole("Director"))
+        else if (_currentUser.IsInRole(AppRoles.Director))
         {
             if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
             {
@@ -61,19 +62,12 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
         }
 
         // Check workflow permission
-        // AgriculturalEngineer or FieldSurveyor can submit
-        bool canSubmit = false;
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        if (!_workflowService.CanTransition(report, DamageReportStatus.TechReview, "Report submitted for review."))
         {
-            canSubmit = _workflowService.IsTransitionValid(report.StatusId, "Submitted", "AgriculturalEngineer"); // Role mapping
+            return Result<Guid>.Failure(new[] { "You do not have permission to submit this report or it is in an invalid state." });
         }
 
-        if (!canSubmit && !_currentUser.IsInRole("SuperAdmin"))
-        {
-            return Result<Guid>.Failure(new[] { "You do not have permission to submit this report." });
-        }
-
-        await _workflowService.TransitionAsync(report, "Submitted", "Report submitted for review.");
+        await _workflowService.TransitionAsync(report, DamageReportStatus.TechReview, "Report submitted for review.");
 
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -1,6 +1,7 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsByFarm;
+using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -84,7 +85,7 @@ public class DamageReportCommandHandlerTests
         Assert.True(result.Succeeded);
         Assert.Equal("000001-TEST-2026", result.Data!.PermanentFormNumber);
         Assert.Single(result.Data!.Items);
-        Assert.Equal("Submitted", result.Data.StatusId);
+        Assert.Equal(DamageReportStatus.Draft, result.Data.StatusId);
     }
 
     [Fact]

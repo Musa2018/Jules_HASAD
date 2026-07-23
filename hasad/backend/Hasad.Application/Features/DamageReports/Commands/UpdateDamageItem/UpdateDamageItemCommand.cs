@@ -2,6 +2,7 @@ using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.DamageReports.Models;
+using Hasad.Domain.Constants;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,14 +48,14 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
             return Result<DamageItemDto>.Failure(new[] { "Parent damage report not found." });
         }
 
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
             if (_currentUser.DirectorateId.HasValue && item.DamageReport.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<DamageItemDto>.Failure(new[] { "Access Denied: You can only manage items within your assigned directorate." });
             }
         }
-        else if (_currentUser.IsInRole("Director"))
+        else if (_currentUser.IsInRole(AppRoles.Director))
         {
             if (_currentUser.GovernorateId.HasValue && item.DamageReport.GovernorateId != _currentUser.GovernorateId.Value)
             {

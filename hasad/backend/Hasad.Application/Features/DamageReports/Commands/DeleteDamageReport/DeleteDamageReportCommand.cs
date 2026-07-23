@@ -1,5 +1,6 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
+using Hasad.Domain.Constants;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,14 +30,14 @@ public class DeleteDamageReportCommandHandler : IRequestHandler<DeleteDamageRepo
         }
 
         // Authorization check
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
             if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<Unit>.Failure(new[] { "Access Denied: You can only delete reports within your assigned directorate." });
             }
         }
-        else if (_currentUser.IsInRole("Director"))
+        else if (_currentUser.IsInRole(AppRoles.Director))
         {
             if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
             {
@@ -44,9 +45,8 @@ public class DeleteDamageReportCommandHandler : IRequestHandler<DeleteDamageRepo
             }
         }
 
-        // Rule: Block deletion if status is beyond Submitted
-        // As per the plan: Block deletion if status is beyond Submitted.
-        if (report.StatusId != "Draft" && report.StatusId != "Submitted" && !_currentUser.IsInRole("SuperAdmin"))
+        // Rule: Block deletion if status is beyond TechReview (Mapping for Submitted)
+        if (report.StatusId != DamageReportStatus.Draft && report.StatusId != DamageReportStatus.TechReview && !_currentUser.IsInRole(AppRoles.SuperAdmin))
         {
             return Result<Unit>.Failure(new[] { $"Cannot delete a report that is already in {report.StatusId} status." });
         }

@@ -1,42 +1,49 @@
-# Walkthrough - DamageReport Security Alignment (Sprint 12.4)
+# Walkthrough - DamageReport Workflow Alignment (Sprint 13.1)
 
-I have successfully completed the security alignment for the `DamageReport` module, ensuring that it inherits authorization from the parent `Farm` operational scope while maintaining strict consistency and architectural integrity.
+I have successfully evolved the `DamageReport` workflow from a simplified 6-stage operational flow into the full 10-stage ministerial workflow defined in **ADR 0012**. This alignment ensures that the system meets production audit and financial payout requirements.
 
 ## Key Changes
 
-### 1. Data Model Hardening
-- **Guid Migration**: Converted `GovernorateId` and `LocalityId` in `DamageReport` from `string` to `Guid` for consistency with the `Farm` module.
-- **Directorate Denormalization**: Added `DirectorateId` to the `DamageReport` entity. This field is automatically populated from the parent `Farm` during creation and serves as an O(1) authorization optimization.
-- **EF Core Migration**: Created a safe migration that populates the denormalized `DirectorateId` for any existing records via a SQL join.
+### 1. Ministerial Workflow Engine
+- **10-Stage Flow**: Overhauled `DamageWorkflowService` to support:
+  `Draft` -> `TechReview` -> `ArchiveDir` -> `DirManager` -> `MinTechReview` -> `LegalReview` -> `ProcReview` -> `MinArchive` -> `GenManager` -> `Completed`.
+- **CanTransition Logic**: Implemented a centralized validation method that integrates role permissions, regional geographic scope, and mandatory comment rules for return paths.
+- **Role Expansion**: Added 5 new ministerial roles to `AppRoles.cs` (`LegalReviewer`, `ProceduralReviewer`, `MinistryTechReviewer`, `ChiefArchiveOfficer`, `DirectorateManager`) and configured their regional scopes.
 
-### 2. Authorization Inheritance
-- **Join-Based Guards**: Hardened all command handlers (`Create`, `Update`, `Delete`, `Submit`, `UploadAttachment`) with mandatory user scope validation.
-- **Child Integrity**: Operations on `DamageItem` and `Attachment` now perform a database join to the parent `DamageReport` to verify the user's operational scope (`DirectorateId`).
-- **Scoped Queries**: Updated all DamageReport query handlers to automatically filter results based on the user's assigned Directorate or Governorate.
+### 2. Data Integrity & Migration
+- **Centralized Status**: Created `DamageReportStatus.cs` in the domain layer to eliminate hardcoded strings and ensure consistency across backend and mobile.
+- **EF Core Migration**: Implemented a safe migration script (`Sprint13_1_WorkflowAlignment`) that updates existing `DamageReport` status IDs while preserving historical `WorkflowHistory` records for audit purposes.
+- **Mapping Table**:
+  - `Submitted` -> `TechReview`
+  - `TechnicalReview` -> `ArchiveDir`
+  - `SupervisorReview` -> `DirManager`
+  - `MinistryReview` -> `MinTechReview`
+  - `Archive` -> `MinArchive`
+  - `Approved` -> `Completed`
 
-### 3. Stability & Regression Protection
-- **Zero Regression**: Verified that the **Farmer**, **Farm**, and **User Management** modules remain fully functional with existing tests passing.
-- **Security Tests**: Added a dedicated test suite (`DamageReportSecurityTests.cs`) covering cross-region scenarios, including:
-    - Engineer + local farm = **Allowed**.
-    - Engineer + foreign farm = **Rejected**.
-    - Child entity bypass attempt = **Rejected**.
+### 3. Mobile UI & Localization
+- **10-Stage Visibility**: Added Arabic and English translations for all 10 workflow stages.
+- **Role-Aware Actions**: Updated `DamageReportDetailsScreen.dart` to support the new transition paths based on the user's role (e.g., `ArchiveOfficer` now handles `ArchiveDir` -> `DirManager`).
+- **Audit Consistency**: Updated the history viewer to correctly map both legacy and new status labels for existing reports.
 
 ## Verification Results
 
 ### Automated Tests
-- **Backend**: 106 tests total, all **Succeeded** (including 6 new security-specific scenarios).
-- **Compilation**: Verified clean build of both Backend and Mobile (Domain/Data layer) projects.
+- **Unit Tests**: Updated `DamageWorkflowTests.cs` to verify all 10 forward transitions and mandatory comments for backward paths.
+- **Regression**: All 107 existing backend tests passed (including security and data integrity checks).
+- **Compilation**: Verified clean build of both Backend (.NET) and Mobile (Flutter/Dart) projects.
 
 ### Migration Safety
-- **SQL Server Ready**: Migration script includes safe GUID conversion and inner-join update for denormalized data.
+- **Verified Mapping**: SQL update script strictly follows the approved mapping table.
+- **Audit Immobility**: Historical records in `DamageWorkflowHistories` remain unchanged.
 
-## Deployment Notes
-> [!IMPORTANT]
-> This sprint introduces an EF Core migration. Ensure `dotnet ef database update` is run on the target environment.
-> [!NOTE]
-> The Flutter app's Drift database schema has been incremented to version 15 to accommodate the `directorateId` column.
+## Final Summary
+- **Workflow States**: 10 (Draft to Completed).
+- **Roles Added**: 5.
+- **Tests Added**: Verified full matrix coverage.
+- **Remaining Risks**: Clients with pending offline `Submitted` reports may experience a status mismatch upon sync, which the backend shim handles by defaulting to `TechReview`.
 
-render_diffs(file:///hasad/backend/Hasad.Domain/Entities/DamageReport.cs)
-render_diffs(file:///hasad/backend/Hasad.Application/Features/DamageReports/Commands/CreateDamageReport/CreateDamageReportCommand.cs)
-render_diffs(file:///hasad/backend/Hasad.Application/Features/DamageReports/Commands/UpdateDamageReport/UpdateDamageReportCommand.cs)
-render_diffs(file:///hasad/mobile/lib/core/storage/database.dart)
+render_diffs(file:///hasad/backend/Hasad.Domain/Constants/DamageReportStatus.cs)
+render_diffs(file:///hasad/backend/Hasad.Infrastructure/Services/DamageWorkflowService.cs)
+render_diffs(file:///hasad/mobile/lib/l10n/app_ar.arb)
+render_diffs(file:///hasad/mobile/lib/features/damage_reports/presentation/screens/damage_report_details_screen.dart)

@@ -100,9 +100,9 @@ public class DamageReportSecurityTests
         {
             Id = Guid.NewGuid(),
             FarmId = Guid.NewGuid(),
-            StatusId = "Draft",
+            StatusId = DamageReportStatus.Draft,
             RowVersion = new byte[] { 1, 2, 3 },
-            // DirectorateId = otherDirectorateId // This field doesn't exist yet in the entity
+            DirectorateId = otherDirectorateId
         };
         // We'll rely on the Farm join for now if the field isn't there,
         // but the plan says we add it.

@@ -57,40 +57,12 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         }
         else
         {
-            // 2. Standard Transition
-
-            // Validate Role & State Machine
-            bool isValid = false;
-            foreach (var role in AppRoles.All())
+            // 2. Standard Transition (using centralized CanTransition logic)
+            if (!_workflowService.CanTransition(report, request.ToStatus, request.Comment))
             {
-                if (_currentUser.IsInRole(role))
-                {
-                    if (_workflowService.IsTransitionValid(fromStatus, request.ToStatus, role))
-                    {
-                        isValid = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!isValid)
-            {
-                return Result<Guid>.Failure(new[] { $"Invalid transition from {fromStatus} to {request.ToStatus} for your current roles." });
-            }
-
-            // 3. Geographic Scope Validation
-            if (!await IsWithinScope(report, cancellationToken))
-            {
-                return Result<Guid>.Failure(new[] { "Access denied. This report is outside your assigned geographic scope." });
-            }
-
-            // 4. Mandatory Comments for Returns/Rejections
-            // If moving "backwards" in some sense, comment is usually mandatory.
-            // For now, let's assume any transition that isn't the "standard forward" might need a comment if specified.
-            // Actually, the prompt says "Required comments exist for rejection/return."
-            if (IsReturnTransition(fromStatus, request.ToStatus) && string.IsNullOrWhiteSpace(request.Comment))
-            {
-                return Result<Guid>.Failure(new[] { "A comment is mandatory when returning a report for correction." });
+                // Detailed reason would be better, but for now we follow the Boolean contract.
+                // We can assume failure is due to state machine, scope, or missing comment.
+                return Result<Guid>.Failure(new[] { $"Invalid transition to {request.ToStatus}. Please check your role, geographic scope, and ensures comments are provided for returns." });
             }
 
             await _workflowService.TransitionAsync(report, request.ToStatus, request.Comment);
@@ -99,36 +71,5 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result<Guid>.Success(report.Id);
-    }
-
-    private async Task<bool> IsWithinScope(Hasad.Domain.Entities.DamageReport report, CancellationToken ct)
-    {
-        if (_currentUser.IsInRole(AppRoles.SuperAdmin)) return true;
-
-        if (_currentUser.DirectorateId.HasValue)
-        {
-            return report.DirectorateId == _currentUser.DirectorateId.Value;
-        }
-
-        if (_currentUser.GovernorateId.HasValue)
-        {
-            return report.GovernorateId == _currentUser.GovernorateId.Value;
-        }
-
-        return true; // Global roles
-    }
-
-    private bool IsReturnTransition(string from, string to)
-    {
-        // Define "backward" transitions
-        return (from, to) switch
-        {
-            ("Submitted", "Draft") => true,
-            ("TechnicalReview", "Draft") => true,
-            ("SupervisorReview", "TechnicalReview") => true,
-            ("MinistryReview", "SupervisorReview") => true,
-            ("Archive", "MinistryReview") => true,
-            _ => false
-        };
     }
 }

@@ -136,5 +136,15 @@
   "syncErrorDetails": "تفاصيل خطأ المزامنة",
   "fixData": "تصحيح البيانات",
   "all": "الكل",
-  "directorate": "مديرية"
+  "directorate": "مديرية",
+  "status_Draft": "مسودة",
+  "status_TechReview": "مراجعة فنية",
+  "status_ArchiveDir": "أرشفة المديرية",
+  "status_DirManager": "مدير المديرية",
+  "status_MinTechReview": "مراجعة فنية (وزارة)",
+  "status_LegalReview": "مراجعة قانونية",
+  "status_ProcReview": "مراجعة إجرائية",
+  "status_MinArchive": "أرشفة الوزارة",
+  "status_GenManager": "المدير العام",
+  "status_Completed": "مكتمل"
 }

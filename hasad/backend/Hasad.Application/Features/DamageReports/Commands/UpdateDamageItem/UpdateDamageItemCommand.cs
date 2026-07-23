@@ -3,8 +3,10 @@ using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.DamageReports.Models;
 using Hasad.Domain.Constants;
+using Hasad.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hasad.Application.Features.DamageReports.Commands.UpdateDamageItem;
 
@@ -24,11 +26,19 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly ICostingService _costingService;
+    private readonly ILogger<UpdateDamageItemCommandHandler> _logger;
 
-    public UpdateDamageItemCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+    public UpdateDamageItemCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUser,
+        ICostingService costingService,
+        ILogger<UpdateDamageItemCommandHandler> logger)
     {
         _context = context;
         _currentUser = currentUser;
+        _costingService = costingService;
+        _logger = logger;
     }
 
     public async Task<Result<DamageItemDto>> Handle(UpdateDamageItemCommand request, CancellationToken cancellationToken)
@@ -70,14 +80,31 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
             return Result<DamageItemDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
+        // Valuation & Costing Resolution (Rule: Backend is Authoritative)
+        var priceResult = await _costingService.GetUnitPriceAsync(request.ClassificationId, request.CostingSheetId, item.DamageReport.DamageDate, cancellationToken);
+        if (!priceResult.Succeeded)
+        {
+            return Result<DamageItemDto>.Failure(priceResult.Errors);
+        }
+
+        decimal unitPrice = priceResult.Data;
+        decimal backendCalculatedLoss = request.Quantity * unitPrice * (request.DamagePercentage / 100);
+
+        // Client Audit
+        if (Math.Abs(backendCalculatedLoss - request.EstimatedLoss) > 0.01m)
+        {
+            _logger.LogWarning("Valuation Mismatch during Update for Item {Id}: Client sent {ClientLoss}, Backend calculated {BackendLoss}",
+                item.Id, request.EstimatedLoss, backendCalculatedLoss);
+        }
+
         item.ClassificationId = request.ClassificationId;
         item.CostingSheetId = request.CostingSheetId;
-        item.CalculatedUnitPrice = request.CalculatedUnitPrice;
+        item.CalculatedUnitPrice = unitPrice; // Authority price
         item.MeasurementUnitSnapshot = request.MeasurementUnitSnapshot;
         item.AffectedArea = request.AffectedArea;
         item.DamagePercentage = request.DamagePercentage;
         item.Quantity = request.Quantity;
-        item.EstimatedLoss = request.EstimatedLoss;
+        item.EstimatedLoss = backendCalculatedLoss; // Authority loss
         item.UpdatedAt = DateTime.UtcNow;
 
         try

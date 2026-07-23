@@ -1,20 +1,26 @@
 # Task: DamageReport Workflow Alignment (Sprint 13.1)
 
-- `[/]` **Phase 1: Backend status model and workflow engine**
-    - [ ] Create `DamageReportStatus.cs` constants
-    - [ ] Update `AppRoles.cs` with new roles and scopes
-    - [ ] Update `DamageWorkflowService.cs` with the new 10-stage matrix
-- [ ] **Phase 2: Backend tests**
-    - [ ] Update unit tests for all 10 forward transitions
-    - [ ] Update unit tests for backward transitions and mandatory comments
-    - [ ] Update security tests for role-based restrictions
-- [ ] **Phase 3: Database migration**
-    - [ ] Create EF Core migration for `StatusId` updates
-    - [ ] Verify migration script with mapping table
-- [ ] **Phase 4: API contract verification**
-    - [ ] Update `CreateDamageReportCommand` defaults
-    - [ ] Replace hardcoded status strings in Application features
-- [ ] **Phase 5: Flutter update**
-    - [ ] Add localization for 10 stages
-    - [ ] Update `damage_report.dart` models
-    - [ ] Update `DamageReportDetailsScreen.dart` transition logic
+- [x] **Phase 1: Backend status model and workflow engine**
+    - [x] Create `DamageReportStatus.cs` constants
+    - [x] Update `AppRoles.cs` with new roles and scopes
+    - [x] Update `DamageWorkflowService.cs` with the new 10-stage matrix
+- [x] **Phase 2: Backend tests**
+    - [x] Update unit tests for all 10 forward transitions
+    - [x] Update unit tests for backward transitions and mandatory comments
+    - [x] Update security tests for role-based restrictions
+- [x] **Phase 3: Database migration**
+    - [x] Create EF Core migration for `StatusId` updates
+    - [x] Verify migration script with mapping table
+- [x] **Phase 4: API contract verification**
+    - [x] Update `CreateDamageReportCommand` defaults
+    - [x] Replace hardcoded status strings in Application features
+- [x] **Phase 5: Flutter update**
+    - [x] Add localization for 10 stages
+    - [x] Update `damage_report.dart` models
+    - [x] Update `DamageReportDetailsScreen.dart` transition logic
+- `[/]` **Sprint 13.2 Phase 1: Backend Valuation Guards**
+    - [x] Implement `ICostingService` and `CostingService`
+    - [x] Harden `CreateDamageReportCommandHandler` math logic
+    - [x] Harden `UpdateDamageItemCommandHandler` math logic
+    - [x] Add `DamageValuationTests.cs`
+    - [x] Update documentation (AI_CONTEXT, PROJECT_STATUS)

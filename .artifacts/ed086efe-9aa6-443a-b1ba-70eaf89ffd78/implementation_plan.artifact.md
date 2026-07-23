@@ -1,60 +1,68 @@
-# Implementation Plan - DamageReport Workflow Alignment (Sprint 13.1)
+# Implementation Plan - Backend Valuation Guards (Sprint 13.2 Phase 1)
 
-Align the `DamageWorkflowService` and `AppRoles` with the 10-stage ministerial workflow defined in **ADR 0012**.
-
-## Status Mapping Table
-
-| Old Status | New Status | Migration Reason |
-| :--- | :--- | :--- |
-| `Draft` | `Draft` | Continuity of initial state. |
-| `Submitted` | `TechReview` | Terminology alignment with Technical Reviewers. |
-| `TechnicalReview` | `ArchiveDir` | Alignment with Directorate-level document verification stage. |
-| `SupervisorReview` | `DirManager` | Explicit Directorate/Governorate Management stage. |
-| `MinistryReview` | `MinTechReview` | Headquarters Technical Review stage. |
-| `Archive` | `MinArchive` | Central Ministry Archival stage. |
-| `Approved` | `Completed` | Definition of final immutable state. |
-
-## Role Expansion Plan
-
-| Role Name | Purpose | Scope |
-| :--- | :--- | :--- |
-| `LegalReviewer` | Legal validation of assessment and ownership docs. | **Global** |
-| `ProceduralReviewer` | Verification of ministerial procedures compliance. | **Global** |
-| `MinistryTechReviewer` | Technical oversight at the central ministry level. | **Global** |
-| `ChiefArchiveOfficer` | Final central document audit and archival. | **Global** |
-| `DirectorateManager` | Approval of reports within assigned region. | **Governorate** |
-
-## Implementation Phases
-
-### Phase 1: Backend Status Model and Workflow Engine
-1.  **Define Constants**: Create `DamageReportStatus.cs` in `Hasad.Domain`.
-2.  **Update Roles**: Add new roles to `AppRoles.cs` and configure their scopes.
-3.  **Refactor Workflow Service**:
-    - Update `IsTransitionValid` with the full 10-stage matrix.
-    - Implement the `CanTransition` logic integrating role, scope, and comment rules.
-
-### Phase 2: Backend Tests
-1.  **New Transition Tests**: Verify every forward path in the 10-stage flow.
-2.  **Return Path Tests**: Verify mandatory comments for all backward transitions.
-3.  **Security/Scope Tests**: Ensure `DirManager` cannot approve reports outside their Governorate.
-
-### Phase 3: Database Migration
-1.  **EF Migration**: Update existing `DamageReport.StatusId` values based on the mapping table.
-2.  **Audit Integrity**: Verify that `DamageWorkflowHistory` records are NOT modified.
-
-### Phase 4: API Contract Verification
-1.  Verify `DamageReportDto` consistency.
-2.  Ensure `CreateDamageReportCommand` defaults to `Draft` (consistent with new engine).
-
-### Phase 5: Flutter Update
-1.  **Localization**: Add Arabic/English strings for all 10 stages.
-2.  **Models**: Update status handling in `damage_report.dart`.
-3.  **UI**: Update the stepper/status display in `DamageReportDetailsScreen`.
+Implement the backend calculation protection layer for Damage Assessment, ensuring technical loss calculations are authoritative and audit-ready.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **WorkflowHistory Immobility**: Historical transitions will still point to old status IDs. The UI must handle both old and new status keys for localization to avoid "empty" status labels for old reports.
+> **Authoritative Backend Calculation**: The backend will now recalculate all technical losses. Client-provided `EstimatedLoss` values will be used for audit comparison only and will be overwritten by server-calculated values.
 
 > [!WARNING]
-> **Backward Compatibility**: Any client currently holding an offline report with status `Submitted` will find that their next sync (which might be an `Update`) will need to handle the backend transition to `TechReview`.
+> **Strict Costing Validation**: Reports will be rejected if the provided `CostingSheetId` does not match the `ClassificationId` or was not active at the time of the damage.
+
+## Proposed Changes
+
+### [Backend] Application Layer
+
+#### [NEW] [ICostingService.cs](file:///hasad/backend/Hasad.Application/Common/Interfaces/ICostingService.cs)
+- Define interface for resolving and validating unit prices.
+
+#### [MODIFY] [CreateDamageReportCommandHandler.cs](file:///hasad/backend/Hasad.Application/Features/DamageReports/Commands/CreateDamageReport/CreateDamageReportCommand.cs)
+- Inject `ICostingService` and `ILogger`.
+- Recalculate `EstimatedLoss` for every item.
+- Log mismatches between client-provided and server-calculated values.
+- Store server-calculated `CalculatedUnitPrice` and `EstimatedLoss`.
+
+#### [MODIFY] [UpdateDamageItemCommandHandler.cs](file:///hasad/backend/Hasad.Application/Features/DamageReports/Commands/UpdateDamageItem/UpdateDamageItemCommand.cs)
+- Inject `ICostingService` and `ILogger`.
+- Recalculate and validate technical loss upon item update.
+
+---
+
+### [Backend] Infrastructure Layer
+
+#### [NEW] [CostingService.cs](file:///hasad/backend/Hasad.Infrastructure/Services/CostingService.cs)
+- Implement `ICostingService` with database lookups for active costing sheets.
+- Validation logic for `ClassificationId`, `EffectiveFrom`, `EffectiveTo`, and `IsActive`.
+
+#### [MODIFY] [DependencyInjection.cs](file:///hasad/backend/Hasad.Infrastructure/DependencyInjection.cs)
+- Register `CostingService`.
+
+---
+
+### [Backend] Documentation
+
+#### [MODIFY] [AI_CONTEXT.md](file:///AI_CONTEXT.md)
+- Document that backend valuation is the authoritative source for technical loss.
+
+#### [MODIFY] [PROJECT_STATUS.md](file:///PROJECT_STATUS.md)
+- Update Sprint 13.2 status.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- **CostingService Tests**:
+    - Valid resolution.
+    - Classification mismatch rejection.
+    - Date out of range rejection.
+    - Inactive version rejection.
+- **Valuation Guard Tests (Create/Update)**:
+    - Client value overwrite.
+    - Mismatch logging (verify via Mock Logger).
+    - Sync scenarios for offline-generated items.
+
+### Manual Verification
+- Attempt to sync a report with an intentionally wrong `EstimatedLoss` and verify the backend corrects it in the database.
+- Verify log entries for valuation mismatches in the development environment.

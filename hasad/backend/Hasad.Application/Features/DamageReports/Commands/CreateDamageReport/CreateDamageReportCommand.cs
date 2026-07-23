@@ -6,6 +6,7 @@ using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
 
@@ -43,15 +44,21 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
     private readonly IDamageReportNumberService _numberService;
+    private readonly ICostingService _costingService;
+    private readonly ILogger<CreateDamageReportCommandHandler> _logger;
 
     public CreateDamageReportCommandHandler(
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        IDamageReportNumberService numberService)
+        IDamageReportNumberService numberService,
+        ICostingService costingService,
+        ILogger<CreateDamageReportCommandHandler> logger)
     {
         _context = context;
         _currentUser = currentUser;
         _numberService = numberService;
+        _costingService = costingService;
+        _logger = logger;
     }
 
     public async Task<Result<DamageReportDto>> Handle(CreateDamageReportCommand request, CancellationToken cancellationToken)
@@ -113,6 +120,42 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         // 5. Generate Permanent Number
         var permanentNumber = await _numberService.GeneratePermanentNumberAsync(farm.DirectorateId, request.DamageYear, cancellationToken);
 
+        // 6. Valuation & Costing Resolution (Authoritative Backend Calculation)
+        var items = new List<DamageItem>();
+        foreach (var itemInput in request.Items)
+        {
+            var priceResult = await _costingService.GetUnitPriceAsync(itemInput.ClassificationId, itemInput.CostingSheetId, request.DamageDate, cancellationToken);
+            if (!priceResult.Succeeded)
+            {
+                return Result<DamageReportDto>.Failure(priceResult.Errors);
+            }
+
+            decimal unitPrice = priceResult.Data;
+            decimal backendCalculatedLoss = itemInput.Quantity * unitPrice * (itemInput.DamagePercentage / 100);
+
+            // Client Audit
+            if (Math.Abs(backendCalculatedLoss - itemInput.EstimatedLoss) > 0.01m)
+            {
+                _logger.LogWarning("Valuation Mismatch for ClientId {ClientId}: Client sent {ClientLoss}, Backend calculated {BackendLoss}",
+                    itemInput.ClientId, itemInput.EstimatedLoss, backendCalculatedLoss);
+            }
+
+            items.Add(new DamageItem
+            {
+                Id = Guid.NewGuid(),
+                ClientId = itemInput.ClientId,
+                ClassificationId = itemInput.ClassificationId,
+                CostingSheetId = itemInput.CostingSheetId,
+                CalculatedUnitPrice = unitPrice, // Authority price
+                MeasurementUnitSnapshot = itemInput.MeasurementUnitSnapshot,
+                AffectedArea = itemInput.AffectedArea,
+                DamagePercentage = itemInput.DamagePercentage,
+                Quantity = itemInput.Quantity,
+                EstimatedLoss = backendCalculatedLoss, // Authority loss
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+
         var report = new DamageReport
         {
             Id = Guid.NewGuid(),
@@ -136,20 +179,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             StatusId = DamageReportStatus.Draft,
             Notes = request.Notes,
             CreatedAt = DateTime.UtcNow,
-            Items = request.Items.Select(i => new DamageItem
-            {
-                Id = Guid.NewGuid(),
-                ClientId = i.ClientId,
-                ClassificationId = i.ClassificationId,
-                CostingSheetId = i.CostingSheetId,
-                CalculatedUnitPrice = i.CalculatedUnitPrice,
-                MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
-                AffectedArea = i.AffectedArea,
-                DamagePercentage = i.DamagePercentage,
-                Quantity = i.Quantity,
-                EstimatedLoss = i.EstimatedLoss,
-                CreatedAt = DateTime.UtcNow
-            }).ToList()
+            Items = items
         };
 
         _context.DamageReports.Add(report);

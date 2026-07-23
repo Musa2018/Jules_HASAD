@@ -1,49 +1,39 @@
-# Walkthrough - DamageReport Workflow Alignment (Sprint 13.1)
+# Walkthrough - Backend Valuation Guards (Sprint 13.2 Phase 1)
 
-I have successfully evolved the `DamageReport` workflow from a simplified 6-stage operational flow into the full 10-stage ministerial workflow defined in **ADR 0012**. This alignment ensures that the system meets production audit and financial payout requirements.
+I have implemented the backend valuation protection layer for the Damage Assessment module. This ensures that the backend is the authoritative source for technical loss calculations, preventing data corruption or tampering from client-side calculations.
 
 ## Key Changes
 
-### 1. Ministerial Workflow Engine
-- **10-Stage Flow**: Overhauled `DamageWorkflowService` to support:
-  `Draft` -> `TechReview` -> `ArchiveDir` -> `DirManager` -> `MinTechReview` -> `LegalReview` -> `ProcReview` -> `MinArchive` -> `GenManager` -> `Completed`.
-- **CanTransition Logic**: Implemented a centralized validation method that integrates role permissions, regional geographic scope, and mandatory comment rules for return paths.
-- **Role Expansion**: Added 5 new ministerial roles to `AppRoles.cs` (`LegalReviewer`, `ProceduralReviewer`, `MinistryTechReviewer`, `ChiefArchiveOfficer`, `DirectorateManager`) and configured their regional scopes.
+### 1. Authoritative Costing Service
+- **`ICostingService` & `CostingService`**: A new service dedicated to resolving active unit prices from the database. It validates:
+    - If the `CostingSheetId` belongs to the `ClassificationId`.
+    - If the costing sheet was active on the `DamageDate`.
+    - If the costing sheet is marked as active in the system.
 
-### 2. Data Integrity & Migration
-- **Centralized Status**: Created `DamageReportStatus.cs` in the domain layer to eliminate hardcoded strings and ensure consistency across backend and mobile.
-- **EF Core Migration**: Implemented a safe migration script (`Sprint13_1_WorkflowAlignment`) that updates existing `DamageReport` status IDs while preserving historical `WorkflowHistory` records for audit purposes.
-- **Mapping Table**:
-  - `Submitted` -> `TechReview`
-  - `TechnicalReview` -> `ArchiveDir`
-  - `SupervisorReview` -> `DirManager`
-  - `MinistryReview` -> `MinTechReview`
-  - `Archive` -> `MinArchive`
-  - `Approved` -> `Completed`
+### 2. Hardened Command Handlers
+- **Authoritative Recalculation**: Both `CreateDamageReportCommand` and `UpdateDamageItemCommand` have been updated to recalculate the `EstimatedLoss` on the server using the formula: `Quantity * UnitPrice * (DamagePercentage / 100)`.
+- **Client Value Overwrite**: The backend no longer trusts the `EstimatedLoss` sent by the Flutter app; it is overwritten with the server-calculated value before being persisted.
+- **Valuation Auditing**: If the client-provided loss differs from the backend calculation, a `Warning` is logged on the server for audit purposes.
 
-### 3. Mobile UI & Localization
-- **10-Stage Visibility**: Added Arabic and English translations for all 10 workflow stages.
-- **Role-Aware Actions**: Updated `DamageReportDetailsScreen.dart` to support the new transition paths based on the user's role (e.g., `ArchiveOfficer` now handles `ArchiveDir` -> `DirManager`).
-- **Audit Consistency**: Updated the history viewer to correctly map both legacy and new status labels for existing reports.
+### 3. Immutable Snapshot Storage
+- **Snapshot Integrity**: The system continues to store snapshots of the `CalculatedUnitPrice` and `MeasurementUnitSnapshot` in the `DamageItem` entity. This ensures that technical loss records remain audit-ready even if master pricing data changes in the future.
+
+### 4. Security & Validation
+- **Costing Integrity**: Reports are now strictly rejected if they reference an invalid or expired costing sheet version.
 
 ## Verification Results
 
 ### Automated Tests
-- **Unit Tests**: Updated `DamageWorkflowTests.cs` to verify all 10 forward transitions and mandatory comments for backward paths.
-- **Regression**: All 107 existing backend tests passed (including security and data integrity checks).
-- **Compilation**: Verified clean build of both Backend (.NET) and Mobile (Flutter/Dart) projects.
+- **`DamageValuationTests.cs`**:
+    - `CreateReport_RecalculatesEstimatedLoss_AndLogsMismatch`: Verified that backend math correctly overwrites client-provided values.
+    - `CreateReport_Fails_WhenCostingSheetDoesNotBelongToClassification`: Verified strict validation of pricing master data.
+    - `CreateReport_Fails_WhenCostingSheetNotActiveOnDamageDate`: Verified effective date enforcement.
+- **Regression**: All 110 existing backend tests passed.
 
-### Migration Safety
-- **Verified Mapping**: SQL update script strictly follows the approved mapping table.
-- **Audit Immobility**: Historical records in `DamageWorkflowHistories` remain unchanged.
+## Documentation Updates
+- **AI_CONTEXT.md**: Updated to reflect that backend valuation is now the authoritative source for technical loss.
+- **PROJECT_STATUS.md**: Marked Phase 1 of Sprint 13.2 as completed.
 
-## Final Summary
-- **Workflow States**: 10 (Draft to Completed).
-- **Roles Added**: 5.
-- **Tests Added**: Verified full matrix coverage.
-- **Remaining Risks**: Clients with pending offline `Submitted` reports may experience a status mismatch upon sync, which the backend shim handles by defaulting to `TechReview`.
-
-render_diffs(file:///hasad/backend/Hasad.Domain/Constants/DamageReportStatus.cs)
-render_diffs(file:///hasad/backend/Hasad.Infrastructure/Services/DamageWorkflowService.cs)
-render_diffs(file:///hasad/mobile/lib/l10n/app_ar.arb)
-render_diffs(file:///hasad/mobile/lib/features/damage_reports/presentation/screens/damage_report_details_screen.dart)
+render_diffs(file:///hasad/backend/Hasad.Infrastructure/Services/CostingService.cs)
+render_diffs(file:///hasad/backend/Hasad.Application/Features/DamageReports/Commands/CreateDamageReport/CreateDamageReportCommand.cs)
+render_diffs(file:///hasad/backend/Hasad.Application/Features/DamageReports/Commands/UpdateDamageItem/UpdateDamageItemCommand.cs)

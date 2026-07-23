@@ -5,6 +5,7 @@ using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -14,6 +15,8 @@ public class DamageReportCommandHandlerTests
 {
     private readonly Mock<ICurrentUserService> _currentUserMock;
     private readonly Mock<IDamageReportNumberService> _numberServiceMock;
+    private readonly Mock<ICostingService> _costingServiceMock;
+    private readonly Mock<ILogger<CreateDamageReportCommandHandler>> _loggerMock;
 
     public DamageReportCommandHandlerTests()
     {
@@ -23,6 +26,12 @@ public class DamageReportCommandHandlerTests
         _numberServiceMock = new Mock<IDamageReportNumberService>();
         _numberServiceMock.Setup(x => x.GeneratePermanentNumberAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("000001-TEST-2026");
+
+        _costingServiceMock = new Mock<ICostingService>();
+        _costingServiceMock.Setup(x => x.GetUnitPriceAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Hasad.Application.Common.Models.Result<decimal>.Success(100m));
+
+        _loggerMock = new Mock<ILogger<CreateDamageReportCommandHandler>>();
     }
 
     private ApplicationDbContext CreateContext()
@@ -58,7 +67,7 @@ public class DamageReportCommandHandlerTests
         context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
-        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _loggerMock.Object);
         var command = new CreateDamageReportCommand(
             Guid.NewGuid(),
             "TEMP-001",
@@ -116,7 +125,7 @@ public class DamageReportCommandHandlerTests
         context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
-        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _loggerMock.Object);
         var command = new CreateDamageReportCommand(
             Guid.NewGuid(), "T1", 2026, farmId, farmer.Id, date, 1, causeId, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
 
@@ -142,7 +151,7 @@ public class DamageReportCommandHandlerTests
         context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
-        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _loggerMock.Object);
         var command = new CreateDamageReportCommand(
             Guid.NewGuid(), "T1", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
 

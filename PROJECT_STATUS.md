@@ -8,15 +8,15 @@
 - **Last Updated**: 2026-07-23
 - **Latest Commit**: `e073d75`
 
-## Sprint 12.4 — COMPLETED
-DamageReport Security Alignment:
-- **Authorization Inheritance**: Implemented full security inheritance from `Farm` to `DamageReport` and its child entities (`Items`, `Attachments`, `History`).
-- **Directorate Denormalization**: Added `DirectorateId` to the `DamageReport` entity as a derived optimization field for high-performance scoped queries (Rule: Snapshot from parent Farm).
-- **Geographic Migration**: Migrated `DamageReport` geographic identifiers from `string` to `Guid` for system-wide consistency with the Farm module.
-- **Join-Based Auth Guards**: Hardened all DamageReport command handlers (`Update`, `Delete`, `Upload`, `Submit`) with mandatory join-based user scope validation.
-- **Scoped Queries**: Enforced regional filtering at the query level for all DamageReport listing and detail operations.
-- **Offline Compatibility**: Incremented Drift schema to **v15** to support regional snapshots offline while ensuring backend-driven synchronization remains backward compatible.
-- **Status**: ✅ **Approved & Production Ready**.
+## Sprint 13.2 — IN PROGRESS
+Damage Assessment & Valuation Engine:
+- **Phase 1 (Completed)**: Backend Valuation Guards.
+    - Implemented `ICostingService` for authoritative price resolution.
+    - Hardened `CreateDamageReport` and `UpdateDamageItem` handlers to recalculate technical loss.
+    - Added valuation mismatch auditing via server logs.
+- **Phase 2 (Pending)**: Pricing Administration & Evidence Locking.
+
+## Sprint 13.1 — COMPLETED
 
 ## Sprint 12.3 — COMPLETED
 Hierarchical Classification UI:

@@ -38,6 +38,11 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Authorization Source of Truth**: `Farm.DirectorateId` is the authoritative source for regional security boundaries.
 - **Derived Authorization Optimization**: `DamageReport` stores a denormalized `DirectorateId` (snapshot from parent Farm) to support high-performance scoped queries and O(1) security checks.
 - **Regional Isolation**: Agricultural Engineers and Field Surveyors are restricted to data within their assigned Directorate. Supervisors and Directors are restricted to their Governorate.
+### Damage Valuation Authority (Sprint 13.2)
+- **Authoritative Backend**: Client-side damage calculations are informational only. The backend is the absolute authority for technical loss valuation.
+- **Recalculation Rule**: Command handlers (`CreateDamageReport`, `UpdateDamageItem`) automatically resolve the active `CostingSheet` and recalculate `EstimatedLoss` using the formula: `Quantity * UnitPrice * (DamagePercentage / 100)`.
+- **Costing Verification**: Backend validates that the provided `CostingSheetId` matches the `ClassificationId` and was active on the `DamageDate`.
+- **Valuation Audit**: Mismatches between client-calculated and server-calculated values are logged as warnings for audit purposes but do not block synchronization.
 - **Decoupling Rule**: Farmer residency is NEVER used as an authorization boundary for managed records (Farms/Reports).
   - **Lifecycle Consistency**: Maintenance operations (Update/Delete) and Query Projections must enforce the same regional boundaries as Creation commands.
 

@@ -28,6 +28,18 @@ mixin _$ReferenceData {
       throw _privateConstructorUsedError;
   List<AreaUnit> get areaUnits => throw _privateConstructorUsedError;
   List<RelationshipToOwner> get relationshipToOwners =>
+      throw _privateConstructorUsedError; // Damage Hierarchy
+  List<DamageNature> get damageNatures => throw _privateConstructorUsedError;
+  List<DamageCategory> get damageCategories =>
+      throw _privateConstructorUsedError;
+  List<DamageSubCategory> get damageSubCategories =>
+      throw _privateConstructorUsedError;
+  List<DamageClassification> get damageClassifications =>
+      throw _privateConstructorUsedError; // Damage Causes
+  List<DamageCauseCategory> get damageCauseCategories =>
+      throw _privateConstructorUsedError;
+  List<DamageCause> get damageCauses => throw _privateConstructorUsedError;
+  List<CostingSheetVersion> get costingSheets =>
       throw _privateConstructorUsedError;
 
   /// Serializes this ReferenceData to a JSON map.
@@ -53,6 +65,13 @@ abstract class $ReferenceDataCopyWith<$Res> {
     List<PoliticalClassification> politicalClassifications,
     List<AreaUnit> areaUnits,
     List<RelationshipToOwner> relationshipToOwners,
+    List<DamageNature> damageNatures,
+    List<DamageCategory> damageCategories,
+    List<DamageSubCategory> damageSubCategories,
+    List<DamageClassification> damageClassifications,
+    List<DamageCauseCategory> damageCauseCategories,
+    List<DamageCause> damageCauses,
+    List<CostingSheetVersion> costingSheets,
   });
 }
 
@@ -76,6 +95,13 @@ class _$ReferenceDataCopyWithImpl<$Res, $Val extends ReferenceData>
     Object? politicalClassifications = null,
     Object? areaUnits = null,
     Object? relationshipToOwners = null,
+    Object? damageNatures = null,
+    Object? damageCategories = null,
+    Object? damageSubCategories = null,
+    Object? damageClassifications = null,
+    Object? damageCauseCategories = null,
+    Object? damageCauses = null,
+    Object? costingSheets = null,
   }) {
     return _then(
       _value.copyWith(
@@ -99,6 +125,34 @@ class _$ReferenceDataCopyWithImpl<$Res, $Val extends ReferenceData>
                 ? _value.relationshipToOwners
                 : relationshipToOwners // ignore: cast_nullable_to_non_nullable
                       as List<RelationshipToOwner>,
+            damageNatures: null == damageNatures
+                ? _value.damageNatures
+                : damageNatures // ignore: cast_nullable_to_non_nullable
+                      as List<DamageNature>,
+            damageCategories: null == damageCategories
+                ? _value.damageCategories
+                : damageCategories // ignore: cast_nullable_to_non_nullable
+                      as List<DamageCategory>,
+            damageSubCategories: null == damageSubCategories
+                ? _value.damageSubCategories
+                : damageSubCategories // ignore: cast_nullable_to_non_nullable
+                      as List<DamageSubCategory>,
+            damageClassifications: null == damageClassifications
+                ? _value.damageClassifications
+                : damageClassifications // ignore: cast_nullable_to_non_nullable
+                      as List<DamageClassification>,
+            damageCauseCategories: null == damageCauseCategories
+                ? _value.damageCauseCategories
+                : damageCauseCategories // ignore: cast_nullable_to_non_nullable
+                      as List<DamageCauseCategory>,
+            damageCauses: null == damageCauses
+                ? _value.damageCauses
+                : damageCauses // ignore: cast_nullable_to_non_nullable
+                      as List<DamageCause>,
+            costingSheets: null == costingSheets
+                ? _value.costingSheets
+                : costingSheets // ignore: cast_nullable_to_non_nullable
+                      as List<CostingSheetVersion>,
           )
           as $Val,
     );
@@ -120,6 +174,13 @@ abstract class _$$ReferenceDataImplCopyWith<$Res>
     List<PoliticalClassification> politicalClassifications,
     List<AreaUnit> areaUnits,
     List<RelationshipToOwner> relationshipToOwners,
+    List<DamageNature> damageNatures,
+    List<DamageCategory> damageCategories,
+    List<DamageSubCategory> damageSubCategories,
+    List<DamageClassification> damageClassifications,
+    List<DamageCauseCategory> damageCauseCategories,
+    List<DamageCause> damageCauses,
+    List<CostingSheetVersion> costingSheets,
   });
 }
 
@@ -142,6 +203,13 @@ class __$$ReferenceDataImplCopyWithImpl<$Res>
     Object? politicalClassifications = null,
     Object? areaUnits = null,
     Object? relationshipToOwners = null,
+    Object? damageNatures = null,
+    Object? damageCategories = null,
+    Object? damageSubCategories = null,
+    Object? damageClassifications = null,
+    Object? damageCauseCategories = null,
+    Object? damageCauses = null,
+    Object? costingSheets = null,
   }) {
     return _then(
       _$ReferenceDataImpl(
@@ -165,6 +233,34 @@ class __$$ReferenceDataImplCopyWithImpl<$Res>
             ? _value._relationshipToOwners
             : relationshipToOwners // ignore: cast_nullable_to_non_nullable
                   as List<RelationshipToOwner>,
+        damageNatures: null == damageNatures
+            ? _value._damageNatures
+            : damageNatures // ignore: cast_nullable_to_non_nullable
+                  as List<DamageNature>,
+        damageCategories: null == damageCategories
+            ? _value._damageCategories
+            : damageCategories // ignore: cast_nullable_to_non_nullable
+                  as List<DamageCategory>,
+        damageSubCategories: null == damageSubCategories
+            ? _value._damageSubCategories
+            : damageSubCategories // ignore: cast_nullable_to_non_nullable
+                  as List<DamageSubCategory>,
+        damageClassifications: null == damageClassifications
+            ? _value._damageClassifications
+            : damageClassifications // ignore: cast_nullable_to_non_nullable
+                  as List<DamageClassification>,
+        damageCauseCategories: null == damageCauseCategories
+            ? _value._damageCauseCategories
+            : damageCauseCategories // ignore: cast_nullable_to_non_nullable
+                  as List<DamageCauseCategory>,
+        damageCauses: null == damageCauses
+            ? _value._damageCauses
+            : damageCauses // ignore: cast_nullable_to_non_nullable
+                  as List<DamageCause>,
+        costingSheets: null == costingSheets
+            ? _value._costingSheets
+            : costingSheets // ignore: cast_nullable_to_non_nullable
+                  as List<CostingSheetVersion>,
       ),
     );
   }
@@ -179,11 +275,25 @@ class _$ReferenceDataImpl implements _ReferenceData {
     required final List<PoliticalClassification> politicalClassifications,
     required final List<AreaUnit> areaUnits,
     required final List<RelationshipToOwner> relationshipToOwners,
+    required final List<DamageNature> damageNatures,
+    required final List<DamageCategory> damageCategories,
+    required final List<DamageSubCategory> damageSubCategories,
+    required final List<DamageClassification> damageClassifications,
+    required final List<DamageCauseCategory> damageCauseCategories,
+    required final List<DamageCause> damageCauses,
+    required final List<CostingSheetVersion> costingSheets,
   }) : _ownershipTypes = ownershipTypes,
        _agriculturalSectors = agriculturalSectors,
        _politicalClassifications = politicalClassifications,
        _areaUnits = areaUnits,
-       _relationshipToOwners = relationshipToOwners;
+       _relationshipToOwners = relationshipToOwners,
+       _damageNatures = damageNatures,
+       _damageCategories = damageCategories,
+       _damageSubCategories = damageSubCategories,
+       _damageClassifications = damageClassifications,
+       _damageCauseCategories = damageCauseCategories,
+       _damageCauses = damageCauses,
+       _costingSheets = costingSheets;
 
   factory _$ReferenceDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$ReferenceDataImplFromJson(json);
@@ -231,9 +341,73 @@ class _$ReferenceDataImpl implements _ReferenceData {
     return EqualUnmodifiableListView(_relationshipToOwners);
   }
 
+  // Damage Hierarchy
+  final List<DamageNature> _damageNatures;
+  // Damage Hierarchy
+  @override
+  List<DamageNature> get damageNatures {
+    if (_damageNatures is EqualUnmodifiableListView) return _damageNatures;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_damageNatures);
+  }
+
+  final List<DamageCategory> _damageCategories;
+  @override
+  List<DamageCategory> get damageCategories {
+    if (_damageCategories is EqualUnmodifiableListView)
+      return _damageCategories;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_damageCategories);
+  }
+
+  final List<DamageSubCategory> _damageSubCategories;
+  @override
+  List<DamageSubCategory> get damageSubCategories {
+    if (_damageSubCategories is EqualUnmodifiableListView)
+      return _damageSubCategories;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_damageSubCategories);
+  }
+
+  final List<DamageClassification> _damageClassifications;
+  @override
+  List<DamageClassification> get damageClassifications {
+    if (_damageClassifications is EqualUnmodifiableListView)
+      return _damageClassifications;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_damageClassifications);
+  }
+
+  // Damage Causes
+  final List<DamageCauseCategory> _damageCauseCategories;
+  // Damage Causes
+  @override
+  List<DamageCauseCategory> get damageCauseCategories {
+    if (_damageCauseCategories is EqualUnmodifiableListView)
+      return _damageCauseCategories;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_damageCauseCategories);
+  }
+
+  final List<DamageCause> _damageCauses;
+  @override
+  List<DamageCause> get damageCauses {
+    if (_damageCauses is EqualUnmodifiableListView) return _damageCauses;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_damageCauses);
+  }
+
+  final List<CostingSheetVersion> _costingSheets;
+  @override
+  List<CostingSheetVersion> get costingSheets {
+    if (_costingSheets is EqualUnmodifiableListView) return _costingSheets;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_costingSheets);
+  }
+
   @override
   String toString() {
-    return 'ReferenceData(ownershipTypes: $ownershipTypes, agriculturalSectors: $agriculturalSectors, politicalClassifications: $politicalClassifications, areaUnits: $areaUnits, relationshipToOwners: $relationshipToOwners)';
+    return 'ReferenceData(ownershipTypes: $ownershipTypes, agriculturalSectors: $agriculturalSectors, politicalClassifications: $politicalClassifications, areaUnits: $areaUnits, relationshipToOwners: $relationshipToOwners, damageNatures: $damageNatures, damageCategories: $damageCategories, damageSubCategories: $damageSubCategories, damageClassifications: $damageClassifications, damageCauseCategories: $damageCauseCategories, damageCauses: $damageCauses, costingSheets: $costingSheets)';
   }
 
   @override
@@ -260,6 +434,34 @@ class _$ReferenceDataImpl implements _ReferenceData {
             const DeepCollectionEquality().equals(
               other._relationshipToOwners,
               _relationshipToOwners,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._damageNatures,
+              _damageNatures,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._damageCategories,
+              _damageCategories,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._damageSubCategories,
+              _damageSubCategories,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._damageClassifications,
+              _damageClassifications,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._damageCauseCategories,
+              _damageCauseCategories,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._damageCauses,
+              _damageCauses,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._costingSheets,
+              _costingSheets,
             ));
   }
 
@@ -272,6 +474,13 @@ class _$ReferenceDataImpl implements _ReferenceData {
     const DeepCollectionEquality().hash(_politicalClassifications),
     const DeepCollectionEquality().hash(_areaUnits),
     const DeepCollectionEquality().hash(_relationshipToOwners),
+    const DeepCollectionEquality().hash(_damageNatures),
+    const DeepCollectionEquality().hash(_damageCategories),
+    const DeepCollectionEquality().hash(_damageSubCategories),
+    const DeepCollectionEquality().hash(_damageClassifications),
+    const DeepCollectionEquality().hash(_damageCauseCategories),
+    const DeepCollectionEquality().hash(_damageCauses),
+    const DeepCollectionEquality().hash(_costingSheets),
   );
 
   /// Create a copy of ReferenceData
@@ -295,6 +504,13 @@ abstract class _ReferenceData implements ReferenceData {
     required final List<PoliticalClassification> politicalClassifications,
     required final List<AreaUnit> areaUnits,
     required final List<RelationshipToOwner> relationshipToOwners,
+    required final List<DamageNature> damageNatures,
+    required final List<DamageCategory> damageCategories,
+    required final List<DamageSubCategory> damageSubCategories,
+    required final List<DamageClassification> damageClassifications,
+    required final List<DamageCauseCategory> damageCauseCategories,
+    required final List<DamageCause> damageCauses,
+    required final List<CostingSheetVersion> costingSheets,
   }) = _$ReferenceDataImpl;
 
   factory _ReferenceData.fromJson(Map<String, dynamic> json) =
@@ -309,7 +525,21 @@ abstract class _ReferenceData implements ReferenceData {
   @override
   List<AreaUnit> get areaUnits;
   @override
-  List<RelationshipToOwner> get relationshipToOwners;
+  List<RelationshipToOwner> get relationshipToOwners; // Damage Hierarchy
+  @override
+  List<DamageNature> get damageNatures;
+  @override
+  List<DamageCategory> get damageCategories;
+  @override
+  List<DamageSubCategory> get damageSubCategories;
+  @override
+  List<DamageClassification> get damageClassifications; // Damage Causes
+  @override
+  List<DamageCauseCategory> get damageCauseCategories;
+  @override
+  List<DamageCause> get damageCauses;
+  @override
+  List<CostingSheetVersion> get costingSheets;
 
   /// Create a copy of ReferenceData
   /// with the given fields replaced by the non-null parameter values.

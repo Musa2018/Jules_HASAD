@@ -44,9 +44,23 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Latest Completed Sprint**: Sprint 11.4 — Farm Management UI
 - **Latest Commit Hash**: `7a4146f` (Branch: Farms)
 - **main**: Stable production-ready code.
-- **Farms**: Active development branch for the Farm (Land) Management module.
+- **Farms**: Completed and hardened.
+- **DamageReport**: Active development branch for Sprint 12.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 12.2 - Hierarchical Classification UI
+- **Classification Wizard**: Implemented a mandatory 4-step wizard (`Nature -> Category -> SubCategory -> Classification`) using `ClassificationWizardProvider`.
+- **Automatic Pricing Resolution**: System automatically fetches and snapshots the active `CostingSheetVersion` and `UnitPrice` upon classification selection.
+- **Cascading State Management**: Selection of a parent level automatically resets all dependent child levels to ensure data consistency.
+- **Valuation Engine**: Implemented `ValuationEngine` for real-time technical loss calculation (`Quantity * Price * %`).
+- **Offline Search**: Integrated local search functionality for all hierarchy levels using Drift SQL queries.
+
+### Sprint 12.0 - Damage Report Engineering Audit
+- **Audit**: Completed comprehensive audit of existing placeholder Damage Report implementation.
+- **Architecture**: Designed 10-stage workflow engine, hierarchical classification system, and versioned costing sheets.
+- **Identity**: Designed offline-compatible sequential numbering system.
+- **Integrity**: Defined duplicate prevention rules based on `FarmId + DamageDate`.
+
 ### Sprint 11.17 - Deletion Integrity Rules
 - **Referential Integrity**: Implemented business validation in `DeleteFarmerCommandHandler` and `DeleteFarmCommandHandler` to block deletion if dependencies exist (e.g., a Farmer linked to a Farm, or a Farm linked to a Damage Report).
 - **Localized Error Feedback**: The backend now returns meaningful, localized error messages for restricted deletions, which are captured and displayed by the Flutter sync engine.

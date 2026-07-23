@@ -314,6 +314,12 @@ abstract class AppLocalizations {
   /// **'Pending Delete'**
   String get pendingDelete;
 
+  /// No description provided for @deleteRestrictedError.
+  ///
+  /// In en, this message translates to:
+  /// **'This record cannot be deleted because it is linked to other data.'**
+  String get deleteRestrictedError;
+
   /// No description provided for @noFarmers.
   ///
   /// In en, this message translates to:
@@ -764,11 +770,11 @@ abstract class AppLocalizations {
   /// **'Enter your email address and we\'ll send you a link to reset your password.'**
   String get enterEmailToReset;
 
-  /// No description provided for @compensation.
+  /// No description provided for @agriculturalAssistance.
   ///
   /// In en, this message translates to:
-  /// **'Compensation'**
-  String get compensation;
+  /// **'Agricultural Assistance'**
+  String get agriculturalAssistance;
 
   /// No description provided for @calculatedAmount.
   ///
@@ -794,11 +800,11 @@ abstract class AppLocalizations {
   /// **'Status'**
   String get status;
 
-  /// No description provided for @calculateCompensation.
+  /// No description provided for @calculateAssistance.
   ///
   /// In en, this message translates to:
-  /// **'Calculate Compensation'**
-  String get calculateCompensation;
+  /// **'Calculate Assistance'**
+  String get calculateAssistance;
 
   /// No description provided for @approve.
   ///
@@ -812,11 +818,11 @@ abstract class AppLocalizations {
   /// **'Paid'**
   String get paid;
 
-  /// No description provided for @noCompensation.
+  /// No description provided for @noAssistance.
   ///
   /// In en, this message translates to:
-  /// **'No compensation calculated yet.'**
-  String get noCompensation;
+  /// **'No agricultural assistance calculated yet.'**
+  String get noAssistance;
 
   /// No description provided for @userManagement.
   ///

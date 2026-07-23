@@ -1,6 +1,8 @@
+using Hasad.Domain.Common;
+
 namespace Hasad.Domain.Entities;
 
-public class DamageItem
+public class DamageItem : ISoftDelete
 {
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }
@@ -8,11 +10,14 @@ public class DamageItem
     public Guid DamageReportId { get; set; }
     public DamageReport? DamageReport { get; set; }
 
-    public string AgriculturalSectorId { get; set; } = string.Empty;
-    public string SubSectorId { get; set; } = string.Empty;
-    public string CropId { get; set; } = string.Empty;
+    public int ClassificationId { get; set; }
+    public DamageClassification? Classification { get; set; }
 
-    public string DamageTypeId { get; set; } = string.Empty;
+    public Guid CostingSheetId { get; set; }
+    public CostingSheet? CostingSheet { get; set; }
+
+    public decimal CalculatedUnitPrice { get; set; }
+    public string MeasurementUnitSnapshot { get; set; } = string.Empty;
 
     public decimal AffectedArea { get; set; }
     public decimal DamagePercentage { get; set; }
@@ -24,4 +29,8 @@ public class DamageItem
     public DateTime? UpdatedAt { get; set; }
 
     public byte[] RowVersion { get; set; } = Array.Empty<byte>();
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
 }

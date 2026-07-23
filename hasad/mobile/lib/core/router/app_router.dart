@@ -5,13 +5,13 @@ import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/presentation/forgot_password_screen.dart';
 import 'package:mobile/features/auth/presentation/reset_password_screen.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
-import 'package:mobile/features/farmers/domain/damage_report.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
-import 'package:mobile/features/farmers/presentation/damage_report/attachment_gallery_screen.dart';
-import 'package:mobile/features/farmers/presentation/damage_report/damage_report_form_screen.dart';
-import 'package:mobile/features/farmers/presentation/damage_report/damage_reports_list_screen.dart';
-import 'package:mobile/features/farmers/presentation/compensation/compensation_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/attachment_gallery_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_report_form_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_reports_list_screen.dart';
+import 'package:mobile/features/agricultural_assistance/presentation/agricultural_assistance_screen.dart';
 import 'package:mobile/features/farms/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
@@ -89,8 +89,8 @@ abstract final class AppRoutes {
   /// Attachment gallery.
   static const attachments = '/damage-reports/attachments';
 
-  /// Compensation.
-  static const compensation = '/compensation';
+  /// Agricultural Assistance.
+  static const agriculturalAssistance = '/agricultural-assistance';
 }
 
 /// Bridges a Riverpod provider into a [Listenable] so GoRouter re-evaluates
@@ -246,9 +246,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             AttachmentGalleryScreen(reportId: state.extra as String),
       ),
       GoRoute(
-        path: AppRoutes.compensation,
+        path: AppRoutes.agriculturalAssistance,
         builder: (context, state) =>
-            CompensationScreen(reportId: state.extra as String),
+            AgriculturalAssistanceScreen(reportId: state.extra as String),
       ),
     ],
   );

@@ -190,4 +190,71 @@ public static class DbInitializer
 
         await context.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Seeds the damage classification hierarchy and causes.
+    /// </summary>
+    public static async Task SeedDamageReferenceDataAsync(ApplicationDbContext context)
+    {
+        if (await context.DamageNatures.AnyAsync()) return;
+
+        // Damage Natures
+        var plant = new DamageNature { Id = 1, NameAr = "نباتي", NameEn = "Plant" };
+        var animal = new DamageNature { Id = 2, NameAr = "حيواني", NameEn = "Animal" };
+        var infrastructure = new DamageNature { Id = 3, NameAr = "منشآت وبنية تحتية", NameEn = "Infrastructure" };
+        context.DamageNatures.AddRange(plant, animal, infrastructure);
+
+        // Damage Categories (Plant)
+        var trees = new DamageCategory { Id = 1, NatureId = 1, NameAr = "أشجار", NameEn = "Trees" };
+        var fieldCrops = new DamageCategory { Id = 2, NatureId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" };
+        var protectedCrops = new DamageCategory { Id = 3, NatureId = 1, NameAr = "خضروات محمية", NameEn = "Protected Crops" };
+        context.DamageCategories.AddRange(trees, fieldCrops, protectedCrops);
+
+        // Damage SubCategories (Trees)
+        var olive = new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "زيتون", NameEn = "Olive" };
+        var stoneFruits = new DamageSubCategory { Id = 2, CategoryId = 1, NameAr = "لوزيات", NameEn = "Stone Fruits" };
+        var citrus = new DamageSubCategory { Id = 3, CategoryId = 1, NameAr = "حمضيات", NameEn = "Citrus" };
+        context.DamageSubCategories.AddRange(olive, stoneFruits, citrus);
+
+        // Damage Classifications (Olive)
+        var olive1to5 = new DamageClassification { Id = 1, SubCategoryId = 1, NameAr = "عمر 1-5 سنوات", NameEn = "Age 1-5 years" };
+        var olive5to10 = new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "عمر 5-10 سنوات", NameEn = "Age 5-10 years" };
+        var olive10plus = new DamageClassification { Id = 3, SubCategoryId = 1, NameAr = "عمر فوق 10 سنوات", NameEn = "Age 10+ years" };
+        context.DamageClassifications.AddRange(olive1to5, olive5to10, olive10plus);
+
+        // Costing Sheets (Initial Prices)
+        var olivePrice1 = new CostingSheet
+        {
+            Id = Guid.NewGuid(),
+            ClassificationId = 2, // Age 5-10 years
+            UnitPrice = 100,
+            EffectiveFrom = new DateTime(2026, 1, 1),
+            IsActive = true,
+            VersionNumber = 1,
+            CreatedAt = DateTime.UtcNow
+        };
+        context.CostingSheets.Add(olivePrice1);
+
+        // Damage Cause Categories
+        var political = new DamageCauseCategory { Id = 1, NameAr = "سياسي", NameEn = "Political" };
+        var natural = new DamageCauseCategory { Id = 2, NameAr = "طبيعي", NameEn = "Natural" };
+        context.DamageCauseCategories.AddRange(political, natural);
+
+        // Damage Causes (Political)
+        context.DamageCauses.AddRange(
+            new DamageCause { Id = 1, CategoryId = 1, NameAr = "جيش الاحتلال", NameEn = "Army" },
+            new DamageCause { Id = 2, CategoryId = 1, NameAr = "مستوطنين", NameEn = "Settlers" },
+            new DamageCause { Id = 3, CategoryId = 1, NameAr = "شركات إسرائيلية", NameEn = "Israeli Companies" }
+        );
+
+        // Damage Causes (Natural)
+        context.DamageCauses.AddRange(
+            new DamageCause { Id = 4, CategoryId = 2, NameAr = "فيضانات", NameEn = "Flood" },
+            new DamageCause { Id = 5, CategoryId = 2, NameAr = "حرائق", NameEn = "Fire" },
+            new DamageCause { Id = 6, CategoryId = 2, NameAr = "جفاف", NameEn = "Drought" },
+            new DamageCause { Id = 7, CategoryId = 2, NameAr = "عواصف", NameEn = "Storm" }
+        );
+
+        await context.SaveChangesAsync();
+    }
 }

@@ -49,9 +49,15 @@ public class DamageReportCommandHandlerTests
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object);
         var command = new CreateDamageReportCommand(
             Guid.NewGuid(),
+            "TEMP-001",
+            2026,
             farm.Id,
             farmer.Id,
             DateTime.UtcNow,
+            1, // DamageTypeId
+            1, // DamageCauseId
+            null,
+            null,
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
             null,
@@ -59,7 +65,7 @@ public class DamageReportCommandHandlerTests
             "Test Notes",
             new List<CreateDamageItemInput>
             {
-                new(Guid.NewGuid(), "Plant", "Fruit", "Olive", "Fire", 10, 50, 100, 1000)
+                new(Guid.NewGuid(), 1, Guid.NewGuid(), 100, "Tree", 10, 50, 100, 1000)
             });
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -109,12 +115,21 @@ public class DamageReportCommandHandlerTests
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object);
         var command = new CreateDamageReportCommand(
             Guid.NewGuid(),
+            "TEMP-001",
+            2026,
             Guid.NewGuid(),
             Guid.NewGuid(),
             DateTime.UtcNow,
-            Guid.NewGuid().ToString(), // Different
-            Guid.NewGuid().ToString(),
-            null, null, "", new List<CreateDamageItemInput>());
+            1,
+            1,
+            null,
+            null,
+            Guid.NewGuid().ToString(), // GovernorateId
+            Guid.NewGuid().ToString(), // LocalityId
+            null,
+            null,
+            "",
+            new List<CreateDamageItemInput>());
 
         var result = await handler.Handle(command, CancellationToken.None);
 

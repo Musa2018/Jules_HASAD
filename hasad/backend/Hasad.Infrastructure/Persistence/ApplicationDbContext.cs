@@ -94,6 +94,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Attachments linked to reports.</summary>
     public DbSet<DamageReportAttachment> DamageReportAttachments => Set<DamageReportAttachment>();
 
+    public DbSet<DamageNature> DamageNatures => Set<DamageNature>();
+    public DbSet<DamageCategory> DamageCategories => Set<DamageCategory>();
+    public DbSet<DamageSubCategory> DamageSubCategories => Set<DamageSubCategory>();
+    public DbSet<DamageClassification> DamageClassifications => Set<DamageClassification>();
+    public DbSet<CostingSheet> CostingSheets => Set<CostingSheet>();
+
+    public DbSet<DamageCauseCategory> DamageCauseCategories => Set<DamageCauseCategory>();
+    public DbSet<DamageCause> DamageCauses => Set<DamageCause>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -359,13 +368,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReport>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.FormNumber).HasMaxLength(50);
+            entity.Property(e => e.TemporaryFormNumber).HasMaxLength(50);
             entity.Property(e => e.GovernorateId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.LocalityId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.StatusId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.RowVersion).IsRowVersion();
 
             entity.HasIndex(e => e.ClientId).IsUnique();
-            entity.HasIndex(e => e.FarmId);
+            entity.HasIndex(e => e.FormNumber).IsUnique();
+            entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
             entity.HasIndex(e => e.FarmerId);
 
             entity.HasOne(e => e.Farm)
@@ -377,15 +389,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany()
                 .HasForeignKey(e => e.FarmerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DamageType)
+                .WithMany()
+                .HasForeignKey(e => e.DamageTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DamageCause)
+                .WithMany()
+                .HasForeignKey(e => e.DamageCauseId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageItem>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.AgriculturalSectorId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.SubSectorId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.CropId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.DamageTypeId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.CalculatedUnitPrice).HasPrecision(18, 2);
+            entity.Property(e => e.MeasurementUnitSnapshot).IsRequired().HasMaxLength(50);
             entity.Property(e => e.AffectedArea).HasPrecision(18, 2);
             entity.Property(e => e.DamagePercentage).HasPrecision(18, 2);
             entity.Property(e => e.Quantity).HasPrecision(18, 2);
@@ -399,6 +419,85 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(r => r.Items)
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Classification)
+                .WithMany()
+                .HasForeignKey(e => e.ClassificationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.CostingSheet)
+                .WithMany()
+                .HasForeignKey(e => e.CostingSheetId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageNature>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<DamageCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.Nature)
+                .WithMany(n => n.Categories)
+                .HasForeignKey(e => e.NatureId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageSubCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageClassification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.SubCategory)
+                .WithMany(s => s.Classifications)
+                .HasForeignKey(e => e.SubCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CostingSheet>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasOne(e => e.Classification)
+                .WithMany(c => c.CostingSheets)
+                .HasForeignKey(e => e.ClassificationId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageCauseCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<DamageCause>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.Causes)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageReportAttachment>(entity =>

@@ -18,12 +18,22 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
 ## Offline First Strategy
 - **Local First**: Data is saved to SQLite via Drift first. Every record has a client-generated UUID for backend idempotency.
 - **Sync Queue**: Operations are queued in a persistent local table and processed by `BackgroundSyncService` when connectivity is detected, using an exponential backoff retry policy.
-- **Geographic Caching**: Reference data (Governorates, Directorates, Localities) is synchronized to local Drift tables to support offline CRUD validation and cascading lookups.
+- **Geographic Caching**: Reference data (Governorates, Directorates, Localities) and **Damage Classification Hierarchy** are synchronized to local Drift tables to support offline CRUD validation and cascading lookups.
 - **Conflict Resolution**: **Optimistic Concurrency** via `RowVersion` tokens. The server returns `409 Conflict` if the record has been modified by another user.
     - **Current Strategy**: **Server Wins**. The background sync engine automatically fetches the remote authority data and overwrites the local Drift record to resolve the conflict.
     - **Roadmap**: Implement a **Merge UI** in future sprints to allow users to manually compare local changes with server data before resolving conflicts.
 
 ## Architectural Decisions
+### ADR 0012: Damage Report Architecture & Workflow Design
+- **Status**: Accepted
+- **Context**: Production-grade damage assessment requires complex hierarchies and ministerial workflows.
+- **Decision**: 
+    - **Classification Hierarchy**: Nature -> Category -> SubCategory -> Classification -> Price Version.
+    - **Snapshot Pattern**: DamageItem snapshots `CalculatedUnitPrice` and `CostingSheetVersionId` for historical integrity.
+    - **Financial Separation**: `DamageItem` handles technical loss; a separate `Agricultural Assistance` entity handles financial payout.
+    - **Two-Phase Numbering**: Temporary offline IDs replaced by permanent server-assigned numbers upon sync.
+- **Reasoning**: Ensures field work can proceed offline while maintaining strict financial and document integrity.
+
 ### ADR 0009: Measurement Units Consolidation (Pending)
 - **Status**: Proposed / Future Target
 - **Decision**: Replace domain-specific lookup tables like `AreaUnit` with a unified `MeasurementUnit` entity.

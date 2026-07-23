@@ -120,6 +120,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pendingDelete => 'Pending Delete';
 
   @override
+  String get deleteRestrictedError =>
+      'This record cannot be deleted because it is linked to other data.';
+
+  @override
   String get noFarmers => 'No farmers found.';
 
   @override
@@ -346,7 +350,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter your email address and we\'ll send you a link to reset your password.';
 
   @override
-  String get compensation => 'Compensation';
+  String get agriculturalAssistance => 'Agricultural Assistance';
 
   @override
   String get calculatedAmount => 'Calculated Amount';
@@ -361,7 +365,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get status => 'Status';
 
   @override
-  String get calculateCompensation => 'Calculate Compensation';
+  String get calculateAssistance => 'Calculate Assistance';
 
   @override
   String get approve => 'Approve';
@@ -370,7 +374,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paid => 'Paid';
 
   @override
-  String get noCompensation => 'No compensation calculated yet.';
+  String get noAssistance => 'No agricultural assistance calculated yet.';
 
   @override
   String get userManagement => 'User Management';

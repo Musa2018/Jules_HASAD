@@ -50,6 +50,10 @@ class Farmers extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
+  // Audit
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  TextColumn get deletedBy => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -173,11 +177,20 @@ class Localities extends Table {
 class DamageReports extends Table {
   TextColumn get id => text()(); // ClientId
   TextColumn get serverId => text().nullable()();
+  TextColumn get formNumber => text().withDefault(const Constant(''))();
+  TextColumn get temporaryFormNumber => text().withDefault(const Constant(''))();
+  IntColumn get damageYear => integer().withDefault(const Constant(0))();
+
   TextColumn get farmId => text()();
   TextColumn get farmerId => text()();
 
   DateTimeColumn get damageDate => dateTime()();
   DateTimeColumn get documentationDate => dateTime()();
+
+  IntColumn get damageTypeId => integer().withDefault(const Constant(0))();
+  IntColumn get damageCauseId => integer().withDefault(const Constant(0))();
+  TextColumn get settlementName => text().nullable()();
+  TextColumn get companyName => text().nullable()();
 
   TextColumn get governorateId => text().withLength(max: 50)();
   TextColumn get localityId => text().withLength(max: 50)();
@@ -206,10 +219,10 @@ class DamageItems extends Table {
   TextColumn get serverId => text().nullable()();
   TextColumn get damageReportId => text()();
 
-  TextColumn get agriculturalSectorId => text().withLength(max: 50)();
-  TextColumn get subSectorId => text().withLength(max: 50)();
-  TextColumn get cropId => text().withLength(max: 50)();
-  TextColumn get damageTypeId => text().withLength(max: 50)();
+  IntColumn get classificationId => integer().withDefault(const Constant(0))();
+  TextColumn get costingSheetId => text().withDefault(const Constant(''))();
+  RealColumn get calculatedUnitPrice => real().withDefault(const Constant(0.0))();
+  TextColumn get measurementUnitSnapshot => text().withDefault(const Constant(''))();
 
   RealColumn get affectedArea => real()();
   RealColumn get damagePercentage => real()();
@@ -269,6 +282,70 @@ class SyncQueue extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class DamageNatures extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class DamageCategories extends Table {
+  IntColumn get id => integer()();
+  IntColumn get parentId => integer()(); // natureId
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class DamageSubCategories extends Table {
+  IntColumn get id => integer()();
+  IntColumn get parentId => integer()(); // categoryId
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class DamageClassifications extends Table {
+  IntColumn get id => integer()();
+  IntColumn get parentId => integer()(); // subCategoryId
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class DamageCauseCategories extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class DamageCauses extends Table {
+  IntColumn get id => integer()();
+  IntColumn get parentId => integer()(); // categoryId
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class CostingSheets extends Table {
+  TextColumn get id => text()(); // Guid
+  IntColumn get classificationId => integer()();
+  RealColumn get unitPrice => real()();
+  DateTimeColumn get effectiveFrom => dateTime()();
+  DateTimeColumn get effectiveTo => dateTime().nullable()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  IntColumn get versionNumber => integer()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     Farmers,
@@ -285,6 +362,13 @@ class SyncQueue extends Table {
     Governorates,
     Directorates,
     Localities,
+    DamageNatures,
+    DamageCategories,
+    DamageSubCategories,
+    DamageClassifications,
+    DamageCauseCategories,
+    DamageCauses,
+    CostingSheets,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -292,7 +376,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -312,26 +396,12 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(damageReportAttachments);
       }
       if (from < 6) {
-        // Upgrade DamageReportAttachments table
-        await m.addColumn(
-          damageReportAttachments,
-          damageReportAttachments.serverId,
-        );
-        await m.addColumn(
-          damageReportAttachments,
-          damageReportAttachments.remotePath,
-        );
-        await m.addColumn(
-          damageReportAttachments,
-          damageReportAttachments.uploadStatus,
-        );
-        await m.addColumn(
-          damageReportAttachments,
-          damageReportAttachments.updatedAt,
-        );
+        await m.addColumn(damageReportAttachments, damageReportAttachments.serverId);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.remotePath);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.uploadStatus);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.updatedAt);
       }
       if (from < 7) {
-        // Enhance Farmers table for Sprint 10.3
         await m.addColumn(farmers, farmers.idTypeId);
         await m.addColumn(farmers, farmers.idNumber);
         await m.addColumn(farmers, farmers.firstNameAr);
@@ -364,18 +434,11 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(damageReportAttachments, damageReportAttachments.isPendingDelete);
       }
       if (from < 10) {
-        // Migration to v10: Redesign Farms and add Lookup tables
         await m.createTable(ownershipTypes);
         await m.createTable(agriculturalSectors);
         await m.createTable(politicalClassifications);
         await m.createTable(areaUnits);
         await m.createTable(relationshipToOwners);
-        
-        // Redesign Farms table
-        // Drift doesn't support easy renaming of columns in alterTable yet (for native sqlite)
-        // We will use the 're-create' strategy or just add missing columns and keep old ones if needed.
-        // Actually, it's cleaner to use a transition: add new, migrate data, drop old (if possible).
-        // Since we are in early alpha, we might just add columns and set defaults.
         
         await m.addColumn(farms, farms.ownerFarmerId);
         await m.addColumn(farms, farms.localFarmName);
@@ -388,14 +451,38 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(farms, farms.agriculturalSectorId);
         await m.addColumn(farms, farms.politicalClassificationId);
         await m.addColumn(farms, farms.notes);
-
-        // Note: 'name' and 'landArea' and 'landAreaUnit' from old schema will remain but be unused.
-        // We could use m.alterTable(farms) but adding columns is safer for now.
       }
       if (from < 11) {
         await m.createTable(governorates);
         await m.createTable(directorates);
         await m.createTable(localities);
+      }
+      if (from < 12) {
+        // Sprint 12.1: Damage Classification Foundation
+        await m.createTable(damageNatures);
+        await m.createTable(damageCategories);
+        await m.createTable(damageSubCategories);
+        await m.createTable(damageClassifications);
+        await m.createTable(damageCauseCategories);
+        await m.createTable(damageCauses);
+        await m.createTable(costingSheets);
+
+        await m.addColumn(damageReports, damageReports.formNumber);
+        await m.addColumn(damageReports, damageReports.temporaryFormNumber);
+        await m.addColumn(damageReports, damageReports.damageYear);
+        await m.addColumn(damageReports, damageReports.damageTypeId);
+        await m.addColumn(damageReports, damageReports.damageCauseId);
+        await m.addColumn(damageReports, damageReports.settlementName);
+        await m.addColumn(damageReports, damageReports.companyName);
+
+        await m.addColumn(damageItems, damageItems.classificationId);
+        await m.addColumn(damageItems, damageItems.costingSheetId);
+        await m.addColumn(damageItems, damageItems.calculatedUnitPrice);
+        await m.addColumn(damageItems, damageItems.measurementUnitSnapshot);
+        
+        // Audit fields for Farmers (already added to class, but need to add to table in migration if not there)
+        await m.addColumn(farmers, farmers.deletedAt);
+        await m.addColumn(farmers, farmers.deletedBy);
       }
     },
     beforeOpen: (details) async {

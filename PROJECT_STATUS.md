@@ -2,10 +2,29 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.10.2-alpha (Domain Hardened)
-- **Current Sprint**: Sprint 11.17 — Domain Integrity Hardening
-- **Current Branch**: `Farms`
+- **Current Version**: v0.12.0-alpha (Architecture Design)
+- **Current Sprint**: Sprint 12.0 — Damage Report Engineering Audit
+- **Current Branch**: `DamageReport`
 - **Last Updated**: 2026-07-23
+
+## Sprint 12.2 — COMPLETED
+Hierarchical Classification UI:
+- **Cascading Selector**: Implemented a 4-step wizard for selecting Damage Nature, Category, SubCategory, and Classification.
+- **Price Snapshot Engine**: Automated resolution of active Costing Sheets with immutable snapshotting for Damage Items.
+- **Valuation Logic**: Integrated `ValuationEngine` for real-time technical loss calculation on the mobile device.
+- **Cascading Resets**: Hardened state management to ensure child selections are cleared when a parent level is changed.
+- **Search Integration**: Enabled Arabic/English partial search for all hierarchy levels completely offline.
+- **Status**: ✅ **Production Ready**.
+
+## Sprint 12.1 — COMPLETED
+
+## Sprint 12.0 — COMPLETED
+Damage Report Engineering Audit & Design:
+- **Audit**: Completed analysis of existing placeholder damage implementation.
+- **Gap Analysis**: Identified critical missing features: Sequential numbering, 10-stage workflow, costing sheets, and hierarchical causes.
+- **Design Deliverables**: Prepared Engineering Audit Report, Proposed Domain Model, Workflow State Machine, and Sync Strategy.
+- **Documentation**: Updated `AI_CONTEXT.md` and `PROJECT_STATUS.md` with the new module roadmap.
+- **Status**: ✅ **Approved**.
 
 ## Sprint 11.17 — COMPLETED
 Domain Integrity Hardening:

@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Sprint 12.2 — Hierarchical Classification UI
+
+#### Added
+- **Classification Wizard**: A mandatory 4-step selection flow for precise damage assessment.
+- **Automatic Price Resolution**: Seamlessly fetches the active unit price from local `CostingSheets`.
+- **Valuation Engine**: Pure business logic for calculating technical losses based on quantity and damage percentage.
+- **Cascading State Resets**: Automated cleanup of dependent selections during hierarchy traversal.
+- **Offline Search**: Searchable lists for all hierarchy levels with full Arabic support.
+
+#### Changed
+- Expanded `ReferenceDataRepository` with granular hierarchical lookup methods.
+
+### Sprint 12.1 — Data Layer & Feature Extraction
+
 ### Sprint 11.17 — Domain Integrity Hardening
 
 #### Added

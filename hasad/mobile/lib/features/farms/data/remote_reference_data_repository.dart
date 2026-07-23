@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
+import '../domain/lookup_entities.dart';
 import '../domain/reference_data.dart';
 import 'reference_data_repository.dart';
 
@@ -24,6 +25,29 @@ class RemoteReferenceDataRepository implements ReferenceDataRepository {
       throw SyncException(_errorsFromDio(e));
     }
   }
+
+  @override
+  Future<List<DamageNature>> getNatures() => throw UnimplementedError();
+
+  @override
+  Future<List<DamageCategory>> getCategories(int natureId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<List<DamageSubCategory>> getSubCategories(int categoryId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<List<DamageClassification>> getClassifications(int subCategoryId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<CostingSheetVersion?> getActiveCostingSheet(int classificationId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<List<DamageClassification>> searchClassifications(String query) =>
+      throw UnimplementedError();
 
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;

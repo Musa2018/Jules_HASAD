@@ -193,6 +193,7 @@ using (var scope = app.Services.CreateScope())
         await DbInitializer.SeedRolesAsync(roleManager);
         await DbInitializer.SeedCompensationRulesAsync(context);
         await DbInitializer.SeedGeographicsAsync(context);
+        await DbInitializer.SeedDamageReferenceDataAsync(context);
 
         var seedAdminEmail = app.Configuration["SeedAdmin:Email"];
         var seedAdminPassword = app.Configuration["SeedAdmin:Password"];

@@ -9,10 +9,10 @@ namespace Hasad.Application.Features.DamageReports.Commands.UpdateDamageItem;
 
 public record UpdateDamageItemCommand(
     Guid Id,
-    string AgriculturalSectorId,
-    string SubSectorId,
-    string CropId,
-    string DamageTypeId,
+    int ClassificationId,
+    Guid CostingSheetId,
+    decimal CalculatedUnitPrice,
+    string MeasurementUnitSnapshot,
     decimal AffectedArea,
     decimal DamagePercentage,
     decimal Quantity,
@@ -45,10 +45,10 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
             return Result<DamageItemDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
-        item.AgriculturalSectorId = request.AgriculturalSectorId;
-        item.SubSectorId = request.SubSectorId;
-        item.CropId = request.CropId;
-        item.DamageTypeId = request.DamageTypeId;
+        item.ClassificationId = request.ClassificationId;
+        item.CostingSheetId = request.CostingSheetId;
+        item.CalculatedUnitPrice = request.CalculatedUnitPrice;
+        item.MeasurementUnitSnapshot = request.MeasurementUnitSnapshot;
         item.AffectedArea = request.AffectedArea;
         item.DamagePercentage = request.DamagePercentage;
         item.Quantity = request.Quantity;
@@ -68,10 +68,10 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
         {
             Id = item.Id,
             ClientId = item.ClientId,
-            AgriculturalSectorId = item.AgriculturalSectorId,
-            SubSectorId = item.SubSectorId,
-            CropId = item.CropId,
-            DamageTypeId = item.DamageTypeId,
+            ClassificationId = item.ClassificationId,
+            CostingSheetId = item.CostingSheetId,
+            CalculatedUnitPrice = item.CalculatedUnitPrice,
+            MeasurementUnitSnapshot = item.MeasurementUnitSnapshot,
             AffectedArea = item.AffectedArea,
             DamagePercentage = item.DamagePercentage,
             Quantity = item.Quantity,
@@ -86,7 +86,7 @@ public class UpdateDamageItemCommandValidator : AbstractValidator<UpdateDamageIt
     public UpdateDamageItemCommandValidator()
     {
         RuleFor(v => v.Id).NotEmpty();
-        RuleFor(v => v.AgriculturalSectorId).NotEmpty();
+        RuleFor(v => v.ClassificationId).NotEmpty();
         RuleFor(v => v.DamagePercentage).InclusiveBetween(0, 100);
         RuleFor(v => v.RowVersion).NotEmpty();
     }

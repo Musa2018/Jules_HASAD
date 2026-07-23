@@ -10,10 +10,10 @@ namespace Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
 
 public record CreateDamageItemInput(
     Guid ClientId,
-    string AgriculturalSectorId,
-    string SubSectorId,
-    string CropId,
-    string DamageTypeId,
+    int ClassificationId,
+    Guid CostingSheetId,
+    decimal CalculatedUnitPrice,
+    string MeasurementUnitSnapshot,
     decimal AffectedArea,
     decimal DamagePercentage,
     decimal Quantity,
@@ -21,9 +21,15 @@ public record CreateDamageItemInput(
 
 public record CreateDamageReportCommand(
     Guid ClientId,
+    string TemporaryFormNumber,
+    int DamageYear,
     Guid FarmId,
     Guid FarmerId,
     DateTime DamageDate,
+    int DamageTypeId,
+    int DamageCauseId,
+    string? SettlementName,
+    string? CompanyName,
     string GovernorateId,
     string LocalityId,
     double? Latitude,
@@ -85,10 +91,16 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         {
             Id = Guid.NewGuid(),
             ClientId = request.ClientId,
+            TemporaryFormNumber = request.TemporaryFormNumber,
+            DamageYear = request.DamageYear,
             FarmId = request.FarmId,
             FarmerId = request.FarmerId,
             DamageDate = request.DamageDate,
             DocumentationDate = DateTime.UtcNow,
+            DamageTypeId = request.DamageTypeId,
+            DamageCauseId = request.DamageCauseId,
+            SettlementName = request.SettlementName,
+            CompanyName = request.CompanyName,
             GovernorateId = request.GovernorateId,
             LocalityId = request.LocalityId,
             Latitude = request.Latitude,
@@ -100,10 +112,10 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             {
                 Id = Guid.NewGuid(),
                 ClientId = i.ClientId,
-                AgriculturalSectorId = i.AgriculturalSectorId,
-                SubSectorId = i.SubSectorId,
-                CropId = i.CropId,
-                DamageTypeId = i.DamageTypeId,
+                ClassificationId = i.ClassificationId,
+                CostingSheetId = i.CostingSheetId,
+                CalculatedUnitPrice = i.CalculatedUnitPrice,
+                MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
                 AffectedArea = i.AffectedArea,
                 DamagePercentage = i.DamagePercentage,
                 Quantity = i.Quantity,
@@ -122,10 +134,17 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
     {
         Id = report.Id,
         ClientId = report.ClientId,
+        FormNumber = report.FormNumber,
+        TemporaryFormNumber = report.TemporaryFormNumber,
+        DamageYear = report.DamageYear,
         FarmId = report.FarmId,
         FarmerId = report.FarmerId,
         DamageDate = report.DamageDate,
         DocumentationDate = report.DocumentationDate,
+        DamageTypeId = report.DamageTypeId,
+        DamageCauseId = report.DamageCauseId,
+        SettlementName = report.SettlementName,
+        CompanyName = report.CompanyName,
         GovernorateId = report.GovernorateId,
         LocalityId = report.LocalityId,
         Latitude = report.Latitude,
@@ -137,10 +156,10 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         {
             Id = i.Id,
             ClientId = i.ClientId,
-            AgriculturalSectorId = i.AgriculturalSectorId,
-            SubSectorId = i.SubSectorId,
-            CropId = i.CropId,
-            DamageTypeId = i.DamageTypeId,
+            ClassificationId = i.ClassificationId,
+            CostingSheetId = i.CostingSheetId,
+            CalculatedUnitPrice = i.CalculatedUnitPrice,
+            MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
             AffectedArea = i.AffectedArea,
             DamagePercentage = i.DamagePercentage,
             Quantity = i.Quantity,
@@ -170,7 +189,10 @@ public class CreateDamageItemInputValidator : AbstractValidator<CreateDamageItem
     public CreateDamageItemInputValidator()
     {
         RuleFor(v => v.ClientId).NotEmpty();
-        RuleFor(v => v.AgriculturalSectorId).NotEmpty();
+        RuleFor(v => v.ClassificationId).NotEmpty();
+        RuleFor(v => v.CostingSheetId).NotEmpty();
+        RuleFor(v => v.CalculatedUnitPrice).GreaterThan(0);
+        RuleFor(v => v.MeasurementUnitSnapshot).NotEmpty();
         RuleFor(v => v.DamagePercentage).InclusiveBetween(0, 100);
         RuleFor(v => v.AffectedArea).GreaterThanOrEqualTo(0);
         RuleFor(v => v.EstimatedLoss).GreaterThanOrEqualTo(0);

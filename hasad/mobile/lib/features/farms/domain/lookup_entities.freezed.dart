@@ -965,3 +965,1551 @@ abstract class _RelationshipToOwner implements RelationshipToOwner {
   _$$RelationshipToOwnerImplCopyWith<_$RelationshipToOwnerImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+DamageNature _$DamageNatureFromJson(Map<String, dynamic> json) {
+  return _DamageNature.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DamageNature {
+  int get id => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+
+  /// Serializes this DamageNature to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DamageNature
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DamageNatureCopyWith<DamageNature> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DamageNatureCopyWith<$Res> {
+  factory $DamageNatureCopyWith(
+    DamageNature value,
+    $Res Function(DamageNature) then,
+  ) = _$DamageNatureCopyWithImpl<$Res, DamageNature>;
+  @useResult
+  $Res call({int id, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class _$DamageNatureCopyWithImpl<$Res, $Val extends DamageNature>
+    implements $DamageNatureCopyWith<$Res> {
+  _$DamageNatureCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DamageNature
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? id = null, Object? nameAr = null, Object? nameEn = null}) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DamageNatureImplCopyWith<$Res>
+    implements $DamageNatureCopyWith<$Res> {
+  factory _$$DamageNatureImplCopyWith(
+    _$DamageNatureImpl value,
+    $Res Function(_$DamageNatureImpl) then,
+  ) = __$$DamageNatureImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class __$$DamageNatureImplCopyWithImpl<$Res>
+    extends _$DamageNatureCopyWithImpl<$Res, _$DamageNatureImpl>
+    implements _$$DamageNatureImplCopyWith<$Res> {
+  __$$DamageNatureImplCopyWithImpl(
+    _$DamageNatureImpl _value,
+    $Res Function(_$DamageNatureImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DamageNature
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? id = null, Object? nameAr = null, Object? nameEn = null}) {
+    return _then(
+      _$DamageNatureImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DamageNatureImpl implements _DamageNature {
+  const _$DamageNatureImpl({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+  });
+
+  factory _$DamageNatureImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DamageNatureImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final String nameAr;
+  @override
+  final String nameEn;
+
+  @override
+  String toString() {
+    return 'DamageNature(id: $id, nameAr: $nameAr, nameEn: $nameEn)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DamageNatureImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, nameAr, nameEn);
+
+  /// Create a copy of DamageNature
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DamageNatureImplCopyWith<_$DamageNatureImpl> get copyWith =>
+      __$$DamageNatureImplCopyWithImpl<_$DamageNatureImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DamageNatureImplToJson(this);
+  }
+}
+
+abstract class _DamageNature implements DamageNature {
+  const factory _DamageNature({
+    required final int id,
+    required final String nameAr,
+    required final String nameEn,
+  }) = _$DamageNatureImpl;
+
+  factory _DamageNature.fromJson(Map<String, dynamic> json) =
+      _$DamageNatureImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+
+  /// Create a copy of DamageNature
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DamageNatureImplCopyWith<_$DamageNatureImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+DamageCategory _$DamageCategoryFromJson(Map<String, dynamic> json) {
+  return _DamageCategory.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DamageCategory {
+  int get id => throw _privateConstructorUsedError;
+  int get parentId => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+
+  /// Serializes this DamageCategory to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DamageCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DamageCategoryCopyWith<DamageCategory> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DamageCategoryCopyWith<$Res> {
+  factory $DamageCategoryCopyWith(
+    DamageCategory value,
+    $Res Function(DamageCategory) then,
+  ) = _$DamageCategoryCopyWithImpl<$Res, DamageCategory>;
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class _$DamageCategoryCopyWithImpl<$Res, $Val extends DamageCategory>
+    implements $DamageCategoryCopyWith<$Res> {
+  _$DamageCategoryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DamageCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            parentId: null == parentId
+                ? _value.parentId
+                : parentId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DamageCategoryImplCopyWith<$Res>
+    implements $DamageCategoryCopyWith<$Res> {
+  factory _$$DamageCategoryImplCopyWith(
+    _$DamageCategoryImpl value,
+    $Res Function(_$DamageCategoryImpl) then,
+  ) = __$$DamageCategoryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class __$$DamageCategoryImplCopyWithImpl<$Res>
+    extends _$DamageCategoryCopyWithImpl<$Res, _$DamageCategoryImpl>
+    implements _$$DamageCategoryImplCopyWith<$Res> {
+  __$$DamageCategoryImplCopyWithImpl(
+    _$DamageCategoryImpl _value,
+    $Res Function(_$DamageCategoryImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DamageCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _$DamageCategoryImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        parentId: null == parentId
+            ? _value.parentId
+            : parentId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DamageCategoryImpl implements _DamageCategory {
+  const _$DamageCategoryImpl({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+
+  factory _$DamageCategoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DamageCategoryImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final int parentId;
+  @override
+  final String nameAr;
+  @override
+  final String nameEn;
+
+  @override
+  String toString() {
+    return 'DamageCategory(id: $id, parentId: $parentId, nameAr: $nameAr, nameEn: $nameEn)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DamageCategoryImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, parentId, nameAr, nameEn);
+
+  /// Create a copy of DamageCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DamageCategoryImplCopyWith<_$DamageCategoryImpl> get copyWith =>
+      __$$DamageCategoryImplCopyWithImpl<_$DamageCategoryImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DamageCategoryImplToJson(this);
+  }
+}
+
+abstract class _DamageCategory implements DamageCategory {
+  const factory _DamageCategory({
+    required final int id,
+    required final int parentId,
+    required final String nameAr,
+    required final String nameEn,
+  }) = _$DamageCategoryImpl;
+
+  factory _DamageCategory.fromJson(Map<String, dynamic> json) =
+      _$DamageCategoryImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  int get parentId;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+
+  /// Create a copy of DamageCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DamageCategoryImplCopyWith<_$DamageCategoryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+DamageSubCategory _$DamageSubCategoryFromJson(Map<String, dynamic> json) {
+  return _DamageSubCategory.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DamageSubCategory {
+  int get id => throw _privateConstructorUsedError;
+  int get parentId => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+
+  /// Serializes this DamageSubCategory to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DamageSubCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DamageSubCategoryCopyWith<DamageSubCategory> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DamageSubCategoryCopyWith<$Res> {
+  factory $DamageSubCategoryCopyWith(
+    DamageSubCategory value,
+    $Res Function(DamageSubCategory) then,
+  ) = _$DamageSubCategoryCopyWithImpl<$Res, DamageSubCategory>;
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class _$DamageSubCategoryCopyWithImpl<$Res, $Val extends DamageSubCategory>
+    implements $DamageSubCategoryCopyWith<$Res> {
+  _$DamageSubCategoryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DamageSubCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            parentId: null == parentId
+                ? _value.parentId
+                : parentId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DamageSubCategoryImplCopyWith<$Res>
+    implements $DamageSubCategoryCopyWith<$Res> {
+  factory _$$DamageSubCategoryImplCopyWith(
+    _$DamageSubCategoryImpl value,
+    $Res Function(_$DamageSubCategoryImpl) then,
+  ) = __$$DamageSubCategoryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class __$$DamageSubCategoryImplCopyWithImpl<$Res>
+    extends _$DamageSubCategoryCopyWithImpl<$Res, _$DamageSubCategoryImpl>
+    implements _$$DamageSubCategoryImplCopyWith<$Res> {
+  __$$DamageSubCategoryImplCopyWithImpl(
+    _$DamageSubCategoryImpl _value,
+    $Res Function(_$DamageSubCategoryImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DamageSubCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _$DamageSubCategoryImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        parentId: null == parentId
+            ? _value.parentId
+            : parentId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DamageSubCategoryImpl implements _DamageSubCategory {
+  const _$DamageSubCategoryImpl({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+
+  factory _$DamageSubCategoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DamageSubCategoryImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final int parentId;
+  @override
+  final String nameAr;
+  @override
+  final String nameEn;
+
+  @override
+  String toString() {
+    return 'DamageSubCategory(id: $id, parentId: $parentId, nameAr: $nameAr, nameEn: $nameEn)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DamageSubCategoryImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, parentId, nameAr, nameEn);
+
+  /// Create a copy of DamageSubCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DamageSubCategoryImplCopyWith<_$DamageSubCategoryImpl> get copyWith =>
+      __$$DamageSubCategoryImplCopyWithImpl<_$DamageSubCategoryImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DamageSubCategoryImplToJson(this);
+  }
+}
+
+abstract class _DamageSubCategory implements DamageSubCategory {
+  const factory _DamageSubCategory({
+    required final int id,
+    required final int parentId,
+    required final String nameAr,
+    required final String nameEn,
+  }) = _$DamageSubCategoryImpl;
+
+  factory _DamageSubCategory.fromJson(Map<String, dynamic> json) =
+      _$DamageSubCategoryImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  int get parentId;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+
+  /// Create a copy of DamageSubCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DamageSubCategoryImplCopyWith<_$DamageSubCategoryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+DamageClassification _$DamageClassificationFromJson(Map<String, dynamic> json) {
+  return _DamageClassification.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DamageClassification {
+  int get id => throw _privateConstructorUsedError;
+  int get parentId => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+
+  /// Serializes this DamageClassification to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DamageClassification
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DamageClassificationCopyWith<DamageClassification> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DamageClassificationCopyWith<$Res> {
+  factory $DamageClassificationCopyWith(
+    DamageClassification value,
+    $Res Function(DamageClassification) then,
+  ) = _$DamageClassificationCopyWithImpl<$Res, DamageClassification>;
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class _$DamageClassificationCopyWithImpl<
+  $Res,
+  $Val extends DamageClassification
+>
+    implements $DamageClassificationCopyWith<$Res> {
+  _$DamageClassificationCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DamageClassification
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            parentId: null == parentId
+                ? _value.parentId
+                : parentId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DamageClassificationImplCopyWith<$Res>
+    implements $DamageClassificationCopyWith<$Res> {
+  factory _$$DamageClassificationImplCopyWith(
+    _$DamageClassificationImpl value,
+    $Res Function(_$DamageClassificationImpl) then,
+  ) = __$$DamageClassificationImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class __$$DamageClassificationImplCopyWithImpl<$Res>
+    extends _$DamageClassificationCopyWithImpl<$Res, _$DamageClassificationImpl>
+    implements _$$DamageClassificationImplCopyWith<$Res> {
+  __$$DamageClassificationImplCopyWithImpl(
+    _$DamageClassificationImpl _value,
+    $Res Function(_$DamageClassificationImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DamageClassification
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _$DamageClassificationImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        parentId: null == parentId
+            ? _value.parentId
+            : parentId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DamageClassificationImpl implements _DamageClassification {
+  const _$DamageClassificationImpl({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+
+  factory _$DamageClassificationImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DamageClassificationImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final int parentId;
+  @override
+  final String nameAr;
+  @override
+  final String nameEn;
+
+  @override
+  String toString() {
+    return 'DamageClassification(id: $id, parentId: $parentId, nameAr: $nameAr, nameEn: $nameEn)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DamageClassificationImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, parentId, nameAr, nameEn);
+
+  /// Create a copy of DamageClassification
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DamageClassificationImplCopyWith<_$DamageClassificationImpl>
+  get copyWith =>
+      __$$DamageClassificationImplCopyWithImpl<_$DamageClassificationImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DamageClassificationImplToJson(this);
+  }
+}
+
+abstract class _DamageClassification implements DamageClassification {
+  const factory _DamageClassification({
+    required final int id,
+    required final int parentId,
+    required final String nameAr,
+    required final String nameEn,
+  }) = _$DamageClassificationImpl;
+
+  factory _DamageClassification.fromJson(Map<String, dynamic> json) =
+      _$DamageClassificationImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  int get parentId;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+
+  /// Create a copy of DamageClassification
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DamageClassificationImplCopyWith<_$DamageClassificationImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+DamageCauseCategory _$DamageCauseCategoryFromJson(Map<String, dynamic> json) {
+  return _DamageCauseCategory.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DamageCauseCategory {
+  int get id => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+
+  /// Serializes this DamageCauseCategory to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DamageCauseCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DamageCauseCategoryCopyWith<DamageCauseCategory> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DamageCauseCategoryCopyWith<$Res> {
+  factory $DamageCauseCategoryCopyWith(
+    DamageCauseCategory value,
+    $Res Function(DamageCauseCategory) then,
+  ) = _$DamageCauseCategoryCopyWithImpl<$Res, DamageCauseCategory>;
+  @useResult
+  $Res call({int id, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class _$DamageCauseCategoryCopyWithImpl<$Res, $Val extends DamageCauseCategory>
+    implements $DamageCauseCategoryCopyWith<$Res> {
+  _$DamageCauseCategoryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DamageCauseCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? id = null, Object? nameAr = null, Object? nameEn = null}) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DamageCauseCategoryImplCopyWith<$Res>
+    implements $DamageCauseCategoryCopyWith<$Res> {
+  factory _$$DamageCauseCategoryImplCopyWith(
+    _$DamageCauseCategoryImpl value,
+    $Res Function(_$DamageCauseCategoryImpl) then,
+  ) = __$$DamageCauseCategoryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class __$$DamageCauseCategoryImplCopyWithImpl<$Res>
+    extends _$DamageCauseCategoryCopyWithImpl<$Res, _$DamageCauseCategoryImpl>
+    implements _$$DamageCauseCategoryImplCopyWith<$Res> {
+  __$$DamageCauseCategoryImplCopyWithImpl(
+    _$DamageCauseCategoryImpl _value,
+    $Res Function(_$DamageCauseCategoryImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DamageCauseCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? id = null, Object? nameAr = null, Object? nameEn = null}) {
+    return _then(
+      _$DamageCauseCategoryImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DamageCauseCategoryImpl implements _DamageCauseCategory {
+  const _$DamageCauseCategoryImpl({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+  });
+
+  factory _$DamageCauseCategoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DamageCauseCategoryImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final String nameAr;
+  @override
+  final String nameEn;
+
+  @override
+  String toString() {
+    return 'DamageCauseCategory(id: $id, nameAr: $nameAr, nameEn: $nameEn)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DamageCauseCategoryImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, nameAr, nameEn);
+
+  /// Create a copy of DamageCauseCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DamageCauseCategoryImplCopyWith<_$DamageCauseCategoryImpl> get copyWith =>
+      __$$DamageCauseCategoryImplCopyWithImpl<_$DamageCauseCategoryImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DamageCauseCategoryImplToJson(this);
+  }
+}
+
+abstract class _DamageCauseCategory implements DamageCauseCategory {
+  const factory _DamageCauseCategory({
+    required final int id,
+    required final String nameAr,
+    required final String nameEn,
+  }) = _$DamageCauseCategoryImpl;
+
+  factory _DamageCauseCategory.fromJson(Map<String, dynamic> json) =
+      _$DamageCauseCategoryImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+
+  /// Create a copy of DamageCauseCategory
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DamageCauseCategoryImplCopyWith<_$DamageCauseCategoryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+DamageCause _$DamageCauseFromJson(Map<String, dynamic> json) {
+  return _DamageCause.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DamageCause {
+  int get id => throw _privateConstructorUsedError;
+  int get parentId => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+
+  /// Serializes this DamageCause to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DamageCause
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DamageCauseCopyWith<DamageCause> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DamageCauseCopyWith<$Res> {
+  factory $DamageCauseCopyWith(
+    DamageCause value,
+    $Res Function(DamageCause) then,
+  ) = _$DamageCauseCopyWithImpl<$Res, DamageCause>;
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class _$DamageCauseCopyWithImpl<$Res, $Val extends DamageCause>
+    implements $DamageCauseCopyWith<$Res> {
+  _$DamageCauseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DamageCause
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            parentId: null == parentId
+                ? _value.parentId
+                : parentId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DamageCauseImplCopyWith<$Res>
+    implements $DamageCauseCopyWith<$Res> {
+  factory _$$DamageCauseImplCopyWith(
+    _$DamageCauseImpl value,
+    $Res Function(_$DamageCauseImpl) then,
+  ) = __$$DamageCauseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, int parentId, String nameAr, String nameEn});
+}
+
+/// @nodoc
+class __$$DamageCauseImplCopyWithImpl<$Res>
+    extends _$DamageCauseCopyWithImpl<$Res, _$DamageCauseImpl>
+    implements _$$DamageCauseImplCopyWith<$Res> {
+  __$$DamageCauseImplCopyWithImpl(
+    _$DamageCauseImpl _value,
+    $Res Function(_$DamageCauseImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DamageCause
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? parentId = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+  }) {
+    return _then(
+      _$DamageCauseImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        parentId: null == parentId
+            ? _value.parentId
+            : parentId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DamageCauseImpl implements _DamageCause {
+  const _$DamageCauseImpl({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+
+  factory _$DamageCauseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DamageCauseImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final int parentId;
+  @override
+  final String nameAr;
+  @override
+  final String nameEn;
+
+  @override
+  String toString() {
+    return 'DamageCause(id: $id, parentId: $parentId, nameAr: $nameAr, nameEn: $nameEn)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DamageCauseImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, parentId, nameAr, nameEn);
+
+  /// Create a copy of DamageCause
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DamageCauseImplCopyWith<_$DamageCauseImpl> get copyWith =>
+      __$$DamageCauseImplCopyWithImpl<_$DamageCauseImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DamageCauseImplToJson(this);
+  }
+}
+
+abstract class _DamageCause implements DamageCause {
+  const factory _DamageCause({
+    required final int id,
+    required final int parentId,
+    required final String nameAr,
+    required final String nameEn,
+  }) = _$DamageCauseImpl;
+
+  factory _DamageCause.fromJson(Map<String, dynamic> json) =
+      _$DamageCauseImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  int get parentId;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+
+  /// Create a copy of DamageCause
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DamageCauseImplCopyWith<_$DamageCauseImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+CostingSheetVersion _$CostingSheetVersionFromJson(Map<String, dynamic> json) {
+  return _CostingSheetVersion.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CostingSheetVersion {
+  String get id => throw _privateConstructorUsedError;
+  int get classificationId => throw _privateConstructorUsedError;
+  double get unitPrice => throw _privateConstructorUsedError;
+  DateTime get effectiveFrom => throw _privateConstructorUsedError;
+  DateTime? get effectiveTo => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+  int get versionNumber => throw _privateConstructorUsedError;
+
+  /// Serializes this CostingSheetVersion to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CostingSheetVersion
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CostingSheetVersionCopyWith<CostingSheetVersion> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CostingSheetVersionCopyWith<$Res> {
+  factory $CostingSheetVersionCopyWith(
+    CostingSheetVersion value,
+    $Res Function(CostingSheetVersion) then,
+  ) = _$CostingSheetVersionCopyWithImpl<$Res, CostingSheetVersion>;
+  @useResult
+  $Res call({
+    String id,
+    int classificationId,
+    double unitPrice,
+    DateTime effectiveFrom,
+    DateTime? effectiveTo,
+    bool isActive,
+    int versionNumber,
+  });
+}
+
+/// @nodoc
+class _$CostingSheetVersionCopyWithImpl<$Res, $Val extends CostingSheetVersion>
+    implements $CostingSheetVersionCopyWith<$Res> {
+  _$CostingSheetVersionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CostingSheetVersion
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? classificationId = null,
+    Object? unitPrice = null,
+    Object? effectiveFrom = null,
+    Object? effectiveTo = freezed,
+    Object? isActive = null,
+    Object? versionNumber = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            classificationId: null == classificationId
+                ? _value.classificationId
+                : classificationId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            unitPrice: null == unitPrice
+                ? _value.unitPrice
+                : unitPrice // ignore: cast_nullable_to_non_nullable
+                      as double,
+            effectiveFrom: null == effectiveFrom
+                ? _value.effectiveFrom
+                : effectiveFrom // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            effectiveTo: freezed == effectiveTo
+                ? _value.effectiveTo
+                : effectiveTo // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            versionNumber: null == versionNumber
+                ? _value.versionNumber
+                : versionNumber // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CostingSheetVersionImplCopyWith<$Res>
+    implements $CostingSheetVersionCopyWith<$Res> {
+  factory _$$CostingSheetVersionImplCopyWith(
+    _$CostingSheetVersionImpl value,
+    $Res Function(_$CostingSheetVersionImpl) then,
+  ) = __$$CostingSheetVersionImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    int classificationId,
+    double unitPrice,
+    DateTime effectiveFrom,
+    DateTime? effectiveTo,
+    bool isActive,
+    int versionNumber,
+  });
+}
+
+/// @nodoc
+class __$$CostingSheetVersionImplCopyWithImpl<$Res>
+    extends _$CostingSheetVersionCopyWithImpl<$Res, _$CostingSheetVersionImpl>
+    implements _$$CostingSheetVersionImplCopyWith<$Res> {
+  __$$CostingSheetVersionImplCopyWithImpl(
+    _$CostingSheetVersionImpl _value,
+    $Res Function(_$CostingSheetVersionImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CostingSheetVersion
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? classificationId = null,
+    Object? unitPrice = null,
+    Object? effectiveFrom = null,
+    Object? effectiveTo = freezed,
+    Object? isActive = null,
+    Object? versionNumber = null,
+  }) {
+    return _then(
+      _$CostingSheetVersionImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        classificationId: null == classificationId
+            ? _value.classificationId
+            : classificationId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        unitPrice: null == unitPrice
+            ? _value.unitPrice
+            : unitPrice // ignore: cast_nullable_to_non_nullable
+                  as double,
+        effectiveFrom: null == effectiveFrom
+            ? _value.effectiveFrom
+            : effectiveFrom // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        effectiveTo: freezed == effectiveTo
+            ? _value.effectiveTo
+            : effectiveTo // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        versionNumber: null == versionNumber
+            ? _value.versionNumber
+            : versionNumber // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CostingSheetVersionImpl implements _CostingSheetVersion {
+  const _$CostingSheetVersionImpl({
+    required this.id,
+    required this.classificationId,
+    required this.unitPrice,
+    required this.effectiveFrom,
+    this.effectiveTo,
+    this.isActive = true,
+    required this.versionNumber,
+  });
+
+  factory _$CostingSheetVersionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CostingSheetVersionImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final int classificationId;
+  @override
+  final double unitPrice;
+  @override
+  final DateTime effectiveFrom;
+  @override
+  final DateTime? effectiveTo;
+  @override
+  @JsonKey()
+  final bool isActive;
+  @override
+  final int versionNumber;
+
+  @override
+  String toString() {
+    return 'CostingSheetVersion(id: $id, classificationId: $classificationId, unitPrice: $unitPrice, effectiveFrom: $effectiveFrom, effectiveTo: $effectiveTo, isActive: $isActive, versionNumber: $versionNumber)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CostingSheetVersionImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.classificationId, classificationId) ||
+                other.classificationId == classificationId) &&
+            (identical(other.unitPrice, unitPrice) ||
+                other.unitPrice == unitPrice) &&
+            (identical(other.effectiveFrom, effectiveFrom) ||
+                other.effectiveFrom == effectiveFrom) &&
+            (identical(other.effectiveTo, effectiveTo) ||
+                other.effectiveTo == effectiveTo) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.versionNumber, versionNumber) ||
+                other.versionNumber == versionNumber));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    classificationId,
+    unitPrice,
+    effectiveFrom,
+    effectiveTo,
+    isActive,
+    versionNumber,
+  );
+
+  /// Create a copy of CostingSheetVersion
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CostingSheetVersionImplCopyWith<_$CostingSheetVersionImpl> get copyWith =>
+      __$$CostingSheetVersionImplCopyWithImpl<_$CostingSheetVersionImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CostingSheetVersionImplToJson(this);
+  }
+}
+
+abstract class _CostingSheetVersion implements CostingSheetVersion {
+  const factory _CostingSheetVersion({
+    required final String id,
+    required final int classificationId,
+    required final double unitPrice,
+    required final DateTime effectiveFrom,
+    final DateTime? effectiveTo,
+    final bool isActive,
+    required final int versionNumber,
+  }) = _$CostingSheetVersionImpl;
+
+  factory _CostingSheetVersion.fromJson(Map<String, dynamic> json) =
+      _$CostingSheetVersionImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  int get classificationId;
+  @override
+  double get unitPrice;
+  @override
+  DateTime get effectiveFrom;
+  @override
+  DateTime? get effectiveTo;
+  @override
+  bool get isActive;
+  @override
+  int get versionNumber;
+
+  /// Create a copy of CostingSheetVersion
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CostingSheetVersionImplCopyWith<_$CostingSheetVersionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

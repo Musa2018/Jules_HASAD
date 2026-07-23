@@ -6,14 +6,14 @@ import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/utils/debug_logger.dart';
-import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
-import 'package:mobile/features/farmers/data/damage_report_repository.dart';
+import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
+import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farmers/domain/damage_item.dart' as item_domain;
-import 'package:mobile/features/farmers/domain/damage_report.dart'
+import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
     as report_domain;
-import 'package:mobile/features/farmers/domain/damage_report_attachment.dart'
+import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart'
     as attachment_domain;
 import 'package:mobile/features/farms/domain/farm.dart' as farm_domain;
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
@@ -837,7 +837,14 @@ class BackgroundSyncService {
             _db.damageReports,
           )..where((t) => t.id.equals(item.localId))).write(
             DamageReportsCompanion(
+              formNumber: Value(remoteReport.formNumber),
+              temporaryFormNumber: Value(remoteReport.temporaryFormNumber),
+              damageYear: Value(remoteReport.damageYear),
               damageDate: Value(remoteReport.damageDate),
+              damageTypeId: Value(remoteReport.damageTypeId),
+              damageCauseId: Value(remoteReport.damageCauseId),
+              settlementName: Value(remoteReport.settlementName),
+              companyName: Value(remoteReport.companyName),
               governorateId: Value(remoteReport.governorateId),
               localityId: Value(remoteReport.localityId),
               latitude: Value(remoteReport.latitude),
@@ -858,11 +865,12 @@ class BackgroundSyncService {
                 .insert(
                   DamageItemsCompanion.insert(
                     id: ri.id,
+                    serverId: Value(ri.serverId),
                     damageReportId: item.localId,
-                    agriculturalSectorId: ri.agriculturalSectorId,
-                    subSectorId: ri.subSectorId,
-                    cropId: ri.cropId,
-                    damageTypeId: ri.damageTypeId,
+                    classificationId: Value(ri.classificationId),
+                    costingSheetId: Value(ri.costingSheetId),
+                    calculatedUnitPrice: Value(ri.calculatedUnitPrice),
+                    measurementUnitSnapshot: Value(ri.measurementUnitSnapshot),
                     affectedArea: ri.affectedArea,
                     damagePercentage: ri.damagePercentage,
                     quantity: ri.quantity,
@@ -905,10 +913,10 @@ class BackgroundSyncService {
           _db.damageItems,
         )..where((t) => t.id.equals(item.localId))).write(
           DamageItemsCompanion(
-            agriculturalSectorId: Value(remoteItem.agriculturalSectorId),
-            subSectorId: Value(remoteItem.subSectorId),
-            cropId: Value(remoteItem.cropId),
-            damageTypeId: Value(remoteItem.damageTypeId),
+            classificationId: Value(remoteItem.classificationId),
+            costingSheetId: Value(remoteItem.costingSheetId),
+            calculatedUnitPrice: Value(remoteItem.calculatedUnitPrice),
+            measurementUnitSnapshot: Value(remoteItem.measurementUnitSnapshot),
             affectedArea: Value(remoteItem.affectedArea),
             damagePercentage: Value(remoteItem.damagePercentage),
             quantity: Value(remoteItem.quantity),

@@ -10,6 +10,10 @@ namespace Hasad.Application.Features.DamageReports.Commands.UpdateDamageReport;
 public record UpdateDamageReportCommand(
     Guid Id,
     DateTime DamageDate,
+    int DamageTypeId,
+    int DamageCauseId,
+    string? SettlementName,
+    string? CompanyName,
     string GovernorateId,
     string LocalityId,
     double? Latitude,
@@ -45,6 +49,10 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         }
 
         report.DamageDate = request.DamageDate;
+        report.DamageTypeId = request.DamageTypeId;
+        report.DamageCauseId = request.DamageCauseId;
+        report.SettlementName = request.SettlementName;
+        report.CompanyName = request.CompanyName;
         report.GovernorateId = request.GovernorateId;
         report.LocalityId = request.LocalityId;
         report.Latitude = request.Latitude;
@@ -65,10 +73,17 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         {
             Id = report.Id,
             ClientId = report.ClientId,
+            FormNumber = report.FormNumber,
+            TemporaryFormNumber = report.TemporaryFormNumber,
+            DamageYear = report.DamageYear,
             FarmId = report.FarmId,
             FarmerId = report.FarmerId,
             DamageDate = report.DamageDate,
             DocumentationDate = report.DocumentationDate,
+            DamageTypeId = report.DamageTypeId,
+            DamageCauseId = report.DamageCauseId,
+            SettlementName = report.SettlementName,
+            CompanyName = report.CompanyName,
             GovernorateId = report.GovernorateId,
             LocalityId = report.LocalityId,
             Latitude = report.Latitude,
@@ -80,10 +95,10 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             {
                 Id = i.Id,
                 ClientId = i.ClientId,
-                AgriculturalSectorId = i.AgriculturalSectorId,
-                SubSectorId = i.SubSectorId,
-                CropId = i.CropId,
-                DamageTypeId = i.DamageTypeId,
+                ClassificationId = i.ClassificationId,
+                CostingSheetId = i.CostingSheetId,
+                CalculatedUnitPrice = i.CalculatedUnitPrice,
+                MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
                 AffectedArea = i.AffectedArea,
                 DamagePercentage = i.DamagePercentage,
                 Quantity = i.Quantity,
@@ -100,6 +115,8 @@ public class UpdateDamageReportCommandValidator : AbstractValidator<UpdateDamage
     {
         RuleFor(v => v.Id).NotEmpty();
         RuleFor(v => v.DamageDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
+        RuleFor(v => v.DamageTypeId).NotEmpty();
+        RuleFor(v => v.DamageCauseId).NotEmpty();
         RuleFor(v => v.GovernorateId).NotEmpty().MaximumLength(50);
         RuleFor(v => v.LocalityId).NotEmpty().MaximumLength(50);
         RuleFor(v => v.RowVersion).NotEmpty();

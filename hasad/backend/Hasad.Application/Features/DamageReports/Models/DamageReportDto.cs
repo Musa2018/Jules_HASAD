@@ -4,10 +4,17 @@ public class DamageReportDto
 {
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }
+    public string FormNumber { get; set; } = string.Empty;
+    public string TemporaryFormNumber { get; set; } = string.Empty;
+    public int DamageYear { get; set; }
     public Guid FarmId { get; set; }
     public Guid FarmerId { get; set; }
     public DateTime DamageDate { get; set; }
     public DateTime DocumentationDate { get; set; }
+    public int DamageTypeId { get; set; }
+    public int DamageCauseId { get; set; }
+    public string? SettlementName { get; set; }
+    public string? CompanyName { get; set; }
     public string GovernorateId { get; set; } = string.Empty;
     public string LocalityId { get; set; } = string.Empty;
     public double? Latitude { get; set; }

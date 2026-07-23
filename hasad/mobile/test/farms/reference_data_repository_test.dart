@@ -21,6 +21,21 @@ void main() {
     politicalClassifications: [const domain.PoliticalClassification(id: 1, nameAr: 'A', nameEn: 'A')],
     areaUnits: [const domain.AreaUnit(id: 1, nameAr: 'دونم', nameEn: 'Dunum')],
     relationshipToOwners: [const domain.RelationshipToOwner(id: 1, nameAr: 'المالك نفسه', nameEn: 'Owner Himself')],
+    damageNatures: [const domain.DamageNature(id: 1, nameAr: 'نباتي', nameEn: 'Plant')],
+    damageCategories: [const domain.DamageCategory(id: 1, parentId: 1, nameAr: 'أشجار', nameEn: 'Trees')],
+    damageSubCategories: [const domain.DamageSubCategory(id: 1, parentId: 1, nameAr: 'زيتون', nameEn: 'Olive')],
+    damageClassifications: [const domain.DamageClassification(id: 1, parentId: 1, nameAr: 'عمر 1-5', nameEn: 'Age 1-5')],
+    damageCauseCategories: [const domain.DamageCauseCategory(id: 1, nameAr: 'سياسي', nameEn: 'Political')],
+    damageCauses: [const domain.DamageCause(id: 1, parentId: 1, nameAr: 'جيش', nameEn: 'Army')],
+    costingSheets: [
+      domain.CostingSheetVersion(
+        id: 'cs1',
+        classificationId: 1,
+        unitPrice: 100,
+        effectiveFrom: DateTime(2026, 1, 1),
+        versionNumber: 1,
+      )
+    ],
   );
 
   setUp(() {
@@ -55,6 +70,19 @@ void main() {
       await db.into(db.politicalClassifications).insert(PoliticalClassificationsCompanion.insert(id: const drift.Value(1), nameAr: 'A', nameEn: 'A'));
       await db.into(db.areaUnits).insert(AreaUnitsCompanion.insert(id: const drift.Value(1), nameAr: 'دونم', nameEn: 'Dunum'));
       await db.into(db.relationshipToOwners).insert(RelationshipToOwnersCompanion.insert(id: const drift.Value(1), nameAr: 'المالك نفسه', nameEn: 'Owner Himself'));
+      await db.into(db.damageNatures).insert(DamageNaturesCompanion.insert(id: const drift.Value(1), nameAr: 'نباتي', nameEn: 'Plant'));
+      await db.into(db.damageCategories).insert(DamageCategoriesCompanion.insert(id: const drift.Value(1), parentId: 1, nameAr: 'أشجار', nameEn: 'Trees'));
+      await db.into(db.damageSubCategories).insert(DamageSubCategoriesCompanion.insert(id: const drift.Value(1), parentId: 1, nameAr: 'زيتون', nameEn: 'Olive'));
+      await db.into(db.damageClassifications).insert(DamageClassificationsCompanion.insert(id: const drift.Value(1), parentId: 1, nameAr: 'عمر 1-5', nameEn: 'Age 1-5'));
+      await db.into(db.damageCauseCategories).insert(DamageCauseCategoriesCompanion.insert(id: const drift.Value(1), nameAr: 'سياسي', nameEn: 'Political'));
+      await db.into(db.damageCauses).insert(DamageCausesCompanion.insert(id: const drift.Value(1), parentId: 1, nameAr: 'جيش', nameEn: 'Army'));
+      await db.into(db.costingSheets).insert(CostingSheetsCompanion.insert(
+        id: 'cs1',
+        classificationId: 1,
+        unitPrice: 100,
+        effectiveFrom: DateTime(2026, 1, 1),
+        versionNumber: 1,
+      ));
 
       final result = await repository.getReferenceData();
 

@@ -20,10 +20,20 @@ public interface IApplicationDbContext
     DbSet<RelationshipToOwner> RelationshipToOwners { get; }
     DbSet<Farm> Farms { get; }
     DbSet<DamageReport> DamageReports { get; }
+    DbSet<DamageItem> DamageItems { get; }
+    DbSet<DamageReportAttachment> DamageReportAttachments { get; }
+
+    DbSet<DamageNature> DamageNatures { get; }
+    DbSet<DamageCategory> DamageCategories { get; }
+    DbSet<DamageSubCategory> DamageSubCategories { get; }
+    DbSet<DamageClassification> DamageClassifications { get; }
+    DbSet<CostingSheet> CostingSheets { get; }
+
+    DbSet<DamageCauseCategory> DamageCauseCategories { get; }
+    DbSet<DamageCause> DamageCauses { get; }
+
     DbSet<Compensation> Compensations { get; }
     DbSet<CompensationRule> CompensationRules { get; }
     DbSet<CompensationAuditLog> CompensationAuditLogs { get; }
-    DbSet<DamageItem> DamageItems { get; }
-    DbSet<DamageReportAttachment> DamageReportAttachments { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

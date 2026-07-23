@@ -11,10 +11,10 @@ namespace Hasad.Application.Features.DamageReports.Commands.AddDamageItem;
 public record AddDamageItemCommand(
     Guid DamageReportId,
     Guid ClientId,
-    string AgriculturalSectorId,
-    string SubSectorId,
-    string CropId,
-    string DamageTypeId,
+    int ClassificationId,
+    Guid CostingSheetId,
+    decimal CalculatedUnitPrice,
+    string MeasurementUnitSnapshot,
     decimal AffectedArea,
     decimal DamagePercentage,
     decimal Quantity,
@@ -51,10 +51,10 @@ public class AddDamageItemCommandHandler : IRequestHandler<AddDamageItemCommand,
             Id = Guid.NewGuid(),
             ClientId = request.ClientId,
             DamageReportId = request.DamageReportId,
-            AgriculturalSectorId = request.AgriculturalSectorId,
-            SubSectorId = request.SubSectorId,
-            CropId = request.CropId,
-            DamageTypeId = request.DamageTypeId,
+            ClassificationId = request.ClassificationId,
+            CostingSheetId = request.CostingSheetId,
+            CalculatedUnitPrice = request.CalculatedUnitPrice,
+            MeasurementUnitSnapshot = request.MeasurementUnitSnapshot,
             AffectedArea = request.AffectedArea,
             DamagePercentage = request.DamagePercentage,
             Quantity = request.Quantity,
@@ -72,10 +72,10 @@ public class AddDamageItemCommandHandler : IRequestHandler<AddDamageItemCommand,
     {
         Id = i.Id,
         ClientId = i.ClientId,
-        AgriculturalSectorId = i.AgriculturalSectorId,
-        SubSectorId = i.SubSectorId,
-        CropId = i.CropId,
-        DamageTypeId = i.DamageTypeId,
+        ClassificationId = i.ClassificationId,
+        CostingSheetId = i.CostingSheetId,
+        CalculatedUnitPrice = i.CalculatedUnitPrice,
+        MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
         AffectedArea = i.AffectedArea,
         DamagePercentage = i.DamagePercentage,
         Quantity = i.Quantity,
@@ -90,7 +90,7 @@ public class AddDamageItemCommandValidator : AbstractValidator<AddDamageItemComm
     {
         RuleFor(v => v.DamageReportId).NotEmpty();
         RuleFor(v => v.ClientId).NotEmpty();
-        RuleFor(v => v.AgriculturalSectorId).NotEmpty();
+        RuleFor(v => v.ClassificationId).NotEmpty();
         RuleFor(v => v.DamagePercentage).InclusiveBetween(0, 100);
     }
 }

@@ -71,6 +71,85 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             })
             .ToListAsync(cancellationToken);
 
+        dto.DamageNatures = await _context.DamageNatures
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.DamageCategories = await _context.DamageCategories
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                ParentId = x.NatureId,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.DamageSubCategories = await _context.DamageSubCategories
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                ParentId = x.CategoryId,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.DamageClassifications = await _context.DamageClassifications
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                ParentId = x.SubCategoryId,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.DamageCauseCategories = await _context.DamageCauseCategories
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.DamageCauses = await _context.DamageCauses
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                ParentId = x.CategoryId,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.CostingSheets = await _context.CostingSheets
+            .AsNoTracking()
+            .Where(x => x.IsActive)
+            .Select(x => new CostingSheetDto
+            {
+                Id = x.Id,
+                ClassificationId = x.ClassificationId,
+                UnitPrice = x.UnitPrice,
+                EffectiveFrom = x.EffectiveFrom,
+                EffectiveTo = x.EffectiveTo,
+                IsActive = x.IsActive,
+                VersionNumber = x.VersionNumber
+            })
+            .ToListAsync(cancellationToken);
+
         return dto;
     }
 }

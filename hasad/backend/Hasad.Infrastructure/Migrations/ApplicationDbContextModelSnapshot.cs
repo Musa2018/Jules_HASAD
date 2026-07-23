@@ -235,6 +235,150 @@ namespace Hasad.Infrastructure.Migrations
                     b.ToTable("CompensationRules");
                 });
 
+            modelBuilder.Entity("Hasad.Domain.Entities.CostingSheet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ClassificationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EffectiveTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassificationId");
+
+                    b.ToTable("CostingSheets");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("NatureId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NatureId");
+
+                    b.ToTable("DamageCategories");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCause", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("DamageCauses");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCauseCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DamageCauseCategories");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageClassification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubCategoryId");
+
+                    b.ToTable("DamageClassifications");
+                });
+
             modelBuilder.Entity("Hasad.Domain.Entities.DamageItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -245,21 +389,21 @@ namespace Hasad.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("AgriculturalSectorId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<decimal>("CalculatedUnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ClassificationId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CostingSheetId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CropId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("DamagePercentage")
                         .HasPrecision(18, 2)
@@ -268,14 +412,23 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("DamageReportId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("DamageTypeId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("EstimatedLoss")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MeasurementUnitSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Quantity")
                         .HasPrecision(18, 2)
@@ -287,22 +440,44 @@ namespace Hasad.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<string>("SubSectorId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClassificationId");
+
                     b.HasIndex("ClientId")
                         .IsUnique();
+
+                    b.HasIndex("CostingSheetId");
 
                     b.HasIndex("DamageReportId");
 
                     b.ToTable("DamageItems");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageNature", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DamageNatures");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReport", b =>
@@ -314,11 +489,29 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("DamageCauseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DamageDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DamageTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DamageYear")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DocumentationDate")
                         .HasColumnType("datetime2");
@@ -329,10 +522,18 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("FarmerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("FormNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("GovernorateId")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("float");
@@ -355,7 +556,15 @@ namespace Hasad.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<string>("SettlementName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StatusId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TemporaryFormNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -368,9 +577,18 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasIndex("ClientId")
                         .IsUnique();
 
-                    b.HasIndex("FarmId");
+                    b.HasIndex("DamageCauseId");
+
+                    b.HasIndex("DamageTypeId");
 
                     b.HasIndex("FarmerId");
+
+                    b.HasIndex("FormNumber")
+                        .IsUnique();
+
+                    b.HasIndex("FarmId", "DamageDate")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("DamageReports");
                 });
@@ -452,6 +670,34 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasIndex("DamageReportId");
 
                     b.ToTable("DamageReportAttachments");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageSubCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("DamageSubCategories");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.Directorate", b =>
@@ -623,6 +869,12 @@ namespace Hasad.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FamilyNameAr")
                         .IsRequired()
@@ -1295,19 +1547,91 @@ namespace Hasad.Infrastructure.Migrations
                     b.Navigation("Compensation");
                 });
 
+            modelBuilder.Entity("Hasad.Domain.Entities.CostingSheet", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.DamageClassification", "Classification")
+                        .WithMany("CostingSheets")
+                        .HasForeignKey("ClassificationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Classification");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCategory", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.DamageNature", "Nature")
+                        .WithMany("Categories")
+                        .HasForeignKey("NatureId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Nature");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCause", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.DamageCauseCategory", "Category")
+                        .WithMany("Causes")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageClassification", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.DamageSubCategory", "SubCategory")
+                        .WithMany("Classifications")
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SubCategory");
+                });
+
             modelBuilder.Entity("Hasad.Domain.Entities.DamageItem", b =>
                 {
+                    b.HasOne("Hasad.Domain.Entities.DamageClassification", "Classification")
+                        .WithMany()
+                        .HasForeignKey("ClassificationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.CostingSheet", "CostingSheet")
+                        .WithMany()
+                        .HasForeignKey("CostingSheetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Hasad.Domain.Entities.DamageReport", "DamageReport")
                         .WithMany("Items")
                         .HasForeignKey("DamageReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Classification");
+
+                    b.Navigation("CostingSheet");
+
                     b.Navigation("DamageReport");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReport", b =>
                 {
+                    b.HasOne("Hasad.Domain.Entities.DamageCause", "DamageCause")
+                        .WithMany()
+                        .HasForeignKey("DamageCauseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.DamageCauseCategory", "DamageType")
+                        .WithMany()
+                        .HasForeignKey("DamageTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Hasad.Domain.Entities.Farm", "Farm")
                         .WithMany()
                         .HasForeignKey("FarmId")
@@ -1319,6 +1643,10 @@ namespace Hasad.Infrastructure.Migrations
                         .HasForeignKey("FarmerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("DamageCause");
+
+                    b.Navigation("DamageType");
 
                     b.Navigation("Farm");
 
@@ -1334,6 +1662,17 @@ namespace Hasad.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("DamageReport");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageSubCategory", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.DamageCategory", "Category")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.Directorate", b =>
@@ -1531,11 +1870,36 @@ namespace Hasad.Infrastructure.Migrations
                     b.Navigation("AuditLogs");
                 });
 
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCategory", b =>
+                {
+                    b.Navigation("SubCategories");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCauseCategory", b =>
+                {
+                    b.Navigation("Causes");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageClassification", b =>
+                {
+                    b.Navigation("CostingSheets");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageNature", b =>
+                {
+                    b.Navigation("Categories");
+                });
+
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReport", b =>
                 {
                     b.Navigation("Attachments");
 
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageSubCategory", b =>
+                {
+                    b.Navigation("Classifications");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.Governorate", b =>

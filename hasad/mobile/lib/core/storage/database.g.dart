@@ -341,6 +341,28 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedByMeta = const VerificationMeta(
+    'deletedBy',
+  );
+  @override
+  late final GeneratedColumn<String> deletedBy = GeneratedColumn<String>(
+    'deleted_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -370,6 +392,8 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     isPendingDelete,
     createdAt,
     updatedAt,
+    deletedAt,
+    deletedBy,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -580,6 +604,18 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
       );
     }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('deleted_by')) {
+      context.handle(
+        _deletedByMeta,
+        deletedBy.isAcceptableOrUnknown(data['deleted_by']!, _deletedByMeta),
+      );
+    }
     return context;
   }
 
@@ -697,6 +733,14 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deletedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_by'],
+      ),
     );
   }
 
@@ -734,6 +778,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
   final bool isPendingDelete;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final DateTime? deletedAt;
+  final String? deletedBy;
   const FarmerLocal({
     required this.id,
     this.serverId,
@@ -762,6 +808,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     required this.isPendingDelete,
     required this.createdAt,
     this.updatedAt,
+    this.deletedAt,
+    this.deletedBy,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -800,6 +848,12 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    if (!nullToAbsent || deletedBy != null) {
+      map['deleted_by'] = Variable<String>(deletedBy);
     }
     return map;
   }
@@ -841,6 +895,12 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deletedBy: deletedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedBy),
     );
   }
 
@@ -877,6 +937,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       isPendingDelete: serializer.fromJson<bool>(json['isPendingDelete']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      deletedBy: serializer.fromJson<String?>(json['deletedBy']),
     );
   }
   @override
@@ -910,6 +972,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       'isPendingDelete': serializer.toJson<bool>(isPendingDelete),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'deletedBy': serializer.toJson<String?>(deletedBy),
     };
   }
 
@@ -941,6 +1005,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     bool? isPendingDelete,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<String?> deletedBy = const Value.absent(),
   }) => FarmerLocal(
     id: id ?? this.id,
     serverId: serverId.present ? serverId.value : this.serverId,
@@ -971,6 +1037,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     isPendingDelete: isPendingDelete ?? this.isPendingDelete,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deletedBy: deletedBy.present ? deletedBy.value : this.deletedBy,
   );
   FarmerLocal copyWithCompanion(FarmersCompanion data) {
     return FarmerLocal(
@@ -1035,6 +1103,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           : this.isPendingDelete,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deletedBy: data.deletedBy.present ? data.deletedBy.value : this.deletedBy,
     );
   }
 
@@ -1067,7 +1137,9 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           ..write('lastSyncError: $lastSyncError, ')
           ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deletedBy: $deletedBy')
           ..write(')'))
         .toString();
   }
@@ -1101,6 +1173,8 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     isPendingDelete,
     createdAt,
     updatedAt,
+    deletedAt,
+    deletedBy,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -1132,7 +1206,9 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           other.lastSyncError == this.lastSyncError &&
           other.isPendingDelete == this.isPendingDelete &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.deletedBy == this.deletedBy);
 }
 
 class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
@@ -1163,6 +1239,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   final Value<bool> isPendingDelete;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String?> deletedBy;
   final Value<int> rowid;
   const FarmersCompanion({
     this.id = const Value.absent(),
@@ -1192,6 +1270,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deletedBy = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FarmersCompanion.insert({
@@ -1222,6 +1302,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.isPendingDelete = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deletedBy = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
   static Insertable<FarmerLocal> custom({
@@ -1252,6 +1334,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Expression<bool>? isPendingDelete,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? deletedBy,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1282,6 +1366,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       if (isPendingDelete != null) 'is_pending_delete': isPendingDelete,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deletedBy != null) 'deleted_by': deletedBy,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1314,6 +1400,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Value<bool>? isPendingDelete,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String?>? deletedBy,
     Value<int>? rowid,
   }) {
     return FarmersCompanion(
@@ -1344,6 +1432,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       isPendingDelete: isPendingDelete ?? this.isPendingDelete,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1432,6 +1522,12 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (deletedBy.present) {
+      map['deleted_by'] = Variable<String>(deletedBy.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1468,6 +1564,8 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
           ..write('isPendingDelete: $isPendingDelete, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deletedBy: $deletedBy, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2905,6 +3003,42 @@ class $DamageReportsTable extends DamageReports
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _formNumberMeta = const VerificationMeta(
+    'formNumber',
+  );
+  @override
+  late final GeneratedColumn<String> formNumber = GeneratedColumn<String>(
+    'form_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _temporaryFormNumberMeta =
+      const VerificationMeta('temporaryFormNumber');
+  @override
+  late final GeneratedColumn<String> temporaryFormNumber =
+      GeneratedColumn<String>(
+        'temporary_form_number',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
+  static const VerificationMeta _damageYearMeta = const VerificationMeta(
+    'damageYear',
+  );
+  @override
+  late final GeneratedColumn<int> damageYear = GeneratedColumn<int>(
+    'damage_year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _farmIdMeta = const VerificationMeta('farmId');
   @override
   late final GeneratedColumn<String> farmId = GeneratedColumn<String>(
@@ -2948,6 +3082,52 @@ class $DamageReportsTable extends DamageReports
         type: DriftSqlType.dateTime,
         requiredDuringInsert: true,
       );
+  static const VerificationMeta _damageTypeIdMeta = const VerificationMeta(
+    'damageTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> damageTypeId = GeneratedColumn<int>(
+    'damage_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _damageCauseIdMeta = const VerificationMeta(
+    'damageCauseId',
+  );
+  @override
+  late final GeneratedColumn<int> damageCauseId = GeneratedColumn<int>(
+    'damage_cause_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _settlementNameMeta = const VerificationMeta(
+    'settlementName',
+  );
+  @override
+  late final GeneratedColumn<String> settlementName = GeneratedColumn<String>(
+    'settlement_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _companyNameMeta = const VerificationMeta(
+    'companyName',
+  );
+  @override
+  late final GeneratedColumn<String> companyName = GeneratedColumn<String>(
+    'company_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _governorateIdMeta = const VerificationMeta(
     'governorateId',
   );
@@ -3092,10 +3272,17 @@ class $DamageReportsTable extends DamageReports
   List<GeneratedColumn> get $columns => [
     id,
     serverId,
+    formNumber,
+    temporaryFormNumber,
+    damageYear,
     farmId,
     farmerId,
     damageDate,
     documentationDate,
+    damageTypeId,
+    damageCauseId,
+    settlementName,
+    companyName,
     governorateId,
     localityId,
     latitude,
@@ -3132,6 +3319,27 @@ class $DamageReportsTable extends DamageReports
         serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
       );
     }
+    if (data.containsKey('form_number')) {
+      context.handle(
+        _formNumberMeta,
+        formNumber.isAcceptableOrUnknown(data['form_number']!, _formNumberMeta),
+      );
+    }
+    if (data.containsKey('temporary_form_number')) {
+      context.handle(
+        _temporaryFormNumberMeta,
+        temporaryFormNumber.isAcceptableOrUnknown(
+          data['temporary_form_number']!,
+          _temporaryFormNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('damage_year')) {
+      context.handle(
+        _damageYearMeta,
+        damageYear.isAcceptableOrUnknown(data['damage_year']!, _damageYearMeta),
+      );
+    }
     if (data.containsKey('farm_id')) {
       context.handle(
         _farmIdMeta,
@@ -3166,6 +3374,42 @@ class $DamageReportsTable extends DamageReports
       );
     } else if (isInserting) {
       context.missing(_documentationDateMeta);
+    }
+    if (data.containsKey('damage_type_id')) {
+      context.handle(
+        _damageTypeIdMeta,
+        damageTypeId.isAcceptableOrUnknown(
+          data['damage_type_id']!,
+          _damageTypeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('damage_cause_id')) {
+      context.handle(
+        _damageCauseIdMeta,
+        damageCauseId.isAcceptableOrUnknown(
+          data['damage_cause_id']!,
+          _damageCauseIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('settlement_name')) {
+      context.handle(
+        _settlementNameMeta,
+        settlementName.isAcceptableOrUnknown(
+          data['settlement_name']!,
+          _settlementNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('company_name')) {
+      context.handle(
+        _companyNameMeta,
+        companyName.isAcceptableOrUnknown(
+          data['company_name']!,
+          _companyNameMeta,
+        ),
+      );
     }
     if (data.containsKey('governorate_id')) {
       context.handle(
@@ -3273,6 +3517,18 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}server_id'],
       ),
+      formNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}form_number'],
+      )!,
+      temporaryFormNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}temporary_form_number'],
+      )!,
+      damageYear: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}damage_year'],
+      )!,
       farmId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}farm_id'],
@@ -3289,6 +3545,22 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.dateTime,
         data['${effectivePrefix}documentation_date'],
       )!,
+      damageTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}damage_type_id'],
+      )!,
+      damageCauseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}damage_cause_id'],
+      )!,
+      settlementName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}settlement_name'],
+      ),
+      companyName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company_name'],
+      ),
       governorateId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}governorate_id'],
@@ -3350,10 +3622,17 @@ class DamageReportLocal extends DataClass
     implements Insertable<DamageReportLocal> {
   final String id;
   final String? serverId;
+  final String formNumber;
+  final String temporaryFormNumber;
+  final int damageYear;
   final String farmId;
   final String farmerId;
   final DateTime damageDate;
   final DateTime documentationDate;
+  final int damageTypeId;
+  final int damageCauseId;
+  final String? settlementName;
+  final String? companyName;
   final String governorateId;
   final String localityId;
   final double? latitude;
@@ -3369,10 +3648,17 @@ class DamageReportLocal extends DataClass
   const DamageReportLocal({
     required this.id,
     this.serverId,
+    required this.formNumber,
+    required this.temporaryFormNumber,
+    required this.damageYear,
     required this.farmId,
     required this.farmerId,
     required this.damageDate,
     required this.documentationDate,
+    required this.damageTypeId,
+    required this.damageCauseId,
+    this.settlementName,
+    this.companyName,
     required this.governorateId,
     required this.localityId,
     this.latitude,
@@ -3393,10 +3679,21 @@ class DamageReportLocal extends DataClass
     if (!nullToAbsent || serverId != null) {
       map['server_id'] = Variable<String>(serverId);
     }
+    map['form_number'] = Variable<String>(formNumber);
+    map['temporary_form_number'] = Variable<String>(temporaryFormNumber);
+    map['damage_year'] = Variable<int>(damageYear);
     map['farm_id'] = Variable<String>(farmId);
     map['farmer_id'] = Variable<String>(farmerId);
     map['damage_date'] = Variable<DateTime>(damageDate);
     map['documentation_date'] = Variable<DateTime>(documentationDate);
+    map['damage_type_id'] = Variable<int>(damageTypeId);
+    map['damage_cause_id'] = Variable<int>(damageCauseId);
+    if (!nullToAbsent || settlementName != null) {
+      map['settlement_name'] = Variable<String>(settlementName);
+    }
+    if (!nullToAbsent || companyName != null) {
+      map['company_name'] = Variable<String>(companyName);
+    }
     map['governorate_id'] = Variable<String>(governorateId);
     map['locality_id'] = Variable<String>(localityId);
     if (!nullToAbsent || latitude != null) {
@@ -3426,10 +3723,21 @@ class DamageReportLocal extends DataClass
       serverId: serverId == null && nullToAbsent
           ? const Value.absent()
           : Value(serverId),
+      formNumber: Value(formNumber),
+      temporaryFormNumber: Value(temporaryFormNumber),
+      damageYear: Value(damageYear),
       farmId: Value(farmId),
       farmerId: Value(farmerId),
       damageDate: Value(damageDate),
       documentationDate: Value(documentationDate),
+      damageTypeId: Value(damageTypeId),
+      damageCauseId: Value(damageCauseId),
+      settlementName: settlementName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(settlementName),
+      companyName: companyName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(companyName),
       governorateId: Value(governorateId),
       localityId: Value(localityId),
       latitude: latitude == null && nullToAbsent
@@ -3461,12 +3769,21 @@ class DamageReportLocal extends DataClass
     return DamageReportLocal(
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
+      formNumber: serializer.fromJson<String>(json['formNumber']),
+      temporaryFormNumber: serializer.fromJson<String>(
+        json['temporaryFormNumber'],
+      ),
+      damageYear: serializer.fromJson<int>(json['damageYear']),
       farmId: serializer.fromJson<String>(json['farmId']),
       farmerId: serializer.fromJson<String>(json['farmerId']),
       damageDate: serializer.fromJson<DateTime>(json['damageDate']),
       documentationDate: serializer.fromJson<DateTime>(
         json['documentationDate'],
       ),
+      damageTypeId: serializer.fromJson<int>(json['damageTypeId']),
+      damageCauseId: serializer.fromJson<int>(json['damageCauseId']),
+      settlementName: serializer.fromJson<String?>(json['settlementName']),
+      companyName: serializer.fromJson<String?>(json['companyName']),
       governorateId: serializer.fromJson<String>(json['governorateId']),
       localityId: serializer.fromJson<String>(json['localityId']),
       latitude: serializer.fromJson<double?>(json['latitude']),
@@ -3487,10 +3804,17 @@ class DamageReportLocal extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
+      'formNumber': serializer.toJson<String>(formNumber),
+      'temporaryFormNumber': serializer.toJson<String>(temporaryFormNumber),
+      'damageYear': serializer.toJson<int>(damageYear),
       'farmId': serializer.toJson<String>(farmId),
       'farmerId': serializer.toJson<String>(farmerId),
       'damageDate': serializer.toJson<DateTime>(damageDate),
       'documentationDate': serializer.toJson<DateTime>(documentationDate),
+      'damageTypeId': serializer.toJson<int>(damageTypeId),
+      'damageCauseId': serializer.toJson<int>(damageCauseId),
+      'settlementName': serializer.toJson<String?>(settlementName),
+      'companyName': serializer.toJson<String?>(companyName),
       'governorateId': serializer.toJson<String>(governorateId),
       'localityId': serializer.toJson<String>(localityId),
       'latitude': serializer.toJson<double?>(latitude),
@@ -3509,10 +3833,17 @@ class DamageReportLocal extends DataClass
   DamageReportLocal copyWith({
     String? id,
     Value<String?> serverId = const Value.absent(),
+    String? formNumber,
+    String? temporaryFormNumber,
+    int? damageYear,
     String? farmId,
     String? farmerId,
     DateTime? damageDate,
     DateTime? documentationDate,
+    int? damageTypeId,
+    int? damageCauseId,
+    Value<String?> settlementName = const Value.absent(),
+    Value<String?> companyName = const Value.absent(),
     String? governorateId,
     String? localityId,
     Value<double?> latitude = const Value.absent(),
@@ -3528,10 +3859,19 @@ class DamageReportLocal extends DataClass
   }) => DamageReportLocal(
     id: id ?? this.id,
     serverId: serverId.present ? serverId.value : this.serverId,
+    formNumber: formNumber ?? this.formNumber,
+    temporaryFormNumber: temporaryFormNumber ?? this.temporaryFormNumber,
+    damageYear: damageYear ?? this.damageYear,
     farmId: farmId ?? this.farmId,
     farmerId: farmerId ?? this.farmerId,
     damageDate: damageDate ?? this.damageDate,
     documentationDate: documentationDate ?? this.documentationDate,
+    damageTypeId: damageTypeId ?? this.damageTypeId,
+    damageCauseId: damageCauseId ?? this.damageCauseId,
+    settlementName: settlementName.present
+        ? settlementName.value
+        : this.settlementName,
+    companyName: companyName.present ? companyName.value : this.companyName,
     governorateId: governorateId ?? this.governorateId,
     localityId: localityId ?? this.localityId,
     latitude: latitude.present ? latitude.value : this.latitude,
@@ -3551,6 +3891,15 @@ class DamageReportLocal extends DataClass
     return DamageReportLocal(
       id: data.id.present ? data.id.value : this.id,
       serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      formNumber: data.formNumber.present
+          ? data.formNumber.value
+          : this.formNumber,
+      temporaryFormNumber: data.temporaryFormNumber.present
+          ? data.temporaryFormNumber.value
+          : this.temporaryFormNumber,
+      damageYear: data.damageYear.present
+          ? data.damageYear.value
+          : this.damageYear,
       farmId: data.farmId.present ? data.farmId.value : this.farmId,
       farmerId: data.farmerId.present ? data.farmerId.value : this.farmerId,
       damageDate: data.damageDate.present
@@ -3559,6 +3908,18 @@ class DamageReportLocal extends DataClass
       documentationDate: data.documentationDate.present
           ? data.documentationDate.value
           : this.documentationDate,
+      damageTypeId: data.damageTypeId.present
+          ? data.damageTypeId.value
+          : this.damageTypeId,
+      damageCauseId: data.damageCauseId.present
+          ? data.damageCauseId.value
+          : this.damageCauseId,
+      settlementName: data.settlementName.present
+          ? data.settlementName.value
+          : this.settlementName,
+      companyName: data.companyName.present
+          ? data.companyName.value
+          : this.companyName,
       governorateId: data.governorateId.present
           ? data.governorateId.value
           : this.governorateId,
@@ -3591,10 +3952,17 @@ class DamageReportLocal extends DataClass
     return (StringBuffer('DamageReportLocal(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
+          ..write('formNumber: $formNumber, ')
+          ..write('temporaryFormNumber: $temporaryFormNumber, ')
+          ..write('damageYear: $damageYear, ')
           ..write('farmId: $farmId, ')
           ..write('farmerId: $farmerId, ')
           ..write('damageDate: $damageDate, ')
           ..write('documentationDate: $documentationDate, ')
+          ..write('damageTypeId: $damageTypeId, ')
+          ..write('damageCauseId: $damageCauseId, ')
+          ..write('settlementName: $settlementName, ')
+          ..write('companyName: $companyName, ')
           ..write('governorateId: $governorateId, ')
           ..write('localityId: $localityId, ')
           ..write('latitude: $latitude, ')
@@ -3612,13 +3980,20 @@ class DamageReportLocal extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     serverId,
+    formNumber,
+    temporaryFormNumber,
+    damageYear,
     farmId,
     farmerId,
     damageDate,
     documentationDate,
+    damageTypeId,
+    damageCauseId,
+    settlementName,
+    companyName,
     governorateId,
     localityId,
     latitude,
@@ -3631,17 +4006,24 @@ class DamageReportLocal extends DataClass
     isPendingDelete,
     createdAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DamageReportLocal &&
           other.id == this.id &&
           other.serverId == this.serverId &&
+          other.formNumber == this.formNumber &&
+          other.temporaryFormNumber == this.temporaryFormNumber &&
+          other.damageYear == this.damageYear &&
           other.farmId == this.farmId &&
           other.farmerId == this.farmerId &&
           other.damageDate == this.damageDate &&
           other.documentationDate == this.documentationDate &&
+          other.damageTypeId == this.damageTypeId &&
+          other.damageCauseId == this.damageCauseId &&
+          other.settlementName == this.settlementName &&
+          other.companyName == this.companyName &&
           other.governorateId == this.governorateId &&
           other.localityId == this.localityId &&
           other.latitude == this.latitude &&
@@ -3659,10 +4041,17 @@ class DamageReportLocal extends DataClass
 class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> id;
   final Value<String?> serverId;
+  final Value<String> formNumber;
+  final Value<String> temporaryFormNumber;
+  final Value<int> damageYear;
   final Value<String> farmId;
   final Value<String> farmerId;
   final Value<DateTime> damageDate;
   final Value<DateTime> documentationDate;
+  final Value<int> damageTypeId;
+  final Value<int> damageCauseId;
+  final Value<String?> settlementName;
+  final Value<String?> companyName;
   final Value<String> governorateId;
   final Value<String> localityId;
   final Value<double?> latitude;
@@ -3679,10 +4068,17 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   const DamageReportsCompanion({
     this.id = const Value.absent(),
     this.serverId = const Value.absent(),
+    this.formNumber = const Value.absent(),
+    this.temporaryFormNumber = const Value.absent(),
+    this.damageYear = const Value.absent(),
     this.farmId = const Value.absent(),
     this.farmerId = const Value.absent(),
     this.damageDate = const Value.absent(),
     this.documentationDate = const Value.absent(),
+    this.damageTypeId = const Value.absent(),
+    this.damageCauseId = const Value.absent(),
+    this.settlementName = const Value.absent(),
+    this.companyName = const Value.absent(),
     this.governorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     this.latitude = const Value.absent(),
@@ -3700,10 +4096,17 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   DamageReportsCompanion.insert({
     required String id,
     this.serverId = const Value.absent(),
+    this.formNumber = const Value.absent(),
+    this.temporaryFormNumber = const Value.absent(),
+    this.damageYear = const Value.absent(),
     required String farmId,
     required String farmerId,
     required DateTime damageDate,
     required DateTime documentationDate,
+    this.damageTypeId = const Value.absent(),
+    this.damageCauseId = const Value.absent(),
+    this.settlementName = const Value.absent(),
+    this.companyName = const Value.absent(),
     required String governorateId,
     required String localityId,
     this.latitude = const Value.absent(),
@@ -3729,10 +4132,17 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   static Insertable<DamageReportLocal> custom({
     Expression<String>? id,
     Expression<String>? serverId,
+    Expression<String>? formNumber,
+    Expression<String>? temporaryFormNumber,
+    Expression<int>? damageYear,
     Expression<String>? farmId,
     Expression<String>? farmerId,
     Expression<DateTime>? damageDate,
     Expression<DateTime>? documentationDate,
+    Expression<int>? damageTypeId,
+    Expression<int>? damageCauseId,
+    Expression<String>? settlementName,
+    Expression<String>? companyName,
     Expression<String>? governorateId,
     Expression<String>? localityId,
     Expression<double>? latitude,
@@ -3750,10 +4160,18 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (serverId != null) 'server_id': serverId,
+      if (formNumber != null) 'form_number': formNumber,
+      if (temporaryFormNumber != null)
+        'temporary_form_number': temporaryFormNumber,
+      if (damageYear != null) 'damage_year': damageYear,
       if (farmId != null) 'farm_id': farmId,
       if (farmerId != null) 'farmer_id': farmerId,
       if (damageDate != null) 'damage_date': damageDate,
       if (documentationDate != null) 'documentation_date': documentationDate,
+      if (damageTypeId != null) 'damage_type_id': damageTypeId,
+      if (damageCauseId != null) 'damage_cause_id': damageCauseId,
+      if (settlementName != null) 'settlement_name': settlementName,
+      if (companyName != null) 'company_name': companyName,
       if (governorateId != null) 'governorate_id': governorateId,
       if (localityId != null) 'locality_id': localityId,
       if (latitude != null) 'latitude': latitude,
@@ -3773,10 +4191,17 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   DamageReportsCompanion copyWith({
     Value<String>? id,
     Value<String?>? serverId,
+    Value<String>? formNumber,
+    Value<String>? temporaryFormNumber,
+    Value<int>? damageYear,
     Value<String>? farmId,
     Value<String>? farmerId,
     Value<DateTime>? damageDate,
     Value<DateTime>? documentationDate,
+    Value<int>? damageTypeId,
+    Value<int>? damageCauseId,
+    Value<String?>? settlementName,
+    Value<String?>? companyName,
     Value<String>? governorateId,
     Value<String>? localityId,
     Value<double?>? latitude,
@@ -3794,10 +4219,17 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return DamageReportsCompanion(
       id: id ?? this.id,
       serverId: serverId ?? this.serverId,
+      formNumber: formNumber ?? this.formNumber,
+      temporaryFormNumber: temporaryFormNumber ?? this.temporaryFormNumber,
+      damageYear: damageYear ?? this.damageYear,
       farmId: farmId ?? this.farmId,
       farmerId: farmerId ?? this.farmerId,
       damageDate: damageDate ?? this.damageDate,
       documentationDate: documentationDate ?? this.documentationDate,
+      damageTypeId: damageTypeId ?? this.damageTypeId,
+      damageCauseId: damageCauseId ?? this.damageCauseId,
+      settlementName: settlementName ?? this.settlementName,
+      companyName: companyName ?? this.companyName,
       governorateId: governorateId ?? this.governorateId,
       localityId: localityId ?? this.localityId,
       latitude: latitude ?? this.latitude,
@@ -3823,6 +4255,17 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (serverId.present) {
       map['server_id'] = Variable<String>(serverId.value);
     }
+    if (formNumber.present) {
+      map['form_number'] = Variable<String>(formNumber.value);
+    }
+    if (temporaryFormNumber.present) {
+      map['temporary_form_number'] = Variable<String>(
+        temporaryFormNumber.value,
+      );
+    }
+    if (damageYear.present) {
+      map['damage_year'] = Variable<int>(damageYear.value);
+    }
     if (farmId.present) {
       map['farm_id'] = Variable<String>(farmId.value);
     }
@@ -3834,6 +4277,18 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     }
     if (documentationDate.present) {
       map['documentation_date'] = Variable<DateTime>(documentationDate.value);
+    }
+    if (damageTypeId.present) {
+      map['damage_type_id'] = Variable<int>(damageTypeId.value);
+    }
+    if (damageCauseId.present) {
+      map['damage_cause_id'] = Variable<int>(damageCauseId.value);
+    }
+    if (settlementName.present) {
+      map['settlement_name'] = Variable<String>(settlementName.value);
+    }
+    if (companyName.present) {
+      map['company_name'] = Variable<String>(companyName.value);
     }
     if (governorateId.present) {
       map['governorate_id'] = Variable<String>(governorateId.value);
@@ -3882,10 +4337,17 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return (StringBuffer('DamageReportsCompanion(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
+          ..write('formNumber: $formNumber, ')
+          ..write('temporaryFormNumber: $temporaryFormNumber, ')
+          ..write('damageYear: $damageYear, ')
           ..write('farmId: $farmId, ')
           ..write('farmerId: $farmerId, ')
           ..write('damageDate: $damageDate, ')
           ..write('documentationDate: $documentationDate, ')
+          ..write('damageTypeId: $damageTypeId, ')
+          ..write('damageCauseId: $damageCauseId, ')
+          ..write('settlementName: $settlementName, ')
+          ..write('companyName: $companyName, ')
           ..write('governorateId: $governorateId, ')
           ..write('localityId: $localityId, ')
           ..write('latitude: $latitude, ')
@@ -3941,52 +4403,54 @@ class $DamageItemsTable extends DamageItems
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _agriculturalSectorIdMeta =
-      const VerificationMeta('agriculturalSectorId');
+  static const VerificationMeta _classificationIdMeta = const VerificationMeta(
+    'classificationId',
+  );
   @override
-  late final GeneratedColumn<String> agriculturalSectorId =
-      GeneratedColumn<String>(
-        'agricultural_sector_id',
+  late final GeneratedColumn<int> classificationId = GeneratedColumn<int>(
+    'classification_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _costingSheetIdMeta = const VerificationMeta(
+    'costingSheetId',
+  );
+  @override
+  late final GeneratedColumn<String> costingSheetId = GeneratedColumn<String>(
+    'costing_sheet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _calculatedUnitPriceMeta =
+      const VerificationMeta('calculatedUnitPrice');
+  @override
+  late final GeneratedColumn<double> calculatedUnitPrice =
+      GeneratedColumn<double>(
+        'calculated_unit_price',
         aliasedName,
         false,
-        additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0.0),
       );
-  static const VerificationMeta _subSectorIdMeta = const VerificationMeta(
-    'subSectorId',
-  );
+  static const VerificationMeta _measurementUnitSnapshotMeta =
+      const VerificationMeta('measurementUnitSnapshot');
   @override
-  late final GeneratedColumn<String> subSectorId = GeneratedColumn<String>(
-    'sub_sector_id',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _cropIdMeta = const VerificationMeta('cropId');
-  @override
-  late final GeneratedColumn<String> cropId = GeneratedColumn<String>(
-    'crop_id',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _damageTypeIdMeta = const VerificationMeta(
-    'damageTypeId',
-  );
-  @override
-  late final GeneratedColumn<String> damageTypeId = GeneratedColumn<String>(
-    'damage_type_id',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumn<String> measurementUnitSnapshot =
+      GeneratedColumn<String>(
+        'measurement_unit_snapshot',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
   static const VerificationMeta _affectedAreaMeta = const VerificationMeta(
     'affectedArea',
   );
@@ -4109,10 +4573,10 @@ class $DamageItemsTable extends DamageItems
     id,
     serverId,
     damageReportId,
-    agriculturalSectorId,
-    subSectorId,
-    cropId,
-    damageTypeId,
+    classificationId,
+    costingSheetId,
+    calculatedUnitPrice,
+    measurementUnitSnapshot,
     affectedArea,
     damagePercentage,
     quantity,
@@ -4158,46 +4622,41 @@ class $DamageItemsTable extends DamageItems
     } else if (isInserting) {
       context.missing(_damageReportIdMeta);
     }
-    if (data.containsKey('agricultural_sector_id')) {
+    if (data.containsKey('classification_id')) {
       context.handle(
-        _agriculturalSectorIdMeta,
-        agriculturalSectorId.isAcceptableOrUnknown(
-          data['agricultural_sector_id']!,
-          _agriculturalSectorIdMeta,
+        _classificationIdMeta,
+        classificationId.isAcceptableOrUnknown(
+          data['classification_id']!,
+          _classificationIdMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_agriculturalSectorIdMeta);
     }
-    if (data.containsKey('sub_sector_id')) {
+    if (data.containsKey('costing_sheet_id')) {
       context.handle(
-        _subSectorIdMeta,
-        subSectorId.isAcceptableOrUnknown(
-          data['sub_sector_id']!,
-          _subSectorIdMeta,
+        _costingSheetIdMeta,
+        costingSheetId.isAcceptableOrUnknown(
+          data['costing_sheet_id']!,
+          _costingSheetIdMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_subSectorIdMeta);
     }
-    if (data.containsKey('crop_id')) {
+    if (data.containsKey('calculated_unit_price')) {
       context.handle(
-        _cropIdMeta,
-        cropId.isAcceptableOrUnknown(data['crop_id']!, _cropIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_cropIdMeta);
-    }
-    if (data.containsKey('damage_type_id')) {
-      context.handle(
-        _damageTypeIdMeta,
-        damageTypeId.isAcceptableOrUnknown(
-          data['damage_type_id']!,
-          _damageTypeIdMeta,
+        _calculatedUnitPriceMeta,
+        calculatedUnitPrice.isAcceptableOrUnknown(
+          data['calculated_unit_price']!,
+          _calculatedUnitPriceMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_damageTypeIdMeta);
+    }
+    if (data.containsKey('measurement_unit_snapshot')) {
+      context.handle(
+        _measurementUnitSnapshotMeta,
+        measurementUnitSnapshot.isAcceptableOrUnknown(
+          data['measurement_unit_snapshot']!,
+          _measurementUnitSnapshotMeta,
+        ),
+      );
     }
     if (data.containsKey('affected_area')) {
       context.handle(
@@ -4303,21 +4762,21 @@ class $DamageItemsTable extends DamageItems
         DriftSqlType.string,
         data['${effectivePrefix}damage_report_id'],
       )!,
-      agriculturalSectorId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}agricultural_sector_id'],
+      classificationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}classification_id'],
       )!,
-      subSectorId: attachedDatabase.typeMapping.read(
+      costingSheetId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}sub_sector_id'],
+        data['${effectivePrefix}costing_sheet_id'],
       )!,
-      cropId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}crop_id'],
+      calculatedUnitPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}calculated_unit_price'],
       )!,
-      damageTypeId: attachedDatabase.typeMapping.read(
+      measurementUnitSnapshot: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}damage_type_id'],
+        data['${effectivePrefix}measurement_unit_snapshot'],
       )!,
       affectedArea: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -4372,10 +4831,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
   final String id;
   final String? serverId;
   final String damageReportId;
-  final String agriculturalSectorId;
-  final String subSectorId;
-  final String cropId;
-  final String damageTypeId;
+  final int classificationId;
+  final String costingSheetId;
+  final double calculatedUnitPrice;
+  final String measurementUnitSnapshot;
   final double affectedArea;
   final double damagePercentage;
   final double quantity;
@@ -4390,10 +4849,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     required this.id,
     this.serverId,
     required this.damageReportId,
-    required this.agriculturalSectorId,
-    required this.subSectorId,
-    required this.cropId,
-    required this.damageTypeId,
+    required this.classificationId,
+    required this.costingSheetId,
+    required this.calculatedUnitPrice,
+    required this.measurementUnitSnapshot,
     required this.affectedArea,
     required this.damagePercentage,
     required this.quantity,
@@ -4413,10 +4872,12 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       map['server_id'] = Variable<String>(serverId);
     }
     map['damage_report_id'] = Variable<String>(damageReportId);
-    map['agricultural_sector_id'] = Variable<String>(agriculturalSectorId);
-    map['sub_sector_id'] = Variable<String>(subSectorId);
-    map['crop_id'] = Variable<String>(cropId);
-    map['damage_type_id'] = Variable<String>(damageTypeId);
+    map['classification_id'] = Variable<int>(classificationId);
+    map['costing_sheet_id'] = Variable<String>(costingSheetId);
+    map['calculated_unit_price'] = Variable<double>(calculatedUnitPrice);
+    map['measurement_unit_snapshot'] = Variable<String>(
+      measurementUnitSnapshot,
+    );
     map['affected_area'] = Variable<double>(affectedArea);
     map['damage_percentage'] = Variable<double>(damagePercentage);
     map['quantity'] = Variable<double>(quantity);
@@ -4441,10 +4902,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           ? const Value.absent()
           : Value(serverId),
       damageReportId: Value(damageReportId),
-      agriculturalSectorId: Value(agriculturalSectorId),
-      subSectorId: Value(subSectorId),
-      cropId: Value(cropId),
-      damageTypeId: Value(damageTypeId),
+      classificationId: Value(classificationId),
+      costingSheetId: Value(costingSheetId),
+      calculatedUnitPrice: Value(calculatedUnitPrice),
+      measurementUnitSnapshot: Value(measurementUnitSnapshot),
       affectedArea: Value(affectedArea),
       damagePercentage: Value(damagePercentage),
       quantity: Value(quantity),
@@ -4471,12 +4932,14 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       damageReportId: serializer.fromJson<String>(json['damageReportId']),
-      agriculturalSectorId: serializer.fromJson<String>(
-        json['agriculturalSectorId'],
+      classificationId: serializer.fromJson<int>(json['classificationId']),
+      costingSheetId: serializer.fromJson<String>(json['costingSheetId']),
+      calculatedUnitPrice: serializer.fromJson<double>(
+        json['calculatedUnitPrice'],
       ),
-      subSectorId: serializer.fromJson<String>(json['subSectorId']),
-      cropId: serializer.fromJson<String>(json['cropId']),
-      damageTypeId: serializer.fromJson<String>(json['damageTypeId']),
+      measurementUnitSnapshot: serializer.fromJson<String>(
+        json['measurementUnitSnapshot'],
+      ),
       affectedArea: serializer.fromJson<double>(json['affectedArea']),
       damagePercentage: serializer.fromJson<double>(json['damagePercentage']),
       quantity: serializer.fromJson<double>(json['quantity']),
@@ -4496,10 +4959,12 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
       'damageReportId': serializer.toJson<String>(damageReportId),
-      'agriculturalSectorId': serializer.toJson<String>(agriculturalSectorId),
-      'subSectorId': serializer.toJson<String>(subSectorId),
-      'cropId': serializer.toJson<String>(cropId),
-      'damageTypeId': serializer.toJson<String>(damageTypeId),
+      'classificationId': serializer.toJson<int>(classificationId),
+      'costingSheetId': serializer.toJson<String>(costingSheetId),
+      'calculatedUnitPrice': serializer.toJson<double>(calculatedUnitPrice),
+      'measurementUnitSnapshot': serializer.toJson<String>(
+        measurementUnitSnapshot,
+      ),
       'affectedArea': serializer.toJson<double>(affectedArea),
       'damagePercentage': serializer.toJson<double>(damagePercentage),
       'quantity': serializer.toJson<double>(quantity),
@@ -4517,10 +4982,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     String? id,
     Value<String?> serverId = const Value.absent(),
     String? damageReportId,
-    String? agriculturalSectorId,
-    String? subSectorId,
-    String? cropId,
-    String? damageTypeId,
+    int? classificationId,
+    String? costingSheetId,
+    double? calculatedUnitPrice,
+    String? measurementUnitSnapshot,
     double? affectedArea,
     double? damagePercentage,
     double? quantity,
@@ -4535,10 +5000,11 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     id: id ?? this.id,
     serverId: serverId.present ? serverId.value : this.serverId,
     damageReportId: damageReportId ?? this.damageReportId,
-    agriculturalSectorId: agriculturalSectorId ?? this.agriculturalSectorId,
-    subSectorId: subSectorId ?? this.subSectorId,
-    cropId: cropId ?? this.cropId,
-    damageTypeId: damageTypeId ?? this.damageTypeId,
+    classificationId: classificationId ?? this.classificationId,
+    costingSheetId: costingSheetId ?? this.costingSheetId,
+    calculatedUnitPrice: calculatedUnitPrice ?? this.calculatedUnitPrice,
+    measurementUnitSnapshot:
+        measurementUnitSnapshot ?? this.measurementUnitSnapshot,
     affectedArea: affectedArea ?? this.affectedArea,
     damagePercentage: damagePercentage ?? this.damagePercentage,
     quantity: quantity ?? this.quantity,
@@ -4559,16 +5025,18 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       damageReportId: data.damageReportId.present
           ? data.damageReportId.value
           : this.damageReportId,
-      agriculturalSectorId: data.agriculturalSectorId.present
-          ? data.agriculturalSectorId.value
-          : this.agriculturalSectorId,
-      subSectorId: data.subSectorId.present
-          ? data.subSectorId.value
-          : this.subSectorId,
-      cropId: data.cropId.present ? data.cropId.value : this.cropId,
-      damageTypeId: data.damageTypeId.present
-          ? data.damageTypeId.value
-          : this.damageTypeId,
+      classificationId: data.classificationId.present
+          ? data.classificationId.value
+          : this.classificationId,
+      costingSheetId: data.costingSheetId.present
+          ? data.costingSheetId.value
+          : this.costingSheetId,
+      calculatedUnitPrice: data.calculatedUnitPrice.present
+          ? data.calculatedUnitPrice.value
+          : this.calculatedUnitPrice,
+      measurementUnitSnapshot: data.measurementUnitSnapshot.present
+          ? data.measurementUnitSnapshot.value
+          : this.measurementUnitSnapshot,
       affectedArea: data.affectedArea.present
           ? data.affectedArea.value
           : this.affectedArea,
@@ -4602,10 +5070,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
           ..write('damageReportId: $damageReportId, ')
-          ..write('agriculturalSectorId: $agriculturalSectorId, ')
-          ..write('subSectorId: $subSectorId, ')
-          ..write('cropId: $cropId, ')
-          ..write('damageTypeId: $damageTypeId, ')
+          ..write('classificationId: $classificationId, ')
+          ..write('costingSheetId: $costingSheetId, ')
+          ..write('calculatedUnitPrice: $calculatedUnitPrice, ')
+          ..write('measurementUnitSnapshot: $measurementUnitSnapshot, ')
           ..write('affectedArea: $affectedArea, ')
           ..write('damagePercentage: $damagePercentage, ')
           ..write('quantity: $quantity, ')
@@ -4625,10 +5093,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     id,
     serverId,
     damageReportId,
-    agriculturalSectorId,
-    subSectorId,
-    cropId,
-    damageTypeId,
+    classificationId,
+    costingSheetId,
+    calculatedUnitPrice,
+    measurementUnitSnapshot,
     affectedArea,
     damagePercentage,
     quantity,
@@ -4647,10 +5115,10 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           other.id == this.id &&
           other.serverId == this.serverId &&
           other.damageReportId == this.damageReportId &&
-          other.agriculturalSectorId == this.agriculturalSectorId &&
-          other.subSectorId == this.subSectorId &&
-          other.cropId == this.cropId &&
-          other.damageTypeId == this.damageTypeId &&
+          other.classificationId == this.classificationId &&
+          other.costingSheetId == this.costingSheetId &&
+          other.calculatedUnitPrice == this.calculatedUnitPrice &&
+          other.measurementUnitSnapshot == this.measurementUnitSnapshot &&
           other.affectedArea == this.affectedArea &&
           other.damagePercentage == this.damagePercentage &&
           other.quantity == this.quantity &&
@@ -4667,10 +5135,10 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
   final Value<String> id;
   final Value<String?> serverId;
   final Value<String> damageReportId;
-  final Value<String> agriculturalSectorId;
-  final Value<String> subSectorId;
-  final Value<String> cropId;
-  final Value<String> damageTypeId;
+  final Value<int> classificationId;
+  final Value<String> costingSheetId;
+  final Value<double> calculatedUnitPrice;
+  final Value<String> measurementUnitSnapshot;
   final Value<double> affectedArea;
   final Value<double> damagePercentage;
   final Value<double> quantity;
@@ -4686,10 +5154,10 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     this.id = const Value.absent(),
     this.serverId = const Value.absent(),
     this.damageReportId = const Value.absent(),
-    this.agriculturalSectorId = const Value.absent(),
-    this.subSectorId = const Value.absent(),
-    this.cropId = const Value.absent(),
-    this.damageTypeId = const Value.absent(),
+    this.classificationId = const Value.absent(),
+    this.costingSheetId = const Value.absent(),
+    this.calculatedUnitPrice = const Value.absent(),
+    this.measurementUnitSnapshot = const Value.absent(),
     this.affectedArea = const Value.absent(),
     this.damagePercentage = const Value.absent(),
     this.quantity = const Value.absent(),
@@ -4706,10 +5174,10 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     required String id,
     this.serverId = const Value.absent(),
     required String damageReportId,
-    required String agriculturalSectorId,
-    required String subSectorId,
-    required String cropId,
-    required String damageTypeId,
+    this.classificationId = const Value.absent(),
+    this.costingSheetId = const Value.absent(),
+    this.calculatedUnitPrice = const Value.absent(),
+    this.measurementUnitSnapshot = const Value.absent(),
     required double affectedArea,
     required double damagePercentage,
     required double quantity,
@@ -4723,10 +5191,6 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        damageReportId = Value(damageReportId),
-       agriculturalSectorId = Value(agriculturalSectorId),
-       subSectorId = Value(subSectorId),
-       cropId = Value(cropId),
-       damageTypeId = Value(damageTypeId),
        affectedArea = Value(affectedArea),
        damagePercentage = Value(damagePercentage),
        quantity = Value(quantity),
@@ -4735,10 +5199,10 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Expression<String>? id,
     Expression<String>? serverId,
     Expression<String>? damageReportId,
-    Expression<String>? agriculturalSectorId,
-    Expression<String>? subSectorId,
-    Expression<String>? cropId,
-    Expression<String>? damageTypeId,
+    Expression<int>? classificationId,
+    Expression<String>? costingSheetId,
+    Expression<double>? calculatedUnitPrice,
+    Expression<String>? measurementUnitSnapshot,
     Expression<double>? affectedArea,
     Expression<double>? damagePercentage,
     Expression<double>? quantity,
@@ -4755,11 +5219,12 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       if (id != null) 'id': id,
       if (serverId != null) 'server_id': serverId,
       if (damageReportId != null) 'damage_report_id': damageReportId,
-      if (agriculturalSectorId != null)
-        'agricultural_sector_id': agriculturalSectorId,
-      if (subSectorId != null) 'sub_sector_id': subSectorId,
-      if (cropId != null) 'crop_id': cropId,
-      if (damageTypeId != null) 'damage_type_id': damageTypeId,
+      if (classificationId != null) 'classification_id': classificationId,
+      if (costingSheetId != null) 'costing_sheet_id': costingSheetId,
+      if (calculatedUnitPrice != null)
+        'calculated_unit_price': calculatedUnitPrice,
+      if (measurementUnitSnapshot != null)
+        'measurement_unit_snapshot': measurementUnitSnapshot,
       if (affectedArea != null) 'affected_area': affectedArea,
       if (damagePercentage != null) 'damage_percentage': damagePercentage,
       if (quantity != null) 'quantity': quantity,
@@ -4778,10 +5243,10 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Value<String>? id,
     Value<String?>? serverId,
     Value<String>? damageReportId,
-    Value<String>? agriculturalSectorId,
-    Value<String>? subSectorId,
-    Value<String>? cropId,
-    Value<String>? damageTypeId,
+    Value<int>? classificationId,
+    Value<String>? costingSheetId,
+    Value<double>? calculatedUnitPrice,
+    Value<String>? measurementUnitSnapshot,
     Value<double>? affectedArea,
     Value<double>? damagePercentage,
     Value<double>? quantity,
@@ -4798,10 +5263,11 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       id: id ?? this.id,
       serverId: serverId ?? this.serverId,
       damageReportId: damageReportId ?? this.damageReportId,
-      agriculturalSectorId: agriculturalSectorId ?? this.agriculturalSectorId,
-      subSectorId: subSectorId ?? this.subSectorId,
-      cropId: cropId ?? this.cropId,
-      damageTypeId: damageTypeId ?? this.damageTypeId,
+      classificationId: classificationId ?? this.classificationId,
+      costingSheetId: costingSheetId ?? this.costingSheetId,
+      calculatedUnitPrice: calculatedUnitPrice ?? this.calculatedUnitPrice,
+      measurementUnitSnapshot:
+          measurementUnitSnapshot ?? this.measurementUnitSnapshot,
       affectedArea: affectedArea ?? this.affectedArea,
       damagePercentage: damagePercentage ?? this.damagePercentage,
       quantity: quantity ?? this.quantity,
@@ -4828,19 +5294,21 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     if (damageReportId.present) {
       map['damage_report_id'] = Variable<String>(damageReportId.value);
     }
-    if (agriculturalSectorId.present) {
-      map['agricultural_sector_id'] = Variable<String>(
-        agriculturalSectorId.value,
+    if (classificationId.present) {
+      map['classification_id'] = Variable<int>(classificationId.value);
+    }
+    if (costingSheetId.present) {
+      map['costing_sheet_id'] = Variable<String>(costingSheetId.value);
+    }
+    if (calculatedUnitPrice.present) {
+      map['calculated_unit_price'] = Variable<double>(
+        calculatedUnitPrice.value,
       );
     }
-    if (subSectorId.present) {
-      map['sub_sector_id'] = Variable<String>(subSectorId.value);
-    }
-    if (cropId.present) {
-      map['crop_id'] = Variable<String>(cropId.value);
-    }
-    if (damageTypeId.present) {
-      map['damage_type_id'] = Variable<String>(damageTypeId.value);
+    if (measurementUnitSnapshot.present) {
+      map['measurement_unit_snapshot'] = Variable<String>(
+        measurementUnitSnapshot.value,
+      );
     }
     if (affectedArea.present) {
       map['affected_area'] = Variable<double>(affectedArea.value);
@@ -4884,10 +5352,10 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
           ..write('damageReportId: $damageReportId, ')
-          ..write('agriculturalSectorId: $agriculturalSectorId, ')
-          ..write('subSectorId: $subSectorId, ')
-          ..write('cropId: $cropId, ')
-          ..write('damageTypeId: $damageTypeId, ')
+          ..write('classificationId: $classificationId, ')
+          ..write('costingSheetId: $costingSheetId, ')
+          ..write('calculatedUnitPrice: $calculatedUnitPrice, ')
+          ..write('measurementUnitSnapshot: $measurementUnitSnapshot, ')
           ..write('affectedArea: $affectedArea, ')
           ..write('damagePercentage: $damagePercentage, ')
           ..write('quantity: $quantity, ')
@@ -8414,6 +8882,2152 @@ class LocalitiesCompanion extends UpdateCompanion<LocalityLocal> {
   }
 }
 
+class $DamageNaturesTable extends DamageNatures
+    with TableInfo<$DamageNaturesTable, DamageNature> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageNaturesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, nameAr, nameEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_natures';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageNature> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageNature map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageNature(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageNaturesTable createAlias(String alias) {
+    return $DamageNaturesTable(attachedDatabase, alias);
+  }
+}
+
+class DamageNature extends DataClass implements Insertable<DamageNature> {
+  final int id;
+  final String nameAr;
+  final String nameEn;
+  const DamageNature({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    return map;
+  }
+
+  DamageNaturesCompanion toCompanion(bool nullToAbsent) {
+    return DamageNaturesCompanion(
+      id: Value(id),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+    );
+  }
+
+  factory DamageNature.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageNature(
+      id: serializer.fromJson<int>(json['id']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+    };
+  }
+
+  DamageNature copyWith({int? id, String? nameAr, String? nameEn}) =>
+      DamageNature(
+        id: id ?? this.id,
+        nameAr: nameAr ?? this.nameAr,
+        nameEn: nameEn ?? this.nameEn,
+      );
+  DamageNature copyWithCompanion(DamageNaturesCompanion data) {
+    return DamageNature(
+      id: data.id.present ? data.id.value : this.id,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageNature(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, nameAr, nameEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageNature &&
+          other.id == this.id &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn);
+}
+
+class DamageNaturesCompanion extends UpdateCompanion<DamageNature> {
+  final Value<int> id;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  const DamageNaturesCompanion({
+    this.id = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+  });
+  DamageNaturesCompanion.insert({
+    this.id = const Value.absent(),
+    required String nameAr,
+    required String nameEn,
+  }) : nameAr = Value(nameAr),
+       nameEn = Value(nameEn);
+  static Insertable<DamageNature> custom({
+    Expression<int>? id,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+    });
+  }
+
+  DamageNaturesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+  }) {
+    return DamageNaturesCompanion(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageNaturesCompanion(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DamageCategoriesTable extends DamageCategories
+    with TableInfo<$DamageCategoriesTable, DamageCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parentIdMeta = const VerificationMeta(
+    'parentId',
+  );
+  @override
+  late final GeneratedColumn<int> parentId = GeneratedColumn<int>(
+    'parent_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, parentId, nameAr, nameEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_categories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageCategory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('parent_id')) {
+      context.handle(
+        _parentIdMeta,
+        parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parentIdMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageCategory(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      parentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}parent_id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageCategoriesTable createAlias(String alias) {
+    return $DamageCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class DamageCategory extends DataClass implements Insertable<DamageCategory> {
+  final int id;
+  final int parentId;
+  final String nameAr;
+  final String nameEn;
+  const DamageCategory({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['parent_id'] = Variable<int>(parentId);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    return map;
+  }
+
+  DamageCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return DamageCategoriesCompanion(
+      id: Value(id),
+      parentId: Value(parentId),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+    );
+  }
+
+  factory DamageCategory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageCategory(
+      id: serializer.fromJson<int>(json['id']),
+      parentId: serializer.fromJson<int>(json['parentId']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'parentId': serializer.toJson<int>(parentId),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+    };
+  }
+
+  DamageCategory copyWith({
+    int? id,
+    int? parentId,
+    String? nameAr,
+    String? nameEn,
+  }) => DamageCategory(
+    id: id ?? this.id,
+    parentId: parentId ?? this.parentId,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+  );
+  DamageCategory copyWithCompanion(DamageCategoriesCompanion data) {
+    return DamageCategory(
+      id: data.id.present ? data.id.value : this.id,
+      parentId: data.parentId.present ? data.parentId.value : this.parentId,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageCategory(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, parentId, nameAr, nameEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageCategory &&
+          other.id == this.id &&
+          other.parentId == this.parentId &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn);
+}
+
+class DamageCategoriesCompanion extends UpdateCompanion<DamageCategory> {
+  final Value<int> id;
+  final Value<int> parentId;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  const DamageCategoriesCompanion({
+    this.id = const Value.absent(),
+    this.parentId = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+  });
+  DamageCategoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required int parentId,
+    required String nameAr,
+    required String nameEn,
+  }) : parentId = Value(parentId),
+       nameAr = Value(nameAr),
+       nameEn = Value(nameEn);
+  static Insertable<DamageCategory> custom({
+    Expression<int>? id,
+    Expression<int>? parentId,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (parentId != null) 'parent_id': parentId,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+    });
+  }
+
+  DamageCategoriesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? parentId,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+  }) {
+    return DamageCategoriesCompanion(
+      id: id ?? this.id,
+      parentId: parentId ?? this.parentId,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (parentId.present) {
+      map['parent_id'] = Variable<int>(parentId.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageCategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DamageSubCategoriesTable extends DamageSubCategories
+    with TableInfo<$DamageSubCategoriesTable, DamageSubCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageSubCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parentIdMeta = const VerificationMeta(
+    'parentId',
+  );
+  @override
+  late final GeneratedColumn<int> parentId = GeneratedColumn<int>(
+    'parent_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, parentId, nameAr, nameEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_sub_categories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageSubCategory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('parent_id')) {
+      context.handle(
+        _parentIdMeta,
+        parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parentIdMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageSubCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageSubCategory(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      parentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}parent_id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageSubCategoriesTable createAlias(String alias) {
+    return $DamageSubCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class DamageSubCategory extends DataClass
+    implements Insertable<DamageSubCategory> {
+  final int id;
+  final int parentId;
+  final String nameAr;
+  final String nameEn;
+  const DamageSubCategory({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['parent_id'] = Variable<int>(parentId);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    return map;
+  }
+
+  DamageSubCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return DamageSubCategoriesCompanion(
+      id: Value(id),
+      parentId: Value(parentId),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+    );
+  }
+
+  factory DamageSubCategory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageSubCategory(
+      id: serializer.fromJson<int>(json['id']),
+      parentId: serializer.fromJson<int>(json['parentId']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'parentId': serializer.toJson<int>(parentId),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+    };
+  }
+
+  DamageSubCategory copyWith({
+    int? id,
+    int? parentId,
+    String? nameAr,
+    String? nameEn,
+  }) => DamageSubCategory(
+    id: id ?? this.id,
+    parentId: parentId ?? this.parentId,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+  );
+  DamageSubCategory copyWithCompanion(DamageSubCategoriesCompanion data) {
+    return DamageSubCategory(
+      id: data.id.present ? data.id.value : this.id,
+      parentId: data.parentId.present ? data.parentId.value : this.parentId,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageSubCategory(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, parentId, nameAr, nameEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageSubCategory &&
+          other.id == this.id &&
+          other.parentId == this.parentId &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn);
+}
+
+class DamageSubCategoriesCompanion extends UpdateCompanion<DamageSubCategory> {
+  final Value<int> id;
+  final Value<int> parentId;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  const DamageSubCategoriesCompanion({
+    this.id = const Value.absent(),
+    this.parentId = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+  });
+  DamageSubCategoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required int parentId,
+    required String nameAr,
+    required String nameEn,
+  }) : parentId = Value(parentId),
+       nameAr = Value(nameAr),
+       nameEn = Value(nameEn);
+  static Insertable<DamageSubCategory> custom({
+    Expression<int>? id,
+    Expression<int>? parentId,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (parentId != null) 'parent_id': parentId,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+    });
+  }
+
+  DamageSubCategoriesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? parentId,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+  }) {
+    return DamageSubCategoriesCompanion(
+      id: id ?? this.id,
+      parentId: parentId ?? this.parentId,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (parentId.present) {
+      map['parent_id'] = Variable<int>(parentId.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageSubCategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DamageClassificationsTable extends DamageClassifications
+    with TableInfo<$DamageClassificationsTable, DamageClassification> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageClassificationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parentIdMeta = const VerificationMeta(
+    'parentId',
+  );
+  @override
+  late final GeneratedColumn<int> parentId = GeneratedColumn<int>(
+    'parent_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, parentId, nameAr, nameEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_classifications';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageClassification> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('parent_id')) {
+      context.handle(
+        _parentIdMeta,
+        parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parentIdMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageClassification map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageClassification(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      parentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}parent_id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageClassificationsTable createAlias(String alias) {
+    return $DamageClassificationsTable(attachedDatabase, alias);
+  }
+}
+
+class DamageClassification extends DataClass
+    implements Insertable<DamageClassification> {
+  final int id;
+  final int parentId;
+  final String nameAr;
+  final String nameEn;
+  const DamageClassification({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['parent_id'] = Variable<int>(parentId);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    return map;
+  }
+
+  DamageClassificationsCompanion toCompanion(bool nullToAbsent) {
+    return DamageClassificationsCompanion(
+      id: Value(id),
+      parentId: Value(parentId),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+    );
+  }
+
+  factory DamageClassification.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageClassification(
+      id: serializer.fromJson<int>(json['id']),
+      parentId: serializer.fromJson<int>(json['parentId']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'parentId': serializer.toJson<int>(parentId),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+    };
+  }
+
+  DamageClassification copyWith({
+    int? id,
+    int? parentId,
+    String? nameAr,
+    String? nameEn,
+  }) => DamageClassification(
+    id: id ?? this.id,
+    parentId: parentId ?? this.parentId,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+  );
+  DamageClassification copyWithCompanion(DamageClassificationsCompanion data) {
+    return DamageClassification(
+      id: data.id.present ? data.id.value : this.id,
+      parentId: data.parentId.present ? data.parentId.value : this.parentId,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageClassification(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, parentId, nameAr, nameEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageClassification &&
+          other.id == this.id &&
+          other.parentId == this.parentId &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn);
+}
+
+class DamageClassificationsCompanion
+    extends UpdateCompanion<DamageClassification> {
+  final Value<int> id;
+  final Value<int> parentId;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  const DamageClassificationsCompanion({
+    this.id = const Value.absent(),
+    this.parentId = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+  });
+  DamageClassificationsCompanion.insert({
+    this.id = const Value.absent(),
+    required int parentId,
+    required String nameAr,
+    required String nameEn,
+  }) : parentId = Value(parentId),
+       nameAr = Value(nameAr),
+       nameEn = Value(nameEn);
+  static Insertable<DamageClassification> custom({
+    Expression<int>? id,
+    Expression<int>? parentId,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (parentId != null) 'parent_id': parentId,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+    });
+  }
+
+  DamageClassificationsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? parentId,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+  }) {
+    return DamageClassificationsCompanion(
+      id: id ?? this.id,
+      parentId: parentId ?? this.parentId,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (parentId.present) {
+      map['parent_id'] = Variable<int>(parentId.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageClassificationsCompanion(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DamageCauseCategoriesTable extends DamageCauseCategories
+    with TableInfo<$DamageCauseCategoriesTable, DamageCauseCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageCauseCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, nameAr, nameEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_cause_categories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageCauseCategory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageCauseCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageCauseCategory(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageCauseCategoriesTable createAlias(String alias) {
+    return $DamageCauseCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class DamageCauseCategory extends DataClass
+    implements Insertable<DamageCauseCategory> {
+  final int id;
+  final String nameAr;
+  final String nameEn;
+  const DamageCauseCategory({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    return map;
+  }
+
+  DamageCauseCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return DamageCauseCategoriesCompanion(
+      id: Value(id),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+    );
+  }
+
+  factory DamageCauseCategory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageCauseCategory(
+      id: serializer.fromJson<int>(json['id']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+    };
+  }
+
+  DamageCauseCategory copyWith({int? id, String? nameAr, String? nameEn}) =>
+      DamageCauseCategory(
+        id: id ?? this.id,
+        nameAr: nameAr ?? this.nameAr,
+        nameEn: nameEn ?? this.nameEn,
+      );
+  DamageCauseCategory copyWithCompanion(DamageCauseCategoriesCompanion data) {
+    return DamageCauseCategory(
+      id: data.id.present ? data.id.value : this.id,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageCauseCategory(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, nameAr, nameEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageCauseCategory &&
+          other.id == this.id &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn);
+}
+
+class DamageCauseCategoriesCompanion
+    extends UpdateCompanion<DamageCauseCategory> {
+  final Value<int> id;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  const DamageCauseCategoriesCompanion({
+    this.id = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+  });
+  DamageCauseCategoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required String nameAr,
+    required String nameEn,
+  }) : nameAr = Value(nameAr),
+       nameEn = Value(nameEn);
+  static Insertable<DamageCauseCategory> custom({
+    Expression<int>? id,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+    });
+  }
+
+  DamageCauseCategoriesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+  }) {
+    return DamageCauseCategoriesCompanion(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageCauseCategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DamageCausesTable extends DamageCauses
+    with TableInfo<$DamageCausesTable, DamageCause> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageCausesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parentIdMeta = const VerificationMeta(
+    'parentId',
+  );
+  @override
+  late final GeneratedColumn<int> parentId = GeneratedColumn<int>(
+    'parent_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, parentId, nameAr, nameEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_causes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageCause> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('parent_id')) {
+      context.handle(
+        _parentIdMeta,
+        parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_parentIdMeta);
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageCause map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageCause(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      parentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}parent_id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageCausesTable createAlias(String alias) {
+    return $DamageCausesTable(attachedDatabase, alias);
+  }
+}
+
+class DamageCause extends DataClass implements Insertable<DamageCause> {
+  final int id;
+  final int parentId;
+  final String nameAr;
+  final String nameEn;
+  const DamageCause({
+    required this.id,
+    required this.parentId,
+    required this.nameAr,
+    required this.nameEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['parent_id'] = Variable<int>(parentId);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    return map;
+  }
+
+  DamageCausesCompanion toCompanion(bool nullToAbsent) {
+    return DamageCausesCompanion(
+      id: Value(id),
+      parentId: Value(parentId),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+    );
+  }
+
+  factory DamageCause.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageCause(
+      id: serializer.fromJson<int>(json['id']),
+      parentId: serializer.fromJson<int>(json['parentId']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'parentId': serializer.toJson<int>(parentId),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+    };
+  }
+
+  DamageCause copyWith({
+    int? id,
+    int? parentId,
+    String? nameAr,
+    String? nameEn,
+  }) => DamageCause(
+    id: id ?? this.id,
+    parentId: parentId ?? this.parentId,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+  );
+  DamageCause copyWithCompanion(DamageCausesCompanion data) {
+    return DamageCause(
+      id: data.id.present ? data.id.value : this.id,
+      parentId: data.parentId.present ? data.parentId.value : this.parentId,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageCause(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, parentId, nameAr, nameEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageCause &&
+          other.id == this.id &&
+          other.parentId == this.parentId &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn);
+}
+
+class DamageCausesCompanion extends UpdateCompanion<DamageCause> {
+  final Value<int> id;
+  final Value<int> parentId;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  const DamageCausesCompanion({
+    this.id = const Value.absent(),
+    this.parentId = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+  });
+  DamageCausesCompanion.insert({
+    this.id = const Value.absent(),
+    required int parentId,
+    required String nameAr,
+    required String nameEn,
+  }) : parentId = Value(parentId),
+       nameAr = Value(nameAr),
+       nameEn = Value(nameEn);
+  static Insertable<DamageCause> custom({
+    Expression<int>? id,
+    Expression<int>? parentId,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (parentId != null) 'parent_id': parentId,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+    });
+  }
+
+  DamageCausesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? parentId,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+  }) {
+    return DamageCausesCompanion(
+      id: id ?? this.id,
+      parentId: parentId ?? this.parentId,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (parentId.present) {
+      map['parent_id'] = Variable<int>(parentId.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageCausesCompanion(')
+          ..write('id: $id, ')
+          ..write('parentId: $parentId, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CostingSheetsTable extends CostingSheets
+    with TableInfo<$CostingSheetsTable, CostingSheet> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CostingSheetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _classificationIdMeta = const VerificationMeta(
+    'classificationId',
+  );
+  @override
+  late final GeneratedColumn<int> classificationId = GeneratedColumn<int>(
+    'classification_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _unitPriceMeta = const VerificationMeta(
+    'unitPrice',
+  );
+  @override
+  late final GeneratedColumn<double> unitPrice = GeneratedColumn<double>(
+    'unit_price',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _effectiveFromMeta = const VerificationMeta(
+    'effectiveFrom',
+  );
+  @override
+  late final GeneratedColumn<DateTime> effectiveFrom =
+      GeneratedColumn<DateTime>(
+        'effective_from',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _effectiveToMeta = const VerificationMeta(
+    'effectiveTo',
+  );
+  @override
+  late final GeneratedColumn<DateTime> effectiveTo = GeneratedColumn<DateTime>(
+    'effective_to',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _versionNumberMeta = const VerificationMeta(
+    'versionNumber',
+  );
+  @override
+  late final GeneratedColumn<int> versionNumber = GeneratedColumn<int>(
+    'version_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    classificationId,
+    unitPrice,
+    effectiveFrom,
+    effectiveTo,
+    isActive,
+    versionNumber,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'costing_sheets';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CostingSheet> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('classification_id')) {
+      context.handle(
+        _classificationIdMeta,
+        classificationId.isAcceptableOrUnknown(
+          data['classification_id']!,
+          _classificationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_classificationIdMeta);
+    }
+    if (data.containsKey('unit_price')) {
+      context.handle(
+        _unitPriceMeta,
+        unitPrice.isAcceptableOrUnknown(data['unit_price']!, _unitPriceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_unitPriceMeta);
+    }
+    if (data.containsKey('effective_from')) {
+      context.handle(
+        _effectiveFromMeta,
+        effectiveFrom.isAcceptableOrUnknown(
+          data['effective_from']!,
+          _effectiveFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_effectiveFromMeta);
+    }
+    if (data.containsKey('effective_to')) {
+      context.handle(
+        _effectiveToMeta,
+        effectiveTo.isAcceptableOrUnknown(
+          data['effective_to']!,
+          _effectiveToMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('version_number')) {
+      context.handle(
+        _versionNumberMeta,
+        versionNumber.isAcceptableOrUnknown(
+          data['version_number']!,
+          _versionNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_versionNumberMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CostingSheet map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CostingSheet(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      classificationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}classification_id'],
+      )!,
+      unitPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}unit_price'],
+      )!,
+      effectiveFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}effective_from'],
+      )!,
+      effectiveTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}effective_to'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      versionNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version_number'],
+      )!,
+    );
+  }
+
+  @override
+  $CostingSheetsTable createAlias(String alias) {
+    return $CostingSheetsTable(attachedDatabase, alias);
+  }
+}
+
+class CostingSheet extends DataClass implements Insertable<CostingSheet> {
+  final String id;
+  final int classificationId;
+  final double unitPrice;
+  final DateTime effectiveFrom;
+  final DateTime? effectiveTo;
+  final bool isActive;
+  final int versionNumber;
+  const CostingSheet({
+    required this.id,
+    required this.classificationId,
+    required this.unitPrice,
+    required this.effectiveFrom,
+    this.effectiveTo,
+    required this.isActive,
+    required this.versionNumber,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['classification_id'] = Variable<int>(classificationId);
+    map['unit_price'] = Variable<double>(unitPrice);
+    map['effective_from'] = Variable<DateTime>(effectiveFrom);
+    if (!nullToAbsent || effectiveTo != null) {
+      map['effective_to'] = Variable<DateTime>(effectiveTo);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['version_number'] = Variable<int>(versionNumber);
+    return map;
+  }
+
+  CostingSheetsCompanion toCompanion(bool nullToAbsent) {
+    return CostingSheetsCompanion(
+      id: Value(id),
+      classificationId: Value(classificationId),
+      unitPrice: Value(unitPrice),
+      effectiveFrom: Value(effectiveFrom),
+      effectiveTo: effectiveTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(effectiveTo),
+      isActive: Value(isActive),
+      versionNumber: Value(versionNumber),
+    );
+  }
+
+  factory CostingSheet.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CostingSheet(
+      id: serializer.fromJson<String>(json['id']),
+      classificationId: serializer.fromJson<int>(json['classificationId']),
+      unitPrice: serializer.fromJson<double>(json['unitPrice']),
+      effectiveFrom: serializer.fromJson<DateTime>(json['effectiveFrom']),
+      effectiveTo: serializer.fromJson<DateTime?>(json['effectiveTo']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      versionNumber: serializer.fromJson<int>(json['versionNumber']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'classificationId': serializer.toJson<int>(classificationId),
+      'unitPrice': serializer.toJson<double>(unitPrice),
+      'effectiveFrom': serializer.toJson<DateTime>(effectiveFrom),
+      'effectiveTo': serializer.toJson<DateTime?>(effectiveTo),
+      'isActive': serializer.toJson<bool>(isActive),
+      'versionNumber': serializer.toJson<int>(versionNumber),
+    };
+  }
+
+  CostingSheet copyWith({
+    String? id,
+    int? classificationId,
+    double? unitPrice,
+    DateTime? effectiveFrom,
+    Value<DateTime?> effectiveTo = const Value.absent(),
+    bool? isActive,
+    int? versionNumber,
+  }) => CostingSheet(
+    id: id ?? this.id,
+    classificationId: classificationId ?? this.classificationId,
+    unitPrice: unitPrice ?? this.unitPrice,
+    effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+    effectiveTo: effectiveTo.present ? effectiveTo.value : this.effectiveTo,
+    isActive: isActive ?? this.isActive,
+    versionNumber: versionNumber ?? this.versionNumber,
+  );
+  CostingSheet copyWithCompanion(CostingSheetsCompanion data) {
+    return CostingSheet(
+      id: data.id.present ? data.id.value : this.id,
+      classificationId: data.classificationId.present
+          ? data.classificationId.value
+          : this.classificationId,
+      unitPrice: data.unitPrice.present ? data.unitPrice.value : this.unitPrice,
+      effectiveFrom: data.effectiveFrom.present
+          ? data.effectiveFrom.value
+          : this.effectiveFrom,
+      effectiveTo: data.effectiveTo.present
+          ? data.effectiveTo.value
+          : this.effectiveTo,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      versionNumber: data.versionNumber.present
+          ? data.versionNumber.value
+          : this.versionNumber,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheet(')
+          ..write('id: $id, ')
+          ..write('classificationId: $classificationId, ')
+          ..write('unitPrice: $unitPrice, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('isActive: $isActive, ')
+          ..write('versionNumber: $versionNumber')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    classificationId,
+    unitPrice,
+    effectiveFrom,
+    effectiveTo,
+    isActive,
+    versionNumber,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CostingSheet &&
+          other.id == this.id &&
+          other.classificationId == this.classificationId &&
+          other.unitPrice == this.unitPrice &&
+          other.effectiveFrom == this.effectiveFrom &&
+          other.effectiveTo == this.effectiveTo &&
+          other.isActive == this.isActive &&
+          other.versionNumber == this.versionNumber);
+}
+
+class CostingSheetsCompanion extends UpdateCompanion<CostingSheet> {
+  final Value<String> id;
+  final Value<int> classificationId;
+  final Value<double> unitPrice;
+  final Value<DateTime> effectiveFrom;
+  final Value<DateTime?> effectiveTo;
+  final Value<bool> isActive;
+  final Value<int> versionNumber;
+  final Value<int> rowid;
+  const CostingSheetsCompanion({
+    this.id = const Value.absent(),
+    this.classificationId = const Value.absent(),
+    this.unitPrice = const Value.absent(),
+    this.effectiveFrom = const Value.absent(),
+    this.effectiveTo = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.versionNumber = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CostingSheetsCompanion.insert({
+    required String id,
+    required int classificationId,
+    required double unitPrice,
+    required DateTime effectiveFrom,
+    this.effectiveTo = const Value.absent(),
+    this.isActive = const Value.absent(),
+    required int versionNumber,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       classificationId = Value(classificationId),
+       unitPrice = Value(unitPrice),
+       effectiveFrom = Value(effectiveFrom),
+       versionNumber = Value(versionNumber);
+  static Insertable<CostingSheet> custom({
+    Expression<String>? id,
+    Expression<int>? classificationId,
+    Expression<double>? unitPrice,
+    Expression<DateTime>? effectiveFrom,
+    Expression<DateTime>? effectiveTo,
+    Expression<bool>? isActive,
+    Expression<int>? versionNumber,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (classificationId != null) 'classification_id': classificationId,
+      if (unitPrice != null) 'unit_price': unitPrice,
+      if (effectiveFrom != null) 'effective_from': effectiveFrom,
+      if (effectiveTo != null) 'effective_to': effectiveTo,
+      if (isActive != null) 'is_active': isActive,
+      if (versionNumber != null) 'version_number': versionNumber,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CostingSheetsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? classificationId,
+    Value<double>? unitPrice,
+    Value<DateTime>? effectiveFrom,
+    Value<DateTime?>? effectiveTo,
+    Value<bool>? isActive,
+    Value<int>? versionNumber,
+    Value<int>? rowid,
+  }) {
+    return CostingSheetsCompanion(
+      id: id ?? this.id,
+      classificationId: classificationId ?? this.classificationId,
+      unitPrice: unitPrice ?? this.unitPrice,
+      effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+      effectiveTo: effectiveTo ?? this.effectiveTo,
+      isActive: isActive ?? this.isActive,
+      versionNumber: versionNumber ?? this.versionNumber,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (classificationId.present) {
+      map['classification_id'] = Variable<int>(classificationId.value);
+    }
+    if (unitPrice.present) {
+      map['unit_price'] = Variable<double>(unitPrice.value);
+    }
+    if (effectiveFrom.present) {
+      map['effective_from'] = Variable<DateTime>(effectiveFrom.value);
+    }
+    if (effectiveTo.present) {
+      map['effective_to'] = Variable<DateTime>(effectiveTo.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (versionNumber.present) {
+      map['version_number'] = Variable<int>(versionNumber.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheetsCompanion(')
+          ..write('id: $id, ')
+          ..write('classificationId: $classificationId, ')
+          ..write('unitPrice: $unitPrice, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('isActive: $isActive, ')
+          ..write('versionNumber: $versionNumber, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -8435,6 +11049,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $GovernoratesTable governorates = $GovernoratesTable(this);
   late final $DirectoratesTable directorates = $DirectoratesTable(this);
   late final $LocalitiesTable localities = $LocalitiesTable(this);
+  late final $DamageNaturesTable damageNatures = $DamageNaturesTable(this);
+  late final $DamageCategoriesTable damageCategories = $DamageCategoriesTable(
+    this,
+  );
+  late final $DamageSubCategoriesTable damageSubCategories =
+      $DamageSubCategoriesTable(this);
+  late final $DamageClassificationsTable damageClassifications =
+      $DamageClassificationsTable(this);
+  late final $DamageCauseCategoriesTable damageCauseCategories =
+      $DamageCauseCategoriesTable(this);
+  late final $DamageCausesTable damageCauses = $DamageCausesTable(this);
+  late final $CostingSheetsTable costingSheets = $CostingSheetsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8454,6 +11080,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     governorates,
     directorates,
     localities,
+    damageNatures,
+    damageCategories,
+    damageSubCategories,
+    damageClassifications,
+    damageCauseCategories,
+    damageCauses,
+    costingSheets,
   ];
 }
 
@@ -8486,6 +11119,8 @@ typedef $$FarmersTableCreateCompanionBuilder =
       Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<String?> deletedBy,
       Value<int> rowid,
     });
 typedef $$FarmersTableUpdateCompanionBuilder =
@@ -8517,6 +11152,8 @@ typedef $$FarmersTableUpdateCompanionBuilder =
       Value<bool> isPendingDelete,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<String?> deletedBy,
       Value<int> rowid,
     });
 
@@ -8661,6 +11298,16 @@ class $$FarmersTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deletedBy => $composableBuilder(
+    column: $table.deletedBy,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -8808,6 +11455,16 @@ class $$FarmersTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deletedBy => $composableBuilder(
+    column: $table.deletedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FarmersTableAnnotationComposer
@@ -8933,6 +11590,12 @@ class $$FarmersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedBy =>
+      $composableBuilder(column: $table.deletedBy, builder: (column) => column);
 }
 
 class $$FarmersTableTableManager
@@ -8993,6 +11656,8 @@ class $$FarmersTableTableManager
                 Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> deletedBy = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FarmersCompanion(
                 id: id,
@@ -9022,6 +11687,8 @@ class $$FarmersTableTableManager
                 isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                deletedBy: deletedBy,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9053,6 +11720,8 @@ class $$FarmersTableTableManager
                 Value<bool> isPendingDelete = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> deletedBy = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FarmersCompanion.insert(
                 id: id,
@@ -9082,6 +11751,8 @@ class $$FarmersTableTableManager
                 isPendingDelete: isPendingDelete,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                deletedBy: deletedBy,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -9711,10 +12382,17 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
     DamageReportsCompanion Function({
       required String id,
       Value<String?> serverId,
+      Value<String> formNumber,
+      Value<String> temporaryFormNumber,
+      Value<int> damageYear,
       required String farmId,
       required String farmerId,
       required DateTime damageDate,
       required DateTime documentationDate,
+      Value<int> damageTypeId,
+      Value<int> damageCauseId,
+      Value<String?> settlementName,
+      Value<String?> companyName,
       required String governorateId,
       required String localityId,
       Value<double?> latitude,
@@ -9733,10 +12411,17 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
     DamageReportsCompanion Function({
       Value<String> id,
       Value<String?> serverId,
+      Value<String> formNumber,
+      Value<String> temporaryFormNumber,
+      Value<int> damageYear,
       Value<String> farmId,
       Value<String> farmerId,
       Value<DateTime> damageDate,
       Value<DateTime> documentationDate,
+      Value<int> damageTypeId,
+      Value<int> damageCauseId,
+      Value<String?> settlementName,
+      Value<String?> companyName,
       Value<String> governorateId,
       Value<String> localityId,
       Value<double?> latitude,
@@ -9771,6 +12456,21 @@ class $$DamageReportsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get formNumber => $composableBuilder(
+    column: $table.formNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get temporaryFormNumber => $composableBuilder(
+    column: $table.temporaryFormNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get damageYear => $composableBuilder(
+    column: $table.damageYear,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get farmId => $composableBuilder(
     column: $table.farmId,
     builder: (column) => ColumnFilters(column),
@@ -9788,6 +12488,26 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<DateTime> get documentationDate => $composableBuilder(
     column: $table.documentationDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get damageTypeId => $composableBuilder(
+    column: $table.damageTypeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get damageCauseId => $composableBuilder(
+    column: $table.damageCauseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get settlementName => $composableBuilder(
+    column: $table.settlementName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get companyName => $composableBuilder(
+    column: $table.companyName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9871,6 +12591,21 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get formNumber => $composableBuilder(
+    column: $table.formNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get temporaryFormNumber => $composableBuilder(
+    column: $table.temporaryFormNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get damageYear => $composableBuilder(
+    column: $table.damageYear,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get farmId => $composableBuilder(
     column: $table.farmId,
     builder: (column) => ColumnOrderings(column),
@@ -9888,6 +12623,26 @@ class $$DamageReportsTableOrderingComposer
 
   ColumnOrderings<DateTime> get documentationDate => $composableBuilder(
     column: $table.documentationDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get damageTypeId => $composableBuilder(
+    column: $table.damageTypeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get damageCauseId => $composableBuilder(
+    column: $table.damageCauseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get settlementName => $composableBuilder(
+    column: $table.settlementName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get companyName => $composableBuilder(
+    column: $table.companyName,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -9967,6 +12722,21 @@ class $$DamageReportsTableAnnotationComposer
   GeneratedColumn<String> get serverId =>
       $composableBuilder(column: $table.serverId, builder: (column) => column);
 
+  GeneratedColumn<String> get formNumber => $composableBuilder(
+    column: $table.formNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get temporaryFormNumber => $composableBuilder(
+    column: $table.temporaryFormNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get damageYear => $composableBuilder(
+    column: $table.damageYear,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get farmId =>
       $composableBuilder(column: $table.farmId, builder: (column) => column);
 
@@ -9980,6 +12750,26 @@ class $$DamageReportsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get documentationDate => $composableBuilder(
     column: $table.documentationDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get damageTypeId => $composableBuilder(
+    column: $table.damageTypeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get damageCauseId => $composableBuilder(
+    column: $table.damageCauseId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get settlementName => $composableBuilder(
+    column: $table.settlementName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get companyName => $composableBuilder(
+    column: $table.companyName,
     builder: (column) => column,
   );
 
@@ -10069,10 +12859,17 @@ class $$DamageReportsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
+                Value<String> formNumber = const Value.absent(),
+                Value<String> temporaryFormNumber = const Value.absent(),
+                Value<int> damageYear = const Value.absent(),
                 Value<String> farmId = const Value.absent(),
                 Value<String> farmerId = const Value.absent(),
                 Value<DateTime> damageDate = const Value.absent(),
                 Value<DateTime> documentationDate = const Value.absent(),
+                Value<int> damageTypeId = const Value.absent(),
+                Value<int> damageCauseId = const Value.absent(),
+                Value<String?> settlementName = const Value.absent(),
+                Value<String?> companyName = const Value.absent(),
                 Value<String> governorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
@@ -10089,10 +12886,17 @@ class $$DamageReportsTableTableManager
               }) => DamageReportsCompanion(
                 id: id,
                 serverId: serverId,
+                formNumber: formNumber,
+                temporaryFormNumber: temporaryFormNumber,
+                damageYear: damageYear,
                 farmId: farmId,
                 farmerId: farmerId,
                 damageDate: damageDate,
                 documentationDate: documentationDate,
+                damageTypeId: damageTypeId,
+                damageCauseId: damageCauseId,
+                settlementName: settlementName,
+                companyName: companyName,
                 governorateId: governorateId,
                 localityId: localityId,
                 latitude: latitude,
@@ -10111,10 +12915,17 @@ class $$DamageReportsTableTableManager
               ({
                 required String id,
                 Value<String?> serverId = const Value.absent(),
+                Value<String> formNumber = const Value.absent(),
+                Value<String> temporaryFormNumber = const Value.absent(),
+                Value<int> damageYear = const Value.absent(),
                 required String farmId,
                 required String farmerId,
                 required DateTime damageDate,
                 required DateTime documentationDate,
+                Value<int> damageTypeId = const Value.absent(),
+                Value<int> damageCauseId = const Value.absent(),
+                Value<String?> settlementName = const Value.absent(),
+                Value<String?> companyName = const Value.absent(),
                 required String governorateId,
                 required String localityId,
                 Value<double?> latitude = const Value.absent(),
@@ -10131,10 +12942,17 @@ class $$DamageReportsTableTableManager
               }) => DamageReportsCompanion.insert(
                 id: id,
                 serverId: serverId,
+                formNumber: formNumber,
+                temporaryFormNumber: temporaryFormNumber,
+                damageYear: damageYear,
                 farmId: farmId,
                 farmerId: farmerId,
                 damageDate: damageDate,
                 documentationDate: documentationDate,
+                damageTypeId: damageTypeId,
+                damageCauseId: damageCauseId,
+                settlementName: settlementName,
+                companyName: companyName,
                 governorateId: governorateId,
                 localityId: localityId,
                 latitude: latitude,
@@ -10179,10 +12997,10 @@ typedef $$DamageItemsTableCreateCompanionBuilder =
       required String id,
       Value<String?> serverId,
       required String damageReportId,
-      required String agriculturalSectorId,
-      required String subSectorId,
-      required String cropId,
-      required String damageTypeId,
+      Value<int> classificationId,
+      Value<String> costingSheetId,
+      Value<double> calculatedUnitPrice,
+      Value<String> measurementUnitSnapshot,
       required double affectedArea,
       required double damagePercentage,
       required double quantity,
@@ -10200,10 +13018,10 @@ typedef $$DamageItemsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String?> serverId,
       Value<String> damageReportId,
-      Value<String> agriculturalSectorId,
-      Value<String> subSectorId,
-      Value<String> cropId,
-      Value<String> damageTypeId,
+      Value<int> classificationId,
+      Value<String> costingSheetId,
+      Value<double> calculatedUnitPrice,
+      Value<String> measurementUnitSnapshot,
       Value<double> affectedArea,
       Value<double> damagePercentage,
       Value<double> quantity,
@@ -10241,23 +13059,23 @@ class $$DamageItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get agriculturalSectorId => $composableBuilder(
-    column: $table.agriculturalSectorId,
+  ColumnFilters<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get subSectorId => $composableBuilder(
-    column: $table.subSectorId,
+  ColumnFilters<String> get costingSheetId => $composableBuilder(
+    column: $table.costingSheetId,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get cropId => $composableBuilder(
-    column: $table.cropId,
+  ColumnFilters<double> get calculatedUnitPrice => $composableBuilder(
+    column: $table.calculatedUnitPrice,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get damageTypeId => $composableBuilder(
-    column: $table.damageTypeId,
+  ColumnFilters<String> get measurementUnitSnapshot => $composableBuilder(
+    column: $table.measurementUnitSnapshot,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10336,23 +13154,23 @@ class $$DamageItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get agriculturalSectorId => $composableBuilder(
-    column: $table.agriculturalSectorId,
+  ColumnOrderings<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get subSectorId => $composableBuilder(
-    column: $table.subSectorId,
+  ColumnOrderings<String> get costingSheetId => $composableBuilder(
+    column: $table.costingSheetId,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get cropId => $composableBuilder(
-    column: $table.cropId,
+  ColumnOrderings<double> get calculatedUnitPrice => $composableBuilder(
+    column: $table.calculatedUnitPrice,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get damageTypeId => $composableBuilder(
-    column: $table.damageTypeId,
+  ColumnOrderings<String> get measurementUnitSnapshot => $composableBuilder(
+    column: $table.measurementUnitSnapshot,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -10427,21 +13245,23 @@ class $$DamageItemsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get agriculturalSectorId => $composableBuilder(
-    column: $table.agriculturalSectorId,
+  GeneratedColumn<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get subSectorId => $composableBuilder(
-    column: $table.subSectorId,
+  GeneratedColumn<String> get costingSheetId => $composableBuilder(
+    column: $table.costingSheetId,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get cropId =>
-      $composableBuilder(column: $table.cropId, builder: (column) => column);
+  GeneratedColumn<double> get calculatedUnitPrice => $composableBuilder(
+    column: $table.calculatedUnitPrice,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get damageTypeId => $composableBuilder(
-    column: $table.damageTypeId,
+  GeneratedColumn<String> get measurementUnitSnapshot => $composableBuilder(
+    column: $table.measurementUnitSnapshot,
     builder: (column) => column,
   );
 
@@ -10524,10 +13344,10 @@ class $$DamageItemsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
                 Value<String> damageReportId = const Value.absent(),
-                Value<String> agriculturalSectorId = const Value.absent(),
-                Value<String> subSectorId = const Value.absent(),
-                Value<String> cropId = const Value.absent(),
-                Value<String> damageTypeId = const Value.absent(),
+                Value<int> classificationId = const Value.absent(),
+                Value<String> costingSheetId = const Value.absent(),
+                Value<double> calculatedUnitPrice = const Value.absent(),
+                Value<String> measurementUnitSnapshot = const Value.absent(),
                 Value<double> affectedArea = const Value.absent(),
                 Value<double> damagePercentage = const Value.absent(),
                 Value<double> quantity = const Value.absent(),
@@ -10543,10 +13363,10 @@ class $$DamageItemsTableTableManager
                 id: id,
                 serverId: serverId,
                 damageReportId: damageReportId,
-                agriculturalSectorId: agriculturalSectorId,
-                subSectorId: subSectorId,
-                cropId: cropId,
-                damageTypeId: damageTypeId,
+                classificationId: classificationId,
+                costingSheetId: costingSheetId,
+                calculatedUnitPrice: calculatedUnitPrice,
+                measurementUnitSnapshot: measurementUnitSnapshot,
                 affectedArea: affectedArea,
                 damagePercentage: damagePercentage,
                 quantity: quantity,
@@ -10564,10 +13384,10 @@ class $$DamageItemsTableTableManager
                 required String id,
                 Value<String?> serverId = const Value.absent(),
                 required String damageReportId,
-                required String agriculturalSectorId,
-                required String subSectorId,
-                required String cropId,
-                required String damageTypeId,
+                Value<int> classificationId = const Value.absent(),
+                Value<String> costingSheetId = const Value.absent(),
+                Value<double> calculatedUnitPrice = const Value.absent(),
+                Value<String> measurementUnitSnapshot = const Value.absent(),
                 required double affectedArea,
                 required double damagePercentage,
                 required double quantity,
@@ -10583,10 +13403,10 @@ class $$DamageItemsTableTableManager
                 id: id,
                 serverId: serverId,
                 damageReportId: damageReportId,
-                agriculturalSectorId: agriculturalSectorId,
-                subSectorId: subSectorId,
-                cropId: cropId,
-                damageTypeId: damageTypeId,
+                classificationId: classificationId,
+                costingSheetId: costingSheetId,
+                calculatedUnitPrice: calculatedUnitPrice,
+                measurementUnitSnapshot: measurementUnitSnapshot,
                 affectedArea: affectedArea,
                 damagePercentage: damagePercentage,
                 quantity: quantity,
@@ -12661,6 +15481,1324 @@ typedef $$LocalitiesTableProcessedTableManager =
       LocalityLocal,
       PrefetchHooks Function()
     >;
+typedef $$DamageNaturesTableCreateCompanionBuilder =
+    DamageNaturesCompanion Function({
+      Value<int> id,
+      required String nameAr,
+      required String nameEn,
+    });
+typedef $$DamageNaturesTableUpdateCompanionBuilder =
+    DamageNaturesCompanion Function({
+      Value<int> id,
+      Value<String> nameAr,
+      Value<String> nameEn,
+    });
+
+class $$DamageNaturesTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageNaturesTable> {
+  $$DamageNaturesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageNaturesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageNaturesTable> {
+  $$DamageNaturesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageNaturesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageNaturesTable> {
+  $$DamageNaturesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+}
+
+class $$DamageNaturesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageNaturesTable,
+          DamageNature,
+          $$DamageNaturesTableFilterComposer,
+          $$DamageNaturesTableOrderingComposer,
+          $$DamageNaturesTableAnnotationComposer,
+          $$DamageNaturesTableCreateCompanionBuilder,
+          $$DamageNaturesTableUpdateCompanionBuilder,
+          (
+            DamageNature,
+            BaseReferences<_$AppDatabase, $DamageNaturesTable, DamageNature>,
+          ),
+          DamageNature,
+          PrefetchHooks Function()
+        > {
+  $$DamageNaturesTableTableManager(_$AppDatabase db, $DamageNaturesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageNaturesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DamageNaturesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DamageNaturesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+              }) => DamageNaturesCompanion(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String nameAr,
+                required String nameEn,
+              }) => DamageNaturesCompanion.insert(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageNaturesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageNaturesTable,
+      DamageNature,
+      $$DamageNaturesTableFilterComposer,
+      $$DamageNaturesTableOrderingComposer,
+      $$DamageNaturesTableAnnotationComposer,
+      $$DamageNaturesTableCreateCompanionBuilder,
+      $$DamageNaturesTableUpdateCompanionBuilder,
+      (
+        DamageNature,
+        BaseReferences<_$AppDatabase, $DamageNaturesTable, DamageNature>,
+      ),
+      DamageNature,
+      PrefetchHooks Function()
+    >;
+typedef $$DamageCategoriesTableCreateCompanionBuilder =
+    DamageCategoriesCompanion Function({
+      Value<int> id,
+      required int parentId,
+      required String nameAr,
+      required String nameEn,
+    });
+typedef $$DamageCategoriesTableUpdateCompanionBuilder =
+    DamageCategoriesCompanion Function({
+      Value<int> id,
+      Value<int> parentId,
+      Value<String> nameAr,
+      Value<String> nameEn,
+    });
+
+class $$DamageCategoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageCategoriesTable> {
+  $$DamageCategoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageCategoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageCategoriesTable> {
+  $$DamageCategoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageCategoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageCategoriesTable> {
+  $$DamageCategoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get parentId =>
+      $composableBuilder(column: $table.parentId, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+}
+
+class $$DamageCategoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageCategoriesTable,
+          DamageCategory,
+          $$DamageCategoriesTableFilterComposer,
+          $$DamageCategoriesTableOrderingComposer,
+          $$DamageCategoriesTableAnnotationComposer,
+          $$DamageCategoriesTableCreateCompanionBuilder,
+          $$DamageCategoriesTableUpdateCompanionBuilder,
+          (
+            DamageCategory,
+            BaseReferences<
+              _$AppDatabase,
+              $DamageCategoriesTable,
+              DamageCategory
+            >,
+          ),
+          DamageCategory,
+          PrefetchHooks Function()
+        > {
+  $$DamageCategoriesTableTableManager(
+    _$AppDatabase db,
+    $DamageCategoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageCategoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DamageCategoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DamageCategoriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> parentId = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+              }) => DamageCategoriesCompanion(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int parentId,
+                required String nameAr,
+                required String nameEn,
+              }) => DamageCategoriesCompanion.insert(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageCategoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageCategoriesTable,
+      DamageCategory,
+      $$DamageCategoriesTableFilterComposer,
+      $$DamageCategoriesTableOrderingComposer,
+      $$DamageCategoriesTableAnnotationComposer,
+      $$DamageCategoriesTableCreateCompanionBuilder,
+      $$DamageCategoriesTableUpdateCompanionBuilder,
+      (
+        DamageCategory,
+        BaseReferences<_$AppDatabase, $DamageCategoriesTable, DamageCategory>,
+      ),
+      DamageCategory,
+      PrefetchHooks Function()
+    >;
+typedef $$DamageSubCategoriesTableCreateCompanionBuilder =
+    DamageSubCategoriesCompanion Function({
+      Value<int> id,
+      required int parentId,
+      required String nameAr,
+      required String nameEn,
+    });
+typedef $$DamageSubCategoriesTableUpdateCompanionBuilder =
+    DamageSubCategoriesCompanion Function({
+      Value<int> id,
+      Value<int> parentId,
+      Value<String> nameAr,
+      Value<String> nameEn,
+    });
+
+class $$DamageSubCategoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageSubCategoriesTable> {
+  $$DamageSubCategoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageSubCategoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageSubCategoriesTable> {
+  $$DamageSubCategoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageSubCategoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageSubCategoriesTable> {
+  $$DamageSubCategoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get parentId =>
+      $composableBuilder(column: $table.parentId, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+}
+
+class $$DamageSubCategoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageSubCategoriesTable,
+          DamageSubCategory,
+          $$DamageSubCategoriesTableFilterComposer,
+          $$DamageSubCategoriesTableOrderingComposer,
+          $$DamageSubCategoriesTableAnnotationComposer,
+          $$DamageSubCategoriesTableCreateCompanionBuilder,
+          $$DamageSubCategoriesTableUpdateCompanionBuilder,
+          (
+            DamageSubCategory,
+            BaseReferences<
+              _$AppDatabase,
+              $DamageSubCategoriesTable,
+              DamageSubCategory
+            >,
+          ),
+          DamageSubCategory,
+          PrefetchHooks Function()
+        > {
+  $$DamageSubCategoriesTableTableManager(
+    _$AppDatabase db,
+    $DamageSubCategoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageSubCategoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DamageSubCategoriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DamageSubCategoriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> parentId = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+              }) => DamageSubCategoriesCompanion(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int parentId,
+                required String nameAr,
+                required String nameEn,
+              }) => DamageSubCategoriesCompanion.insert(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageSubCategoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageSubCategoriesTable,
+      DamageSubCategory,
+      $$DamageSubCategoriesTableFilterComposer,
+      $$DamageSubCategoriesTableOrderingComposer,
+      $$DamageSubCategoriesTableAnnotationComposer,
+      $$DamageSubCategoriesTableCreateCompanionBuilder,
+      $$DamageSubCategoriesTableUpdateCompanionBuilder,
+      (
+        DamageSubCategory,
+        BaseReferences<
+          _$AppDatabase,
+          $DamageSubCategoriesTable,
+          DamageSubCategory
+        >,
+      ),
+      DamageSubCategory,
+      PrefetchHooks Function()
+    >;
+typedef $$DamageClassificationsTableCreateCompanionBuilder =
+    DamageClassificationsCompanion Function({
+      Value<int> id,
+      required int parentId,
+      required String nameAr,
+      required String nameEn,
+    });
+typedef $$DamageClassificationsTableUpdateCompanionBuilder =
+    DamageClassificationsCompanion Function({
+      Value<int> id,
+      Value<int> parentId,
+      Value<String> nameAr,
+      Value<String> nameEn,
+    });
+
+class $$DamageClassificationsTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageClassificationsTable> {
+  $$DamageClassificationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageClassificationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageClassificationsTable> {
+  $$DamageClassificationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageClassificationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageClassificationsTable> {
+  $$DamageClassificationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get parentId =>
+      $composableBuilder(column: $table.parentId, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+}
+
+class $$DamageClassificationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageClassificationsTable,
+          DamageClassification,
+          $$DamageClassificationsTableFilterComposer,
+          $$DamageClassificationsTableOrderingComposer,
+          $$DamageClassificationsTableAnnotationComposer,
+          $$DamageClassificationsTableCreateCompanionBuilder,
+          $$DamageClassificationsTableUpdateCompanionBuilder,
+          (
+            DamageClassification,
+            BaseReferences<
+              _$AppDatabase,
+              $DamageClassificationsTable,
+              DamageClassification
+            >,
+          ),
+          DamageClassification,
+          PrefetchHooks Function()
+        > {
+  $$DamageClassificationsTableTableManager(
+    _$AppDatabase db,
+    $DamageClassificationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageClassificationsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$DamageClassificationsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DamageClassificationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> parentId = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+              }) => DamageClassificationsCompanion(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int parentId,
+                required String nameAr,
+                required String nameEn,
+              }) => DamageClassificationsCompanion.insert(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageClassificationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageClassificationsTable,
+      DamageClassification,
+      $$DamageClassificationsTableFilterComposer,
+      $$DamageClassificationsTableOrderingComposer,
+      $$DamageClassificationsTableAnnotationComposer,
+      $$DamageClassificationsTableCreateCompanionBuilder,
+      $$DamageClassificationsTableUpdateCompanionBuilder,
+      (
+        DamageClassification,
+        BaseReferences<
+          _$AppDatabase,
+          $DamageClassificationsTable,
+          DamageClassification
+        >,
+      ),
+      DamageClassification,
+      PrefetchHooks Function()
+    >;
+typedef $$DamageCauseCategoriesTableCreateCompanionBuilder =
+    DamageCauseCategoriesCompanion Function({
+      Value<int> id,
+      required String nameAr,
+      required String nameEn,
+    });
+typedef $$DamageCauseCategoriesTableUpdateCompanionBuilder =
+    DamageCauseCategoriesCompanion Function({
+      Value<int> id,
+      Value<String> nameAr,
+      Value<String> nameEn,
+    });
+
+class $$DamageCauseCategoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageCauseCategoriesTable> {
+  $$DamageCauseCategoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageCauseCategoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageCauseCategoriesTable> {
+  $$DamageCauseCategoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageCauseCategoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageCauseCategoriesTable> {
+  $$DamageCauseCategoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+}
+
+class $$DamageCauseCategoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageCauseCategoriesTable,
+          DamageCauseCategory,
+          $$DamageCauseCategoriesTableFilterComposer,
+          $$DamageCauseCategoriesTableOrderingComposer,
+          $$DamageCauseCategoriesTableAnnotationComposer,
+          $$DamageCauseCategoriesTableCreateCompanionBuilder,
+          $$DamageCauseCategoriesTableUpdateCompanionBuilder,
+          (
+            DamageCauseCategory,
+            BaseReferences<
+              _$AppDatabase,
+              $DamageCauseCategoriesTable,
+              DamageCauseCategory
+            >,
+          ),
+          DamageCauseCategory,
+          PrefetchHooks Function()
+        > {
+  $$DamageCauseCategoriesTableTableManager(
+    _$AppDatabase db,
+    $DamageCauseCategoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageCauseCategoriesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$DamageCauseCategoriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DamageCauseCategoriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+              }) => DamageCauseCategoriesCompanion(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String nameAr,
+                required String nameEn,
+              }) => DamageCauseCategoriesCompanion.insert(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageCauseCategoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageCauseCategoriesTable,
+      DamageCauseCategory,
+      $$DamageCauseCategoriesTableFilterComposer,
+      $$DamageCauseCategoriesTableOrderingComposer,
+      $$DamageCauseCategoriesTableAnnotationComposer,
+      $$DamageCauseCategoriesTableCreateCompanionBuilder,
+      $$DamageCauseCategoriesTableUpdateCompanionBuilder,
+      (
+        DamageCauseCategory,
+        BaseReferences<
+          _$AppDatabase,
+          $DamageCauseCategoriesTable,
+          DamageCauseCategory
+        >,
+      ),
+      DamageCauseCategory,
+      PrefetchHooks Function()
+    >;
+typedef $$DamageCausesTableCreateCompanionBuilder =
+    DamageCausesCompanion Function({
+      Value<int> id,
+      required int parentId,
+      required String nameAr,
+      required String nameEn,
+    });
+typedef $$DamageCausesTableUpdateCompanionBuilder =
+    DamageCausesCompanion Function({
+      Value<int> id,
+      Value<int> parentId,
+      Value<String> nameAr,
+      Value<String> nameEn,
+    });
+
+class $$DamageCausesTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageCausesTable> {
+  $$DamageCausesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageCausesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageCausesTable> {
+  $$DamageCausesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get parentId => $composableBuilder(
+    column: $table.parentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageCausesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageCausesTable> {
+  $$DamageCausesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get parentId =>
+      $composableBuilder(column: $table.parentId, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+}
+
+class $$DamageCausesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageCausesTable,
+          DamageCause,
+          $$DamageCausesTableFilterComposer,
+          $$DamageCausesTableOrderingComposer,
+          $$DamageCausesTableAnnotationComposer,
+          $$DamageCausesTableCreateCompanionBuilder,
+          $$DamageCausesTableUpdateCompanionBuilder,
+          (
+            DamageCause,
+            BaseReferences<_$AppDatabase, $DamageCausesTable, DamageCause>,
+          ),
+          DamageCause,
+          PrefetchHooks Function()
+        > {
+  $$DamageCausesTableTableManager(_$AppDatabase db, $DamageCausesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageCausesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DamageCausesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DamageCausesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> parentId = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+              }) => DamageCausesCompanion(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int parentId,
+                required String nameAr,
+                required String nameEn,
+              }) => DamageCausesCompanion.insert(
+                id: id,
+                parentId: parentId,
+                nameAr: nameAr,
+                nameEn: nameEn,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageCausesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageCausesTable,
+      DamageCause,
+      $$DamageCausesTableFilterComposer,
+      $$DamageCausesTableOrderingComposer,
+      $$DamageCausesTableAnnotationComposer,
+      $$DamageCausesTableCreateCompanionBuilder,
+      $$DamageCausesTableUpdateCompanionBuilder,
+      (
+        DamageCause,
+        BaseReferences<_$AppDatabase, $DamageCausesTable, DamageCause>,
+      ),
+      DamageCause,
+      PrefetchHooks Function()
+    >;
+typedef $$CostingSheetsTableCreateCompanionBuilder =
+    CostingSheetsCompanion Function({
+      required String id,
+      required int classificationId,
+      required double unitPrice,
+      required DateTime effectiveFrom,
+      Value<DateTime?> effectiveTo,
+      Value<bool> isActive,
+      required int versionNumber,
+      Value<int> rowid,
+    });
+typedef $$CostingSheetsTableUpdateCompanionBuilder =
+    CostingSheetsCompanion Function({
+      Value<String> id,
+      Value<int> classificationId,
+      Value<double> unitPrice,
+      Value<DateTime> effectiveFrom,
+      Value<DateTime?> effectiveTo,
+      Value<bool> isActive,
+      Value<int> versionNumber,
+      Value<int> rowid,
+    });
+
+class $$CostingSheetsTableFilterComposer
+    extends Composer<_$AppDatabase, $CostingSheetsTable> {
+  $$CostingSheetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get unitPrice => $composableBuilder(
+    column: $table.unitPrice,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CostingSheetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CostingSheetsTable> {
+  $$CostingSheetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get unitPrice => $composableBuilder(
+    column: $table.unitPrice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CostingSheetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CostingSheetsTable> {
+  $$CostingSheetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get unitPrice =>
+      $composableBuilder(column: $table.unitPrice, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => column,
+  );
+}
+
+class $$CostingSheetsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CostingSheetsTable,
+          CostingSheet,
+          $$CostingSheetsTableFilterComposer,
+          $$CostingSheetsTableOrderingComposer,
+          $$CostingSheetsTableAnnotationComposer,
+          $$CostingSheetsTableCreateCompanionBuilder,
+          $$CostingSheetsTableUpdateCompanionBuilder,
+          (
+            CostingSheet,
+            BaseReferences<_$AppDatabase, $CostingSheetsTable, CostingSheet>,
+          ),
+          CostingSheet,
+          PrefetchHooks Function()
+        > {
+  $$CostingSheetsTableTableManager(_$AppDatabase db, $CostingSheetsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CostingSheetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CostingSheetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CostingSheetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> classificationId = const Value.absent(),
+                Value<double> unitPrice = const Value.absent(),
+                Value<DateTime> effectiveFrom = const Value.absent(),
+                Value<DateTime?> effectiveTo = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<int> versionNumber = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetsCompanion(
+                id: id,
+                classificationId: classificationId,
+                unitPrice: unitPrice,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                isActive: isActive,
+                versionNumber: versionNumber,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int classificationId,
+                required double unitPrice,
+                required DateTime effectiveFrom,
+                Value<DateTime?> effectiveTo = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                required int versionNumber,
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetsCompanion.insert(
+                id: id,
+                classificationId: classificationId,
+                unitPrice: unitPrice,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                isActive: isActive,
+                versionNumber: versionNumber,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CostingSheetsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CostingSheetsTable,
+      CostingSheet,
+      $$CostingSheetsTableFilterComposer,
+      $$CostingSheetsTableOrderingComposer,
+      $$CostingSheetsTableAnnotationComposer,
+      $$CostingSheetsTableCreateCompanionBuilder,
+      $$CostingSheetsTableUpdateCompanionBuilder,
+      (
+        CostingSheet,
+        BaseReferences<_$AppDatabase, $CostingSheetsTable, CostingSheet>,
+      ),
+      CostingSheet,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12699,4 +16837,18 @@ class $AppDatabaseManager {
       $$DirectoratesTableTableManager(_db, _db.directorates);
   $$LocalitiesTableTableManager get localities =>
       $$LocalitiesTableTableManager(_db, _db.localities);
+  $$DamageNaturesTableTableManager get damageNatures =>
+      $$DamageNaturesTableTableManager(_db, _db.damageNatures);
+  $$DamageCategoriesTableTableManager get damageCategories =>
+      $$DamageCategoriesTableTableManager(_db, _db.damageCategories);
+  $$DamageSubCategoriesTableTableManager get damageSubCategories =>
+      $$DamageSubCategoriesTableTableManager(_db, _db.damageSubCategories);
+  $$DamageClassificationsTableTableManager get damageClassifications =>
+      $$DamageClassificationsTableTableManager(_db, _db.damageClassifications);
+  $$DamageCauseCategoriesTableTableManager get damageCauseCategories =>
+      $$DamageCauseCategoriesTableTableManager(_db, _db.damageCauseCategories);
+  $$DamageCausesTableTableManager get damageCauses =>
+      $$DamageCausesTableTableManager(_db, _db.damageCauses);
+  $$CostingSheetsTableTableManager get costingSheets =>
+      $$CostingSheetsTableTableManager(_db, _db.costingSheets);
 }

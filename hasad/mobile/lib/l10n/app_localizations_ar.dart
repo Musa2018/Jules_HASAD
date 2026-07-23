@@ -120,6 +120,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pendingDelete => 'معلق للحذف';
 
   @override
+  String get deleteRestrictedError =>
+      'لا يمكن حذف هذا السجل لأنه مرتبط ببيانات أخرى.';
+
+  @override
   String get noFarmers => 'لا يوجد مزارعون.';
 
   @override
@@ -346,7 +350,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.';
 
   @override
-  String get compensation => 'التعويض';
+  String get agriculturalAssistance => 'المساعدة الزراعية';
 
   @override
   String get calculatedAmount => 'المبلغ المحتسب';
@@ -361,7 +365,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get status => 'الحالة';
 
   @override
-  String get calculateCompensation => 'احتساب التعويض';
+  String get calculateAssistance => 'احتساب المساعدة';
 
   @override
   String get approve => 'اعتماد';
@@ -370,7 +374,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paid => 'تم الصرف';
 
   @override
-  String get noCompensation => 'لم يتم احتساب التعويض بعد.';
+  String get noAssistance => 'لم يتم احتساب المساعدة الزراعية بعد.';
 
   @override
   String get userManagement => 'إدارة المستخدمين';

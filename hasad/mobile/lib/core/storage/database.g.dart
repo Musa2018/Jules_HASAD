@@ -1730,6 +1730,17 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
   );
+  static const VerificationMeta _measurementUnitIdMeta = const VerificationMeta(
+    'measurementUnitId',
+  );
+  @override
+  late final GeneratedColumn<int> measurementUnitId = GeneratedColumn<int>(
+    'measurement_unit_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _agriculturalSectorIdMeta =
       const VerificationMeta('agriculturalSectorId');
   @override
@@ -1873,6 +1884,7 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
     parcel,
     area,
     areaUnitId,
+    measurementUnitId,
     agriculturalSectorId,
     politicalClassificationId,
     latitude,
@@ -2014,6 +2026,15 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         areaUnitId.isAcceptableOrUnknown(
           data['area_unit_id']!,
           _areaUnitIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('measurement_unit_id')) {
+      context.handle(
+        _measurementUnitIdMeta,
+        measurementUnitId.isAcceptableOrUnknown(
+          data['measurement_unit_id']!,
+          _measurementUnitIdMeta,
         ),
       );
     }
@@ -2160,6 +2181,10 @@ class $FarmsTable extends Farms with TableInfo<$FarmsTable, FarmLocal> {
         DriftSqlType.int,
         data['${effectivePrefix}area_unit_id'],
       )!,
+      measurementUnitId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}measurement_unit_id'],
+      ),
       agriculturalSectorId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}agricultural_sector_id'],
@@ -2228,6 +2253,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
   final String parcel;
   final double area;
   final int areaUnitId;
+  final int? measurementUnitId;
   final int agriculturalSectorId;
   final int politicalClassificationId;
   final double? latitude;
@@ -2254,6 +2280,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     required this.parcel,
     required this.area,
     required this.areaUnitId,
+    this.measurementUnitId,
     required this.agriculturalSectorId,
     required this.politicalClassificationId,
     this.latitude,
@@ -2289,6 +2316,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     map['parcel'] = Variable<String>(parcel);
     map['area'] = Variable<double>(area);
     map['area_unit_id'] = Variable<int>(areaUnitId);
+    if (!nullToAbsent || measurementUnitId != null) {
+      map['measurement_unit_id'] = Variable<int>(measurementUnitId);
+    }
     map['agricultural_sector_id'] = Variable<int>(agriculturalSectorId);
     map['political_classification_id'] = Variable<int>(
       politicalClassificationId,
@@ -2337,6 +2367,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       parcel: Value(parcel),
       area: Value(area),
       areaUnitId: Value(areaUnitId),
+      measurementUnitId: measurementUnitId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measurementUnitId),
       agriculturalSectorId: Value(agriculturalSectorId),
       politicalClassificationId: Value(politicalClassificationId),
       latitude: latitude == null && nullToAbsent
@@ -2383,6 +2416,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       parcel: serializer.fromJson<String>(json['parcel']),
       area: serializer.fromJson<double>(json['area']),
       areaUnitId: serializer.fromJson<int>(json['areaUnitId']),
+      measurementUnitId: serializer.fromJson<int?>(json['measurementUnitId']),
       agriculturalSectorId: serializer.fromJson<int>(
         json['agriculturalSectorId'],
       ),
@@ -2418,6 +2452,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       'parcel': serializer.toJson<String>(parcel),
       'area': serializer.toJson<double>(area),
       'areaUnitId': serializer.toJson<int>(areaUnitId),
+      'measurementUnitId': serializer.toJson<int?>(measurementUnitId),
       'agriculturalSectorId': serializer.toJson<int>(agriculturalSectorId),
       'politicalClassificationId': serializer.toJson<int>(
         politicalClassificationId,
@@ -2449,6 +2484,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     String? parcel,
     double? area,
     int? areaUnitId,
+    Value<int?> measurementUnitId = const Value.absent(),
     int? agriculturalSectorId,
     int? politicalClassificationId,
     Value<double?> latitude = const Value.absent(),
@@ -2479,6 +2515,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     parcel: parcel ?? this.parcel,
     area: area ?? this.area,
     areaUnitId: areaUnitId ?? this.areaUnitId,
+    measurementUnitId: measurementUnitId.present
+        ? measurementUnitId.value
+        : this.measurementUnitId,
     agriculturalSectorId: agriculturalSectorId ?? this.agriculturalSectorId,
     politicalClassificationId:
         politicalClassificationId ?? this.politicalClassificationId,
@@ -2526,6 +2565,9 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
       areaUnitId: data.areaUnitId.present
           ? data.areaUnitId.value
           : this.areaUnitId,
+      measurementUnitId: data.measurementUnitId.present
+          ? data.measurementUnitId.value
+          : this.measurementUnitId,
       agriculturalSectorId: data.agriculturalSectorId.present
           ? data.agriculturalSectorId.value
           : this.agriculturalSectorId,
@@ -2569,6 +2611,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           ..write('parcel: $parcel, ')
           ..write('area: $area, ')
           ..write('areaUnitId: $areaUnitId, ')
+          ..write('measurementUnitId: $measurementUnitId, ')
           ..write('agriculturalSectorId: $agriculturalSectorId, ')
           ..write('politicalClassificationId: $politicalClassificationId, ')
           ..write('latitude: $latitude, ')
@@ -2600,6 +2643,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
     parcel,
     area,
     areaUnitId,
+    measurementUnitId,
     agriculturalSectorId,
     politicalClassificationId,
     latitude,
@@ -2630,6 +2674,7 @@ class FarmLocal extends DataClass implements Insertable<FarmLocal> {
           other.parcel == this.parcel &&
           other.area == this.area &&
           other.areaUnitId == this.areaUnitId &&
+          other.measurementUnitId == this.measurementUnitId &&
           other.agriculturalSectorId == this.agriculturalSectorId &&
           other.politicalClassificationId == this.politicalClassificationId &&
           other.latitude == this.latitude &&
@@ -2658,6 +2703,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
   final Value<String> parcel;
   final Value<double> area;
   final Value<int> areaUnitId;
+  final Value<int?> measurementUnitId;
   final Value<int> agriculturalSectorId;
   final Value<int> politicalClassificationId;
   final Value<double?> latitude;
@@ -2685,6 +2731,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     this.parcel = const Value.absent(),
     this.area = const Value.absent(),
     this.areaUnitId = const Value.absent(),
+    this.measurementUnitId = const Value.absent(),
     this.agriculturalSectorId = const Value.absent(),
     this.politicalClassificationId = const Value.absent(),
     this.latitude = const Value.absent(),
@@ -2713,6 +2760,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     required String parcel,
     required double area,
     this.areaUnitId = const Value.absent(),
+    this.measurementUnitId = const Value.absent(),
     this.agriculturalSectorId = const Value.absent(),
     this.politicalClassificationId = const Value.absent(),
     this.latitude = const Value.absent(),
@@ -2749,6 +2797,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Expression<String>? parcel,
     Expression<double>? area,
     Expression<int>? areaUnitId,
+    Expression<int>? measurementUnitId,
     Expression<int>? agriculturalSectorId,
     Expression<int>? politicalClassificationId,
     Expression<double>? latitude,
@@ -2778,6 +2827,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       if (parcel != null) 'parcel': parcel,
       if (area != null) 'area': area,
       if (areaUnitId != null) 'area_unit_id': areaUnitId,
+      if (measurementUnitId != null) 'measurement_unit_id': measurementUnitId,
       if (agriculturalSectorId != null)
         'agricultural_sector_id': agriculturalSectorId,
       if (politicalClassificationId != null)
@@ -2810,6 +2860,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     Value<String>? parcel,
     Value<double>? area,
     Value<int>? areaUnitId,
+    Value<int?>? measurementUnitId,
     Value<int>? agriculturalSectorId,
     Value<int>? politicalClassificationId,
     Value<double?>? latitude,
@@ -2839,6 +2890,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
       parcel: parcel ?? this.parcel,
       area: area ?? this.area,
       areaUnitId: areaUnitId ?? this.areaUnitId,
+      measurementUnitId: measurementUnitId ?? this.measurementUnitId,
       agriculturalSectorId: agriculturalSectorId ?? this.agriculturalSectorId,
       politicalClassificationId:
           politicalClassificationId ?? this.politicalClassificationId,
@@ -2902,6 +2954,9 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
     if (areaUnitId.present) {
       map['area_unit_id'] = Variable<int>(areaUnitId.value);
     }
+    if (measurementUnitId.present) {
+      map['measurement_unit_id'] = Variable<int>(measurementUnitId.value);
+    }
     if (agriculturalSectorId.present) {
       map['agricultural_sector_id'] = Variable<int>(agriculturalSectorId.value);
     }
@@ -2960,6 +3015,7 @@ class FarmsCompanion extends UpdateCompanion<FarmLocal> {
           ..write('parcel: $parcel, ')
           ..write('area: $area, ')
           ..write('areaUnitId: $areaUnitId, ')
+          ..write('measurementUnitId: $measurementUnitId, ')
           ..write('agriculturalSectorId: $agriculturalSectorId, ')
           ..write('politicalClassificationId: $politicalClassificationId, ')
           ..write('latitude: $latitude, ')
@@ -3135,7 +3191,17 @@ class $DamageReportsTable extends DamageReports
     'governorate_id',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _directorateIdMeta = const VerificationMeta(
+    'directorateId',
+  );
+  @override
+  late final GeneratedColumn<String> directorateId = GeneratedColumn<String>(
+    'directorate_id',
+    aliasedName,
+    false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -3147,7 +3213,6 @@ class $DamageReportsTable extends DamageReports
     'locality_id',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -3283,6 +3348,7 @@ class $DamageReportsTable extends DamageReports
     settlementName,
     companyName,
     governorateId,
+    directorateId,
     localityId,
     latitude,
     longitude,
@@ -3423,6 +3489,17 @@ class $DamageReportsTable extends DamageReports
       );
     } else if (isInserting) {
       context.missing(_governorateIdMeta);
+    }
+    if (data.containsKey('directorate_id')) {
+      context.handle(
+        _directorateIdMeta,
+        directorateId.isAcceptableOrUnknown(
+          data['directorate_id']!,
+          _directorateIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_directorateIdMeta);
     }
     if (data.containsKey('locality_id')) {
       context.handle(
@@ -3567,6 +3644,10 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}governorate_id'],
       )!,
+      directorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}directorate_id'],
+      )!,
       localityId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}locality_id'],
@@ -3636,6 +3717,7 @@ class DamageReportLocal extends DataClass
   final String? settlementName;
   final String? companyName;
   final String governorateId;
+  final String directorateId;
   final String localityId;
   final double? latitude;
   final double? longitude;
@@ -3662,6 +3744,7 @@ class DamageReportLocal extends DataClass
     this.settlementName,
     this.companyName,
     required this.governorateId,
+    required this.directorateId,
     required this.localityId,
     this.latitude,
     this.longitude,
@@ -3697,6 +3780,7 @@ class DamageReportLocal extends DataClass
       map['company_name'] = Variable<String>(companyName);
     }
     map['governorate_id'] = Variable<String>(governorateId);
+    map['directorate_id'] = Variable<String>(directorateId);
     map['locality_id'] = Variable<String>(localityId);
     if (!nullToAbsent || latitude != null) {
       map['latitude'] = Variable<double>(latitude);
@@ -3741,6 +3825,7 @@ class DamageReportLocal extends DataClass
           ? const Value.absent()
           : Value(companyName),
       governorateId: Value(governorateId),
+      directorateId: Value(directorateId),
       localityId: Value(localityId),
       latitude: latitude == null && nullToAbsent
           ? const Value.absent()
@@ -3791,6 +3876,7 @@ class DamageReportLocal extends DataClass
       settlementName: serializer.fromJson<String?>(json['settlementName']),
       companyName: serializer.fromJson<String?>(json['companyName']),
       governorateId: serializer.fromJson<String>(json['governorateId']),
+      directorateId: serializer.fromJson<String>(json['directorateId']),
       localityId: serializer.fromJson<String>(json['localityId']),
       latitude: serializer.fromJson<double?>(json['latitude']),
       longitude: serializer.fromJson<double?>(json['longitude']),
@@ -3822,6 +3908,7 @@ class DamageReportLocal extends DataClass
       'settlementName': serializer.toJson<String?>(settlementName),
       'companyName': serializer.toJson<String?>(companyName),
       'governorateId': serializer.toJson<String>(governorateId),
+      'directorateId': serializer.toJson<String>(directorateId),
       'localityId': serializer.toJson<String>(localityId),
       'latitude': serializer.toJson<double?>(latitude),
       'longitude': serializer.toJson<double?>(longitude),
@@ -3851,6 +3938,7 @@ class DamageReportLocal extends DataClass
     Value<String?> settlementName = const Value.absent(),
     Value<String?> companyName = const Value.absent(),
     String? governorateId,
+    String? directorateId,
     String? localityId,
     Value<double?> latitude = const Value.absent(),
     Value<double?> longitude = const Value.absent(),
@@ -3879,6 +3967,7 @@ class DamageReportLocal extends DataClass
         : this.settlementName,
     companyName: companyName.present ? companyName.value : this.companyName,
     governorateId: governorateId ?? this.governorateId,
+    directorateId: directorateId ?? this.directorateId,
     localityId: localityId ?? this.localityId,
     latitude: latitude.present ? latitude.value : this.latitude,
     longitude: longitude.present ? longitude.value : this.longitude,
@@ -3929,6 +4018,9 @@ class DamageReportLocal extends DataClass
       governorateId: data.governorateId.present
           ? data.governorateId.value
           : this.governorateId,
+      directorateId: data.directorateId.present
+          ? data.directorateId.value
+          : this.directorateId,
       localityId: data.localityId.present
           ? data.localityId.value
           : this.localityId,
@@ -3970,6 +4062,7 @@ class DamageReportLocal extends DataClass
           ..write('settlementName: $settlementName, ')
           ..write('companyName: $companyName, ')
           ..write('governorateId: $governorateId, ')
+          ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('latitude: $latitude, ')
           ..write('longitude: $longitude, ')
@@ -4001,6 +4094,7 @@ class DamageReportLocal extends DataClass
     settlementName,
     companyName,
     governorateId,
+    directorateId,
     localityId,
     latitude,
     longitude,
@@ -4031,6 +4125,7 @@ class DamageReportLocal extends DataClass
           other.settlementName == this.settlementName &&
           other.companyName == this.companyName &&
           other.governorateId == this.governorateId &&
+          other.directorateId == this.directorateId &&
           other.localityId == this.localityId &&
           other.latitude == this.latitude &&
           other.longitude == this.longitude &&
@@ -4059,6 +4154,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String?> settlementName;
   final Value<String?> companyName;
   final Value<String> governorateId;
+  final Value<String> directorateId;
   final Value<String> localityId;
   final Value<double?> latitude;
   final Value<double?> longitude;
@@ -4086,6 +4182,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.settlementName = const Value.absent(),
     this.companyName = const Value.absent(),
     this.governorateId = const Value.absent(),
+    this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
@@ -4114,6 +4211,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.settlementName = const Value.absent(),
     this.companyName = const Value.absent(),
     required String governorateId,
+    required String directorateId,
     required String localityId,
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
@@ -4132,6 +4230,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
        damageDate = Value(damageDate),
        documentationDate = Value(documentationDate),
        governorateId = Value(governorateId),
+       directorateId = Value(directorateId),
        localityId = Value(localityId),
        statusId = Value(statusId),
        notes = Value(notes);
@@ -4150,6 +4249,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<String>? settlementName,
     Expression<String>? companyName,
     Expression<String>? governorateId,
+    Expression<String>? directorateId,
     Expression<String>? localityId,
     Expression<double>? latitude,
     Expression<double>? longitude,
@@ -4181,6 +4281,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (settlementName != null) 'settlement_name': settlementName,
       if (companyName != null) 'company_name': companyName,
       if (governorateId != null) 'governorate_id': governorateId,
+      if (directorateId != null) 'directorate_id': directorateId,
       if (localityId != null) 'locality_id': localityId,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
@@ -4211,6 +4312,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<String?>? settlementName,
     Value<String?>? companyName,
     Value<String>? governorateId,
+    Value<String>? directorateId,
     Value<String>? localityId,
     Value<double?>? latitude,
     Value<double?>? longitude,
@@ -4240,6 +4342,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       settlementName: settlementName ?? this.settlementName,
       companyName: companyName ?? this.companyName,
       governorateId: governorateId ?? this.governorateId,
+      directorateId: directorateId ?? this.directorateId,
       localityId: localityId ?? this.localityId,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
@@ -4306,6 +4409,9 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (governorateId.present) {
       map['governorate_id'] = Variable<String>(governorateId.value);
     }
+    if (directorateId.present) {
+      map['directorate_id'] = Variable<String>(directorateId.value);
+    }
     if (localityId.present) {
       map['locality_id'] = Variable<String>(localityId.value);
     }
@@ -4362,6 +4468,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('settlementName: $settlementName, ')
           ..write('companyName: $companyName, ')
           ..write('governorateId: $governorateId, ')
+          ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('latitude: $latitude, ')
           ..write('longitude: $longitude, ')
@@ -4440,6 +4547,17 @@ class $DamageItemsTable extends DamageItems
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _costingSheetItemIdMeta =
+      const VerificationMeta('costingSheetItemId');
+  @override
+  late final GeneratedColumn<String> costingSheetItemId =
+      GeneratedColumn<String>(
+        'costing_sheet_item_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _calculatedUnitPriceMeta =
       const VerificationMeta('calculatedUnitPrice');
   @override
@@ -4588,6 +4706,7 @@ class $DamageItemsTable extends DamageItems
     damageReportId,
     classificationId,
     costingSheetId,
+    costingSheetItemId,
     calculatedUnitPrice,
     measurementUnitSnapshot,
     affectedArea,
@@ -4650,6 +4769,15 @@ class $DamageItemsTable extends DamageItems
         costingSheetId.isAcceptableOrUnknown(
           data['costing_sheet_id']!,
           _costingSheetIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('costing_sheet_item_id')) {
+      context.handle(
+        _costingSheetItemIdMeta,
+        costingSheetItemId.isAcceptableOrUnknown(
+          data['costing_sheet_item_id']!,
+          _costingSheetItemIdMeta,
         ),
       );
     }
@@ -4783,6 +4911,10 @@ class $DamageItemsTable extends DamageItems
         DriftSqlType.string,
         data['${effectivePrefix}costing_sheet_id'],
       )!,
+      costingSheetItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}costing_sheet_item_id'],
+      ),
       calculatedUnitPrice: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}calculated_unit_price'],
@@ -4846,6 +4978,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
   final String damageReportId;
   final int classificationId;
   final String costingSheetId;
+  final String? costingSheetItemId;
   final double calculatedUnitPrice;
   final String measurementUnitSnapshot;
   final double affectedArea;
@@ -4864,6 +4997,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     required this.damageReportId,
     required this.classificationId,
     required this.costingSheetId,
+    this.costingSheetItemId,
     required this.calculatedUnitPrice,
     required this.measurementUnitSnapshot,
     required this.affectedArea,
@@ -4887,6 +5021,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     map['damage_report_id'] = Variable<String>(damageReportId);
     map['classification_id'] = Variable<int>(classificationId);
     map['costing_sheet_id'] = Variable<String>(costingSheetId);
+    if (!nullToAbsent || costingSheetItemId != null) {
+      map['costing_sheet_item_id'] = Variable<String>(costingSheetItemId);
+    }
     map['calculated_unit_price'] = Variable<double>(calculatedUnitPrice);
     map['measurement_unit_snapshot'] = Variable<String>(
       measurementUnitSnapshot,
@@ -4917,6 +5054,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       damageReportId: Value(damageReportId),
       classificationId: Value(classificationId),
       costingSheetId: Value(costingSheetId),
+      costingSheetItemId: costingSheetItemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(costingSheetItemId),
       calculatedUnitPrice: Value(calculatedUnitPrice),
       measurementUnitSnapshot: Value(measurementUnitSnapshot),
       affectedArea: Value(affectedArea),
@@ -4947,6 +5087,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       damageReportId: serializer.fromJson<String>(json['damageReportId']),
       classificationId: serializer.fromJson<int>(json['classificationId']),
       costingSheetId: serializer.fromJson<String>(json['costingSheetId']),
+      costingSheetItemId: serializer.fromJson<String?>(
+        json['costingSheetItemId'],
+      ),
       calculatedUnitPrice: serializer.fromJson<double>(
         json['calculatedUnitPrice'],
       ),
@@ -4974,6 +5117,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       'damageReportId': serializer.toJson<String>(damageReportId),
       'classificationId': serializer.toJson<int>(classificationId),
       'costingSheetId': serializer.toJson<String>(costingSheetId),
+      'costingSheetItemId': serializer.toJson<String?>(costingSheetItemId),
       'calculatedUnitPrice': serializer.toJson<double>(calculatedUnitPrice),
       'measurementUnitSnapshot': serializer.toJson<String>(
         measurementUnitSnapshot,
@@ -4997,6 +5141,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     String? damageReportId,
     int? classificationId,
     String? costingSheetId,
+    Value<String?> costingSheetItemId = const Value.absent(),
     double? calculatedUnitPrice,
     String? measurementUnitSnapshot,
     double? affectedArea,
@@ -5015,6 +5160,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     damageReportId: damageReportId ?? this.damageReportId,
     classificationId: classificationId ?? this.classificationId,
     costingSheetId: costingSheetId ?? this.costingSheetId,
+    costingSheetItemId: costingSheetItemId.present
+        ? costingSheetItemId.value
+        : this.costingSheetItemId,
     calculatedUnitPrice: calculatedUnitPrice ?? this.calculatedUnitPrice,
     measurementUnitSnapshot:
         measurementUnitSnapshot ?? this.measurementUnitSnapshot,
@@ -5044,6 +5192,9 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
       costingSheetId: data.costingSheetId.present
           ? data.costingSheetId.value
           : this.costingSheetId,
+      costingSheetItemId: data.costingSheetItemId.present
+          ? data.costingSheetItemId.value
+          : this.costingSheetItemId,
       calculatedUnitPrice: data.calculatedUnitPrice.present
           ? data.calculatedUnitPrice.value
           : this.calculatedUnitPrice,
@@ -5085,6 +5236,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           ..write('damageReportId: $damageReportId, ')
           ..write('classificationId: $classificationId, ')
           ..write('costingSheetId: $costingSheetId, ')
+          ..write('costingSheetItemId: $costingSheetItemId, ')
           ..write('calculatedUnitPrice: $calculatedUnitPrice, ')
           ..write('measurementUnitSnapshot: $measurementUnitSnapshot, ')
           ..write('affectedArea: $affectedArea, ')
@@ -5108,6 +5260,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
     damageReportId,
     classificationId,
     costingSheetId,
+    costingSheetItemId,
     calculatedUnitPrice,
     measurementUnitSnapshot,
     affectedArea,
@@ -5130,6 +5283,7 @@ class DamageItemLocal extends DataClass implements Insertable<DamageItemLocal> {
           other.damageReportId == this.damageReportId &&
           other.classificationId == this.classificationId &&
           other.costingSheetId == this.costingSheetId &&
+          other.costingSheetItemId == this.costingSheetItemId &&
           other.calculatedUnitPrice == this.calculatedUnitPrice &&
           other.measurementUnitSnapshot == this.measurementUnitSnapshot &&
           other.affectedArea == this.affectedArea &&
@@ -5150,6 +5304,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
   final Value<String> damageReportId;
   final Value<int> classificationId;
   final Value<String> costingSheetId;
+  final Value<String?> costingSheetItemId;
   final Value<double> calculatedUnitPrice;
   final Value<String> measurementUnitSnapshot;
   final Value<double> affectedArea;
@@ -5169,6 +5324,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     this.damageReportId = const Value.absent(),
     this.classificationId = const Value.absent(),
     this.costingSheetId = const Value.absent(),
+    this.costingSheetItemId = const Value.absent(),
     this.calculatedUnitPrice = const Value.absent(),
     this.measurementUnitSnapshot = const Value.absent(),
     this.affectedArea = const Value.absent(),
@@ -5189,6 +5345,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     required String damageReportId,
     this.classificationId = const Value.absent(),
     this.costingSheetId = const Value.absent(),
+    this.costingSheetItemId = const Value.absent(),
     this.calculatedUnitPrice = const Value.absent(),
     this.measurementUnitSnapshot = const Value.absent(),
     required double affectedArea,
@@ -5214,6 +5371,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Expression<String>? damageReportId,
     Expression<int>? classificationId,
     Expression<String>? costingSheetId,
+    Expression<String>? costingSheetItemId,
     Expression<double>? calculatedUnitPrice,
     Expression<String>? measurementUnitSnapshot,
     Expression<double>? affectedArea,
@@ -5234,6 +5392,8 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       if (damageReportId != null) 'damage_report_id': damageReportId,
       if (classificationId != null) 'classification_id': classificationId,
       if (costingSheetId != null) 'costing_sheet_id': costingSheetId,
+      if (costingSheetItemId != null)
+        'costing_sheet_item_id': costingSheetItemId,
       if (calculatedUnitPrice != null)
         'calculated_unit_price': calculatedUnitPrice,
       if (measurementUnitSnapshot != null)
@@ -5258,6 +5418,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     Value<String>? damageReportId,
     Value<int>? classificationId,
     Value<String>? costingSheetId,
+    Value<String?>? costingSheetItemId,
     Value<double>? calculatedUnitPrice,
     Value<String>? measurementUnitSnapshot,
     Value<double>? affectedArea,
@@ -5278,6 +5439,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
       damageReportId: damageReportId ?? this.damageReportId,
       classificationId: classificationId ?? this.classificationId,
       costingSheetId: costingSheetId ?? this.costingSheetId,
+      costingSheetItemId: costingSheetItemId ?? this.costingSheetItemId,
       calculatedUnitPrice: calculatedUnitPrice ?? this.calculatedUnitPrice,
       measurementUnitSnapshot:
           measurementUnitSnapshot ?? this.measurementUnitSnapshot,
@@ -5312,6 +5474,9 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
     }
     if (costingSheetId.present) {
       map['costing_sheet_id'] = Variable<String>(costingSheetId.value);
+    }
+    if (costingSheetItemId.present) {
+      map['costing_sheet_item_id'] = Variable<String>(costingSheetItemId.value);
     }
     if (calculatedUnitPrice.present) {
       map['calculated_unit_price'] = Variable<double>(
@@ -5367,6 +5532,7 @@ class DamageItemsCompanion extends UpdateCompanion<DamageItemLocal> {
           ..write('damageReportId: $damageReportId, ')
           ..write('classificationId: $classificationId, ')
           ..write('costingSheetId: $costingSheetId, ')
+          ..write('costingSheetItemId: $costingSheetItemId, ')
           ..write('calculatedUnitPrice: $calculatedUnitPrice, ')
           ..write('measurementUnitSnapshot: $measurementUnitSnapshot, ')
           ..write('affectedArea: $affectedArea, ')
@@ -10554,6 +10720,1772 @@ class DamageCausesCompanion extends UpdateCompanion<DamageCause> {
   }
 }
 
+class $MeasurementUnitsTable extends MeasurementUnits
+    with TableInfo<$MeasurementUnitsTable, MeasurementUnit> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MeasurementUnitsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, nameAr, nameEn, code, category];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'measurement_units';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MeasurementUnit> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MeasurementUnit map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MeasurementUnit(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+    );
+  }
+
+  @override
+  $MeasurementUnitsTable createAlias(String alias) {
+    return $MeasurementUnitsTable(attachedDatabase, alias);
+  }
+}
+
+class MeasurementUnit extends DataClass implements Insertable<MeasurementUnit> {
+  final int id;
+  final String nameAr;
+  final String nameEn;
+  final String? code;
+  final String category;
+  const MeasurementUnit({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+    this.code,
+    required this.category,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    if (!nullToAbsent || code != null) {
+      map['code'] = Variable<String>(code);
+    }
+    map['category'] = Variable<String>(category);
+    return map;
+  }
+
+  MeasurementUnitsCompanion toCompanion(bool nullToAbsent) {
+    return MeasurementUnitsCompanion(
+      id: Value(id),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+      code: code == null && nullToAbsent ? const Value.absent() : Value(code),
+      category: Value(category),
+    );
+  }
+
+  factory MeasurementUnit.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MeasurementUnit(
+      id: serializer.fromJson<int>(json['id']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+      code: serializer.fromJson<String?>(json['code']),
+      category: serializer.fromJson<String>(json['category']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+      'code': serializer.toJson<String?>(code),
+      'category': serializer.toJson<String>(category),
+    };
+  }
+
+  MeasurementUnit copyWith({
+    int? id,
+    String? nameAr,
+    String? nameEn,
+    Value<String?> code = const Value.absent(),
+    String? category,
+  }) => MeasurementUnit(
+    id: id ?? this.id,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+    code: code.present ? code.value : this.code,
+    category: category ?? this.category,
+  );
+  MeasurementUnit copyWithCompanion(MeasurementUnitsCompanion data) {
+    return MeasurementUnit(
+      id: data.id.present ? data.id.value : this.id,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      code: data.code.present ? data.code.value : this.code,
+      category: data.category.present ? data.category.value : this.category,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeasurementUnit(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('code: $code, ')
+          ..write('category: $category')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, nameAr, nameEn, code, category);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MeasurementUnit &&
+          other.id == this.id &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn &&
+          other.code == this.code &&
+          other.category == this.category);
+}
+
+class MeasurementUnitsCompanion extends UpdateCompanion<MeasurementUnit> {
+  final Value<int> id;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  final Value<String?> code;
+  final Value<String> category;
+  const MeasurementUnitsCompanion({
+    this.id = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.code = const Value.absent(),
+    this.category = const Value.absent(),
+  });
+  MeasurementUnitsCompanion.insert({
+    this.id = const Value.absent(),
+    required String nameAr,
+    required String nameEn,
+    this.code = const Value.absent(),
+    required String category,
+  }) : nameAr = Value(nameAr),
+       nameEn = Value(nameEn),
+       category = Value(category);
+  static Insertable<MeasurementUnit> custom({
+    Expression<int>? id,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+    Expression<String>? code,
+    Expression<String>? category,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+      if (code != null) 'code': code,
+      if (category != null) 'category': category,
+    });
+  }
+
+  MeasurementUnitsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+    Value<String?>? code,
+    Value<String>? category,
+  }) {
+    return MeasurementUnitsCompanion(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+      code: code ?? this.code,
+      category: category ?? this.category,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MeasurementUnitsCompanion(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('code: $code, ')
+          ..write('category: $category')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CostingSheetCatalogsTable extends CostingSheetCatalogs
+    with TableInfo<$CostingSheetCatalogsTable, CostingSheetCatalog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CostingSheetCatalogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 200),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    description,
+    createdAt,
+    createdBy,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'costing_sheet_catalogs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CostingSheetCatalog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CostingSheetCatalog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CostingSheetCatalog(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+    );
+  }
+
+  @override
+  $CostingSheetCatalogsTable createAlias(String alias) {
+    return $CostingSheetCatalogsTable(attachedDatabase, alias);
+  }
+}
+
+class CostingSheetCatalog extends DataClass
+    implements Insertable<CostingSheetCatalog> {
+  final String id;
+  final String name;
+  final String? description;
+  final DateTime createdAt;
+  final String createdBy;
+  const CostingSheetCatalog({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.createdAt,
+    required this.createdBy,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['created_by'] = Variable<String>(createdBy);
+    return map;
+  }
+
+  CostingSheetCatalogsCompanion toCompanion(bool nullToAbsent) {
+    return CostingSheetCatalogsCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      createdAt: Value(createdAt),
+      createdBy: Value(createdBy),
+    );
+  }
+
+  factory CostingSheetCatalog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CostingSheetCatalog(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'createdBy': serializer.toJson<String>(createdBy),
+    };
+  }
+
+  CostingSheetCatalog copyWith({
+    String? id,
+    String? name,
+    Value<String?> description = const Value.absent(),
+    DateTime? createdAt,
+    String? createdBy,
+  }) => CostingSheetCatalog(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    description: description.present ? description.value : this.description,
+    createdAt: createdAt ?? this.createdAt,
+    createdBy: createdBy ?? this.createdBy,
+  );
+  CostingSheetCatalog copyWithCompanion(CostingSheetCatalogsCompanion data) {
+    return CostingSheetCatalog(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheetCatalog(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('createdBy: $createdBy')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, description, createdAt, createdBy);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CostingSheetCatalog &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.createdAt == this.createdAt &&
+          other.createdBy == this.createdBy);
+}
+
+class CostingSheetCatalogsCompanion
+    extends UpdateCompanion<CostingSheetCatalog> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<DateTime> createdAt;
+  final Value<String> createdBy;
+  final Value<int> rowid;
+  const CostingSheetCatalogsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CostingSheetCatalogsCompanion.insert({
+    required String id,
+    required String name,
+    this.description = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    required String createdBy,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       createdBy = Value(createdBy);
+  static Insertable<CostingSheetCatalog> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<DateTime>? createdAt,
+    Expression<String>? createdBy,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (createdAt != null) 'created_at': createdAt,
+      if (createdBy != null) 'created_by': createdBy,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CostingSheetCatalogsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String?>? description,
+    Value<DateTime>? createdAt,
+    Value<String>? createdBy,
+    Value<int>? rowid,
+  }) {
+    return CostingSheetCatalogsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheetCatalogsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CostingSheetVersionsTable extends CostingSheetVersions
+    with TableInfo<$CostingSheetVersionsTable, CostingSheetVersion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CostingSheetVersionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _catalogIdMeta = const VerificationMeta(
+    'catalogId',
+  );
+  @override
+  late final GeneratedColumn<String> catalogId = GeneratedColumn<String>(
+    'catalog_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionNumberMeta = const VerificationMeta(
+    'versionNumber',
+  );
+  @override
+  late final GeneratedColumn<int> versionNumber = GeneratedColumn<int>(
+    'version_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _effectiveFromMeta = const VerificationMeta(
+    'effectiveFrom',
+  );
+  @override
+  late final GeneratedColumn<DateTime> effectiveFrom =
+      GeneratedColumn<DateTime>(
+        'effective_from',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _effectiveToMeta = const VerificationMeta(
+    'effectiveTo',
+  );
+  @override
+  late final GeneratedColumn<DateTime> effectiveTo = GeneratedColumn<DateTime>(
+    'effective_to',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _approvedAtMeta = const VerificationMeta(
+    'approvedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> approvedAt = GeneratedColumn<DateTime>(
+    'approved_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _approvedByMeta = const VerificationMeta(
+    'approvedBy',
+  );
+  @override
+  late final GeneratedColumn<String> approvedBy = GeneratedColumn<String>(
+    'approved_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    catalogId,
+    versionNumber,
+    status,
+    effectiveFrom,
+    effectiveTo,
+    createdAt,
+    createdBy,
+    approvedAt,
+    approvedBy,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'costing_sheet_versions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CostingSheetVersion> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('catalog_id')) {
+      context.handle(
+        _catalogIdMeta,
+        catalogId.isAcceptableOrUnknown(data['catalog_id']!, _catalogIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_catalogIdMeta);
+    }
+    if (data.containsKey('version_number')) {
+      context.handle(
+        _versionNumberMeta,
+        versionNumber.isAcceptableOrUnknown(
+          data['version_number']!,
+          _versionNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_versionNumberMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('effective_from')) {
+      context.handle(
+        _effectiveFromMeta,
+        effectiveFrom.isAcceptableOrUnknown(
+          data['effective_from']!,
+          _effectiveFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_effectiveFromMeta);
+    }
+    if (data.containsKey('effective_to')) {
+      context.handle(
+        _effectiveToMeta,
+        effectiveTo.isAcceptableOrUnknown(
+          data['effective_to']!,
+          _effectiveToMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('approved_at')) {
+      context.handle(
+        _approvedAtMeta,
+        approvedAt.isAcceptableOrUnknown(data['approved_at']!, _approvedAtMeta),
+      );
+    }
+    if (data.containsKey('approved_by')) {
+      context.handle(
+        _approvedByMeta,
+        approvedBy.isAcceptableOrUnknown(data['approved_by']!, _approvedByMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CostingSheetVersion map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CostingSheetVersion(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      catalogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}catalog_id'],
+      )!,
+      versionNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version_number'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      effectiveFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}effective_from'],
+      )!,
+      effectiveTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}effective_to'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      approvedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}approved_at'],
+      ),
+      approvedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}approved_by'],
+      ),
+    );
+  }
+
+  @override
+  $CostingSheetVersionsTable createAlias(String alias) {
+    return $CostingSheetVersionsTable(attachedDatabase, alias);
+  }
+}
+
+class CostingSheetVersion extends DataClass
+    implements Insertable<CostingSheetVersion> {
+  final String id;
+  final String catalogId;
+  final int versionNumber;
+  final int status;
+  final DateTime effectiveFrom;
+  final DateTime? effectiveTo;
+  final DateTime createdAt;
+  final String createdBy;
+  final DateTime? approvedAt;
+  final String? approvedBy;
+  const CostingSheetVersion({
+    required this.id,
+    required this.catalogId,
+    required this.versionNumber,
+    required this.status,
+    required this.effectiveFrom,
+    this.effectiveTo,
+    required this.createdAt,
+    required this.createdBy,
+    this.approvedAt,
+    this.approvedBy,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['catalog_id'] = Variable<String>(catalogId);
+    map['version_number'] = Variable<int>(versionNumber);
+    map['status'] = Variable<int>(status);
+    map['effective_from'] = Variable<DateTime>(effectiveFrom);
+    if (!nullToAbsent || effectiveTo != null) {
+      map['effective_to'] = Variable<DateTime>(effectiveTo);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['created_by'] = Variable<String>(createdBy);
+    if (!nullToAbsent || approvedAt != null) {
+      map['approved_at'] = Variable<DateTime>(approvedAt);
+    }
+    if (!nullToAbsent || approvedBy != null) {
+      map['approved_by'] = Variable<String>(approvedBy);
+    }
+    return map;
+  }
+
+  CostingSheetVersionsCompanion toCompanion(bool nullToAbsent) {
+    return CostingSheetVersionsCompanion(
+      id: Value(id),
+      catalogId: Value(catalogId),
+      versionNumber: Value(versionNumber),
+      status: Value(status),
+      effectiveFrom: Value(effectiveFrom),
+      effectiveTo: effectiveTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(effectiveTo),
+      createdAt: Value(createdAt),
+      createdBy: Value(createdBy),
+      approvedAt: approvedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(approvedAt),
+      approvedBy: approvedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(approvedBy),
+    );
+  }
+
+  factory CostingSheetVersion.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CostingSheetVersion(
+      id: serializer.fromJson<String>(json['id']),
+      catalogId: serializer.fromJson<String>(json['catalogId']),
+      versionNumber: serializer.fromJson<int>(json['versionNumber']),
+      status: serializer.fromJson<int>(json['status']),
+      effectiveFrom: serializer.fromJson<DateTime>(json['effectiveFrom']),
+      effectiveTo: serializer.fromJson<DateTime?>(json['effectiveTo']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      approvedAt: serializer.fromJson<DateTime?>(json['approvedAt']),
+      approvedBy: serializer.fromJson<String?>(json['approvedBy']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'catalogId': serializer.toJson<String>(catalogId),
+      'versionNumber': serializer.toJson<int>(versionNumber),
+      'status': serializer.toJson<int>(status),
+      'effectiveFrom': serializer.toJson<DateTime>(effectiveFrom),
+      'effectiveTo': serializer.toJson<DateTime?>(effectiveTo),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'approvedAt': serializer.toJson<DateTime?>(approvedAt),
+      'approvedBy': serializer.toJson<String?>(approvedBy),
+    };
+  }
+
+  CostingSheetVersion copyWith({
+    String? id,
+    String? catalogId,
+    int? versionNumber,
+    int? status,
+    DateTime? effectiveFrom,
+    Value<DateTime?> effectiveTo = const Value.absent(),
+    DateTime? createdAt,
+    String? createdBy,
+    Value<DateTime?> approvedAt = const Value.absent(),
+    Value<String?> approvedBy = const Value.absent(),
+  }) => CostingSheetVersion(
+    id: id ?? this.id,
+    catalogId: catalogId ?? this.catalogId,
+    versionNumber: versionNumber ?? this.versionNumber,
+    status: status ?? this.status,
+    effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+    effectiveTo: effectiveTo.present ? effectiveTo.value : this.effectiveTo,
+    createdAt: createdAt ?? this.createdAt,
+    createdBy: createdBy ?? this.createdBy,
+    approvedAt: approvedAt.present ? approvedAt.value : this.approvedAt,
+    approvedBy: approvedBy.present ? approvedBy.value : this.approvedBy,
+  );
+  CostingSheetVersion copyWithCompanion(CostingSheetVersionsCompanion data) {
+    return CostingSheetVersion(
+      id: data.id.present ? data.id.value : this.id,
+      catalogId: data.catalogId.present ? data.catalogId.value : this.catalogId,
+      versionNumber: data.versionNumber.present
+          ? data.versionNumber.value
+          : this.versionNumber,
+      status: data.status.present ? data.status.value : this.status,
+      effectiveFrom: data.effectiveFrom.present
+          ? data.effectiveFrom.value
+          : this.effectiveFrom,
+      effectiveTo: data.effectiveTo.present
+          ? data.effectiveTo.value
+          : this.effectiveTo,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      approvedAt: data.approvedAt.present
+          ? data.approvedAt.value
+          : this.approvedAt,
+      approvedBy: data.approvedBy.present
+          ? data.approvedBy.value
+          : this.approvedBy,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheetVersion(')
+          ..write('id: $id, ')
+          ..write('catalogId: $catalogId, ')
+          ..write('versionNumber: $versionNumber, ')
+          ..write('status: $status, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('approvedAt: $approvedAt, ')
+          ..write('approvedBy: $approvedBy')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    catalogId,
+    versionNumber,
+    status,
+    effectiveFrom,
+    effectiveTo,
+    createdAt,
+    createdBy,
+    approvedAt,
+    approvedBy,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CostingSheetVersion &&
+          other.id == this.id &&
+          other.catalogId == this.catalogId &&
+          other.versionNumber == this.versionNumber &&
+          other.status == this.status &&
+          other.effectiveFrom == this.effectiveFrom &&
+          other.effectiveTo == this.effectiveTo &&
+          other.createdAt == this.createdAt &&
+          other.createdBy == this.createdBy &&
+          other.approvedAt == this.approvedAt &&
+          other.approvedBy == this.approvedBy);
+}
+
+class CostingSheetVersionsCompanion
+    extends UpdateCompanion<CostingSheetVersion> {
+  final Value<String> id;
+  final Value<String> catalogId;
+  final Value<int> versionNumber;
+  final Value<int> status;
+  final Value<DateTime> effectiveFrom;
+  final Value<DateTime?> effectiveTo;
+  final Value<DateTime> createdAt;
+  final Value<String> createdBy;
+  final Value<DateTime?> approvedAt;
+  final Value<String?> approvedBy;
+  final Value<int> rowid;
+  const CostingSheetVersionsCompanion({
+    this.id = const Value.absent(),
+    this.catalogId = const Value.absent(),
+    this.versionNumber = const Value.absent(),
+    this.status = const Value.absent(),
+    this.effectiveFrom = const Value.absent(),
+    this.effectiveTo = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.approvedAt = const Value.absent(),
+    this.approvedBy = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CostingSheetVersionsCompanion.insert({
+    required String id,
+    required String catalogId,
+    required int versionNumber,
+    required int status,
+    required DateTime effectiveFrom,
+    this.effectiveTo = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    required String createdBy,
+    this.approvedAt = const Value.absent(),
+    this.approvedBy = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       catalogId = Value(catalogId),
+       versionNumber = Value(versionNumber),
+       status = Value(status),
+       effectiveFrom = Value(effectiveFrom),
+       createdBy = Value(createdBy);
+  static Insertable<CostingSheetVersion> custom({
+    Expression<String>? id,
+    Expression<String>? catalogId,
+    Expression<int>? versionNumber,
+    Expression<int>? status,
+    Expression<DateTime>? effectiveFrom,
+    Expression<DateTime>? effectiveTo,
+    Expression<DateTime>? createdAt,
+    Expression<String>? createdBy,
+    Expression<DateTime>? approvedAt,
+    Expression<String>? approvedBy,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (catalogId != null) 'catalog_id': catalogId,
+      if (versionNumber != null) 'version_number': versionNumber,
+      if (status != null) 'status': status,
+      if (effectiveFrom != null) 'effective_from': effectiveFrom,
+      if (effectiveTo != null) 'effective_to': effectiveTo,
+      if (createdAt != null) 'created_at': createdAt,
+      if (createdBy != null) 'created_by': createdBy,
+      if (approvedAt != null) 'approved_at': approvedAt,
+      if (approvedBy != null) 'approved_by': approvedBy,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CostingSheetVersionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? catalogId,
+    Value<int>? versionNumber,
+    Value<int>? status,
+    Value<DateTime>? effectiveFrom,
+    Value<DateTime?>? effectiveTo,
+    Value<DateTime>? createdAt,
+    Value<String>? createdBy,
+    Value<DateTime?>? approvedAt,
+    Value<String?>? approvedBy,
+    Value<int>? rowid,
+  }) {
+    return CostingSheetVersionsCompanion(
+      id: id ?? this.id,
+      catalogId: catalogId ?? this.catalogId,
+      versionNumber: versionNumber ?? this.versionNumber,
+      status: status ?? this.status,
+      effectiveFrom: effectiveFrom ?? this.effectiveFrom,
+      effectiveTo: effectiveTo ?? this.effectiveTo,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      approvedAt: approvedAt ?? this.approvedAt,
+      approvedBy: approvedBy ?? this.approvedBy,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (catalogId.present) {
+      map['catalog_id'] = Variable<String>(catalogId.value);
+    }
+    if (versionNumber.present) {
+      map['version_number'] = Variable<int>(versionNumber.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (effectiveFrom.present) {
+      map['effective_from'] = Variable<DateTime>(effectiveFrom.value);
+    }
+    if (effectiveTo.present) {
+      map['effective_to'] = Variable<DateTime>(effectiveTo.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (approvedAt.present) {
+      map['approved_at'] = Variable<DateTime>(approvedAt.value);
+    }
+    if (approvedBy.present) {
+      map['approved_by'] = Variable<String>(approvedBy.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheetVersionsCompanion(')
+          ..write('id: $id, ')
+          ..write('catalogId: $catalogId, ')
+          ..write('versionNumber: $versionNumber, ')
+          ..write('status: $status, ')
+          ..write('effectiveFrom: $effectiveFrom, ')
+          ..write('effectiveTo: $effectiveTo, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('approvedAt: $approvedAt, ')
+          ..write('approvedBy: $approvedBy, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CostingSheetItemsTable extends CostingSheetItems
+    with TableInfo<$CostingSheetItemsTable, CostingSheetItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CostingSheetItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionIdMeta = const VerificationMeta(
+    'versionId',
+  );
+  @override
+  late final GeneratedColumn<String> versionId = GeneratedColumn<String>(
+    'version_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _classificationIdMeta = const VerificationMeta(
+    'classificationId',
+  );
+  @override
+  late final GeneratedColumn<int> classificationId = GeneratedColumn<int>(
+    'classification_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _measurementUnitIdMeta = const VerificationMeta(
+    'measurementUnitId',
+  );
+  @override
+  late final GeneratedColumn<int> measurementUnitId = GeneratedColumn<int>(
+    'measurement_unit_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _unitPriceMeta = const VerificationMeta(
+    'unitPrice',
+  );
+  @override
+  late final GeneratedColumn<double> unitPrice = GeneratedColumn<double>(
+    'unit_price',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    versionId,
+    classificationId,
+    measurementUnitId,
+    unitPrice,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'costing_sheet_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CostingSheetItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('version_id')) {
+      context.handle(
+        _versionIdMeta,
+        versionId.isAcceptableOrUnknown(data['version_id']!, _versionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionIdMeta);
+    }
+    if (data.containsKey('classification_id')) {
+      context.handle(
+        _classificationIdMeta,
+        classificationId.isAcceptableOrUnknown(
+          data['classification_id']!,
+          _classificationIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_classificationIdMeta);
+    }
+    if (data.containsKey('measurement_unit_id')) {
+      context.handle(
+        _measurementUnitIdMeta,
+        measurementUnitId.isAcceptableOrUnknown(
+          data['measurement_unit_id']!,
+          _measurementUnitIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('unit_price')) {
+      context.handle(
+        _unitPriceMeta,
+        unitPrice.isAcceptableOrUnknown(data['unit_price']!, _unitPriceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_unitPriceMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CostingSheetItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CostingSheetItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      versionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}version_id'],
+      )!,
+      classificationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}classification_id'],
+      )!,
+      measurementUnitId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}measurement_unit_id'],
+      ),
+      unitPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}unit_price'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CostingSheetItemsTable createAlias(String alias) {
+    return $CostingSheetItemsTable(attachedDatabase, alias);
+  }
+}
+
+class CostingSheetItem extends DataClass
+    implements Insertable<CostingSheetItem> {
+  final String id;
+  final String versionId;
+  final int classificationId;
+  final int? measurementUnitId;
+  final double unitPrice;
+  final DateTime createdAt;
+  const CostingSheetItem({
+    required this.id,
+    required this.versionId,
+    required this.classificationId,
+    this.measurementUnitId,
+    required this.unitPrice,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['version_id'] = Variable<String>(versionId);
+    map['classification_id'] = Variable<int>(classificationId);
+    if (!nullToAbsent || measurementUnitId != null) {
+      map['measurement_unit_id'] = Variable<int>(measurementUnitId);
+    }
+    map['unit_price'] = Variable<double>(unitPrice);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CostingSheetItemsCompanion toCompanion(bool nullToAbsent) {
+    return CostingSheetItemsCompanion(
+      id: Value(id),
+      versionId: Value(versionId),
+      classificationId: Value(classificationId),
+      measurementUnitId: measurementUnitId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measurementUnitId),
+      unitPrice: Value(unitPrice),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory CostingSheetItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CostingSheetItem(
+      id: serializer.fromJson<String>(json['id']),
+      versionId: serializer.fromJson<String>(json['versionId']),
+      classificationId: serializer.fromJson<int>(json['classificationId']),
+      measurementUnitId: serializer.fromJson<int?>(json['measurementUnitId']),
+      unitPrice: serializer.fromJson<double>(json['unitPrice']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'versionId': serializer.toJson<String>(versionId),
+      'classificationId': serializer.toJson<int>(classificationId),
+      'measurementUnitId': serializer.toJson<int?>(measurementUnitId),
+      'unitPrice': serializer.toJson<double>(unitPrice),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  CostingSheetItem copyWith({
+    String? id,
+    String? versionId,
+    int? classificationId,
+    Value<int?> measurementUnitId = const Value.absent(),
+    double? unitPrice,
+    DateTime? createdAt,
+  }) => CostingSheetItem(
+    id: id ?? this.id,
+    versionId: versionId ?? this.versionId,
+    classificationId: classificationId ?? this.classificationId,
+    measurementUnitId: measurementUnitId.present
+        ? measurementUnitId.value
+        : this.measurementUnitId,
+    unitPrice: unitPrice ?? this.unitPrice,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  CostingSheetItem copyWithCompanion(CostingSheetItemsCompanion data) {
+    return CostingSheetItem(
+      id: data.id.present ? data.id.value : this.id,
+      versionId: data.versionId.present ? data.versionId.value : this.versionId,
+      classificationId: data.classificationId.present
+          ? data.classificationId.value
+          : this.classificationId,
+      measurementUnitId: data.measurementUnitId.present
+          ? data.measurementUnitId.value
+          : this.measurementUnitId,
+      unitPrice: data.unitPrice.present ? data.unitPrice.value : this.unitPrice,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheetItem(')
+          ..write('id: $id, ')
+          ..write('versionId: $versionId, ')
+          ..write('classificationId: $classificationId, ')
+          ..write('measurementUnitId: $measurementUnitId, ')
+          ..write('unitPrice: $unitPrice, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    versionId,
+    classificationId,
+    measurementUnitId,
+    unitPrice,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CostingSheetItem &&
+          other.id == this.id &&
+          other.versionId == this.versionId &&
+          other.classificationId == this.classificationId &&
+          other.measurementUnitId == this.measurementUnitId &&
+          other.unitPrice == this.unitPrice &&
+          other.createdAt == this.createdAt);
+}
+
+class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
+  final Value<String> id;
+  final Value<String> versionId;
+  final Value<int> classificationId;
+  final Value<int?> measurementUnitId;
+  final Value<double> unitPrice;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const CostingSheetItemsCompanion({
+    this.id = const Value.absent(),
+    this.versionId = const Value.absent(),
+    this.classificationId = const Value.absent(),
+    this.measurementUnitId = const Value.absent(),
+    this.unitPrice = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CostingSheetItemsCompanion.insert({
+    required String id,
+    required String versionId,
+    required int classificationId,
+    this.measurementUnitId = const Value.absent(),
+    required double unitPrice,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       versionId = Value(versionId),
+       classificationId = Value(classificationId),
+       unitPrice = Value(unitPrice);
+  static Insertable<CostingSheetItem> custom({
+    Expression<String>? id,
+    Expression<String>? versionId,
+    Expression<int>? classificationId,
+    Expression<int>? measurementUnitId,
+    Expression<double>? unitPrice,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (versionId != null) 'version_id': versionId,
+      if (classificationId != null) 'classification_id': classificationId,
+      if (measurementUnitId != null) 'measurement_unit_id': measurementUnitId,
+      if (unitPrice != null) 'unit_price': unitPrice,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CostingSheetItemsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? versionId,
+    Value<int>? classificationId,
+    Value<int?>? measurementUnitId,
+    Value<double>? unitPrice,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return CostingSheetItemsCompanion(
+      id: id ?? this.id,
+      versionId: versionId ?? this.versionId,
+      classificationId: classificationId ?? this.classificationId,
+      measurementUnitId: measurementUnitId ?? this.measurementUnitId,
+      unitPrice: unitPrice ?? this.unitPrice,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (versionId.present) {
+      map['version_id'] = Variable<String>(versionId.value);
+    }
+    if (classificationId.present) {
+      map['classification_id'] = Variable<int>(classificationId.value);
+    }
+    if (measurementUnitId.present) {
+      map['measurement_unit_id'] = Variable<int>(measurementUnitId.value);
+    }
+    if (unitPrice.present) {
+      map['unit_price'] = Variable<double>(unitPrice.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CostingSheetItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('versionId: $versionId, ')
+          ..write('classificationId: $classificationId, ')
+          ..write('measurementUnitId: $measurementUnitId, ')
+          ..write('unitPrice: $unitPrice, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CostingSheetsTable extends CostingSheets
     with TableInfo<$CostingSheetsTable, CostingSheet> {
   @override
@@ -11661,6 +13593,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DamageCauseCategoriesTable damageCauseCategories =
       $DamageCauseCategoriesTable(this);
   late final $DamageCausesTable damageCauses = $DamageCausesTable(this);
+  late final $MeasurementUnitsTable measurementUnits = $MeasurementUnitsTable(
+    this,
+  );
+  late final $CostingSheetCatalogsTable costingSheetCatalogs =
+      $CostingSheetCatalogsTable(this);
+  late final $CostingSheetVersionsTable costingSheetVersions =
+      $CostingSheetVersionsTable(this);
+  late final $CostingSheetItemsTable costingSheetItems =
+      $CostingSheetItemsTable(this);
   late final $CostingSheetsTable costingSheets = $CostingSheetsTable(this);
   late final $DamageWorkflowHistoriesTable damageWorkflowHistories =
       $DamageWorkflowHistoriesTable(this);
@@ -11689,6 +13630,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     damageClassifications,
     damageCauseCategories,
     damageCauses,
+    measurementUnits,
+    costingSheetCatalogs,
+    costingSheetVersions,
+    costingSheetItems,
     costingSheets,
     damageWorkflowHistories,
   ];
@@ -12397,6 +14342,7 @@ typedef $$FarmsTableCreateCompanionBuilder =
       required String parcel,
       required double area,
       Value<int> areaUnitId,
+      Value<int?> measurementUnitId,
       Value<int> agriculturalSectorId,
       Value<int> politicalClassificationId,
       Value<double?> latitude,
@@ -12426,6 +14372,7 @@ typedef $$FarmsTableUpdateCompanionBuilder =
       Value<String> parcel,
       Value<double> area,
       Value<int> areaUnitId,
+      Value<int?> measurementUnitId,
       Value<int> agriculturalSectorId,
       Value<int> politicalClassificationId,
       Value<double?> latitude,
@@ -12515,6 +14462,11 @@ class $$FarmsTableFilterComposer extends Composer<_$AppDatabase, $FarmsTable> {
 
   ColumnFilters<int> get areaUnitId => $composableBuilder(
     column: $table.areaUnitId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get measurementUnitId => $composableBuilder(
+    column: $table.measurementUnitId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12653,6 +14605,11 @@ class $$FarmsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get measurementUnitId => $composableBuilder(
+    column: $table.measurementUnitId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get agriculturalSectorId => $composableBuilder(
     column: $table.agriculturalSectorId,
     builder: (column) => ColumnOrderings(column),
@@ -12776,6 +14733,11 @@ class $$FarmsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get measurementUnitId => $composableBuilder(
+    column: $table.measurementUnitId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get agriculturalSectorId => $composableBuilder(
     column: $table.agriculturalSectorId,
     builder: (column) => column,
@@ -12864,6 +14826,7 @@ class $$FarmsTableTableManager
                 Value<String> parcel = const Value.absent(),
                 Value<double> area = const Value.absent(),
                 Value<int> areaUnitId = const Value.absent(),
+                Value<int?> measurementUnitId = const Value.absent(),
                 Value<int> agriculturalSectorId = const Value.absent(),
                 Value<int> politicalClassificationId = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
@@ -12891,6 +14854,7 @@ class $$FarmsTableTableManager
                 parcel: parcel,
                 area: area,
                 areaUnitId: areaUnitId,
+                measurementUnitId: measurementUnitId,
                 agriculturalSectorId: agriculturalSectorId,
                 politicalClassificationId: politicalClassificationId,
                 latitude: latitude,
@@ -12920,6 +14884,7 @@ class $$FarmsTableTableManager
                 required String parcel,
                 required double area,
                 Value<int> areaUnitId = const Value.absent(),
+                Value<int?> measurementUnitId = const Value.absent(),
                 Value<int> agriculturalSectorId = const Value.absent(),
                 Value<int> politicalClassificationId = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
@@ -12947,6 +14912,7 @@ class $$FarmsTableTableManager
                 parcel: parcel,
                 area: area,
                 areaUnitId: areaUnitId,
+                measurementUnitId: measurementUnitId,
                 agriculturalSectorId: agriculturalSectorId,
                 politicalClassificationId: politicalClassificationId,
                 latitude: latitude,
@@ -12998,6 +14964,7 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       Value<String?> settlementName,
       Value<String?> companyName,
       required String governorateId,
+      required String directorateId,
       required String localityId,
       Value<double?> latitude,
       Value<double?> longitude,
@@ -13027,6 +14994,7 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<String?> settlementName,
       Value<String?> companyName,
       Value<String> governorateId,
+      Value<String> directorateId,
       Value<String> localityId,
       Value<double?> latitude,
       Value<double?> longitude,
@@ -13117,6 +15085,11 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<String> get governorateId => $composableBuilder(
     column: $table.governorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13255,6 +15228,11 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get localityId => $composableBuilder(
     column: $table.localityId,
     builder: (column) => ColumnOrderings(column),
@@ -13382,6 +15360,11 @@ class $$DamageReportsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get localityId => $composableBuilder(
     column: $table.localityId,
     builder: (column) => column,
@@ -13475,6 +15458,7 @@ class $$DamageReportsTableTableManager
                 Value<String?> settlementName = const Value.absent(),
                 Value<String?> companyName = const Value.absent(),
                 Value<String> governorateId = const Value.absent(),
+                Value<String> directorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
@@ -13502,6 +15486,7 @@ class $$DamageReportsTableTableManager
                 settlementName: settlementName,
                 companyName: companyName,
                 governorateId: governorateId,
+                directorateId: directorateId,
                 localityId: localityId,
                 latitude: latitude,
                 longitude: longitude,
@@ -13531,6 +15516,7 @@ class $$DamageReportsTableTableManager
                 Value<String?> settlementName = const Value.absent(),
                 Value<String?> companyName = const Value.absent(),
                 required String governorateId,
+                required String directorateId,
                 required String localityId,
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
@@ -13558,6 +15544,7 @@ class $$DamageReportsTableTableManager
                 settlementName: settlementName,
                 companyName: companyName,
                 governorateId: governorateId,
+                directorateId: directorateId,
                 localityId: localityId,
                 latitude: latitude,
                 longitude: longitude,
@@ -13603,6 +15590,7 @@ typedef $$DamageItemsTableCreateCompanionBuilder =
       required String damageReportId,
       Value<int> classificationId,
       Value<String> costingSheetId,
+      Value<String?> costingSheetItemId,
       Value<double> calculatedUnitPrice,
       Value<String> measurementUnitSnapshot,
       required double affectedArea,
@@ -13624,6 +15612,7 @@ typedef $$DamageItemsTableUpdateCompanionBuilder =
       Value<String> damageReportId,
       Value<int> classificationId,
       Value<String> costingSheetId,
+      Value<String?> costingSheetItemId,
       Value<double> calculatedUnitPrice,
       Value<String> measurementUnitSnapshot,
       Value<double> affectedArea,
@@ -13670,6 +15659,11 @@ class $$DamageItemsTableFilterComposer
 
   ColumnFilters<String> get costingSheetId => $composableBuilder(
     column: $table.costingSheetId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get costingSheetItemId => $composableBuilder(
+    column: $table.costingSheetItemId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13768,6 +15762,11 @@ class $$DamageItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get costingSheetItemId => $composableBuilder(
+    column: $table.costingSheetItemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get calculatedUnitPrice => $composableBuilder(
     column: $table.calculatedUnitPrice,
     builder: (column) => ColumnOrderings(column),
@@ -13856,6 +15855,11 @@ class $$DamageItemsTableAnnotationComposer
 
   GeneratedColumn<String> get costingSheetId => $composableBuilder(
     column: $table.costingSheetId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get costingSheetItemId => $composableBuilder(
+    column: $table.costingSheetItemId,
     builder: (column) => column,
   );
 
@@ -13950,6 +15954,7 @@ class $$DamageItemsTableTableManager
                 Value<String> damageReportId = const Value.absent(),
                 Value<int> classificationId = const Value.absent(),
                 Value<String> costingSheetId = const Value.absent(),
+                Value<String?> costingSheetItemId = const Value.absent(),
                 Value<double> calculatedUnitPrice = const Value.absent(),
                 Value<String> measurementUnitSnapshot = const Value.absent(),
                 Value<double> affectedArea = const Value.absent(),
@@ -13969,6 +15974,7 @@ class $$DamageItemsTableTableManager
                 damageReportId: damageReportId,
                 classificationId: classificationId,
                 costingSheetId: costingSheetId,
+                costingSheetItemId: costingSheetItemId,
                 calculatedUnitPrice: calculatedUnitPrice,
                 measurementUnitSnapshot: measurementUnitSnapshot,
                 affectedArea: affectedArea,
@@ -13990,6 +15996,7 @@ class $$DamageItemsTableTableManager
                 required String damageReportId,
                 Value<int> classificationId = const Value.absent(),
                 Value<String> costingSheetId = const Value.absent(),
+                Value<String?> costingSheetItemId = const Value.absent(),
                 Value<double> calculatedUnitPrice = const Value.absent(),
                 Value<String> measurementUnitSnapshot = const Value.absent(),
                 required double affectedArea,
@@ -14009,6 +16016,7 @@ class $$DamageItemsTableTableManager
                 damageReportId: damageReportId,
                 classificationId: classificationId,
                 costingSheetId: costingSheetId,
+                costingSheetItemId: costingSheetItemId,
                 calculatedUnitPrice: calculatedUnitPrice,
                 measurementUnitSnapshot: measurementUnitSnapshot,
                 affectedArea: affectedArea,
@@ -17157,6 +19165,981 @@ typedef $$DamageCausesTableProcessedTableManager =
       DamageCause,
       PrefetchHooks Function()
     >;
+typedef $$MeasurementUnitsTableCreateCompanionBuilder =
+    MeasurementUnitsCompanion Function({
+      Value<int> id,
+      required String nameAr,
+      required String nameEn,
+      Value<String?> code,
+      required String category,
+    });
+typedef $$MeasurementUnitsTableUpdateCompanionBuilder =
+    MeasurementUnitsCompanion Function({
+      Value<int> id,
+      Value<String> nameAr,
+      Value<String> nameEn,
+      Value<String?> code,
+      Value<String> category,
+    });
+
+class $$MeasurementUnitsTableFilterComposer
+    extends Composer<_$AppDatabase, $MeasurementUnitsTable> {
+  $$MeasurementUnitsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MeasurementUnitsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MeasurementUnitsTable> {
+  $$MeasurementUnitsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MeasurementUnitsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MeasurementUnitsTable> {
+  $$MeasurementUnitsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+}
+
+class $$MeasurementUnitsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MeasurementUnitsTable,
+          MeasurementUnit,
+          $$MeasurementUnitsTableFilterComposer,
+          $$MeasurementUnitsTableOrderingComposer,
+          $$MeasurementUnitsTableAnnotationComposer,
+          $$MeasurementUnitsTableCreateCompanionBuilder,
+          $$MeasurementUnitsTableUpdateCompanionBuilder,
+          (
+            MeasurementUnit,
+            BaseReferences<
+              _$AppDatabase,
+              $MeasurementUnitsTable,
+              MeasurementUnit
+            >,
+          ),
+          MeasurementUnit,
+          PrefetchHooks Function()
+        > {
+  $$MeasurementUnitsTableTableManager(
+    _$AppDatabase db,
+    $MeasurementUnitsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MeasurementUnitsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MeasurementUnitsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MeasurementUnitsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+                Value<String?> code = const Value.absent(),
+                Value<String> category = const Value.absent(),
+              }) => MeasurementUnitsCompanion(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                code: code,
+                category: category,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String nameAr,
+                required String nameEn,
+                Value<String?> code = const Value.absent(),
+                required String category,
+              }) => MeasurementUnitsCompanion.insert(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                code: code,
+                category: category,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MeasurementUnitsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MeasurementUnitsTable,
+      MeasurementUnit,
+      $$MeasurementUnitsTableFilterComposer,
+      $$MeasurementUnitsTableOrderingComposer,
+      $$MeasurementUnitsTableAnnotationComposer,
+      $$MeasurementUnitsTableCreateCompanionBuilder,
+      $$MeasurementUnitsTableUpdateCompanionBuilder,
+      (
+        MeasurementUnit,
+        BaseReferences<_$AppDatabase, $MeasurementUnitsTable, MeasurementUnit>,
+      ),
+      MeasurementUnit,
+      PrefetchHooks Function()
+    >;
+typedef $$CostingSheetCatalogsTableCreateCompanionBuilder =
+    CostingSheetCatalogsCompanion Function({
+      required String id,
+      required String name,
+      Value<String?> description,
+      Value<DateTime> createdAt,
+      required String createdBy,
+      Value<int> rowid,
+    });
+typedef $$CostingSheetCatalogsTableUpdateCompanionBuilder =
+    CostingSheetCatalogsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String?> description,
+      Value<DateTime> createdAt,
+      Value<String> createdBy,
+      Value<int> rowid,
+    });
+
+class $$CostingSheetCatalogsTableFilterComposer
+    extends Composer<_$AppDatabase, $CostingSheetCatalogsTable> {
+  $$CostingSheetCatalogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CostingSheetCatalogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CostingSheetCatalogsTable> {
+  $$CostingSheetCatalogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CostingSheetCatalogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CostingSheetCatalogsTable> {
+  $$CostingSheetCatalogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+}
+
+class $$CostingSheetCatalogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CostingSheetCatalogsTable,
+          CostingSheetCatalog,
+          $$CostingSheetCatalogsTableFilterComposer,
+          $$CostingSheetCatalogsTableOrderingComposer,
+          $$CostingSheetCatalogsTableAnnotationComposer,
+          $$CostingSheetCatalogsTableCreateCompanionBuilder,
+          $$CostingSheetCatalogsTableUpdateCompanionBuilder,
+          (
+            CostingSheetCatalog,
+            BaseReferences<
+              _$AppDatabase,
+              $CostingSheetCatalogsTable,
+              CostingSheetCatalog
+            >,
+          ),
+          CostingSheetCatalog,
+          PrefetchHooks Function()
+        > {
+  $$CostingSheetCatalogsTableTableManager(
+    _$AppDatabase db,
+    $CostingSheetCatalogsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CostingSheetCatalogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CostingSheetCatalogsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CostingSheetCatalogsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetCatalogsCompanion(
+                id: id,
+                name: name,
+                description: description,
+                createdAt: createdAt,
+                createdBy: createdBy,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                Value<String?> description = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                required String createdBy,
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetCatalogsCompanion.insert(
+                id: id,
+                name: name,
+                description: description,
+                createdAt: createdAt,
+                createdBy: createdBy,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CostingSheetCatalogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CostingSheetCatalogsTable,
+      CostingSheetCatalog,
+      $$CostingSheetCatalogsTableFilterComposer,
+      $$CostingSheetCatalogsTableOrderingComposer,
+      $$CostingSheetCatalogsTableAnnotationComposer,
+      $$CostingSheetCatalogsTableCreateCompanionBuilder,
+      $$CostingSheetCatalogsTableUpdateCompanionBuilder,
+      (
+        CostingSheetCatalog,
+        BaseReferences<
+          _$AppDatabase,
+          $CostingSheetCatalogsTable,
+          CostingSheetCatalog
+        >,
+      ),
+      CostingSheetCatalog,
+      PrefetchHooks Function()
+    >;
+typedef $$CostingSheetVersionsTableCreateCompanionBuilder =
+    CostingSheetVersionsCompanion Function({
+      required String id,
+      required String catalogId,
+      required int versionNumber,
+      required int status,
+      required DateTime effectiveFrom,
+      Value<DateTime?> effectiveTo,
+      Value<DateTime> createdAt,
+      required String createdBy,
+      Value<DateTime?> approvedAt,
+      Value<String?> approvedBy,
+      Value<int> rowid,
+    });
+typedef $$CostingSheetVersionsTableUpdateCompanionBuilder =
+    CostingSheetVersionsCompanion Function({
+      Value<String> id,
+      Value<String> catalogId,
+      Value<int> versionNumber,
+      Value<int> status,
+      Value<DateTime> effectiveFrom,
+      Value<DateTime?> effectiveTo,
+      Value<DateTime> createdAt,
+      Value<String> createdBy,
+      Value<DateTime?> approvedAt,
+      Value<String?> approvedBy,
+      Value<int> rowid,
+    });
+
+class $$CostingSheetVersionsTableFilterComposer
+    extends Composer<_$AppDatabase, $CostingSheetVersionsTable> {
+  $$CostingSheetVersionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get catalogId => $composableBuilder(
+    column: $table.catalogId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get approvedAt => $composableBuilder(
+    column: $table.approvedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get approvedBy => $composableBuilder(
+    column: $table.approvedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CostingSheetVersionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CostingSheetVersionsTable> {
+  $$CostingSheetVersionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get catalogId => $composableBuilder(
+    column: $table.catalogId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get approvedAt => $composableBuilder(
+    column: $table.approvedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get approvedBy => $composableBuilder(
+    column: $table.approvedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CostingSheetVersionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CostingSheetVersionsTable> {
+  $$CostingSheetVersionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get catalogId =>
+      $composableBuilder(column: $table.catalogId, builder: (column) => column);
+
+  GeneratedColumn<int> get versionNumber => $composableBuilder(
+    column: $table.versionNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get effectiveFrom => $composableBuilder(
+    column: $table.effectiveFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get effectiveTo => $composableBuilder(
+    column: $table.effectiveTo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get approvedAt => $composableBuilder(
+    column: $table.approvedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get approvedBy => $composableBuilder(
+    column: $table.approvedBy,
+    builder: (column) => column,
+  );
+}
+
+class $$CostingSheetVersionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CostingSheetVersionsTable,
+          CostingSheetVersion,
+          $$CostingSheetVersionsTableFilterComposer,
+          $$CostingSheetVersionsTableOrderingComposer,
+          $$CostingSheetVersionsTableAnnotationComposer,
+          $$CostingSheetVersionsTableCreateCompanionBuilder,
+          $$CostingSheetVersionsTableUpdateCompanionBuilder,
+          (
+            CostingSheetVersion,
+            BaseReferences<
+              _$AppDatabase,
+              $CostingSheetVersionsTable,
+              CostingSheetVersion
+            >,
+          ),
+          CostingSheetVersion,
+          PrefetchHooks Function()
+        > {
+  $$CostingSheetVersionsTableTableManager(
+    _$AppDatabase db,
+    $CostingSheetVersionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CostingSheetVersionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CostingSheetVersionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CostingSheetVersionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> catalogId = const Value.absent(),
+                Value<int> versionNumber = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<DateTime> effectiveFrom = const Value.absent(),
+                Value<DateTime?> effectiveTo = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime?> approvedAt = const Value.absent(),
+                Value<String?> approvedBy = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetVersionsCompanion(
+                id: id,
+                catalogId: catalogId,
+                versionNumber: versionNumber,
+                status: status,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                createdAt: createdAt,
+                createdBy: createdBy,
+                approvedAt: approvedAt,
+                approvedBy: approvedBy,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String catalogId,
+                required int versionNumber,
+                required int status,
+                required DateTime effectiveFrom,
+                Value<DateTime?> effectiveTo = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                required String createdBy,
+                Value<DateTime?> approvedAt = const Value.absent(),
+                Value<String?> approvedBy = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetVersionsCompanion.insert(
+                id: id,
+                catalogId: catalogId,
+                versionNumber: versionNumber,
+                status: status,
+                effectiveFrom: effectiveFrom,
+                effectiveTo: effectiveTo,
+                createdAt: createdAt,
+                createdBy: createdBy,
+                approvedAt: approvedAt,
+                approvedBy: approvedBy,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CostingSheetVersionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CostingSheetVersionsTable,
+      CostingSheetVersion,
+      $$CostingSheetVersionsTableFilterComposer,
+      $$CostingSheetVersionsTableOrderingComposer,
+      $$CostingSheetVersionsTableAnnotationComposer,
+      $$CostingSheetVersionsTableCreateCompanionBuilder,
+      $$CostingSheetVersionsTableUpdateCompanionBuilder,
+      (
+        CostingSheetVersion,
+        BaseReferences<
+          _$AppDatabase,
+          $CostingSheetVersionsTable,
+          CostingSheetVersion
+        >,
+      ),
+      CostingSheetVersion,
+      PrefetchHooks Function()
+    >;
+typedef $$CostingSheetItemsTableCreateCompanionBuilder =
+    CostingSheetItemsCompanion Function({
+      required String id,
+      required String versionId,
+      required int classificationId,
+      Value<int?> measurementUnitId,
+      required double unitPrice,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$CostingSheetItemsTableUpdateCompanionBuilder =
+    CostingSheetItemsCompanion Function({
+      Value<String> id,
+      Value<String> versionId,
+      Value<int> classificationId,
+      Value<int?> measurementUnitId,
+      Value<double> unitPrice,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$CostingSheetItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $CostingSheetItemsTable> {
+  $$CostingSheetItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get versionId => $composableBuilder(
+    column: $table.versionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get measurementUnitId => $composableBuilder(
+    column: $table.measurementUnitId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get unitPrice => $composableBuilder(
+    column: $table.unitPrice,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CostingSheetItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CostingSheetItemsTable> {
+  $$CostingSheetItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get versionId => $composableBuilder(
+    column: $table.versionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get measurementUnitId => $composableBuilder(
+    column: $table.measurementUnitId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get unitPrice => $composableBuilder(
+    column: $table.unitPrice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CostingSheetItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CostingSheetItemsTable> {
+  $$CostingSheetItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get versionId =>
+      $composableBuilder(column: $table.versionId, builder: (column) => column);
+
+  GeneratedColumn<int> get classificationId => $composableBuilder(
+    column: $table.classificationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get measurementUnitId => $composableBuilder(
+    column: $table.measurementUnitId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get unitPrice =>
+      $composableBuilder(column: $table.unitPrice, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$CostingSheetItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CostingSheetItemsTable,
+          CostingSheetItem,
+          $$CostingSheetItemsTableFilterComposer,
+          $$CostingSheetItemsTableOrderingComposer,
+          $$CostingSheetItemsTableAnnotationComposer,
+          $$CostingSheetItemsTableCreateCompanionBuilder,
+          $$CostingSheetItemsTableUpdateCompanionBuilder,
+          (
+            CostingSheetItem,
+            BaseReferences<
+              _$AppDatabase,
+              $CostingSheetItemsTable,
+              CostingSheetItem
+            >,
+          ),
+          CostingSheetItem,
+          PrefetchHooks Function()
+        > {
+  $$CostingSheetItemsTableTableManager(
+    _$AppDatabase db,
+    $CostingSheetItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CostingSheetItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CostingSheetItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CostingSheetItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> versionId = const Value.absent(),
+                Value<int> classificationId = const Value.absent(),
+                Value<int?> measurementUnitId = const Value.absent(),
+                Value<double> unitPrice = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetItemsCompanion(
+                id: id,
+                versionId: versionId,
+                classificationId: classificationId,
+                measurementUnitId: measurementUnitId,
+                unitPrice: unitPrice,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String versionId,
+                required int classificationId,
+                Value<int?> measurementUnitId = const Value.absent(),
+                required double unitPrice,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CostingSheetItemsCompanion.insert(
+                id: id,
+                versionId: versionId,
+                classificationId: classificationId,
+                measurementUnitId: measurementUnitId,
+                unitPrice: unitPrice,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CostingSheetItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CostingSheetItemsTable,
+      CostingSheetItem,
+      $$CostingSheetItemsTableFilterComposer,
+      $$CostingSheetItemsTableOrderingComposer,
+      $$CostingSheetItemsTableAnnotationComposer,
+      $$CostingSheetItemsTableCreateCompanionBuilder,
+      $$CostingSheetItemsTableUpdateCompanionBuilder,
+      (
+        CostingSheetItem,
+        BaseReferences<
+          _$AppDatabase,
+          $CostingSheetItemsTable,
+          CostingSheetItem
+        >,
+      ),
+      CostingSheetItem,
+      PrefetchHooks Function()
+    >;
 typedef $$CostingSheetsTableCreateCompanionBuilder =
     CostingSheetsCompanion Function({
       required String id,
@@ -17756,6 +20739,14 @@ class $AppDatabaseManager {
       $$DamageCauseCategoriesTableTableManager(_db, _db.damageCauseCategories);
   $$DamageCausesTableTableManager get damageCauses =>
       $$DamageCausesTableTableManager(_db, _db.damageCauses);
+  $$MeasurementUnitsTableTableManager get measurementUnits =>
+      $$MeasurementUnitsTableTableManager(_db, _db.measurementUnits);
+  $$CostingSheetCatalogsTableTableManager get costingSheetCatalogs =>
+      $$CostingSheetCatalogsTableTableManager(_db, _db.costingSheetCatalogs);
+  $$CostingSheetVersionsTableTableManager get costingSheetVersions =>
+      $$CostingSheetVersionsTableTableManager(_db, _db.costingSheetVersions);
+  $$CostingSheetItemsTableTableManager get costingSheetItems =>
+      $$CostingSheetItemsTableTableManager(_db, _db.costingSheetItems);
   $$CostingSheetsTableTableManager get costingSheets =>
       $$CostingSheetsTableTableManager(_db, _db.costingSheets);
   $$DamageWorkflowHistoriesTableTableManager get damageWorkflowHistories =>

@@ -37,6 +37,7 @@ mixin _$DamageReport {
   String? get settlementName => throw _privateConstructorUsedError;
   String? get companyName => throw _privateConstructorUsedError;
   String get governorateId => throw _privateConstructorUsedError;
+  String get directorateId => throw _privateConstructorUsedError;
   String get localityId => throw _privateConstructorUsedError;
   double? get latitude => throw _privateConstructorUsedError;
   double? get longitude => throw _privateConstructorUsedError;
@@ -82,6 +83,7 @@ abstract class $DamageReportCopyWith<$Res> {
     String? settlementName,
     String? companyName,
     String governorateId,
+    String directorateId,
     String localityId,
     double? latitude,
     double? longitude,
@@ -126,6 +128,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? settlementName = freezed,
     Object? companyName = freezed,
     Object? governorateId = null,
+    Object? directorateId = null,
     Object? localityId = null,
     Object? latitude = freezed,
     Object? longitude = freezed,
@@ -196,6 +199,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
             governorateId: null == governorateId
                 ? _value.governorateId
                 : governorateId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            directorateId: null == directorateId
+                ? _value.directorateId
+                : directorateId // ignore: cast_nullable_to_non_nullable
                       as String,
             localityId: null == localityId
                 ? _value.localityId
@@ -275,6 +282,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String? settlementName,
     String? companyName,
     String governorateId,
+    String directorateId,
     String localityId,
     double? latitude,
     double? longitude,
@@ -318,6 +326,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? settlementName = freezed,
     Object? companyName = freezed,
     Object? governorateId = null,
+    Object? directorateId = null,
     Object? localityId = null,
     Object? latitude = freezed,
     Object? longitude = freezed,
@@ -388,6 +397,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
         governorateId: null == governorateId
             ? _value.governorateId
             : governorateId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        directorateId: null == directorateId
+            ? _value.directorateId
+            : directorateId // ignore: cast_nullable_to_non_nullable
                   as String,
         localityId: null == localityId
             ? _value.localityId
@@ -460,6 +473,7 @@ class _$DamageReportImpl implements _DamageReport {
     this.settlementName,
     this.companyName,
     required this.governorateId,
+    required this.directorateId,
     required this.localityId,
     this.latitude,
     this.longitude,
@@ -514,6 +528,8 @@ class _$DamageReportImpl implements _DamageReport {
   @override
   final String governorateId;
   @override
+  final String directorateId;
+  @override
   final String localityId;
   @override
   final double? latitude;
@@ -549,7 +565,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, governorateId: $governorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -583,6 +599,8 @@ class _$DamageReportImpl implements _DamageReport {
                 other.companyName == companyName) &&
             (identical(other.governorateId, governorateId) ||
                 other.governorateId == governorateId) &&
+            (identical(other.directorateId, directorateId) ||
+                other.directorateId == directorateId) &&
             (identical(other.localityId, localityId) ||
                 other.localityId == localityId) &&
             (identical(other.latitude, latitude) ||
@@ -625,6 +643,7 @@ class _$DamageReportImpl implements _DamageReport {
     settlementName,
     companyName,
     governorateId,
+    directorateId,
     localityId,
     latitude,
     longitude,
@@ -669,6 +688,7 @@ abstract class _DamageReport implements DamageReport {
     final String? settlementName,
     final String? companyName,
     required final String governorateId,
+    required final String directorateId,
     required final String localityId,
     final double? latitude,
     final double? longitude,
@@ -716,6 +736,8 @@ abstract class _DamageReport implements DamageReport {
   String? get companyName;
   @override
   String get governorateId;
+  @override
+  String get directorateId;
   @override
   String get localityId;
   @override

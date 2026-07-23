@@ -79,6 +79,7 @@ class Farms extends Table {
   // Area
   RealColumn get area => real()();
   IntColumn get areaUnitId => integer().withDefault(const Constant(1))();
+  IntColumn get measurementUnitId => integer().nullable()();
 
   // Agriculture
   IntColumn get agriculturalSectorId => integer().withDefault(const Constant(1))();
@@ -132,6 +133,14 @@ class AreaUnits extends Table {
   TextColumn get nameEn => text()();
   @override
   Set<Column> get primaryKey => {id};
+}
+
+class MeasurementUnits extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get nameAr => text().withLength(max: 100)();
+  TextColumn get nameEn => text().withLength(max: 100)();
+  TextColumn get code => text().nullable()();
+  TextColumn get category => text().withLength(max: 50)();
 }
 
 class RelationshipToOwners extends Table {
@@ -222,6 +231,7 @@ class DamageItems extends Table {
 
   IntColumn get classificationId => integer().withDefault(const Constant(0))();
   TextColumn get costingSheetId => text().withDefault(const Constant(''))();
+  TextColumn get costingSheetItemId => text().nullable()();
   RealColumn get calculatedUnitPrice => real().withDefault(const Constant(0.0))();
   TextColumn get measurementUnitSnapshot => text().withDefault(const Constant(''))();
 
@@ -366,6 +376,45 @@ class CostingSheets extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class CostingSheetCatalogs extends Table {
+  TextColumn get id => text()(); // Guid
+  TextColumn get name => text().withLength(max: 200)();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get createdBy => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class CostingSheetVersions extends Table {
+  TextColumn get id => text()(); // Guid
+  TextColumn get catalogId => text()(); // Guid
+  IntColumn get versionNumber => integer()();
+  IntColumn get status => integer()(); // 0: Draft, 1: PendingApproval, 2: Active, 3: Archived
+  DateTimeColumn get effectiveFrom => dateTime()();
+  DateTimeColumn get effectiveTo => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get createdBy => text()();
+  DateTimeColumn get approvedAt => dateTime().nullable()();
+  TextColumn get approvedBy => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class CostingSheetItems extends Table {
+  TextColumn get id => text()(); // Guid
+  TextColumn get versionId => text()(); // Guid
+  IntColumn get classificationId => integer()();
+  IntColumn get measurementUnitId => integer().nullable()();
+  RealColumn get unitPrice => real()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     Farmers,
@@ -388,6 +437,10 @@ class CostingSheets extends Table {
     DamageClassifications,
     DamageCauseCategories,
     DamageCauses,
+    MeasurementUnits,
+    CostingSheetCatalogs,
+    CostingSheetVersions,
+    CostingSheetItems,
     CostingSheets,
     DamageWorkflowHistories,
   ],
@@ -397,7 +450,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -441,6 +494,51 @@ class AppDatabase extends _$AppDatabase {
       if (from < 15) {
         // Sprint 12.4: Directorate Denormalization for Security
         await m.addColumn(damageReports, damageReports.directorateId);
+      }
+      if (from < 16) {
+        // Sprint 13.2: Costing Catalog & Measurement Unit Consolidation
+        await m.createTable(measurementUnits);
+        await m.createTable(costingSheetCatalogs);
+        await m.createTable(costingSheetVersions);
+        await m.createTable(costingSheetItems);
+
+        await m.addColumn(farms, farms.measurementUnitId);
+        await m.addColumn(damageItems, damageItems.costingSheetItemId);
+
+        // Data Migration
+        await transaction(() async {
+          // 1. Migrate AreaUnits to MeasurementUnits
+          await customStatement('''
+            INSERT INTO measurement_units (id, name_ar, name_en, category)
+            SELECT id, name_ar, name_en, 'Area' FROM area_units
+          ''');
+
+          // 2. Create Local Legacy Catalog
+          final legacyCatalogId = 'LEGACY-CATALOG-LOCAL';
+          await customStatement('''
+            INSERT INTO costing_sheet_catalogs (id, name, description, created_at, created_by)
+            VALUES (?, 'Legacy Catalog (Local)', 'Auto-generated during migration from v15 to v16.', 
+                   strftime('%s', 'now'), 'System')
+          ''', [legacyCatalogId]);
+
+          // 3. Create Local Legacy Version (Status: 3 - Archived)
+          final legacyVersionId = 'LEGACY-VERSION-LOCAL';
+          await customStatement('''
+            INSERT INTO costing_sheet_versions (id, catalog_id, version_number, status, effective_from, created_at, created_by)
+            VALUES (?, ?, 1, 3, strftime('%s', '2000-01-01'), strftime('%s', 'now'), 'System')
+          ''', [legacyVersionId, legacyCatalogId]);
+
+          // 4. Migrate CostingSheets to CostingSheetItems
+          await customStatement('''
+            INSERT INTO costing_sheet_items (id, version_id, classification_id, unit_price, created_at)
+            SELECT id, ?, classification_id, unit_price, strftime('%s', 'now')
+            FROM costing_sheets
+          ''', [legacyVersionId]);
+
+          // 5. Populate new reference columns
+          await customStatement('UPDATE farms SET measurement_unit_id = area_unit_id');
+          await customStatement('UPDATE damage_items SET costing_sheet_item_id = costing_sheet_id');
+        });
       }
     },
     beforeOpen: (details) async {

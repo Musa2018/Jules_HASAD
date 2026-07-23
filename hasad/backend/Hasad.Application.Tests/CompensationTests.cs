@@ -48,6 +48,9 @@ public class CompensationTests
         context.DamageReports.Add(new DamageReport
         {
             Id = reportId,
+            GovernorateId = Guid.NewGuid(),
+            DirectorateId = Guid.NewGuid(),
+            LocalityId = Guid.NewGuid(),
             Items = new List<DamageItem>
             {
                 new DamageItem { EstimatedLoss = 1000 }

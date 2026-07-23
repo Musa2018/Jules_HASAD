@@ -11,16 +11,35 @@ public record GetDamageReportsByFarmQuery(Guid FarmId) : IRequest<Result<List<Da
 public class GetDamageReportsByFarmQueryHandler : IRequestHandler<GetDamageReportsByFarmQuery, Result<List<DamageReportDto>>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public GetDamageReportsByFarmQueryHandler(IApplicationDbContext context)
+    public GetDamageReportsByFarmQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<List<DamageReportDto>>> Handle(GetDamageReportsByFarmQuery request, CancellationToken cancellationToken)
     {
-        var reports = await _context.DamageReports
-            .AsNoTracking()
+        var query = _context.DamageReports.AsNoTracking();
+
+        // Authorization filtering
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (_currentUser.DirectorateId.HasValue)
+            {
+                query = query.Where(r => r.DirectorateId == _currentUser.DirectorateId.Value);
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (_currentUser.GovernorateId.HasValue)
+            {
+                query = query.Where(r => r.GovernorateId == _currentUser.GovernorateId.Value);
+            }
+        }
+
+        var reports = await query
             .Where(r => r.FarmId == request.FarmId)
             .OrderByDescending(r => r.DamageDate)
             .Select(r => new DamageReportDto
@@ -36,6 +55,7 @@ public class GetDamageReportsByFarmQueryHandler : IRequestHandler<GetDamageRepor
                 DamageCauseCategoryId = r.DamageCauseCategoryId,
                 DamageCauseId = r.DamageCauseId,
                 GovernorateId = r.GovernorateId,
+                DirectorateId = r.DirectorateId,
                 LocalityId = r.LocalityId,
                 Latitude = r.Latitude,
                 Longitude = r.Longitude,

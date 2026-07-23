@@ -192,8 +192,9 @@ class DamageReports extends Table {
   TextColumn get settlementName => text().nullable()();
   TextColumn get companyName => text().nullable()();
 
-  TextColumn get governorateId => text().withLength(max: 50)();
-  TextColumn get localityId => text().withLength(max: 50)();
+  TextColumn get governorateId => text()();
+  TextColumn get directorateId => text()();
+  TextColumn get localityId => text()();
 
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();
@@ -396,7 +397,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -436,6 +437,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 14) {
         // Sprint 12.4: Workflow History
         await m.createTable(damageWorkflowHistories);
+      }
+      if (from < 15) {
+        // Sprint 12.4: Directorate Denormalization for Security
+        await m.addColumn(damageReports, damageReports.directorateId);
       }
     },
     beforeOpen: (details) async {

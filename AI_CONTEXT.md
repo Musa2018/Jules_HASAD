@@ -33,6 +33,13 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - Three levels: Global, Governorate, Directorate.
   - Regional isolation enforced via geographic IDs in session and commands.
   - **Permanent Rule**: Geographic attributes of referenced entities (e.g., Farmer residence) must never be used as authorization scope. Authorization follows operational ownership of the managed record (e.g., Farm location).
+  - **Inheritance Rule**: Authorization for child entities (Damage Items, Attachments, Workflow History) must be validated against the parent managed record's operational scope.
+- **Managed Record Authorization Inheritance**: `DamageReport` authorization is strictly inherited from its parent `Farm`.
+- **Authorization Source of Truth**: `Farm.DirectorateId` is the authoritative source for regional security boundaries.
+- **Derived Authorization Optimization**: `DamageReport` stores a denormalized `DirectorateId` (snapshot from parent Farm) to support high-performance scoped queries and O(1) security checks.
+- **Regional Isolation**: Agricultural Engineers and Field Surveyors are restricted to data within their assigned Directorate. Supervisors and Directors are restricted to their Governorate.
+- **Decoupling Rule**: Farmer residency is NEVER used as an authorization boundary for managed records (Farms/Reports).
+  - **Lifecycle Consistency**: Maintenance operations (Update/Delete) and Query Projections must enforce the same regional boundaries as Creation commands.
 
 ## 3. Architectural Decisions
 ### Measurement Unit Consolidation (Pending)
@@ -196,9 +203,10 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Location Data**: **Offline-First**. Retrieved from Drift with automatic remote synchronization/caching.
 - **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
 
-## 8. Pending Work
-- **UI/UX**:
-  - Conflict resolution comparison screen (handling 409 server responses).
-  - Mobile geographic caching for offline reference data support.
-- **Features**:
-  - Farm/Damage Report module alignment with new locality foundation.
+### Sprint 12.4 - DamageReport Security Alignment
+- **Security Baseline**: Implemented strict authorization inheritance from `Farm` to `DamageReport` and all child entities (`DamageItem`, `Attachment`, `WorkflowHistory`).
+- **Data Hardening**: Migrated geographic identifiers from `string` to `Guid` for system-wide consistency.
+- **Directorate Denormalization**: Added denormalized `DirectorateId` to `DamageReport` for high-performance scoped queries, with automated synchronization from the parent `Farm`.
+- **Join-Based Auth Guards**: Hardened all backend command handlers (`Update`, `Delete`, `Upload`, `Submit`) with mandatory join-based user scope validation.
+- **Scoped Query Filtering**: Enforced regional isolation at the query level, ensuring users only see reports they are authorized to manage.
+- **Offline Reliability**: Updated Drift database (Version 15) to maintain security snapshots offline while ensuring backward compatibility for pending sync tasks.

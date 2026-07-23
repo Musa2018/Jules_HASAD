@@ -15,8 +15,9 @@ public class DamageReportDto
     public int DamageCauseId { get; set; }
     public string? SettlementName { get; set; }
     public string? CompanyName { get; set; }
-    public string GovernorateId { get; set; } = string.Empty;
-    public string LocalityId { get; set; } = string.Empty;
+    public Guid GovernorateId { get; set; }
+    public Guid DirectorateId { get; set; }
+    public Guid LocalityId { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public string StatusId { get; set; } = string.Empty;

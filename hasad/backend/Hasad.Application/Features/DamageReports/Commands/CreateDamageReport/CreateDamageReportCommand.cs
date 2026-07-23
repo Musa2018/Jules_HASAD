@@ -30,8 +30,8 @@ public record CreateDamageReportCommand(
     int DamageCauseId,
     string? SettlementName,
     string? CompanyName,
-    string GovernorateId,
-    string LocalityId,
+    Guid GovernorateId,
+    Guid LocalityId,
     double? Latitude,
     double? Longitude,
     string Notes,
@@ -70,16 +70,16 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         }
 
         // 2. Authorization check
-        if (_currentUser.IsInRole("AgriculturalEngineer"))
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
         {
             if (_currentUser.DirectorateId.HasValue && farm.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only create reports for farms within your assigned directorate." });
             }
         }
-        else if (_currentUser.IsInRole("FieldSurveyor") || _currentUser.IsInRole("Director"))
+        else if (_currentUser.IsInRole("Director"))
         {
-            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
+            if (_currentUser.GovernorateId.HasValue && farm.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
             }
@@ -128,6 +128,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             SettlementName = request.SettlementName,
             CompanyName = request.CompanyName,
             GovernorateId = request.GovernorateId,
+            DirectorateId = farm.DirectorateId, // Denormalized from Farm (Rule 1)
             LocalityId = request.LocalityId,
             Latitude = request.Latitude,
             Longitude = request.Longitude,
@@ -203,8 +204,8 @@ public class CreateDamageReportCommandValidator : AbstractValidator<CreateDamage
         RuleFor(v => v.FarmId).NotEmpty();
         RuleFor(v => v.FarmerId).NotEmpty();
         RuleFor(v => v.DamageDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
-        RuleFor(v => v.GovernorateId).NotEmpty().MaximumLength(50);
-        RuleFor(v => v.LocalityId).NotEmpty().MaximumLength(50);
+        RuleFor(v => v.GovernorateId).NotEmpty();
+        RuleFor(v => v.LocalityId).NotEmpty();
 
         RuleForEach(v => v.Items).SetValidator(new CreateDamageItemInputValidator());
     }

@@ -373,8 +373,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasKey(e => e.Id);
             entity.Property(e => e.PermanentFormNumber).HasMaxLength(50);
             entity.Property(e => e.TemporaryFormNumber).HasMaxLength(50);
-            entity.Property(e => e.GovernorateId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.LocalityId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.GovernorateId).IsRequired();
+            entity.Property(e => e.DirectorateId).IsRequired();
+            entity.Property(e => e.LocalityId).IsRequired();
             entity.Property(e => e.StatusId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.RowVersion).IsRowVersion();
 

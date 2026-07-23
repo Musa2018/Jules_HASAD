@@ -2,7 +2,23 @@
 
 ## [Unreleased]
 
-### Sprint 12.3 — Form & Sync Hardening (Geographic Authorization Fix)
+### Sprint 12.4 — DamageReport Security Alignment
+
+#### Added
+- **Authorization Inheritance Engine**: New backend mechanism ensuring all Damage Assessment entities inherit security boundaries from the parent Farm location.
+- **Directorate Snapshotting**: Added `DirectorateId` to `DamageReport` for O(1) performance in regional listing queries.
+- **Security Scoped Queries**: Automated regional filtering for all DamageReport listing and detail endpoints.
+- **Join-Based Auth Guards**: Hardened `Update`, `Delete`, `Submit`, and `UploadAttachment` commands with mandatory scope validation.
+- **Cross-Region Security Tests**: Dedicated test suite verifying Agricultural Engineer restrictions and authorization inheritance.
+- **ADR 0013**: Documented "DamageReport Operational Scope and Authorization Inheritance."
+
+#### Changed
+- **Geographic Data Hardening**: Migrated `GovernorateId` and `LocalityId` in `DamageReport` from `string` to `Guid`.
+- **Drift Schema Upgrade (v15)**: Integrated regional snapshots into the mobile offline data layer.
+
+#### Fixed
+- **Security Vulnerability**: Resolved missing authorization checks on DamageReport `Update` and `Delete` endpoints.
+- **Child Bypass Risk**: Fixed potential for child entities (`DamageItem`, `Attachment`) to be modified outside of the user's assigned regional scope.
 
 #### Fixed
 - **Geographic Authorization Regression**: Resolved issue where Agricultural Engineers were blocked from creating farms for farmers residing in different governorates.

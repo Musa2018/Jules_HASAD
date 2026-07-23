@@ -1,0 +1,24 @@
+# Task: DamageReport Security Implementation (Sprint 12.4)
+
+- [x] **Phase 1: Authorization Tests**
+    - [x] Add security boundary tests for DamageReport (Create/Update/Delete/Query) - (Failures confirmed)
+    - [ ] Add regression tests for Farmer/Farm modules (Confirm existing tests pass)
+    - [ ] Add child entity (Item/Attachment) inheritance tests (Failures confirmed)
+- [x] **Phase 2: Backend Authorization Guards**
+    - [x] Update `CreateDamageReportCommand` with scope check and Directorate denormalization
+    - [x] Update `UpdateDamageReportCommand` with scope check and immutability rules
+    - [x] Update `DeleteDamageReportCommand` and `SubmitDamageReportCommand`
+    - [x] Update `UpdateDamageItemCommand` and `DeleteDamageItemCommand` with join-based auth
+    - [x] Update `UploadAttachmentCommand` with join-based auth
+- [x] **Phase 3: Backend Query Filtering**
+    - [x] Implement scoped filtering in `GetDamageReportByIdQuery`
+    - [x] Implement scoped filtering in `GetDamageReportsByFarmQuery`
+    - [x] Implement scoped filtering in `GetDamageReportsByFarmerQuery`
+- [x] **Phase 4: Data Model Migration**
+    - [x] Update `DamageReport.cs` entity (GUID migration + DirectorateId)
+    - [x] Create and verify EF Migration
+    - [x] Update DTOs and Flutter models
+- [x] **Phase 5: Documentation & Verification**
+    - [x] Update `AI_CONTEXT.md` with the new security rule
+    - [x] Final end-to-end verification
+    - [x] Generate Walkthrough

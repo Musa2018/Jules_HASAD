@@ -8,14 +8,17 @@
 - **Last Updated**: 2026-07-23
 - **Latest Commit**: `e073d75`
 
-## Sprint 12.3 — IN PROGRESS
-Geographic Authorization Regression Fix:
-- **Authorization Decoupling**: Removed residency-based authorization checks from Farmer management commands.
-- **Operational Scoping**: Hardened Farm authorization to rely strictly on the Farm's Directorate regardless of the Farmer's residence.
-- **Regression Testing**: Added backend tests verifying cross-region farmer selection and farm creation.
-- **Architecture Rule**: Formally adopted the rule that referenced entity attributes do not dictate authorization boundaries.
+## Sprint 12.4 — COMPLETED
+DamageReport Security Alignment:
+- **Authorization Inheritance**: Implemented full security inheritance from `Farm` to `DamageReport` and its child entities (`Items`, `Attachments`, `History`).
+- **Directorate Denormalization**: Added `DirectorateId` to the `DamageReport` entity as a derived optimization field for high-performance scoped queries (Rule: Snapshot from parent Farm).
+- **Geographic Migration**: Migrated `DamageReport` geographic identifiers from `string` to `Guid` for system-wide consistency with the Farm module.
+- **Join-Based Auth Guards**: Hardened all DamageReport command handlers (`Update`, `Delete`, `Upload`, `Submit`) with mandatory join-based user scope validation.
+- **Scoped Queries**: Enforced regional filtering at the query level for all DamageReport listing and detail operations.
+- **Offline Compatibility**: Incremented Drift schema to **v15** to support regional snapshots offline while ensuring backend-driven synchronization remains backward compatible.
+- **Status**: ✅ **Approved & Production Ready**.
 
-## Sprint 12.2 — COMPLETED
+## Sprint 12.3 — COMPLETED
 Hierarchical Classification UI:
 - **Cascading Selector**: Implemented a 4-step wizard for selecting Damage Nature, Category, SubCategory, and Classification.
 - **Price Snapshot Engine**: Automated resolution of active Costing Sheets with immutable snapshotting for Damage Items.

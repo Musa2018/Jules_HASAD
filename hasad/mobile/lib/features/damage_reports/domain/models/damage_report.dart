@@ -22,6 +22,7 @@ class DamageReport with _$DamageReport {
     String? settlementName,
     String? companyName,
     required String governorateId,
+    required String directorateId,
     required String localityId,
     double? latitude,
     double? longitude,

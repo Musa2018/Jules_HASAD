@@ -57,7 +57,7 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.UserId).Returns("user-1");
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
-        var report = new DamageReport { Id = Guid.NewGuid(), StatusId = "Draft" };
+        var report = new DamageReport { Id = Guid.NewGuid(), StatusId = "Draft", GovernorateId = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid() };
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
@@ -81,7 +81,7 @@ public class DamageWorkflowTests
         var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object);
 
         var reportId = Guid.NewGuid();
-        context.DamageReports.Add(new DamageReport { Id = reportId, StatusId = "Draft" });
+        context.DamageReports.Add(new DamageReport { Id = reportId, StatusId = "Draft", GovernorateId = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid() });
         await context.SaveChangesAsync();
 
         _currentUserMock.Setup(x => x.IsInRole(It.IsAny<string>())).Returns(false);
@@ -104,7 +104,7 @@ public class DamageWorkflowTests
         var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object);
 
         var reportId = Guid.NewGuid();
-        context.DamageReports.Add(new DamageReport { Id = reportId, StatusId = "Draft" });
+        context.DamageReports.Add(new DamageReport { Id = reportId, StatusId = "Draft", GovernorateId = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid() });
         await context.SaveChangesAsync();
 
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.GeneralManager)).Returns(true);

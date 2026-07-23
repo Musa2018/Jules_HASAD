@@ -11,10 +11,12 @@ public record GetDamageReportByIdQuery(Guid Id) : IRequest<Result<DamageReportDt
 public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportByIdQuery, Result<DamageReportDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public GetDamageReportByIdQueryHandler(IApplicationDbContext context)
+    public GetDamageReportByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<DamageReportDto>> Handle(GetDamageReportByIdQuery request, CancellationToken cancellationToken)
@@ -27,6 +29,22 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
         if (report == null)
         {
             return Result<DamageReportDto>.Failure(new[] { "Damage report not found." });
+        }
+
+        // Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: This report is outside your assigned directorate scope." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: This report is outside your assigned governorate scope." });
+            }
         }
 
         return Result<DamageReportDto>.Success(new DamageReportDto
@@ -45,6 +63,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
             SettlementName = report.SettlementName,
             CompanyName = report.CompanyName,
             GovernorateId = report.GovernorateId,
+            DirectorateId = report.DirectorateId,
             LocalityId = report.LocalityId,
             Latitude = report.Latitude,
             Longitude = report.Longitude,

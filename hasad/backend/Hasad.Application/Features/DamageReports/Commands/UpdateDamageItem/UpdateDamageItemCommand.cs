@@ -22,20 +22,44 @@ public record UpdateDamageItemCommand(
 public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCommand, Result<DamageItemDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public UpdateDamageItemCommandHandler(IApplicationDbContext context)
+    public UpdateDamageItemCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<DamageItemDto>> Handle(UpdateDamageItemCommand request, CancellationToken cancellationToken)
     {
         var item = await _context.DamageItems
+            .Include(i => i.DamageReport)
             .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
 
         if (item == null)
         {
             return Result<DamageItemDto>.Failure(new[] { "Damage item not found." });
+        }
+
+        // Authorization Inheritance (Rule 4)
+        if (item.DamageReport == null)
+        {
+            return Result<DamageItemDto>.Failure(new[] { "Parent damage report not found." });
+        }
+
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (_currentUser.DirectorateId.HasValue && item.DamageReport.DirectorateId != _currentUser.DirectorateId.Value)
+            {
+                return Result<DamageItemDto>.Failure(new[] { "Access Denied: You can only manage items within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (_currentUser.GovernorateId.HasValue && item.DamageReport.GovernorateId != _currentUser.GovernorateId.Value)
+            {
+                return Result<DamageItemDto>.Failure(new[] { "Access Denied: You can only manage items within your assigned governorate." });
+            }
         }
 
         // Concurrency

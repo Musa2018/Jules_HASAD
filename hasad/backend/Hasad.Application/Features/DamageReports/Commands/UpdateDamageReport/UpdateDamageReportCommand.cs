@@ -14,8 +14,8 @@ public record UpdateDamageReportCommand(
     int DamageCauseId,
     string? SettlementName,
     string? CompanyName,
-    string GovernorateId,
-    string LocalityId,
+    Guid GovernorateId,
+    Guid LocalityId,
     double? Latitude,
     double? Longitude,
     string Notes,
@@ -24,10 +24,12 @@ public record UpdateDamageReportCommand(
 public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageReportCommand, Result<DamageReportDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public UpdateDamageReportCommandHandler(IApplicationDbContext context)
+    public UpdateDamageReportCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<DamageReportDto>> Handle(UpdateDamageReportCommand request, CancellationToken cancellationToken)
@@ -40,6 +42,28 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         {
             return Result<DamageReportDto>.Failure(new[] { "Damage report not found." });
         }
+
+        // Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
+            }
+        }
+
+        // Immutability Rule: DirectorateId cannot be changed independently of the Farm link.
+        // We don't expose DirectorateId in the command anyway, but we should ensure the report's geographic integrity.
+        // Rule: On update, DirectorateId MUST never be changed independently (Rule 2).
+        // Since it's not in the command, we just don't touch it.
+        // If the user wants to move the report to a different farm, that's a different operation (not supported yet).
 
         // Optimistic concurrency
         byte[] expectedVersion = Convert.FromBase64String(request.RowVersion);
@@ -102,6 +126,7 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             SettlementName = report.SettlementName,
             CompanyName = report.CompanyName,
             GovernorateId = report.GovernorateId,
+            DirectorateId = report.DirectorateId,
             LocalityId = report.LocalityId,
             Latitude = report.Latitude,
             Longitude = report.Longitude,
@@ -134,8 +159,8 @@ public class UpdateDamageReportCommandValidator : AbstractValidator<UpdateDamage
         RuleFor(v => v.DamageDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
         RuleFor(v => v.DamageCauseCategoryId).NotEmpty();
         RuleFor(v => v.DamageCauseId).NotEmpty();
-        RuleFor(v => v.GovernorateId).NotEmpty().MaximumLength(50);
-        RuleFor(v => v.LocalityId).NotEmpty().MaximumLength(50);
+        RuleFor(v => v.GovernorateId).NotEmpty();
+        RuleFor(v => v.LocalityId).NotEmpty();
         RuleFor(v => v.RowVersion).NotEmpty();
     }
 }

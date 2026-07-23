@@ -45,13 +45,18 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
         }
 
         // Scope validation
-        if (_currentUser.DirectorateId.HasValue && report.LocalityId != null)
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
         {
-            // Verify if locality belongs to user's directorate
-            var locality = await _context.Localities.FindAsync(report.LocalityId);
-            if (locality?.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
             {
-                 return Result<Guid>.Failure(new[] { "Access denied. Report is outside your assigned directorate scope." });
+                return Result<Guid>.Failure(new[] { "Access denied. Report is outside your assigned directorate scope." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
+            {
+                return Result<Guid>.Failure(new[] { "Access denied. Report is outside your assigned governorate scope." });
             }
         }
 

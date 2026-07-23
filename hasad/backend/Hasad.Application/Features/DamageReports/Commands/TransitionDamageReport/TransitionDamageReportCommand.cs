@@ -107,13 +107,12 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
 
         if (_currentUser.DirectorateId.HasValue)
         {
-            var locality = await _context.Localities.FindAsync(new object[] { report.LocalityId }, ct);
-            return locality?.DirectorateId == _currentUser.DirectorateId.Value;
+            return report.DirectorateId == _currentUser.DirectorateId.Value;
         }
 
         if (_currentUser.GovernorateId.HasValue)
         {
-            return report.GovernorateId == _currentUser.GovernorateId.Value.ToString();
+            return report.GovernorateId == _currentUser.GovernorateId.Value;
         }
 
         return true; // Global roles

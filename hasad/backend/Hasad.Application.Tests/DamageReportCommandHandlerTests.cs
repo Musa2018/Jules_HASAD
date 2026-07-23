@@ -69,8 +69,8 @@ public class DamageReportCommandHandlerTests
             1, // DamageCauseId
             null,
             null,
-            Guid.NewGuid().ToString(),
-            Guid.NewGuid().ToString(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             null,
             null,
             "Test Notes",
@@ -102,8 +102,9 @@ public class DamageReportCommandHandlerTests
             FarmerId = Guid.NewGuid(),
             DamageDate = date,
             DamageCauseId = causeId,
-            GovernorateId = "G1",
-            LocalityId = "L1",
+            GovernorateId = Guid.NewGuid(),
+            DirectorateId = Guid.NewGuid(),
+            LocalityId = Guid.NewGuid(),
             StatusId = "Submitted",
             RowVersion = new byte[] { 1 }
         });
@@ -116,7 +117,7 @@ public class DamageReportCommandHandlerTests
 
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
         var command = new CreateDamageReportCommand(
-            Guid.NewGuid(), "T1", 2026, farmId, farmer.Id, date, 1, causeId, null, null, "G1", "L1", null, null, "", new List<CreateDamageItemInput>());
+            Guid.NewGuid(), "T1", 2026, farmId, farmer.Id, date, 1, causeId, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -142,7 +143,7 @@ public class DamageReportCommandHandlerTests
 
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
         var command = new CreateDamageReportCommand(
-            Guid.NewGuid(), "T1", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, null, null, "G1", "L1", null, null, "", new List<CreateDamageItemInput>());
+            Guid.NewGuid(), "T1", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -161,14 +162,15 @@ public class DamageReportCommandHandlerTests
             FarmId = farmId,
             FarmerId = Guid.NewGuid(),
             DamageDate = DateTime.UtcNow,
-            GovernorateId = Guid.NewGuid().ToString(),
-            LocalityId = Guid.NewGuid().ToString(),
+            GovernorateId = Guid.NewGuid(),
+            DirectorateId = Guid.NewGuid(),
+            LocalityId = Guid.NewGuid(),
             StatusId = "Draft",
             RowVersion = new byte[] { 1 }
         });
         await context.SaveChangesAsync();
 
-        var handler = new GetDamageReportsByFarmQueryHandler(context);
+        var handler = new GetDamageReportsByFarmQueryHandler(context, _currentUserMock.Object);
         var query = new GetDamageReportsByFarmQuery(farmId);
 
         var result = await handler.Handle(query, CancellationToken.None);

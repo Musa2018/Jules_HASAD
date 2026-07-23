@@ -278,7 +278,7 @@ public class FarmCommandHandlerTests
     {
         var context = CreateContext();
         var farm = new Farm { Id = Guid.NewGuid() };
-        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, GovernorateId = "G", LocalityId = "L", StatusId = "Draft" };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(), StatusId = "Draft" };
 
         context.Farms.Add(farm);
         context.DamageReports.Add(report);

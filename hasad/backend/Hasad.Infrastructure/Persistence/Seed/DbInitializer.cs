@@ -3,6 +3,7 @@ using Hasad.Domain.Entities;
 using Hasad.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Hasad.Infrastructure.Persistence.Seed;
 
@@ -196,65 +197,132 @@ public static class DbInitializer
     /// </summary>
     public static async Task SeedDamageReferenceDataAsync(ApplicationDbContext context)
     {
-        if (await context.DamageNatures.AnyAsync()) return;
-
-        // Damage Natures
-        var plant = new DamageNature { Id = 1, NameAr = "نباتي", NameEn = "Plant" };
-        var animal = new DamageNature { Id = 2, NameAr = "حيواني", NameEn = "Animal" };
-        var infrastructure = new DamageNature { Id = 3, NameAr = "منشآت وبنية تحتية", NameEn = "Infrastructure" };
-        context.DamageNatures.AddRange(plant, animal, infrastructure);
-
-        // Damage Categories (Plant)
-        var trees = new DamageCategory { Id = 1, NatureId = 1, NameAr = "أشجار", NameEn = "Trees" };
-        var fieldCrops = new DamageCategory { Id = 2, NatureId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" };
-        var protectedCrops = new DamageCategory { Id = 3, NatureId = 1, NameAr = "خضروات محمية", NameEn = "Protected Crops" };
-        context.DamageCategories.AddRange(trees, fieldCrops, protectedCrops);
-
-        // Damage SubCategories (Trees)
-        var olive = new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "زيتون", NameEn = "Olive" };
-        var stoneFruits = new DamageSubCategory { Id = 2, CategoryId = 1, NameAr = "لوزيات", NameEn = "Stone Fruits" };
-        var citrus = new DamageSubCategory { Id = 3, CategoryId = 1, NameAr = "حمضيات", NameEn = "Citrus" };
-        context.DamageSubCategories.AddRange(olive, stoneFruits, citrus);
-
-        // Damage Classifications (Olive)
-        var olive1to5 = new DamageClassification { Id = 1, SubCategoryId = 1, NameAr = "عمر 1-5 سنوات", NameEn = "Age 1-5 years" };
-        var olive5to10 = new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "عمر 5-10 سنوات", NameEn = "Age 5-10 years" };
-        var olive10plus = new DamageClassification { Id = 3, SubCategoryId = 1, NameAr = "عمر فوق 10 سنوات", NameEn = "Age 10+ years" };
-        context.DamageClassifications.AddRange(olive1to5, olive5to10, olive10plus);
-
-        // Costing Sheets (Initial Prices)
-        var olivePrice1 = new CostingSheet
+        if (await context.DamageNatures.AnyAsync())
         {
-            Id = Guid.NewGuid(),
-            ClassificationId = 2, // Age 5-10 years
-            UnitPrice = 100,
-            EffectiveFrom = new DateTime(2026, 1, 1),
-            IsActive = true,
-            VersionNumber = 1,
-            CreatedAt = DateTime.UtcNow
-        };
-        context.CostingSheets.Add(olivePrice1);
+            Log.Information("Damage reference data already exists; skipping seeding.");
+            return;
+        }
 
-        // Damage Cause Categories
-        var political = new DamageCauseCategory { Id = 1, NameAr = "سياسي", NameEn = "Political" };
-        var natural = new DamageCauseCategory { Id = 2, NameAr = "طبيعي", NameEn = "Natural" };
-        context.DamageCauseCategories.AddRange(political, natural);
+        Log.Information("Starting Damage Reference Data seeding...");
 
-        // Damage Causes (Political)
-        context.DamageCauses.AddRange(
-            new DamageCause { Id = 1, CategoryId = 1, NameAr = "جيش الاحتلال", NameEn = "Army" },
-            new DamageCause { Id = 2, CategoryId = 1, NameAr = "مستوطنين", NameEn = "Settlers" },
-            new DamageCause { Id = 3, CategoryId = 1, NameAr = "شركات إسرائيلية", NameEn = "Israeli Companies" }
-        );
+        var strategy = context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                // Ensure connection is open for IDENTITY_INSERT commands
+                if (context.Database.GetDbConnection().State != System.Data.ConnectionState.Open)
+                {
+                    await context.Database.OpenConnectionAsync();
+                }
 
-        // Damage Causes (Natural)
-        context.DamageCauses.AddRange(
-            new DamageCause { Id = 4, CategoryId = 2, NameAr = "فيضانات", NameEn = "Flood" },
-            new DamageCause { Id = 5, CategoryId = 2, NameAr = "حرائق", NameEn = "Fire" },
-            new DamageCause { Id = 6, CategoryId = 2, NameAr = "جفاف", NameEn = "Drought" },
-            new DamageCause { Id = 7, CategoryId = 2, NameAr = "عواصف", NameEn = "Storm" }
-        );
+                // 1. Damage Natures
+                Log.Information("Seeding DamageNatures...");
+                context.DamageNatures.AddRange(
+                    new DamageNature { Id = 1, NameAr = "نباتي", NameEn = "Plant" },
+                    new DamageNature { Id = 2, NameAr = "حيواني", NameEn = "Animal" },
+                    new DamageNature { Id = 3, NameAr = "منشآت وبنية تحتية", NameEn = "Infrastructure" }
+                );
+                await SaveWithIdentityInsertAsync(context, "DamageNatures");
 
-        await context.SaveChangesAsync();
+                // 2. Damage Categories
+                Log.Information("Seeding DamageCategories...");
+                context.DamageCategories.AddRange(
+                    new DamageCategory { Id = 1, NatureId = 1, NameAr = "أشجار", NameEn = "Trees" },
+                    new DamageCategory { Id = 2, NatureId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
+                    new DamageCategory { Id = 3, NatureId = 1, NameAr = "خضروات محمية", NameEn = "Protected Crops" }
+                );
+                await SaveWithIdentityInsertAsync(context, "DamageCategories");
+
+                // 3. Damage SubCategories
+                Log.Information("Seeding DamageSubCategories...");
+                context.DamageSubCategories.AddRange(
+                    new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "زيتون", NameEn = "Olive" },
+                    new DamageSubCategory { Id = 2, CategoryId = 1, NameAr = "لوزيات", NameEn = "Stone Fruits" },
+                    new DamageSubCategory { Id = 3, CategoryId = 1, NameAr = "حمضيات", NameEn = "Citrus" }
+                );
+                await SaveWithIdentityInsertAsync(context, "DamageSubCategories");
+
+                // 4. Damage Classifications
+                Log.Information("Seeding DamageClassifications...");
+                context.DamageClassifications.AddRange(
+                    new DamageClassification { Id = 1, SubCategoryId = 1, NameAr = "عمر 1-5 سنوات", NameEn = "Age 1-5 years" },
+                    new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "عمر 5-10 سنوات", NameEn = "Age 5-10 years" },
+                    new DamageClassification { Id = 3, SubCategoryId = 1, NameAr = "عمر فوق 10 سنوات", NameEn = "Age 10+ years" }
+                );
+                await SaveWithIdentityInsertAsync(context, "DamageClassifications");
+
+                // 5. Costing Sheets (No identity insert needed as Id is Guid)
+                Log.Information("Seeding CostingSheets...");
+                context.CostingSheets.Add(new CostingSheet
+                {
+                    Id = Guid.NewGuid(),
+                    ClassificationId = 2, // Age 5-10 years
+                    UnitPrice = 100,
+                    EffectiveFrom = new DateTime(2026, 1, 1),
+                    IsActive = true,
+                    VersionNumber = 1,
+                    CreatedAt = DateTime.UtcNow
+                });
+                await context.SaveChangesAsync();
+
+                // 6. Damage Cause Categories
+                Log.Information("Seeding DamageCauseCategories...");
+                context.DamageCauseCategories.AddRange(
+                    new DamageCauseCategory { Id = 1, NameAr = "سياسي", NameEn = "Political" },
+                    new DamageCauseCategory { Id = 2, NameAr = "طبيعي", NameEn = "Natural" }
+                );
+                await SaveWithIdentityInsertAsync(context, "DamageCauseCategories");
+
+                // 7. Damage Causes
+                Log.Information("Seeding DamageCauses...");
+                context.DamageCauses.AddRange(
+                    new DamageCause { Id = 1, CategoryId = 1, NameAr = "جيش الاحتلال", NameEn = "Army" },
+                    new DamageCause { Id = 2, CategoryId = 1, NameAr = "مستوطنين", NameEn = "Settlers" },
+                    new DamageCause { Id = 3, CategoryId = 1, NameAr = "شركات إسرائيلية", NameEn = "Israeli Companies" },
+                    new DamageCause { Id = 4, CategoryId = 2, NameAr = "فيضانات", NameEn = "Flood" },
+                    new DamageCause { Id = 5, CategoryId = 2, NameAr = "حرائق", NameEn = "Fire" },
+                    new DamageCause { Id = 6, CategoryId = 2, NameAr = "جفاف", NameEn = "Drought" },
+                    new DamageCause { Id = 7, CategoryId = 2, NameAr = "عواصف", NameEn = "Storm" }
+                );
+                await SaveWithIdentityInsertAsync(context, "DamageCauses");
+
+                await transaction.CommitAsync();
+                Log.Information("Damage Reference Data seeding completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to seed damage reference data. Rolling back transaction.");
+                await transaction.RollbackAsync();
+                throw;
+            }
+        });
+    }
+
+    private static async Task SaveWithIdentityInsertAsync(ApplicationDbContext context, string tableName)
+    {
+        try
+        {
+            Log.Debug("Enabling IDENTITY_INSERT for {Table}", tableName);
+            await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {tableName} ON");
+            await context.SaveChangesAsync();
+            await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {tableName} OFF");
+            Log.Debug("Disabled IDENTITY_INSERT for {Table}", tableName);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error during IDENTITY_INSERT operation for table {Table}", tableName);
+            // Ensure IDENTITY_INSERT is OFF even on failure if connection is still open
+            try
+            {
+                await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {tableName} OFF");
+            }
+            catch
+            {
+                // Ignore errors during emergency cleanup
+            }
+            throw;
+        }
     }
 }

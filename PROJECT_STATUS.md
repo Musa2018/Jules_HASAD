@@ -2,10 +2,17 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.9.3-alpha (Search-First Flow Implemented)
-- **Current Sprint**: Sprint 11.8 — Search-First Owner Selection Workflow
+- **Current Version**: v0.9.4-alpha (Authorization Hardened)
+- **Current Sprint**: Sprint 11.9 — Authorization Hardening & Token Fix
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-23
+
+## Sprint 11.9 — COMPLETED
+Authorization Hardening & Token Fix:
+- **JWT Fix**: Added geographic scope claims (`governorate_id`, `directorate_id`) to the authentication token, resolving "Access Denied" errors in synchronization.
+- **Universal Scoping**: Applied regional authorization rules across all synchronized entities: Farmers, Farms, and Damage Reports.
+- **Security Hardening**: Enforced that Agricultural Engineers and Surveyors can only create/update data within their assigned Directorate.
+- **Test Coverage**: Verified with 89/89 active backend tests passing, including new token and scope validation scenarios.
 
 ## Sprint 11.8 — COMPLETED
 Search-First Owner Selection Workflow:

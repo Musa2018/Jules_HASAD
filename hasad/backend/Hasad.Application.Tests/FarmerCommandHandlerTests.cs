@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.Farmers.Commands.CreateFarmer;
 using Hasad.Application.Features.Farmers.Commands.DeleteFarmer;
 using Hasad.Application.Features.Farmers.Commands.UpdateFarmer;
@@ -7,12 +8,21 @@ using Hasad.Domain.Entities;
 using Hasad.Domain.Enums;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace Hasad.Application.Tests;
 
 public class FarmerCommandHandlerTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public FarmerCommandHandlerTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+        _currentUserMock.Setup(x => x.UserId).Returns(Guid.NewGuid().ToString());
+    }
+
     private ApplicationDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -25,7 +35,7 @@ public class FarmerCommandHandlerTests
     public async Task CreateFarmer_Succeeds_WhenDataIsValid()
     {
         var context = CreateContext();
-        var handler = new CreateFarmerCommandHandler(context);
+        var handler = new CreateFarmerCommandHandler(context, _currentUserMock.Object);
         var command = new CreateFarmerCommand(
             Guid.NewGuid(),
             1,
@@ -72,7 +82,7 @@ public class FarmerCommandHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new CreateFarmerCommandHandler(context);
+        var handler = new CreateFarmerCommandHandler(context, _currentUserMock.Object);
         var command = new CreateFarmerCommand(clientId, 1, "123", "اسم", "مختلف", "جدا", "هنا", "", "", "", "", new DateOnly(1990, 1, 1), Gender.Female, "059", 4, "G", "L", "Address");
 
         var result = await handler.Handle(command, CancellationToken.None);
@@ -105,7 +115,7 @@ public class FarmerCommandHandlerTests
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
-        var handler = new UpdateFarmerCommandHandler(context);
+        var handler = new UpdateFarmerCommandHandler(context, _currentUserMock.Object);
         var command = new UpdateFarmerCommand(
             farmer.Id, farmer.ClientId, 1, "123",
             "الاسم", "الجديد", "تم", "تحديثه",
@@ -138,7 +148,7 @@ public class FarmerCommandHandlerTests
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
-        var handler = new UpdateFarmerCommandHandler(context);
+        var handler = new UpdateFarmerCommandHandler(context, _currentUserMock.Object);
         var command = new UpdateFarmerCommand(
             farmer.Id, farmer.ClientId, 1, "123",
             "جديد", "جديد", "جديد", "جديد",
@@ -237,5 +247,26 @@ public class FarmerCommandHandlerTests
         Assert.Equal(15, result.Data!.TotalCount);
         Assert.Equal(2, result.Data!.TotalPages);
         Assert.NotEmpty(result.Data!.Items[0].RowVersion);
+    }
+
+    [Fact]
+    public async Task CreateFarmer_Fails_WhenGovernorateScopingMismatches()
+    {
+        var context = CreateContext();
+        var userGovId = Guid.NewGuid();
+        _currentUserMock.Setup(x => x.IsInRole("Director")).Returns(true);
+        _currentUserMock.Setup(x => x.GovernorateId).Returns(userGovId);
+
+        var handler = new CreateFarmerCommandHandler(context, _currentUserMock.Object);
+        var command = new CreateFarmerCommand(
+            Guid.NewGuid(), 1, "123", "A", "B", "C", "D", "", "", "", "",
+            new DateOnly(1980, 1, 1), Gender.Male, "059", 1,
+            Guid.NewGuid().ToString(), // Different GovernorateId
+            "L", "Add");
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
     }
 }

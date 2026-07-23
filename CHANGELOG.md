@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Sprint 11.9 — Authorization Hardening & Token Fix
+
+#### Fixed
+- Critical sync failure where users with regional roles (Engineers/Surveyors) were incorrectly denied access due to missing geographic claims in the JWT token.
+
+#### Added
+- `governorate_id` and `directorate_id` claims to the JWT access token.
+- Regional scoping authorization checks to `CreateFarmer`, `UpdateFarmer`, and `CreateDamageReport` handlers.
+- `TokenServiceTests` to verify JWT claim integrity.
+
 ### Sprint 11.8 — Search-First Owner Selection Workflow
 
 #### Added

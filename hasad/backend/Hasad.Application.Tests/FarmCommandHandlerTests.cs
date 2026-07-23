@@ -148,4 +148,28 @@ public class FarmCommandHandlerTests
         Assert.False(result.Succeeded);
         Assert.Contains("CONFLICT", result.Errors[0]);
     }
+
+    [Fact]
+    public async Task CreateFarm_Fails_WhenDirectorateScopingMismatches()
+    {
+        var context = CreateContext();
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        context.Farmers.Add(farmer);
+        await context.SaveChangesAsync();
+
+        var userDirectorateId = Guid.NewGuid();
+        _currentUserMock.Setup(x => x.IsInRole("FieldSurveyor")).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(userDirectorateId);
+
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new CreateFarmCommand(
+            Guid.NewGuid(), farmer.Id, "Farm", 1, null, null,
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), // Different DirectorateId
+            "B", "P", 10, 1, 1, 1, null, null, null);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
 }

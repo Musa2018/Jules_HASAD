@@ -47,6 +47,11 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 11.9 - Authorization Hardening & Token Fix
+- **JWT Claim Fix**: Resolved a critical authorization failure by adding `governorate_id` and `directorate_id` claims to the JWT access token. This allows `ICurrentUserService` to correctly identify user scopes during request processing.
+- **Regional Scoping Enforcement**: Hardened `CreateFarmer`, `UpdateFarmer`, and `CreateDamageReport` command handlers by implementing mandatory regional scoping checks (Governorate/Directorate), ensuring consistency with the Farm module.
+- **Regression Testing**: Added `TokenServiceTests` and expanded command handler tests to verify regional scope enforcement.
+
 ### Sprint 11.8 - Search-First Owner Selection Workflow
 - **Search-First Pattern**: Implemented a reusable `SearchableLookupField` with `onAction` support.
 - **Enhanced Farmer Search**: Upgraded `OfflineFirstFarmerRepository` to support robust 8-part name searching, ID, and phone number matching locally.

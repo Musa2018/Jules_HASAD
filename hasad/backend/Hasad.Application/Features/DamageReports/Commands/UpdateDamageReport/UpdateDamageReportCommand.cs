@@ -10,7 +10,7 @@ namespace Hasad.Application.Features.DamageReports.Commands.UpdateDamageReport;
 public record UpdateDamageReportCommand(
     Guid Id,
     DateTime DamageDate,
-    int DamageTypeId,
+    int DamageCauseCategoryId,
     int DamageCauseId,
     string? SettlementName,
     string? CompanyName,
@@ -48,8 +48,25 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             return Result<DamageReportDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
+        // Duplicate Prevention (Farm + Date + Cause) - Check if date or cause changed
+        if (report.DamageDate.Date != request.DamageDate.Date || report.DamageCauseId != request.DamageCauseId)
+        {
+            var existingDuplicate = await _context.DamageReports
+                .AsNoTracking()
+                .AnyAsync(r => r.Id != request.Id &&
+                               r.FarmId == report.FarmId &&
+                               r.DamageDate.Date == request.DamageDate.Date &&
+                               r.DamageCauseId == request.DamageCauseId,
+                          cancellationToken);
+
+            if (existingDuplicate)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm, date, and cause." });
+            }
+        }
+
         report.DamageDate = request.DamageDate;
-        report.DamageTypeId = request.DamageTypeId;
+        report.DamageCauseCategoryId = request.DamageCauseCategoryId;
         report.DamageCauseId = request.DamageCauseId;
         report.SettlementName = request.SettlementName;
         report.CompanyName = request.CompanyName;
@@ -73,14 +90,14 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         {
             Id = report.Id,
             ClientId = report.ClientId,
-            FormNumber = report.FormNumber,
+            PermanentFormNumber = report.PermanentFormNumber,
             TemporaryFormNumber = report.TemporaryFormNumber,
             DamageYear = report.DamageYear,
             FarmId = report.FarmId,
             FarmerId = report.FarmerId,
             DamageDate = report.DamageDate,
             DocumentationDate = report.DocumentationDate,
-            DamageTypeId = report.DamageTypeId,
+            DamageCauseCategoryId = report.DamageCauseCategoryId,
             DamageCauseId = report.DamageCauseId,
             SettlementName = report.SettlementName,
             CompanyName = report.CompanyName,
@@ -115,7 +132,7 @@ public class UpdateDamageReportCommandValidator : AbstractValidator<UpdateDamage
     {
         RuleFor(v => v.Id).NotEmpty();
         RuleFor(v => v.DamageDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
-        RuleFor(v => v.DamageTypeId).NotEmpty();
+        RuleFor(v => v.DamageCauseCategoryId).NotEmpty();
         RuleFor(v => v.DamageCauseId).NotEmpty();
         RuleFor(v => v.GovernorateId).NotEmpty().MaximumLength(50);
         RuleFor(v => v.LocalityId).NotEmpty().MaximumLength(50);

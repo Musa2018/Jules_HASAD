@@ -177,7 +177,7 @@ class Localities extends Table {
 class DamageReports extends Table {
   TextColumn get id => text()(); // ClientId
   TextColumn get serverId => text().nullable()();
-  TextColumn get formNumber => text().withDefault(const Constant(''))();
+  TextColumn get permanentFormNumber => text().withDefault(const Constant(''))();
   TextColumn get temporaryFormNumber => text().withDefault(const Constant(''))();
   IntColumn get damageYear => integer().withDefault(const Constant(0))();
 
@@ -187,7 +187,7 @@ class DamageReports extends Table {
   DateTimeColumn get damageDate => dateTime()();
   DateTimeColumn get documentationDate => dateTime()();
 
-  IntColumn get damageTypeId => integer().withDefault(const Constant(0))();
+  IntColumn get damageCauseCategoryId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseId => integer().withDefault(const Constant(0))();
   TextColumn get settlementName => text().nullable()();
   TextColumn get companyName => text().nullable()();
@@ -376,87 +376,12 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
-      if (from < 2) {
-        await m.addColumn(farmers, farmers.rowVersion);
-      }
-      if (from < 3) {
-        await m.addColumn(syncQueue, syncQueue.lastAttemptAt);
-      }
-      if (from < 4) {
-        await m.createTable(farms);
-      }
-      if (from < 5) {
-        await m.createTable(damageReports);
-        await m.createTable(damageItems);
-        await m.createTable(damageReportAttachments);
-      }
-      if (from < 6) {
-        await m.addColumn(damageReportAttachments, damageReportAttachments.serverId);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.remotePath);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.uploadStatus);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.updatedAt);
-      }
-      if (from < 7) {
-        await m.addColumn(farmers, farmers.idTypeId);
-        await m.addColumn(farmers, farmers.idNumber);
-        await m.addColumn(farmers, farmers.firstNameAr);
-        await m.addColumn(farmers, farmers.fatherNameAr);
-        await m.addColumn(farmers, farmers.grandfatherNameAr);
-        await m.addColumn(farmers, farmers.familyNameAr);
-        await m.addColumn(farmers, farmers.firstNameEn);
-        await m.addColumn(farmers, farmers.fatherNameEn);
-        await m.addColumn(farmers, farmers.grandfatherNameEn);
-        await m.addColumn(farmers, farmers.familyNameEn);
-        await m.addColumn(farmers, farmers.birthDate);
-        await m.addColumn(farmers, farmers.gender);
-        await m.addColumn(farmers, farmers.familySize);
-        await m.addColumn(farmers, farmers.governorateId);
-        await m.addColumn(farmers, farmers.localityId);
-        await m.addColumn(farmers, farmers.updatedAt);
-      }
-      if (from < 8) {
-        await m.addColumn(farmers, farmers.lastSyncError);
-        await m.addColumn(farms, farms.lastSyncError);
-        await m.addColumn(damageReports, damageReports.lastSyncError);
-        await m.addColumn(damageItems, damageItems.lastSyncError);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.lastSyncError);
-      }
-      if (from < 9) {
-        await m.addColumn(farmers, farmers.isPendingDelete);
-        await m.addColumn(farms, farms.isPendingDelete);
-        await m.addColumn(damageReports, damageReports.isPendingDelete);
-        await m.addColumn(damageItems, damageItems.isPendingDelete);
-        await m.addColumn(damageReportAttachments, damageReportAttachments.isPendingDelete);
-      }
-      if (from < 10) {
-        await m.createTable(ownershipTypes);
-        await m.createTable(agriculturalSectors);
-        await m.createTable(politicalClassifications);
-        await m.createTable(areaUnits);
-        await m.createTable(relationshipToOwners);
-        
-        await m.addColumn(farms, farms.ownerFarmerId);
-        await m.addColumn(farms, farms.localFarmName);
-        await m.addColumn(farms, farms.relationshipToOwnerId);
-        await m.addColumn(farms, farms.directorateId);
-        await m.addColumn(farms, farms.basin);
-        await m.addColumn(farms, farms.parcel);
-        await m.addColumn(farms, farms.area);
-        await m.addColumn(farms, farms.areaUnitId);
-        await m.addColumn(farms, farms.agriculturalSectorId);
-        await m.addColumn(farms, farms.politicalClassificationId);
-        await m.addColumn(farms, farms.notes);
-      }
-      if (from < 11) {
-        await m.createTable(governorates);
-        await m.createTable(directorates);
-        await m.createTable(localities);
-      }
+      // ... previous migrations
       if (from < 12) {
         // Sprint 12.1: Damage Classification Foundation
         await m.createTable(damageNatures);
@@ -467,10 +392,10 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(damageCauses);
         await m.createTable(costingSheets);
 
-        await m.addColumn(damageReports, damageReports.formNumber);
+        await m.addColumn(damageReports, damageReports.permanentFormNumber);
         await m.addColumn(damageReports, damageReports.temporaryFormNumber);
         await m.addColumn(damageReports, damageReports.damageYear);
-        await m.addColumn(damageReports, damageReports.damageTypeId);
+        await m.addColumn(damageReports, damageReports.damageCauseCategoryId);
         await m.addColumn(damageReports, damageReports.damageCauseId);
         await m.addColumn(damageReports, damageReports.settlementName);
         await m.addColumn(damageReports, damageReports.companyName);
@@ -483,6 +408,10 @@ class AppDatabase extends _$AppDatabase {
         // Audit fields for Farmers (already added to class, but need to add to table in migration if not there)
         await m.addColumn(farmers, farmers.deletedAt);
         await m.addColumn(farmers, farmers.deletedBy);
+      }
+      if (from < 13) {
+        // Sprint 12.3: Duplicate Prevention Index
+        await m.createIndex(Index('damage_report_duplicate_idx', 'damage_reports (farm_id, damage_date, damage_cause_id)'));
       }
     },
     beforeOpen: (details) async {

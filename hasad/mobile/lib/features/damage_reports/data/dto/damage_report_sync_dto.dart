@@ -10,7 +10,7 @@ class DamageReportSyncDto {
       'farmId': report.farmId,
       'farmerId': report.farmerId,
       'damageDate': report.damageDate.toIso8601String(),
-      'damageTypeId': report.damageTypeId,
+      'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
       'settlementName': report.settlementName,
       'companyName': report.companyName,
@@ -30,7 +30,7 @@ class DamageReportSyncDto {
     return {
       'id': report.serverId,
       'damageDate': report.damageDate.toIso8601String(),
-      'damageTypeId': report.damageTypeId,
+      'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
       'settlementName': report.settlementName,
       'companyName': report.companyName,

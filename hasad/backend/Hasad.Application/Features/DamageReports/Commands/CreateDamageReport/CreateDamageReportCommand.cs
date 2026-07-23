@@ -26,7 +26,7 @@ public record CreateDamageReportCommand(
     Guid FarmId,
     Guid FarmerId,
     DateTime DamageDate,
-    int DamageTypeId,
+    int DamageCauseCategoryId,
     int DamageCauseId,
     string? SettlementName,
     string? CompanyName,
@@ -41,44 +41,26 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly IDamageReportNumberService _numberService;
 
-    public CreateDamageReportCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+    public CreateDamageReportCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUser,
+        IDamageReportNumberService numberService)
     {
         _context = context;
         _currentUser = currentUser;
+        _numberService = numberService;
     }
 
     public async Task<Result<DamageReportDto>> Handle(CreateDamageReportCommand request, CancellationToken cancellationToken)
     {
-        // Authorization check
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
-        {
-            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
-            {
-                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
-            }
-        }
-        else if (_currentUser.IsInRole("Director"))
-        {
-            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
-            {
-                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
-            }
-        }
-
-        // Idempotency
-        var existing = await _context.DamageReports
+        // 1. Validation: Farm and Farmer must exist
+        var farm = await _context.Farms
             .AsNoTracking()
-            .Include(r => r.Items)
-            .FirstOrDefaultAsync(r => r.ClientId == request.ClientId, cancellationToken);
+            .FirstOrDefaultAsync(f => f.Id == request.FarmId, cancellationToken);
 
-        if (existing != null)
-        {
-            return Result<DamageReportDto>.Success(MapToDto(existing));
-        }
-
-        // Validation: Farm and Farmer must exist
-        if (!await _context.Farms.AnyAsync(f => f.Id == request.FarmId, cancellationToken))
+        if (farm == null)
         {
             return Result<DamageReportDto>.Failure(new[] { "Farm not found." });
         }
@@ -87,17 +69,61 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             return Result<DamageReportDto>.Failure(new[] { "Farmer not found." });
         }
 
+        // 2. Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer"))
+        {
+            if (_currentUser.DirectorateId.HasValue && farm.DirectorateId != _currentUser.DirectorateId.Value)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only create reports for farms within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("FieldSurveyor") || _currentUser.IsInRole("Director"))
+        {
+            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
+            }
+        }
+
+        // 3. Idempotency (ClientId)
+        var existingByClientId = await _context.DamageReports
+            .AsNoTracking()
+            .Include(r => r.Items)
+            .FirstOrDefaultAsync(r => r.ClientId == request.ClientId, cancellationToken);
+
+        if (existingByClientId != null)
+        {
+            return Result<DamageReportDto>.Success(MapToDto(existingByClientId));
+        }
+
+        // 4. Duplicate Prevention (Farm + Date + Cause)
+        var existingDuplicate = await _context.DamageReports
+            .AsNoTracking()
+            .AnyAsync(r => r.FarmId == request.FarmId &&
+                           r.DamageDate.Date == request.DamageDate.Date &&
+                           r.DamageCauseId == request.DamageCauseId,
+                      cancellationToken);
+
+        if (existingDuplicate)
+        {
+            return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm, date, and cause." });
+        }
+
+        // 5. Generate Permanent Number
+        var permanentNumber = await _numberService.GeneratePermanentNumberAsync(farm.DirectorateId, request.DamageYear, cancellationToken);
+
         var report = new DamageReport
         {
             Id = Guid.NewGuid(),
             ClientId = request.ClientId,
+            PermanentFormNumber = permanentNumber,
             TemporaryFormNumber = request.TemporaryFormNumber,
             DamageYear = request.DamageYear,
             FarmId = request.FarmId,
             FarmerId = request.FarmerId,
             DamageDate = request.DamageDate,
             DocumentationDate = DateTime.UtcNow,
-            DamageTypeId = request.DamageTypeId,
+            DamageCauseCategoryId = request.DamageCauseCategoryId,
             DamageCauseId = request.DamageCauseId,
             SettlementName = request.SettlementName,
             CompanyName = request.CompanyName,
@@ -134,14 +160,14 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
     {
         Id = report.Id,
         ClientId = report.ClientId,
-        FormNumber = report.FormNumber,
+        PermanentFormNumber = report.PermanentFormNumber,
         TemporaryFormNumber = report.TemporaryFormNumber,
         DamageYear = report.DamageYear,
         FarmId = report.FarmId,
         FarmerId = report.FarmerId,
         DamageDate = report.DamageDate,
         DocumentationDate = report.DocumentationDate,
-        DamageTypeId = report.DamageTypeId,
+        DamageCauseCategoryId = report.DamageCauseCategoryId,
         DamageCauseId = report.DamageCauseId,
         SettlementName = report.SettlementName,
         CompanyName = report.CompanyName,

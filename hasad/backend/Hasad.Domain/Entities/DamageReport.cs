@@ -7,7 +7,7 @@ public class DamageReport : ISoftDelete
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }
 
-    public string FormNumber { get; set; } = string.Empty;
+    public string PermanentFormNumber { get; set; } = string.Empty;
     public string TemporaryFormNumber { get; set; } = string.Empty;
     public int DamageYear { get; set; }
 
@@ -20,8 +20,8 @@ public class DamageReport : ISoftDelete
     public DateTime DamageDate { get; set; }
     public DateTime DocumentationDate { get; set; }
 
-    public int DamageTypeId { get; set; }
-    public DamageCauseCategory? DamageType { get; set; }
+    public int DamageCauseCategoryId { get; set; }
+    public DamageCauseCategory? DamageCauseCategory { get; set; }
 
     public int DamageCauseId { get; set; }
     public DamageCause? DamageCause { get; set; }

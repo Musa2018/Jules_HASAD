@@ -3003,18 +3003,18 @@ class $DamageReportsTable extends DamageReports
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _formNumberMeta = const VerificationMeta(
-    'formNumber',
-  );
+  static const VerificationMeta _permanentFormNumberMeta =
+      const VerificationMeta('permanentFormNumber');
   @override
-  late final GeneratedColumn<String> formNumber = GeneratedColumn<String>(
-    'form_number',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(''),
-  );
+  late final GeneratedColumn<String> permanentFormNumber =
+      GeneratedColumn<String>(
+        'permanent_form_number',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
   static const VerificationMeta _temporaryFormNumberMeta =
       const VerificationMeta('temporaryFormNumber');
   @override
@@ -3082,12 +3082,11 @@ class $DamageReportsTable extends DamageReports
         type: DriftSqlType.dateTime,
         requiredDuringInsert: true,
       );
-  static const VerificationMeta _damageTypeIdMeta = const VerificationMeta(
-    'damageTypeId',
-  );
+  static const VerificationMeta _damageCauseCategoryIdMeta =
+      const VerificationMeta('damageCauseCategoryId');
   @override
-  late final GeneratedColumn<int> damageTypeId = GeneratedColumn<int>(
-    'damage_type_id',
+  late final GeneratedColumn<int> damageCauseCategoryId = GeneratedColumn<int>(
+    'damage_cause_category_id',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -3272,14 +3271,14 @@ class $DamageReportsTable extends DamageReports
   List<GeneratedColumn> get $columns => [
     id,
     serverId,
-    formNumber,
+    permanentFormNumber,
     temporaryFormNumber,
     damageYear,
     farmId,
     farmerId,
     damageDate,
     documentationDate,
-    damageTypeId,
+    damageCauseCategoryId,
     damageCauseId,
     settlementName,
     companyName,
@@ -3319,10 +3318,13 @@ class $DamageReportsTable extends DamageReports
         serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
       );
     }
-    if (data.containsKey('form_number')) {
+    if (data.containsKey('permanent_form_number')) {
       context.handle(
-        _formNumberMeta,
-        formNumber.isAcceptableOrUnknown(data['form_number']!, _formNumberMeta),
+        _permanentFormNumberMeta,
+        permanentFormNumber.isAcceptableOrUnknown(
+          data['permanent_form_number']!,
+          _permanentFormNumberMeta,
+        ),
       );
     }
     if (data.containsKey('temporary_form_number')) {
@@ -3375,12 +3377,12 @@ class $DamageReportsTable extends DamageReports
     } else if (isInserting) {
       context.missing(_documentationDateMeta);
     }
-    if (data.containsKey('damage_type_id')) {
+    if (data.containsKey('damage_cause_category_id')) {
       context.handle(
-        _damageTypeIdMeta,
-        damageTypeId.isAcceptableOrUnknown(
-          data['damage_type_id']!,
-          _damageTypeIdMeta,
+        _damageCauseCategoryIdMeta,
+        damageCauseCategoryId.isAcceptableOrUnknown(
+          data['damage_cause_category_id']!,
+          _damageCauseCategoryIdMeta,
         ),
       );
     }
@@ -3517,9 +3519,9 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}server_id'],
       ),
-      formNumber: attachedDatabase.typeMapping.read(
+      permanentFormNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}form_number'],
+        data['${effectivePrefix}permanent_form_number'],
       )!,
       temporaryFormNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -3545,9 +3547,9 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.dateTime,
         data['${effectivePrefix}documentation_date'],
       )!,
-      damageTypeId: attachedDatabase.typeMapping.read(
+      damageCauseCategoryId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}damage_type_id'],
+        data['${effectivePrefix}damage_cause_category_id'],
       )!,
       damageCauseId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -3622,14 +3624,14 @@ class DamageReportLocal extends DataClass
     implements Insertable<DamageReportLocal> {
   final String id;
   final String? serverId;
-  final String formNumber;
+  final String permanentFormNumber;
   final String temporaryFormNumber;
   final int damageYear;
   final String farmId;
   final String farmerId;
   final DateTime damageDate;
   final DateTime documentationDate;
-  final int damageTypeId;
+  final int damageCauseCategoryId;
   final int damageCauseId;
   final String? settlementName;
   final String? companyName;
@@ -3648,14 +3650,14 @@ class DamageReportLocal extends DataClass
   const DamageReportLocal({
     required this.id,
     this.serverId,
-    required this.formNumber,
+    required this.permanentFormNumber,
     required this.temporaryFormNumber,
     required this.damageYear,
     required this.farmId,
     required this.farmerId,
     required this.damageDate,
     required this.documentationDate,
-    required this.damageTypeId,
+    required this.damageCauseCategoryId,
     required this.damageCauseId,
     this.settlementName,
     this.companyName,
@@ -3679,14 +3681,14 @@ class DamageReportLocal extends DataClass
     if (!nullToAbsent || serverId != null) {
       map['server_id'] = Variable<String>(serverId);
     }
-    map['form_number'] = Variable<String>(formNumber);
+    map['permanent_form_number'] = Variable<String>(permanentFormNumber);
     map['temporary_form_number'] = Variable<String>(temporaryFormNumber);
     map['damage_year'] = Variable<int>(damageYear);
     map['farm_id'] = Variable<String>(farmId);
     map['farmer_id'] = Variable<String>(farmerId);
     map['damage_date'] = Variable<DateTime>(damageDate);
     map['documentation_date'] = Variable<DateTime>(documentationDate);
-    map['damage_type_id'] = Variable<int>(damageTypeId);
+    map['damage_cause_category_id'] = Variable<int>(damageCauseCategoryId);
     map['damage_cause_id'] = Variable<int>(damageCauseId);
     if (!nullToAbsent || settlementName != null) {
       map['settlement_name'] = Variable<String>(settlementName);
@@ -3723,14 +3725,14 @@ class DamageReportLocal extends DataClass
       serverId: serverId == null && nullToAbsent
           ? const Value.absent()
           : Value(serverId),
-      formNumber: Value(formNumber),
+      permanentFormNumber: Value(permanentFormNumber),
       temporaryFormNumber: Value(temporaryFormNumber),
       damageYear: Value(damageYear),
       farmId: Value(farmId),
       farmerId: Value(farmerId),
       damageDate: Value(damageDate),
       documentationDate: Value(documentationDate),
-      damageTypeId: Value(damageTypeId),
+      damageCauseCategoryId: Value(damageCauseCategoryId),
       damageCauseId: Value(damageCauseId),
       settlementName: settlementName == null && nullToAbsent
           ? const Value.absent()
@@ -3769,7 +3771,9 @@ class DamageReportLocal extends DataClass
     return DamageReportLocal(
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
-      formNumber: serializer.fromJson<String>(json['formNumber']),
+      permanentFormNumber: serializer.fromJson<String>(
+        json['permanentFormNumber'],
+      ),
       temporaryFormNumber: serializer.fromJson<String>(
         json['temporaryFormNumber'],
       ),
@@ -3780,7 +3784,9 @@ class DamageReportLocal extends DataClass
       documentationDate: serializer.fromJson<DateTime>(
         json['documentationDate'],
       ),
-      damageTypeId: serializer.fromJson<int>(json['damageTypeId']),
+      damageCauseCategoryId: serializer.fromJson<int>(
+        json['damageCauseCategoryId'],
+      ),
       damageCauseId: serializer.fromJson<int>(json['damageCauseId']),
       settlementName: serializer.fromJson<String?>(json['settlementName']),
       companyName: serializer.fromJson<String?>(json['companyName']),
@@ -3804,14 +3810,14 @@ class DamageReportLocal extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
-      'formNumber': serializer.toJson<String>(formNumber),
+      'permanentFormNumber': serializer.toJson<String>(permanentFormNumber),
       'temporaryFormNumber': serializer.toJson<String>(temporaryFormNumber),
       'damageYear': serializer.toJson<int>(damageYear),
       'farmId': serializer.toJson<String>(farmId),
       'farmerId': serializer.toJson<String>(farmerId),
       'damageDate': serializer.toJson<DateTime>(damageDate),
       'documentationDate': serializer.toJson<DateTime>(documentationDate),
-      'damageTypeId': serializer.toJson<int>(damageTypeId),
+      'damageCauseCategoryId': serializer.toJson<int>(damageCauseCategoryId),
       'damageCauseId': serializer.toJson<int>(damageCauseId),
       'settlementName': serializer.toJson<String?>(settlementName),
       'companyName': serializer.toJson<String?>(companyName),
@@ -3833,14 +3839,14 @@ class DamageReportLocal extends DataClass
   DamageReportLocal copyWith({
     String? id,
     Value<String?> serverId = const Value.absent(),
-    String? formNumber,
+    String? permanentFormNumber,
     String? temporaryFormNumber,
     int? damageYear,
     String? farmId,
     String? farmerId,
     DateTime? damageDate,
     DateTime? documentationDate,
-    int? damageTypeId,
+    int? damageCauseCategoryId,
     int? damageCauseId,
     Value<String?> settlementName = const Value.absent(),
     Value<String?> companyName = const Value.absent(),
@@ -3859,14 +3865,14 @@ class DamageReportLocal extends DataClass
   }) => DamageReportLocal(
     id: id ?? this.id,
     serverId: serverId.present ? serverId.value : this.serverId,
-    formNumber: formNumber ?? this.formNumber,
+    permanentFormNumber: permanentFormNumber ?? this.permanentFormNumber,
     temporaryFormNumber: temporaryFormNumber ?? this.temporaryFormNumber,
     damageYear: damageYear ?? this.damageYear,
     farmId: farmId ?? this.farmId,
     farmerId: farmerId ?? this.farmerId,
     damageDate: damageDate ?? this.damageDate,
     documentationDate: documentationDate ?? this.documentationDate,
-    damageTypeId: damageTypeId ?? this.damageTypeId,
+    damageCauseCategoryId: damageCauseCategoryId ?? this.damageCauseCategoryId,
     damageCauseId: damageCauseId ?? this.damageCauseId,
     settlementName: settlementName.present
         ? settlementName.value
@@ -3891,9 +3897,9 @@ class DamageReportLocal extends DataClass
     return DamageReportLocal(
       id: data.id.present ? data.id.value : this.id,
       serverId: data.serverId.present ? data.serverId.value : this.serverId,
-      formNumber: data.formNumber.present
-          ? data.formNumber.value
-          : this.formNumber,
+      permanentFormNumber: data.permanentFormNumber.present
+          ? data.permanentFormNumber.value
+          : this.permanentFormNumber,
       temporaryFormNumber: data.temporaryFormNumber.present
           ? data.temporaryFormNumber.value
           : this.temporaryFormNumber,
@@ -3908,9 +3914,9 @@ class DamageReportLocal extends DataClass
       documentationDate: data.documentationDate.present
           ? data.documentationDate.value
           : this.documentationDate,
-      damageTypeId: data.damageTypeId.present
-          ? data.damageTypeId.value
-          : this.damageTypeId,
+      damageCauseCategoryId: data.damageCauseCategoryId.present
+          ? data.damageCauseCategoryId.value
+          : this.damageCauseCategoryId,
       damageCauseId: data.damageCauseId.present
           ? data.damageCauseId.value
           : this.damageCauseId,
@@ -3952,14 +3958,14 @@ class DamageReportLocal extends DataClass
     return (StringBuffer('DamageReportLocal(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
-          ..write('formNumber: $formNumber, ')
+          ..write('permanentFormNumber: $permanentFormNumber, ')
           ..write('temporaryFormNumber: $temporaryFormNumber, ')
           ..write('damageYear: $damageYear, ')
           ..write('farmId: $farmId, ')
           ..write('farmerId: $farmerId, ')
           ..write('damageDate: $damageDate, ')
           ..write('documentationDate: $documentationDate, ')
-          ..write('damageTypeId: $damageTypeId, ')
+          ..write('damageCauseCategoryId: $damageCauseCategoryId, ')
           ..write('damageCauseId: $damageCauseId, ')
           ..write('settlementName: $settlementName, ')
           ..write('companyName: $companyName, ')
@@ -3983,14 +3989,14 @@ class DamageReportLocal extends DataClass
   int get hashCode => Object.hashAll([
     id,
     serverId,
-    formNumber,
+    permanentFormNumber,
     temporaryFormNumber,
     damageYear,
     farmId,
     farmerId,
     damageDate,
     documentationDate,
-    damageTypeId,
+    damageCauseCategoryId,
     damageCauseId,
     settlementName,
     companyName,
@@ -4013,14 +4019,14 @@ class DamageReportLocal extends DataClass
       (other is DamageReportLocal &&
           other.id == this.id &&
           other.serverId == this.serverId &&
-          other.formNumber == this.formNumber &&
+          other.permanentFormNumber == this.permanentFormNumber &&
           other.temporaryFormNumber == this.temporaryFormNumber &&
           other.damageYear == this.damageYear &&
           other.farmId == this.farmId &&
           other.farmerId == this.farmerId &&
           other.damageDate == this.damageDate &&
           other.documentationDate == this.documentationDate &&
-          other.damageTypeId == this.damageTypeId &&
+          other.damageCauseCategoryId == this.damageCauseCategoryId &&
           other.damageCauseId == this.damageCauseId &&
           other.settlementName == this.settlementName &&
           other.companyName == this.companyName &&
@@ -4041,14 +4047,14 @@ class DamageReportLocal extends DataClass
 class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> id;
   final Value<String?> serverId;
-  final Value<String> formNumber;
+  final Value<String> permanentFormNumber;
   final Value<String> temporaryFormNumber;
   final Value<int> damageYear;
   final Value<String> farmId;
   final Value<String> farmerId;
   final Value<DateTime> damageDate;
   final Value<DateTime> documentationDate;
-  final Value<int> damageTypeId;
+  final Value<int> damageCauseCategoryId;
   final Value<int> damageCauseId;
   final Value<String?> settlementName;
   final Value<String?> companyName;
@@ -4068,14 +4074,14 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   const DamageReportsCompanion({
     this.id = const Value.absent(),
     this.serverId = const Value.absent(),
-    this.formNumber = const Value.absent(),
+    this.permanentFormNumber = const Value.absent(),
     this.temporaryFormNumber = const Value.absent(),
     this.damageYear = const Value.absent(),
     this.farmId = const Value.absent(),
     this.farmerId = const Value.absent(),
     this.damageDate = const Value.absent(),
     this.documentationDate = const Value.absent(),
-    this.damageTypeId = const Value.absent(),
+    this.damageCauseCategoryId = const Value.absent(),
     this.damageCauseId = const Value.absent(),
     this.settlementName = const Value.absent(),
     this.companyName = const Value.absent(),
@@ -4096,14 +4102,14 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   DamageReportsCompanion.insert({
     required String id,
     this.serverId = const Value.absent(),
-    this.formNumber = const Value.absent(),
+    this.permanentFormNumber = const Value.absent(),
     this.temporaryFormNumber = const Value.absent(),
     this.damageYear = const Value.absent(),
     required String farmId,
     required String farmerId,
     required DateTime damageDate,
     required DateTime documentationDate,
-    this.damageTypeId = const Value.absent(),
+    this.damageCauseCategoryId = const Value.absent(),
     this.damageCauseId = const Value.absent(),
     this.settlementName = const Value.absent(),
     this.companyName = const Value.absent(),
@@ -4132,14 +4138,14 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   static Insertable<DamageReportLocal> custom({
     Expression<String>? id,
     Expression<String>? serverId,
-    Expression<String>? formNumber,
+    Expression<String>? permanentFormNumber,
     Expression<String>? temporaryFormNumber,
     Expression<int>? damageYear,
     Expression<String>? farmId,
     Expression<String>? farmerId,
     Expression<DateTime>? damageDate,
     Expression<DateTime>? documentationDate,
-    Expression<int>? damageTypeId,
+    Expression<int>? damageCauseCategoryId,
     Expression<int>? damageCauseId,
     Expression<String>? settlementName,
     Expression<String>? companyName,
@@ -4160,7 +4166,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (serverId != null) 'server_id': serverId,
-      if (formNumber != null) 'form_number': formNumber,
+      if (permanentFormNumber != null)
+        'permanent_form_number': permanentFormNumber,
       if (temporaryFormNumber != null)
         'temporary_form_number': temporaryFormNumber,
       if (damageYear != null) 'damage_year': damageYear,
@@ -4168,7 +4175,8 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (farmerId != null) 'farmer_id': farmerId,
       if (damageDate != null) 'damage_date': damageDate,
       if (documentationDate != null) 'documentation_date': documentationDate,
-      if (damageTypeId != null) 'damage_type_id': damageTypeId,
+      if (damageCauseCategoryId != null)
+        'damage_cause_category_id': damageCauseCategoryId,
       if (damageCauseId != null) 'damage_cause_id': damageCauseId,
       if (settlementName != null) 'settlement_name': settlementName,
       if (companyName != null) 'company_name': companyName,
@@ -4191,14 +4199,14 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   DamageReportsCompanion copyWith({
     Value<String>? id,
     Value<String?>? serverId,
-    Value<String>? formNumber,
+    Value<String>? permanentFormNumber,
     Value<String>? temporaryFormNumber,
     Value<int>? damageYear,
     Value<String>? farmId,
     Value<String>? farmerId,
     Value<DateTime>? damageDate,
     Value<DateTime>? documentationDate,
-    Value<int>? damageTypeId,
+    Value<int>? damageCauseCategoryId,
     Value<int>? damageCauseId,
     Value<String?>? settlementName,
     Value<String?>? companyName,
@@ -4219,14 +4227,15 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return DamageReportsCompanion(
       id: id ?? this.id,
       serverId: serverId ?? this.serverId,
-      formNumber: formNumber ?? this.formNumber,
+      permanentFormNumber: permanentFormNumber ?? this.permanentFormNumber,
       temporaryFormNumber: temporaryFormNumber ?? this.temporaryFormNumber,
       damageYear: damageYear ?? this.damageYear,
       farmId: farmId ?? this.farmId,
       farmerId: farmerId ?? this.farmerId,
       damageDate: damageDate ?? this.damageDate,
       documentationDate: documentationDate ?? this.documentationDate,
-      damageTypeId: damageTypeId ?? this.damageTypeId,
+      damageCauseCategoryId:
+          damageCauseCategoryId ?? this.damageCauseCategoryId,
       damageCauseId: damageCauseId ?? this.damageCauseId,
       settlementName: settlementName ?? this.settlementName,
       companyName: companyName ?? this.companyName,
@@ -4255,8 +4264,10 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (serverId.present) {
       map['server_id'] = Variable<String>(serverId.value);
     }
-    if (formNumber.present) {
-      map['form_number'] = Variable<String>(formNumber.value);
+    if (permanentFormNumber.present) {
+      map['permanent_form_number'] = Variable<String>(
+        permanentFormNumber.value,
+      );
     }
     if (temporaryFormNumber.present) {
       map['temporary_form_number'] = Variable<String>(
@@ -4278,8 +4289,10 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (documentationDate.present) {
       map['documentation_date'] = Variable<DateTime>(documentationDate.value);
     }
-    if (damageTypeId.present) {
-      map['damage_type_id'] = Variable<int>(damageTypeId.value);
+    if (damageCauseCategoryId.present) {
+      map['damage_cause_category_id'] = Variable<int>(
+        damageCauseCategoryId.value,
+      );
     }
     if (damageCauseId.present) {
       map['damage_cause_id'] = Variable<int>(damageCauseId.value);
@@ -4337,14 +4350,14 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return (StringBuffer('DamageReportsCompanion(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
-          ..write('formNumber: $formNumber, ')
+          ..write('permanentFormNumber: $permanentFormNumber, ')
           ..write('temporaryFormNumber: $temporaryFormNumber, ')
           ..write('damageYear: $damageYear, ')
           ..write('farmId: $farmId, ')
           ..write('farmerId: $farmerId, ')
           ..write('damageDate: $damageDate, ')
           ..write('documentationDate: $documentationDate, ')
-          ..write('damageTypeId: $damageTypeId, ')
+          ..write('damageCauseCategoryId: $damageCauseCategoryId, ')
           ..write('damageCauseId: $damageCauseId, ')
           ..write('settlementName: $settlementName, ')
           ..write('companyName: $companyName, ')
@@ -12382,14 +12395,14 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
     DamageReportsCompanion Function({
       required String id,
       Value<String?> serverId,
-      Value<String> formNumber,
+      Value<String> permanentFormNumber,
       Value<String> temporaryFormNumber,
       Value<int> damageYear,
       required String farmId,
       required String farmerId,
       required DateTime damageDate,
       required DateTime documentationDate,
-      Value<int> damageTypeId,
+      Value<int> damageCauseCategoryId,
       Value<int> damageCauseId,
       Value<String?> settlementName,
       Value<String?> companyName,
@@ -12411,14 +12424,14 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
     DamageReportsCompanion Function({
       Value<String> id,
       Value<String?> serverId,
-      Value<String> formNumber,
+      Value<String> permanentFormNumber,
       Value<String> temporaryFormNumber,
       Value<int> damageYear,
       Value<String> farmId,
       Value<String> farmerId,
       Value<DateTime> damageDate,
       Value<DateTime> documentationDate,
-      Value<int> damageTypeId,
+      Value<int> damageCauseCategoryId,
       Value<int> damageCauseId,
       Value<String?> settlementName,
       Value<String?> companyName,
@@ -12456,8 +12469,8 @@ class $$DamageReportsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get formNumber => $composableBuilder(
-    column: $table.formNumber,
+  ColumnFilters<String> get permanentFormNumber => $composableBuilder(
+    column: $table.permanentFormNumber,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12491,8 +12504,8 @@ class $$DamageReportsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get damageTypeId => $composableBuilder(
-    column: $table.damageTypeId,
+  ColumnFilters<int> get damageCauseCategoryId => $composableBuilder(
+    column: $table.damageCauseCategoryId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12591,8 +12604,8 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get formNumber => $composableBuilder(
-    column: $table.formNumber,
+  ColumnOrderings<String> get permanentFormNumber => $composableBuilder(
+    column: $table.permanentFormNumber,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12626,8 +12639,8 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get damageTypeId => $composableBuilder(
-    column: $table.damageTypeId,
+  ColumnOrderings<int> get damageCauseCategoryId => $composableBuilder(
+    column: $table.damageCauseCategoryId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12722,8 +12735,8 @@ class $$DamageReportsTableAnnotationComposer
   GeneratedColumn<String> get serverId =>
       $composableBuilder(column: $table.serverId, builder: (column) => column);
 
-  GeneratedColumn<String> get formNumber => $composableBuilder(
-    column: $table.formNumber,
+  GeneratedColumn<String> get permanentFormNumber => $composableBuilder(
+    column: $table.permanentFormNumber,
     builder: (column) => column,
   );
 
@@ -12753,8 +12766,8 @@ class $$DamageReportsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get damageTypeId => $composableBuilder(
-    column: $table.damageTypeId,
+  GeneratedColumn<int> get damageCauseCategoryId => $composableBuilder(
+    column: $table.damageCauseCategoryId,
     builder: (column) => column,
   );
 
@@ -12859,14 +12872,14 @@ class $$DamageReportsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
-                Value<String> formNumber = const Value.absent(),
+                Value<String> permanentFormNumber = const Value.absent(),
                 Value<String> temporaryFormNumber = const Value.absent(),
                 Value<int> damageYear = const Value.absent(),
                 Value<String> farmId = const Value.absent(),
                 Value<String> farmerId = const Value.absent(),
                 Value<DateTime> damageDate = const Value.absent(),
                 Value<DateTime> documentationDate = const Value.absent(),
-                Value<int> damageTypeId = const Value.absent(),
+                Value<int> damageCauseCategoryId = const Value.absent(),
                 Value<int> damageCauseId = const Value.absent(),
                 Value<String?> settlementName = const Value.absent(),
                 Value<String?> companyName = const Value.absent(),
@@ -12886,14 +12899,14 @@ class $$DamageReportsTableTableManager
               }) => DamageReportsCompanion(
                 id: id,
                 serverId: serverId,
-                formNumber: formNumber,
+                permanentFormNumber: permanentFormNumber,
                 temporaryFormNumber: temporaryFormNumber,
                 damageYear: damageYear,
                 farmId: farmId,
                 farmerId: farmerId,
                 damageDate: damageDate,
                 documentationDate: documentationDate,
-                damageTypeId: damageTypeId,
+                damageCauseCategoryId: damageCauseCategoryId,
                 damageCauseId: damageCauseId,
                 settlementName: settlementName,
                 companyName: companyName,
@@ -12915,14 +12928,14 @@ class $$DamageReportsTableTableManager
               ({
                 required String id,
                 Value<String?> serverId = const Value.absent(),
-                Value<String> formNumber = const Value.absent(),
+                Value<String> permanentFormNumber = const Value.absent(),
                 Value<String> temporaryFormNumber = const Value.absent(),
                 Value<int> damageYear = const Value.absent(),
                 required String farmId,
                 required String farmerId,
                 required DateTime damageDate,
                 required DateTime documentationDate,
-                Value<int> damageTypeId = const Value.absent(),
+                Value<int> damageCauseCategoryId = const Value.absent(),
                 Value<int> damageCauseId = const Value.absent(),
                 Value<String?> settlementName = const Value.absent(),
                 Value<String?> companyName = const Value.absent(),
@@ -12942,14 +12955,14 @@ class $$DamageReportsTableTableManager
               }) => DamageReportsCompanion.insert(
                 id: id,
                 serverId: serverId,
-                formNumber: formNumber,
+                permanentFormNumber: permanentFormNumber,
                 temporaryFormNumber: temporaryFormNumber,
                 damageYear: damageYear,
                 farmId: farmId,
                 farmerId: farmerId,
                 damageDate: damageDate,
                 documentationDate: documentationDate,
-                damageTypeId: damageTypeId,
+                damageCauseCategoryId: damageCauseCategoryId,
                 damageCauseId: damageCauseId,
                 settlementName: settlementName,
                 companyName: companyName,

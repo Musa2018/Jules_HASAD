@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:drift/drift.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
@@ -28,52 +31,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         _db.damageItems,
       )..where((t) => t.damageReportId.equals(r.id))).get();
 
-      results.add(
-        domain.DamageReport(
-          id: r.id,
-          serverId: r.serverId,
-          formNumber: r.formNumber,
-          temporaryFormNumber: r.temporaryFormNumber,
-          damageYear: r.damageYear,
-          farmId: r.farmId,
-          farmerId: r.farmerId,
-          damageDate: r.damageDate,
-          documentationDate: r.documentationDate,
-          damageTypeId: r.damageTypeId,
-          damageCauseId: r.damageCauseId,
-          settlementName: r.settlementName,
-          companyName: r.companyName,
-          governorateId: r.governorateId,
-          localityId: r.localityId,
-          latitude: r.latitude,
-          longitude: r.longitude,
-          statusId: r.statusId,
-          notes: r.notes,
-          rowVersion: r.rowVersion,
-          syncStatus: r.syncStatus,
-          lastSyncError: r.lastSyncError,
-          items: items
-              .map(
-                (i) => domain.DamageItem(
-                  id: i.id,
-                  serverId: i.serverId,
-                  damageReportId: i.damageReportId,
-                  classificationId: i.classificationId,
-                  costingSheetId: i.costingSheetId,
-                  calculatedUnitPrice: i.calculatedUnitPrice,
-                  measurementUnitSnapshot: i.measurementUnitSnapshot,
-                  affectedArea: i.affectedArea,
-                  damagePercentage: i.damagePercentage,
-                  quantity: i.quantity,
-                  estimatedLoss: i.estimatedLoss,
-                  rowVersion: i.rowVersion,
-                  syncStatus: i.syncStatus,
-                  lastSyncError: i.lastSyncError,
-                ),
-              )
-              .toList(),
-        ),
-      );
+      results.add(_mapToDomain(r, items));
     }
     return results;
   }
@@ -87,17 +45,21 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       _db.damageItems,
     )..where((t) => t.damageReportId.equals(r.id))).get();
 
+    return _mapToDomain(r, items);
+  }
+
+  domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items) {
     return domain.DamageReport(
       id: r.id,
       serverId: r.serverId,
-      formNumber: r.formNumber,
+      permanentFormNumber: r.permanentFormNumber,
       temporaryFormNumber: r.temporaryFormNumber,
       damageYear: r.damageYear,
       farmId: r.farmId,
       farmerId: r.farmerId,
       damageDate: r.damageDate,
       documentationDate: r.documentationDate,
-      damageTypeId: r.damageTypeId,
+      damageCauseCategoryId: r.damageCauseCategoryId,
       damageCauseId: r.damageCauseId,
       settlementName: r.settlementName,
       companyName: r.companyName,
@@ -137,14 +99,14 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     return DamageReportsCompanion.insert(
       id: report.id,
       serverId: Value(report.serverId),
-      formNumber: Value(report.formNumber),
+      permanentFormNumber: Value(report.permanentFormNumber),
       temporaryFormNumber: Value(report.temporaryFormNumber),
       damageYear: Value(report.damageYear),
       farmId: report.farmId,
       farmerId: report.farmerId,
       damageDate: report.damageDate,
       documentationDate: report.documentationDate,
-      damageTypeId: Value(report.damageTypeId),
+      damageCauseCategoryId: Value(report.damageCauseCategoryId),
       damageCauseId: Value(report.damageCauseId),
       settlementName: Value(report.settlementName),
       companyName: Value(report.companyName),
@@ -181,13 +143,33 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   Future<domain.DamageReport> createDamageReport(
     domain.DamageReport report,
   ) async {
+    // 1. Duplicate check (Local)
+    final existing = await (_db.select(_db.damageReports)
+          ..where((t) => t.farmId.equals(report.farmId) & 
+                         t.damageDate.equals(report.damageDate) &
+                         t.damageCauseId.equals(report.damageCauseId) &
+                         t.isPendingDelete.equals(false)))
+        .getSingleOrNull();
+    
+    if (existing != null) {
+      throw Exception('A damage report already exists for this farm, date, and cause.');
+    }
+
     final localId = report.id.isEmpty ? const Uuid().v4() : report.id;
+    final tempNumber = _generateTemporaryNumber();
+
+    final finalReport = report.copyWith(
+      id: localId,
+      temporaryFormNumber: tempNumber,
+      documentationDate: DateTime.now(),
+      damageYear: report.damageDate.year,
+    );
 
     await _db.transaction(() async {
       await _db
           .into(_db.damageReports)
           .insert(
-            _mapReportToCompanion(report).copyWith(
+            _mapReportToCompanion(finalReport).copyWith(
               id: Value(localId),
               syncStatus: const Value('pending'),
             ),
@@ -207,8 +189,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       }
     });
 
-    final createdReport = report.copyWith(
-      id: localId,
+    final createdReport = finalReport.copyWith(
       items: report.items
           .map((e) => e.copyWith(damageReportId: localId))
           .toList(),
@@ -224,10 +205,29 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     return createdReport;
   }
 
+  String _generateTemporaryNumber() {
+    final date = DateFormat('yyyyMMdd').format(DateTime.now());
+    final random = Random().nextInt(10000).toString().padLeft(4, '0');
+    return 'TEMP-$date-$random';
+  }
+
   @override
   Future<domain.DamageReport> updateDamageReport(
     domain.DamageReport report,
   ) async {
+    // Duplicate check on update
+    final existing = await (_db.select(_db.damageReports)
+          ..where((t) => t.id.equals(report.id).not() &
+                         t.farmId.equals(report.farmId) & 
+                         t.damageDate.equals(report.damageDate) &
+                         t.damageCauseId.equals(report.damageCauseId) &
+                         t.isPendingDelete.equals(false)))
+        .getSingleOrNull();
+    
+    if (existing != null) {
+      throw Exception('A damage report already exists for this farm, date, and cause.');
+    }
+
     await (_db.update(
       _db.damageReports,
     )..where((t) => t.id.equals(report.id))).write(

@@ -368,7 +368,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReport>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.FormNumber).HasMaxLength(50);
+            entity.Property(e => e.PermanentFormNumber).HasMaxLength(50);
             entity.Property(e => e.TemporaryFormNumber).HasMaxLength(50);
             entity.Property(e => e.GovernorateId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.LocalityId).IsRequired().HasMaxLength(50);
@@ -376,8 +376,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.Property(e => e.RowVersion).IsRowVersion();
 
             entity.HasIndex(e => e.ClientId).IsUnique();
-            entity.HasIndex(e => e.FormNumber).IsUnique();
-            entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasIndex(e => e.PermanentFormNumber).IsUnique();
+            entity.HasIndex(e => new { e.FarmId, e.DamageDate, e.DamageCauseId }).IsUnique().HasFilter("[IsDeleted] = 0");
             entity.HasIndex(e => e.FarmerId);
 
             entity.HasOne(e => e.Farm)
@@ -390,9 +390,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .HasForeignKey(e => e.FarmerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.DamageType)
+            entity.HasOne(e => e.DamageCauseCategory)
                 .WithMany()
-                .HasForeignKey(e => e.DamageTypeId)
+                .HasForeignKey(e => e.DamageCauseCategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.DamageCause)

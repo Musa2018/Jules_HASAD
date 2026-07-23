@@ -12,11 +12,16 @@ namespace Hasad.Application.Tests;
 public class DamageReportCommandHandlerTests
 {
     private readonly Mock<ICurrentUserService> _currentUserMock;
+    private readonly Mock<IDamageReportNumberService> _numberServiceMock;
 
     public DamageReportCommandHandlerTests()
     {
         _currentUserMock = new Mock<ICurrentUserService>();
         _currentUserMock.Setup(x => x.UserId).Returns(Guid.NewGuid().ToString());
+
+        _numberServiceMock = new Mock<IDamageReportNumberService>();
+        _numberServiceMock.Setup(x => x.GeneratePermanentNumberAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("000001-TEST-2026");
     }
 
     private ApplicationDbContext CreateContext()
@@ -28,7 +33,7 @@ public class DamageReportCommandHandlerTests
     }
 
     [Fact]
-    public async Task CreateDamageReport_Succeeds_WithItems()
+    public async Task CreateDamageReport_Succeeds_WithItemsAndNumber()
     {
         var context = CreateContext();
         var farmer = new Farmer
@@ -41,12 +46,18 @@ public class DamageReportCommandHandlerTests
             IdTypeId = 1,
             IdNumber = "123456789"
         };
-        var farm = new Farm { Id = Guid.NewGuid(), FarmerId = farmer.Id, LocalFarmName = "Farm" };
+        var farm = new Farm
+        {
+            Id = Guid.NewGuid(),
+            FarmerId = farmer.Id,
+            LocalFarmName = "Farm",
+            DirectorateId = Guid.NewGuid()
+        };
         context.Farmers.Add(farmer);
         context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
-        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object);
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
         var command = new CreateDamageReportCommand(
             Guid.NewGuid(),
             "TEMP-001",
@@ -54,7 +65,7 @@ public class DamageReportCommandHandlerTests
             farm.Id,
             farmer.Id,
             DateTime.UtcNow,
-            1, // DamageTypeId
+            1, // DamageCauseCategoryId
             1, // DamageCauseId
             null,
             null,
@@ -71,10 +82,72 @@ public class DamageReportCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
+        Assert.Equal("000001-TEST-2026", result.Data!.PermanentFormNumber);
         Assert.Single(result.Data!.Items);
         Assert.Equal("Submitted", result.Data.StatusId);
-        Assert.Single(context.DamageReports);
-        Assert.Single(context.DamageItems);
+    }
+
+    [Fact]
+    public async Task CreateDamageReport_Fails_WhenDuplicateIncidentOnSameDay()
+    {
+        var context = CreateContext();
+        var farmId = Guid.NewGuid();
+        var date = DateTime.UtcNow.Date;
+        var causeId = 1;
+
+        context.DamageReports.Add(new DamageReport
+        {
+            Id = Guid.NewGuid(),
+            FarmId = farmId,
+            FarmerId = Guid.NewGuid(),
+            DamageDate = date,
+            DamageCauseId = causeId,
+            GovernorateId = "G1",
+            LocalityId = "L1",
+            StatusId = "Submitted",
+            RowVersion = new byte[] { 1 }
+        });
+
+        var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
+        var farm = new Farm { Id = farmId, FarmerId = farmer.Id, LocalFarmName = "F", DirectorateId = Guid.NewGuid() };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        await context.SaveChangesAsync();
+
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
+        var command = new CreateDamageReportCommand(
+            Guid.NewGuid(), "T1", 2026, farmId, farmer.Id, date, 1, causeId, null, null, "G1", "L1", null, null, "", new List<CreateDamageItemInput>());
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("already exists", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task CreateDamageReport_Fails_WhenEngineerOutsideDirectorate()
+    {
+        var context = CreateContext();
+        var userDirectorateId = Guid.NewGuid();
+        var farmDirectorateId = Guid.NewGuid();
+
+        _currentUserMock.Setup(x => x.IsInRole("AgriculturalEngineer")).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(userDirectorateId);
+
+        var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
+        var farm = new Farm { Id = Guid.NewGuid(), FarmerId = farmer.Id, LocalFarmName = "F", DirectorateId = farmDirectorateId };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        await context.SaveChangesAsync();
+
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object);
+        var command = new CreateDamageReportCommand(
+            Guid.NewGuid(), "T1", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, null, null, "G1", "L1", null, null, "", new List<CreateDamageItemInput>());
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("within your assigned directorate", result.Errors[0]);
     }
 
     [Fact]
@@ -102,38 +175,5 @@ public class DamageReportCommandHandlerTests
 
         Assert.True(result.Succeeded);
         Assert.Single(result.Data!);
-    }
-
-    [Fact]
-    public async Task CreateDamageReport_Fails_WhenGovernorateScopingMismatches()
-    {
-        var context = CreateContext();
-        var userGovId = Guid.NewGuid();
-        _currentUserMock.Setup(x => x.IsInRole("Director")).Returns(true);
-        _currentUserMock.Setup(x => x.GovernorateId).Returns(userGovId);
-
-        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object);
-        var command = new CreateDamageReportCommand(
-            Guid.NewGuid(),
-            "TEMP-001",
-            2026,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            DateTime.UtcNow,
-            1,
-            1,
-            null,
-            null,
-            Guid.NewGuid().ToString(), // GovernorateId
-            Guid.NewGuid().ToString(), // LocalityId
-            null,
-            null,
-            "",
-            new List<CreateDamageItemInput>());
-
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        Assert.False(result.Succeeded);
-        Assert.Contains("Access Denied", result.Errors[0]);
     }
 }

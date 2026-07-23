@@ -206,7 +206,9 @@ class BackgroundSyncService {
           if (item.retryCount >= 3) continue;
 
           // Simple backoff: 0, 5, 15 minutes
-          if (item.lastAttemptAt != null) {
+          // skip backoff for dependency errors to allow fast resolution in same loop
+          final isDependencyError = item.lastError?.contains('Waiting for') ?? false;
+          if (item.lastAttemptAt != null && !isDependencyError) {
             final waitMinutes =
                 item.retryCount == 1 ? 5 : (item.retryCount == 2 ? 15 : 0);
             if (now.difference(item.lastAttemptAt!).inMinutes < waitMinutes) {
@@ -271,7 +273,12 @@ class BackgroundSyncService {
           lastError: Value(e.toString()),
         ),
       );
-      await _updateEntitySyncStatus(item.entityType, item.localId, 'pending');
+      await _updateEntitySyncStatus(
+        item.entityType,
+        item.localId,
+        'pending',
+        error: e.toString(),
+      );
     } on SyncValidationException catch (e) {
       await _db.update(_db.syncQueue).replace(
         item.copyWith(status: 'invalid', lastError: Value(e.toString())),
@@ -365,6 +372,7 @@ class BackgroundSyncService {
         item.copyWith(
           status: 'failed',
           retryCount: item.retryCount + 1,
+          lastAttemptAt: Value(now),
           lastError: Value(e.toString()),
         ),
       );
@@ -514,18 +522,12 @@ class BackgroundSyncService {
   Future<void> _syncFarm(SyncQueueData item) async {
     final data = jsonDecode(item.data) as Map<String, dynamic>;
 
-    if (DebugLogger.enableSyncDebug) {
-      DebugLogger.logHeader('FARM SYNC');
-      DebugLogger.log('Operation: ${item.operation}');
-    }
-
     if (item.operation == 'delete') {
       final serverId = data['serverId'] ?? data['id'];
       if (serverId != null) {
         await _remoteFarmRepository.deleteFarm(serverId.toString());
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
-      if (DebugLogger.enableSyncDebug) DebugLogger.logFooter();
       return;
     }
 
@@ -534,9 +536,6 @@ class BackgroundSyncService {
     final resolvedFarmerId = await _resolveFarmerId(originalFarmerId);
     if (resolvedFarmerId != null) {
       data['farmerId'] = resolvedFarmerId;
-      if (DebugLogger.enableSyncDebug) {
-        DebugLogger.log('Resolved farmerId: $originalFarmerId -> $resolvedFarmerId');
-      }
     } else {
       // If we can't resolve a mandatory ID, we must wait for the parent to sync
       throw SyncDependencyException(['Waiting for Farmer ($originalFarmerId) to synchronize.']);
@@ -547,21 +546,12 @@ class BackgroundSyncService {
       final resolvedOwnerId = await _resolveFarmerId(originalOwnerId);
       if (resolvedOwnerId != null) {
         data['ownerFarmerId'] = resolvedOwnerId;
-        if (DebugLogger.enableSyncDebug) {
-          DebugLogger.log('Resolved ownerFarmerId: $originalOwnerId -> $resolvedOwnerId');
-        }
       } else {
         throw SyncDependencyException(['Waiting for Owner Farmer ($originalOwnerId) to synchronize.']);
       }
     }
 
-    if (DebugLogger.enableSyncDebug) {
-      DebugLogger.log('Payload after resolution:');
-      DebugLogger.logJson(data);
-    }
-
     final farm = farm_domain.Farm.fromJson(data);
-    // ... rest of the method
 
     if (item.operation == 'create') {
       final result = await _remoteFarmRepository.createFarm(farm);
@@ -587,7 +577,6 @@ class BackgroundSyncService {
         ),
       );
     }
-    if (DebugLogger.enableSyncDebug) DebugLogger.logFooter();
   }
 
   Future<void> _syncDamageReport(SyncQueueData item) async {
@@ -631,6 +620,7 @@ class BackgroundSyncService {
         )..where((t) => t.id.equals(item.localId))).write(
           DamageReportsCompanion(
             serverId: Value(result.serverId),
+            permanentFormNumber: Value(result.permanentFormNumber),
             rowVersion: Value(result.rowVersion),
             syncStatus: const Value('completed'),
             lastSyncError: const Value(null),
@@ -639,7 +629,7 @@ class BackgroundSyncService {
         for (var i in result.items) {
           await (_db.update(
             _db.damageItems,
-          )..where((t) => t.id.equals(i.id))).write(
+          )..where((t) => t.id.equals(i.id) | t.serverId.equals(i.serverId!))).write(
             DamageItemsCompanion(
               serverId: Value(i.serverId),
               rowVersion: Value(i.rowVersion),
@@ -837,11 +827,11 @@ class BackgroundSyncService {
             _db.damageReports,
           )..where((t) => t.id.equals(item.localId))).write(
             DamageReportsCompanion(
-              formNumber: Value(remoteReport.formNumber),
+              permanentFormNumber: Value(remoteReport.permanentFormNumber),
               temporaryFormNumber: Value(remoteReport.temporaryFormNumber),
               damageYear: Value(remoteReport.damageYear),
               damageDate: Value(remoteReport.damageDate),
-              damageTypeId: Value(remoteReport.damageTypeId),
+              damageCauseCategoryId: Value(remoteReport.damageCauseCategoryId),
               damageCauseId: Value(remoteReport.damageCauseId),
               settlementName: Value(remoteReport.settlementName),
               companyName: Value(remoteReport.companyName),

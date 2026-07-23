@@ -9,5 +9,5 @@ public class DamageClassification
     public string NameAr { get; set; } = string.Empty;
     public string NameEn { get; set; } = string.Empty;
 
-    public ICollection<CostingSheet> CostingSheets { get; set; } = new List<CostingSheet>();
+    public ICollection<CostingSheetItem> CostingSheetItems { get; set; } = new List<CostingSheetItem>();
 }

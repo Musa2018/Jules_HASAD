@@ -21,7 +21,7 @@ public record UpdateFarmCommand(
     string Basin,
     string Parcel,
     decimal Area,
-    int AreaUnitId,
+    int MeasurementUnitId,
     int AgriculturalSectorId,
     int PoliticalClassificationId,
     double? Latitude,
@@ -89,7 +89,7 @@ public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Resul
         farm.Basin = request.Basin;
         farm.Parcel = request.Parcel;
         farm.Area = request.Area;
-        farm.AreaUnitId = request.AreaUnitId;
+        farm.MeasurementUnitId = request.MeasurementUnitId;
         farm.AgriculturalSectorId = request.AgriculturalSectorId;
         farm.PoliticalClassificationId = request.PoliticalClassificationId;
         farm.Latitude = request.Latitude;
@@ -121,7 +121,7 @@ public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Resul
             Basin = farm.Basin,
             Parcel = farm.Parcel,
             Area = farm.Area,
-            AreaUnitId = farm.AreaUnitId,
+            MeasurementUnitId = farm.MeasurementUnitId,
             AgriculturalSectorId = farm.AgriculturalSectorId,
             PoliticalClassificationId = farm.PoliticalClassificationId,
             Latitude = farm.Latitude,
@@ -148,7 +148,7 @@ public class UpdateFarmCommandValidator : AbstractValidator<UpdateFarmCommand>
         RuleFor(v => v.Basin).NotEmpty().MaximumLength(100);
         RuleFor(v => v.Parcel).NotEmpty().MaximumLength(100);
         RuleFor(v => v.Area).GreaterThan(0);
-        RuleFor(v => v.AreaUnitId).NotEmpty();
+        RuleFor(v => v.MeasurementUnitId).NotEmpty();
         RuleFor(v => v.AgriculturalSectorId).NotEmpty();
         RuleFor(v => v.PoliticalClassificationId).NotEmpty();
         RuleFor(v => v.RowVersion).NotEmpty();

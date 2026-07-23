@@ -23,7 +23,7 @@ public class GetFarmsByFarmerQueryHandler : IRequestHandler<GetFarmsByFarmerQuer
             .AsNoTracking()
             .Include(f => f.OwnershipType)
             .Include(f => f.Locality)
-            .Include(f => f.AreaUnit)
+            .Include(f => f.MeasurementUnit)
             .Where(f => f.FarmerId == request.FarmerId)
             .Select(f => new FarmDto
             {
@@ -38,8 +38,8 @@ public class GetFarmsByFarmerQueryHandler : IRequestHandler<GetFarmsByFarmerQuer
                 Basin = f.Basin,
                 Parcel = f.Parcel,
                 Area = f.Area,
-                AreaUnitId = f.AreaUnitId,
-                AreaUnitName = f.AreaUnit != null ? f.AreaUnit.NameAr : null,
+                MeasurementUnitId = f.MeasurementUnitId,
+                MeasurementUnitName = f.MeasurementUnit != null ? f.MeasurementUnit.NameAr : null,
                 RowVersion = Convert.ToBase64String(f.RowVersion),
                 CreatedAt = f.CreatedAt
             })

@@ -61,8 +61,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Types of ownership for farms.</summary>
     public DbSet<OwnershipType> OwnershipTypes => Set<OwnershipType>();
 
-    /// <summary>Units of area for land.</summary>
-    public DbSet<AreaUnit> AreaUnits => Set<AreaUnit>();
+    /// <summary>Units of measurement (Area, Weight, Count, etc.).</summary>
+    public DbSet<MeasurementUnit> MeasurementUnits => Set<MeasurementUnit>();
 
     /// <summary>Agricultural sectors (Plant, Animal, Mixed).</summary>
     public DbSet<AgriculturalSector> AgriculturalSectors => Set<AgriculturalSector>();
@@ -101,7 +101,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<DamageCategory> DamageCategories => Set<DamageCategory>();
     public DbSet<DamageSubCategory> DamageSubCategories => Set<DamageSubCategory>();
     public DbSet<DamageClassification> DamageClassifications => Set<DamageClassification>();
-    public DbSet<CostingSheet> CostingSheets => Set<CostingSheet>();
+    public DbSet<CostingSheetCatalog> CostingSheetCatalogs => Set<CostingSheetCatalog>();
+    public DbSet<CostingSheetVersion> CostingSheetVersions => Set<CostingSheetVersion>();
+    public DbSet<CostingSheetItem> CostingSheetItems => Set<CostingSheetItem>();
 
     public DbSet<DamageCauseCategory> DamageCauseCategories => Set<DamageCauseCategory>();
     public DbSet<DamageCause> DamageCauses => Set<DamageCause>();
@@ -299,9 +301,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .HasForeignKey(f => f.LocalityId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(f => f.AreaUnit)
+            entity.HasOne(f => f.MeasurementUnit)
                 .WithMany()
-                .HasForeignKey(f => f.AreaUnitId)
+                .HasForeignKey(f => f.MeasurementUnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(f => f.AgriculturalSector)
@@ -345,13 +347,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             );
         });
 
-        builder.Entity<AreaUnit>(entity =>
+        builder.Entity<MeasurementUnit>(entity =>
         {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Category).IsRequired().HasMaxLength(50);
+
             entity.HasData(
-                new AreaUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum" },
-                new AreaUnit { Id = 2, NameAr = "متر مربع", NameEn = "Square Meter" },
-                new AreaUnit { Id = 3, NameAr = "هكتار", NameEn = "Hectare" },
-                new AreaUnit { Id = 4, NameAr = "أخرى", NameEn = "Other" }
+                new MeasurementUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum", Category = "Area" },
+                new MeasurementUnit { Id = 2, NameAr = "متر مربع", NameEn = "Square Meter", Category = "Area" },
+                new MeasurementUnit { Id = 3, NameAr = "هكتار", NameEn = "Hectare", Category = "Area" },
+                new MeasurementUnit { Id = 4, NameAr = "أخرى", NameEn = "Other", Category = "Area" }
             );
         });
 
@@ -429,9 +436,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .HasForeignKey(e => e.ClassificationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.CostingSheet)
+            entity.HasOne(e => e.CostingSheetItem)
                 .WithMany()
-                .HasForeignKey(e => e.CostingSheetId)
+                .HasForeignKey(e => e.CostingSheetItemId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -475,14 +482,42 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<CostingSheet>(entity =>
+        builder.Entity<CostingSheetCatalog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        builder.Entity<CostingSheetVersion>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasOne(e => e.Catalog)
+                .WithMany(c => c.Versions)
+                .HasForeignKey(e => e.CatalogId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<CostingSheetItem>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasOne(e => e.Version)
+                .WithMany(v => v.Items)
+                .HasForeignKey(e => e.VersionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             entity.HasOne(e => e.Classification)
-                .WithMany(c => c.CostingSheets)
+                .WithMany(c => c.CostingSheetItems)
                 .HasForeignKey(e => e.ClassificationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.MeasurementUnit)
+                .WithMany()
+                .HasForeignKey(e => e.MeasurementUnitId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 

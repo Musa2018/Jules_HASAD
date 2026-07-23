@@ -58,7 +58,7 @@ public class FarmCommandHandlerTests
             "Basin 1",
             "Parcel 2",
             100.5m,
-            1, // AreaUnitId
+            1, // MeasurementUnitId
             1, // AgriculturalSectorId
             1, // PoliticalClassificationId
             31.5,

@@ -48,8 +48,8 @@ public class Farm : ISoftDelete
 
     // Area
     public decimal Area { get; set; }
-    public int AreaUnitId { get; set; }
-    public AreaUnit? AreaUnit { get; set; }
+    public int MeasurementUnitId { get; set; }
+    public MeasurementUnit? MeasurementUnit { get; set; }
 
     public int AgriculturalSectorId { get; set; }
     public AgriculturalSector? AgriculturalSector { get; set; }

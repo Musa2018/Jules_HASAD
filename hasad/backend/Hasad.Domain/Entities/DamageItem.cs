@@ -13,8 +13,8 @@ public class DamageItem : ISoftDelete
     public int ClassificationId { get; set; }
     public DamageClassification? Classification { get; set; }
 
-    public Guid CostingSheetId { get; set; }
-    public CostingSheet? CostingSheet { get; set; }
+    public Guid CostingSheetItemId { get; set; }
+    public CostingSheetItem? CostingSheetItem { get; set; }
 
     public decimal CalculatedUnitPrice { get; set; }
     public string MeasurementUnitSnapshot { get; set; } = string.Empty;

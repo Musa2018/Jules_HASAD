@@ -14,7 +14,7 @@ public interface IApplicationDbContext
     DbSet<Farmer> Farmers { get; }
     DbSet<IdType> IdTypes { get; }
     DbSet<OwnershipType> OwnershipTypes { get; }
-    DbSet<AreaUnit> AreaUnits { get; }
+    DbSet<MeasurementUnit> MeasurementUnits { get; }
     DbSet<AgriculturalSector> AgriculturalSectors { get; }
     DbSet<PoliticalClassification> PoliticalClassifications { get; }
     DbSet<RelationshipToOwner> RelationshipToOwners { get; }
@@ -28,7 +28,9 @@ public interface IApplicationDbContext
     DbSet<DamageCategory> DamageCategories { get; }
     DbSet<DamageSubCategory> DamageSubCategories { get; }
     DbSet<DamageClassification> DamageClassifications { get; }
-    DbSet<CostingSheet> CostingSheets { get; }
+    DbSet<CostingSheetCatalog> CostingSheetCatalogs { get; }
+    DbSet<CostingSheetVersion> CostingSheetVersions { get; }
+    DbSet<CostingSheetItem> CostingSheetItems { get; }
 
     DbSet<DamageCauseCategory> DamageCauseCategories { get; }
     DbSet<DamageCause> DamageCauses { get; }

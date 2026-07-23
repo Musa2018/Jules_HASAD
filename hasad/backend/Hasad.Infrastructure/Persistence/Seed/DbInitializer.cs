@@ -1,5 +1,6 @@
 using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
+using Hasad.Domain.Enums;
 using Hasad.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -253,16 +254,37 @@ public static class DbInitializer
                 );
                 await SaveWithIdentityInsertAsync(context, "DamageClassifications");
 
-                // 5. Costing Sheets (No identity insert needed as Id is Guid)
-                Log.Information("Seeding CostingSheets...");
-                context.CostingSheets.Add(new CostingSheet
+                // 5. Costing Sheets (Hierarchy: Catalog -> Version -> Item)
+                Log.Information("Seeding Costing Catalog & Versions...");
+                var catalog = new CostingSheetCatalog
                 {
                     Id = Guid.NewGuid(),
+                    Name = "Official Pricing Catalog 2026",
+                    Description = "Baseline pricing for the 2026 damage assessment cycle.",
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = "System"
+                };
+                context.CostingSheetCatalogs.Add(catalog);
+
+                var version = new CostingSheetVersion
+                {
+                    Id = Guid.NewGuid(),
+                    CatalogId = catalog.Id,
+                    VersionNumber = 1,
+                    Status = CostingSheetStatus.Active,
+                    EffectiveFrom = new DateTime(2026, 1, 1),
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = "System"
+                };
+                context.CostingSheetVersions.Add(version);
+
+                context.CostingSheetItems.Add(new CostingSheetItem
+                {
+                    Id = Guid.NewGuid(),
+                    VersionId = version.Id,
                     ClassificationId = 2, // Age 5-10 years
                     UnitPrice = 100,
-                    EffectiveFrom = new DateTime(2026, 1, 1),
-                    IsActive = true,
-                    VersionNumber = 1,
+                    MeasurementUnitId = 1, // Dunum (from HasData in DbContext)
                     CreatedAt = DateTime.UtcNow
                 });
                 await context.SaveChangesAsync();

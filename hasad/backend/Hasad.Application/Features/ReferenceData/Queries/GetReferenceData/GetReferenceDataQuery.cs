@@ -1,5 +1,6 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
+using Hasad.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,8 +51,9 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             })
             .ToListAsync(cancellationToken);
 
-        dto.AreaUnits = await _context.AreaUnits
+        dto.AreaUnits = await _context.MeasurementUnits
             .AsNoTracking()
+            .Where(x => x.Category == "Area")
             .Select(x => new LookupDto
             {
                 Id = x.Id,
@@ -135,18 +137,19 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             })
             .ToListAsync(cancellationToken);
 
-        dto.CostingSheets = await _context.CostingSheets
+        dto.CostingSheets = await _context.CostingSheetItems
             .AsNoTracking()
-            .Where(x => x.IsActive)
+            .Include(x => x.Version)
+            .Where(x => x.Version!.Status == CostingSheetStatus.Active)
             .Select(x => new CostingSheetDto
             {
                 Id = x.Id,
                 ClassificationId = x.ClassificationId,
                 UnitPrice = x.UnitPrice,
-                EffectiveFrom = x.EffectiveFrom,
-                EffectiveTo = x.EffectiveTo,
-                IsActive = x.IsActive,
-                VersionNumber = x.VersionNumber
+                EffectiveFrom = x.Version!.EffectiveFrom,
+                EffectiveTo = x.Version.EffectiveTo,
+                IsActive = true,
+                VersionNumber = x.Version.VersionNumber
             })
             .ToListAsync(cancellationToken);
 

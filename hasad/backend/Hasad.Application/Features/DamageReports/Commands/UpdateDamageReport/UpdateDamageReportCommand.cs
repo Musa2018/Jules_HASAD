@@ -139,7 +139,7 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
                 Id = i.Id,
                 ClientId = i.ClientId,
                 ClassificationId = i.ClassificationId,
-                CostingSheetId = i.CostingSheetId,
+                CostingSheetId = i.CostingSheetItemId,
                 CalculatedUnitPrice = i.CalculatedUnitPrice,
                 MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
                 AffectedArea = i.AffectedArea,

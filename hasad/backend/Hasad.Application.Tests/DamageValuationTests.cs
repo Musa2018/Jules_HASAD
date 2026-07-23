@@ -1,6 +1,7 @@
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
 using Hasad.Domain.Entities;
+using Hasad.Domain.Enums;
 using Hasad.Infrastructure.Persistence;
 using Hasad.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -50,13 +51,22 @@ public class DamageValuationTests
 
         context.Farms.Add(farm);
         context.Farmers.Add(farmer);
-        context.CostingSheets.Add(new CostingSheet
+        var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
+        var version = new CostingSheetVersion
+        {
+            Id = Guid.NewGuid(),
+            CatalogId = catalog.Id,
+            Status = CostingSheetStatus.Active,
+            EffectiveFrom = damageDate.AddDays(-10)
+        };
+        context.CostingSheetCatalogs.Add(catalog);
+        context.CostingSheetVersions.Add(version);
+        context.CostingSheetItems.Add(new CostingSheetItem
         {
             Id = costingSheetId,
+            VersionId = version.Id,
             ClassificationId = classificationId,
-            UnitPrice = 50m,
-            EffectiveFrom = damageDate.AddDays(-10),
-            IsActive = true
+            UnitPrice = 50m
         });
         await context.SaveChangesAsync();
 
@@ -113,13 +123,22 @@ public class DamageValuationTests
 
         context.Farms.Add(farm);
         context.Farmers.Add(farmer);
-        context.CostingSheets.Add(new CostingSheet
+        var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
+        var version = new CostingSheetVersion
+        {
+            Id = Guid.NewGuid(),
+            CatalogId = catalog.Id,
+            Status = CostingSheetStatus.Active,
+            EffectiveFrom = DateTime.UtcNow.AddDays(-10)
+        };
+        context.CostingSheetCatalogs.Add(catalog);
+        context.CostingSheetVersions.Add(version);
+        context.CostingSheetItems.Add(new CostingSheetItem
         {
             Id = wrongCostingSheetId,
+            VersionId = version.Id,
             ClassificationId = 999, // Different!
-            UnitPrice = 50m,
-            EffectiveFrom = DateTime.UtcNow.AddDays(-10),
-            IsActive = true
+            UnitPrice = 50m
         });
         await context.SaveChangesAsync();
 
@@ -150,13 +169,22 @@ public class DamageValuationTests
 
         context.Farms.Add(farm);
         context.Farmers.Add(farmer);
-        context.CostingSheets.Add(new CostingSheet
+        var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
+        var version = new CostingSheetVersion
+        {
+            Id = Guid.NewGuid(),
+            CatalogId = catalog.Id,
+            Status = CostingSheetStatus.Active,
+            EffectiveFrom = damageDate.AddDays(1) // Starts tomorrow!
+        };
+        context.CostingSheetCatalogs.Add(catalog);
+        context.CostingSheetVersions.Add(version);
+        context.CostingSheetItems.Add(new CostingSheetItem
         {
             Id = costingSheetId,
+            VersionId = version.Id,
             ClassificationId = classificationId,
-            UnitPrice = 50m,
-            EffectiveFrom = damageDate.AddDays(1), // Starts tomorrow!
-            IsActive = true
+            UnitPrice = 50m
         });
         await context.SaveChangesAsync();
 

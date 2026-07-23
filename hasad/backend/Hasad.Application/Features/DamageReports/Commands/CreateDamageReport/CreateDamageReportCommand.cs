@@ -145,7 +145,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
                 Id = Guid.NewGuid(),
                 ClientId = itemInput.ClientId,
                 ClassificationId = itemInput.ClassificationId,
-                CostingSheetId = itemInput.CostingSheetId,
+                CostingSheetItemId = itemInput.CostingSheetId,
                 CalculatedUnitPrice = unitPrice, // Authority price
                 MeasurementUnitSnapshot = itemInput.MeasurementUnitSnapshot,
                 AffectedArea = itemInput.AffectedArea,
@@ -215,7 +215,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             Id = i.Id,
             ClientId = i.ClientId,
             ClassificationId = i.ClassificationId,
-            CostingSheetId = i.CostingSheetId,
+            CostingSheetId = i.CostingSheetItemId,
             CalculatedUnitPrice = i.CalculatedUnitPrice,
             MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
             AffectedArea = i.AffectedArea,

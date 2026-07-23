@@ -35,8 +35,8 @@ public class FarmDto
 
     // Area
     public decimal Area { get; set; }
-    public int AreaUnitId { get; set; }
-    public string? AreaUnitName { get; set; }
+    public int MeasurementUnitId { get; set; }
+    public string? MeasurementUnitName { get; set; }
 
     public int AgriculturalSectorId { get; set; }
     public string? AgriculturalSectorName { get; set; }

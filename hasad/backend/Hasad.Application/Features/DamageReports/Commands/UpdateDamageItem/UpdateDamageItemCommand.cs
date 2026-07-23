@@ -98,7 +98,7 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
         }
 
         item.ClassificationId = request.ClassificationId;
-        item.CostingSheetId = request.CostingSheetId;
+        item.CostingSheetItemId = request.CostingSheetId;
         item.CalculatedUnitPrice = unitPrice; // Authority price
         item.MeasurementUnitSnapshot = request.MeasurementUnitSnapshot;
         item.AffectedArea = request.AffectedArea;
@@ -121,7 +121,7 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
             Id = item.Id,
             ClientId = item.ClientId,
             ClassificationId = item.ClassificationId,
-            CostingSheetId = item.CostingSheetId,
+            CostingSheetId = item.CostingSheetItemId,
             CalculatedUnitPrice = item.CalculatedUnitPrice,
             MeasurementUnitSnapshot = item.MeasurementUnitSnapshot,
             AffectedArea = item.AffectedArea,

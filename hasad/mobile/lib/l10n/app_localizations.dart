@@ -650,6 +650,78 @@ abstract class AppLocalizations {
   /// **'Land Area'**
   String get landArea;
 
+  /// No description provided for @measurementUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement Unit'**
+  String get measurementUnit;
+
+  /// No description provided for @unitCategory_Area.
+  ///
+  /// In en, this message translates to:
+  /// **'Area'**
+  String get unitCategory_Area;
+
+  /// No description provided for @unitCategory_Weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get unitCategory_Weight;
+
+  /// No description provided for @unitCategory_Count.
+  ///
+  /// In en, this message translates to:
+  /// **'Count'**
+  String get unitCategory_Count;
+
+  /// No description provided for @unitCategory_Volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get unitCategory_Volume;
+
+  /// No description provided for @assessmentItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment Item'**
+  String get assessmentItem;
+
+  /// No description provided for @quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get quantity;
+
+  /// No description provided for @damagePercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Percentage (%)'**
+  String get damagePercentage;
+
+  /// No description provided for @affectedAreaOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected Area (Optional)'**
+  String get affectedAreaOptional;
+
+  /// No description provided for @unitPriceSnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Price (Snapshot)'**
+  String get unitPriceSnapshot;
+
+  /// No description provided for @pricingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing not found. Please contact support or sync reference data.'**
+  String get pricingNotFound;
+
+  /// No description provided for @technicalValuation.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Valuation:'**
+  String get technicalValuation;
+
   /// No description provided for @unit.
   ///
   /// In en, this message translates to:

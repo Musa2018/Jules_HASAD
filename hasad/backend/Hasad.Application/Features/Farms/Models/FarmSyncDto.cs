@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace Hasad.Application.Features.Farms.Models;
 
@@ -21,6 +22,10 @@ public class FarmSyncDto
     public string Parcel { get; set; } = string.Empty;
     public decimal Area { get; set; }
     public int AreaUnitId { get; set; }
+
+    [JsonPropertyName("measurementUnitId")]
+    public int MeasurementUnitId => AreaUnitId;
+
     public int AgriculturalSectorId { get; set; }
     public int PoliticalClassificationId { get; set; }
     public double? Latitude { get; set; }

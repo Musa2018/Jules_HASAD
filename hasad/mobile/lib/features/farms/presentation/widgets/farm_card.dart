@@ -57,9 +57,9 @@ class FarmCard extends ConsumerWidget {
       if (item != null) sectorText = isAr ? item.nameAr : item.nameEn;
     });
 
-    String areaUnitText = farm.areaUnitId.toString();
+    String areaUnitText = (farm.measurementUnitId ?? farm.areaUnitId).toString();
     areaUnitsAsync.whenData((items) {
-      final item = items.where((i) => i.id == farm.areaUnitId).firstOrNull;
+      final item = items.where((i) => i.id == (farm.measurementUnitId ?? farm.areaUnitId)).firstOrNull;
       if (item != null) areaUnitText = isAr ? item.nameAr : item.nameEn;
     });
 

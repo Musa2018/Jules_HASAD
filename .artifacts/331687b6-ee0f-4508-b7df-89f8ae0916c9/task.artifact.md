@@ -1,0 +1,23 @@
+# Tasks - Flutter Client Terminology Update (Phase 2C)
+
+- [x] Localization Alignment
+    - [x] Update `app_en.arb` with new keys
+    - [x] Update `app_ar.arb` with new keys
+- [x] Domain Alignment
+    - [x] Review `farm.dart` documentation
+    - [x] Review `damage_item.dart` documentation
+- [x] Farm UI Updates
+    - [x] Update `FarmFormScreen` labels and unit selector
+    - [x] Update `FarmDetailsScreen` labels
+    - [x] Update `FarmCard` labels
+- [x] Damage Assessment UI Updates
+    - [x] Update `DamageItemFormSheet` with localized labels
+    - [x] Update `ValuationPreview` components
+- [x] Verification & Testing
+    - [x] Run `flutter analyze`
+    - [x] Run `flutter test`
+    - [x] Verify backward compatibility for `areaUnitId`
+- [x] Documentation Updates
+    - [x] Update `AI_CONTEXT.md`
+    - [x] Update `PROJECT_STATUS.md`
+    - [x] Update `CHANGELOG.md`

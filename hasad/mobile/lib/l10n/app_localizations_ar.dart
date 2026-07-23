@@ -286,7 +286,44 @@ class AppLocalizationsAr extends AppLocalizations {
   String get locality => 'التجمع السكاني';
 
   @override
-  String get landArea => 'مساحة الأرض';
+  String get landArea => 'المساحة';
+
+  @override
+  String get measurementUnit => 'وحدة القياس';
+
+  @override
+  String get unitCategory_Area => 'مساحة';
+
+  @override
+  String get unitCategory_Weight => 'وزن';
+
+  @override
+  String get unitCategory_Count => 'عدد';
+
+  @override
+  String get unitCategory_Volume => 'حجم';
+
+  @override
+  String get assessmentItem => 'بند التقييم';
+
+  @override
+  String get quantity => 'الكمية';
+
+  @override
+  String get damagePercentage => 'نسبة الضرر (%)';
+
+  @override
+  String get affectedAreaOptional => 'المساحة المتضررة (اختياري)';
+
+  @override
+  String get unitPriceSnapshot => 'سعر الوحدة (لحظي)';
+
+  @override
+  String get pricingNotFound =>
+      'التسعير غير موجود. يرجى الاتصال بالدعم أو مزامنة البيانات المرجعية.';
+
+  @override
+  String get technicalValuation => 'التقييم الفني:';
 
   @override
   String get unit => 'الوحدة';

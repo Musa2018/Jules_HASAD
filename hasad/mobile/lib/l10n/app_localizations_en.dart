@@ -289,6 +289,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landArea => 'Land Area';
 
   @override
+  String get measurementUnit => 'Measurement Unit';
+
+  @override
+  String get unitCategory_Area => 'Area';
+
+  @override
+  String get unitCategory_Weight => 'Weight';
+
+  @override
+  String get unitCategory_Count => 'Count';
+
+  @override
+  String get unitCategory_Volume => 'Volume';
+
+  @override
+  String get assessmentItem => 'Assessment Item';
+
+  @override
+  String get quantity => 'Quantity';
+
+  @override
+  String get damagePercentage => 'Damage Percentage (%)';
+
+  @override
+  String get affectedAreaOptional => 'Affected Area (Optional)';
+
+  @override
+  String get unitPriceSnapshot => 'Unit Price (Snapshot)';
+
+  @override
+  String get pricingNotFound =>
+      'Pricing not found. Please contact support or sync reference data.';
+
+  @override
+  String get technicalValuation => 'Technical Valuation:';
+
+  @override
   String get unit => 'Unit';
 
   @override

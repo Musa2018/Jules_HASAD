@@ -56,9 +56,11 @@ The workflow is implemented as a rigid state machine. Transitions are restricted
   - `ApprovedAmount` (modified by GM/Finance).
   - This ensures the technical record remains unchanged even if the financial payout is adjusted.
 
-### 7. Attachment Architecture
-- **Archive Lock**: After a report enters `TechReview`, only users with `Archive` roles can add or remove attachments.
-- **Sync**: Multi-part background upload. `Attachment` entity tracks `UploadStatus` (Pending, Success, Failure).
+### 7. Evidence Lifecycle & Attachment Architecture
+- **Terminology**: The system transitions from "Attachments" to **Evidence** to reflect the legal and technical weight of documentation.
+- **Evidence Lifecycle**: Evidence follows a strict progression: `Captured` -> `Uploaded` -> `Validated` -> `Locked` -> `Archived`.
+- **Archive Lock**: After a report enters `TechReview`, existing Evidence becomes **Locked** (Immutable). Only users with `Archive` roles can add supplemental evidence if requested during the review.
+- **Sync**: Multi-part background upload. `Evidence` entity tracks `UploadStatus` and `ValidationStatus`.
 
 ### 8. Database Migration
 - Placeholder tables (`DamageReports`, `DamageItems`) will be migrated using EF Core Migrations.

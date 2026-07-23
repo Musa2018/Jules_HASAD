@@ -24,6 +24,7 @@ class Farm with _$Farm {
     
     // Area
     required double area,
+    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
     required int areaUnitId,
     int? measurementUnitId,
     

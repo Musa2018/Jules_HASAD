@@ -171,6 +171,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       parcel: _parcelController.text.trim(),
       area: double.tryParse(_areaController.text) ?? 0,
       areaUnitId: _selectedAreaUnitId ?? 1,
+      measurementUnitId: _selectedAreaUnitId,
       agriculturalSectorId: _selectedAgriculturalSectorId ?? 1,
       politicalClassificationId: _selectedPoliticalClassificationId ?? 1,
       notes: _notesController.text.trim(),
@@ -352,7 +353,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
                       flex: 3,
                       child: areaUnitsAsync.when(
                         data: (items) => SearchableLookupField<AreaUnit>(
-                          label: l10n.unit,
+                          label: l10n.measurementUnit,
                           items: items,
                           itemLabel: (i) => isAr ? i.nameAr : i.nameEn,
                           value: items.where((i) => i.id == _selectedAreaUnitId).firstOrNull,

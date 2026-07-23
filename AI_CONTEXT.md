@@ -38,11 +38,30 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Authorization Source of Truth**: `Farm.DirectorateId` is the authoritative source for regional security boundaries.
 - **Derived Authorization Optimization**: `DamageReport` stores a denormalized `DirectorateId` (snapshot from parent Farm) to support high-performance scoped queries and O(1) security checks.
 - **Regional Isolation**: Agricultural Engineers and Field Surveyors are restricted to data within their assigned Directorate. Supervisors and Directors are restricted to their Governorate.
+### Pricing Catalog & Costing (Sprint 13.2)
+- **Hierarchy**: `Catalog -> Version -> Item`.
+- **Entities**:
+  - `CostingSheetCatalog`: High-level grouping (e.g., "Year 2024 Base Prices").
+  - `CostingSheetVersion`: Lifecycle management (`Draft`, `PendingApproval`, `Active`, `Archived`).
+  - `CostingSheetItem`: Individual price per `Classification` + `MeasurementUnit`.
+- **Measurement Units**: Consolidated into a universal `MeasurementUnit` entity (Category: Area, Weight, Count, etc.).
+- **Immutability**: `Active` and `Archived` versions are immutable. Changes require a new `Draft` version.
+- **Backward Compatibility**: `GetReferenceDataQuery` and `CostingService` maintain compatibility with older mobile clients.
+- **Sync Compatibility Hardening (Sprint 13.2)**: 
+  - Backend commands (`CreateFarmCommand`, `UpdateFarmCommand`) and DTOs (`FarmDto`, `FarmSyncDto`) use `JsonPropertyName` aliases to support both legacy (`areaUnitId`) and modern (`measurementUnitId`) field names during the transition period.
+  - This ensures that offline drafts created before the migration can still synchronize successfully.
+- **Terminology Alignment (Phase 2C)**: 
+  - The Flutter client UI has been updated to use "Measurement Unit" (وحدة القياس) instead of "Area Unit" (وحدة المساحة).
+  - Domain models (`Farm`, `DamageItem`) prioritize modern identifiers (`measurementUnitId`, `costingSheetItemId`) while maintaining legacy fields for backward compatibility.
+- **Flutter Implementation**:
+  - Drift schema v16 supports hierarchical pricing tables.
+  - `OfflineFirstReferenceDataRepository` resolves the `Active` price by joining `Items` with their parent `Version`.
+  - Legacy pricing records are automatically mapped to a local legacy version during sync and migration.
+
 ### Damage Valuation Authority (Sprint 13.2)
 - **Authoritative Backend**: Client-side damage calculations are informational only. The backend is the absolute authority for technical loss valuation.
-- **Recalculation Rule**: Command handlers (`CreateDamageReport`, `UpdateDamageItem`) automatically resolve the active `CostingSheet` and recalculate `EstimatedLoss` using the formula: `Quantity * UnitPrice * (DamagePercentage / 100)`.
-- **Costing Verification**: Backend validates that the provided `CostingSheetId` matches the `ClassificationId` and was active on the `DamageDate`.
-- **Valuation Audit**: Mismatches between client-calculated and server-calculated values are logged as warnings for audit purposes but do not block synchronization.
+- **Recalculation Rule**: Command handlers (`CreateDamageReport`, `UpdateDamageItem`) automatically resolve the active `CostingSheetItem` (via its version) and recalculate `EstimatedLoss`.
+- **Costing Verification**: Backend validates that the provided `CostingSheetItemId` matches the `ClassificationId` and its parent version was active on the `DamageDate`.
 - **Decoupling Rule**: Farmer residency is NEVER used as an authorization boundary for managed records (Farms/Reports).
   - **Lifecycle Consistency**: Maintenance operations (Update/Delete) and Query Projections must enforce the same regional boundaries as Creation commands.
 

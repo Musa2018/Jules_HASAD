@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
@@ -27,7 +28,11 @@ public record UpdateFarmCommand(
     double? Latitude,
     double? Longitude,
     string? Notes,
-    string RowVersion) : IRequest<Result<FarmDto>>;
+    string RowVersion) : IRequest<Result<FarmDto>>
+{
+    [JsonPropertyName("areaUnitId")]
+    public int? AreaUnitId { init => MeasurementUnitId = value ?? MeasurementUnitId; }
+}
 
 public class UpdateFarmCommandHandler : IRequestHandler<UpdateFarmCommand, Result<FarmDto>>
 {

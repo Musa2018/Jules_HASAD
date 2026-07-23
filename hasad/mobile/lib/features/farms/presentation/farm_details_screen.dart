@@ -51,7 +51,7 @@ class FarmDetailsScreen extends ConsumerWidget {
                 ]),
                 _buildSection(context, l10n.areaAndSectorSection, [
                   _buildSectorRow(ref, l10n.agriculturalSector, currentFarm.agriculturalSectorId),
-                  _buildAreaRow(ref, l10n.landArea, currentFarm.area, currentFarm.areaUnitId),
+                  _buildAreaRow(ref, l10n.landArea, currentFarm.area, currentFarm.measurementUnitId ?? currentFarm.areaUnitId),
                   _buildPoliticalRow(ref, l10n.politicalClassification, currentFarm.politicalClassificationId),
                 ]),
                 _buildSection(context, l10n.locationSection, [

@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+### Sprint 13.2 - Phase 2C (Mobile Terminology Update)
+- **Terminology Alignment**: Replaced "Area Unit" (وحدة المساحة) with "Measurement Unit" (وحدة القياس) across all UI components.
+- **Localization**: Added comprehensive support for unit categories (Weight, Count, Volume, Area) in Arabic and English.
+- **UI Hardening**: Updated `DamageItemFormSheet` and `FarmFormScreen` to use modern terminology and dynamic unit resolution.
+- **Compatibility Preservation**: Maintained internal support for `areaUnitId` and `costingSheetId` to ensure zero disruption for offline records.
+
+### Sprint 13.2 - Phase 2B (Mobile & Sync Hardening)
+- **Schema Upgrade**: Drift v16 with hierarchical tables for Catalogs, Versions, and Items.
+- **Domain Refactor**: Aligned `DamageItem` and `Farm` models with the new Pricing Catalog architecture.
+- **Sync Hardening**: Implemented backward-compatible JSON aliases (`areaUnitId`) in Backend Commands and DTOs to support legacy offline drafts.
+- **Repository Optimization**: Enhanced `OfflineFirstReferenceDataRepository` to resolve the `Active` pricing version using Drift joins.
+- **Legacy Compatibility**: Automated mapping of legacy flat pricing DTOs to a local legacy version wrapper.
+- **Unit Consolidation**: Full transition from `AreaUnit` to the universal `MeasurementUnit` domain model.
+
+### Sprint 13.2 - Phase 2A (Backend)
+- **New Feature**: Versioned Pricing Catalog (`Catalog -> Version -> Item`) with `Draft`, `PendingApproval`, `Active`, and `Archived` states.
+- **Refinement**: Consolidated `AreaUnit` into a universal `MeasurementUnit` entity supporting Area, Weight, Count, and Volume categories.
+- **Integrity**: Implemented an immutability rule for `Active` pricing versions to ensure audit-ready valuation history.
+- **Migration**: Automated EF migration with SQL data preservation for existing pricing records and `DamageItem` snapshots.
+- **Compatibility**: Maintained backend support for existing mobile sync payloads by mapping hierarchical data to legacy DTO structures.
+
+### Sprint 13.2 - Phase 1 (Backend)
+- **New Service**: `ICostingService` for authoritative price resolution.
+- **Hardening**: Automatic recalculation of `EstimatedLoss` in `CreateDamageReport` and `UpdateDamageItem`.
+- **Auditing**: Added valuation mismatch detection and logging.
+
 ### Sprint 12.4 — DamageReport Security Alignment
 
 #### Added

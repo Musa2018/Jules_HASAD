@@ -4,6 +4,8 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/services/valuation_engine.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/classification_selector.dart';
+import 'package:mobile/features/farms/domain/lookup_entities.dart';
+import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
@@ -60,7 +62,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Assessment Item',
+                l10n.assessmentItem,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
@@ -78,6 +80,18 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
 
   Widget _buildDetailsForm(ClassificationWizardState state, AppLocalizations l10n) {
     final costing = state.resolvedCosting;
+    
+    final unitAsync = costing?.measurementUnitId != null
+        ? ref.watch(measurementUnitByIdProvider(costing!.measurementUnitId!))
+        : const AsyncValue<MeasurementUnit?>.data(null);
+    
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final unitName = unitAsync.when(
+      data: (u) => u != null ? (isAr ? u.nameAr : u.nameEn) : 'Unit',
+      loading: () => '...',
+      error: (_, __) => 'Unit',
+    );
+
     final estimatedLoss = ValuationEngine.calculateEstimatedLoss(
       quantity: _quantity,
       unitPrice: costing?.unitPrice ?? 0.0,
@@ -94,46 +108,46 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
             _buildSelectionPath(state),
             const SizedBox(height: 24),
             if (costing == null)
-              _buildPricingMissingWarning()
+              _buildPricingMissingWarning(l10n)
             else
-              _buildPricingPreview(costing),
+              _buildPricingPreview(costing, l10n),
             const SizedBox(height: 24),
             TextFormField(
               controller: _quantityController,
-              decoration: const InputDecoration(labelText: 'Quantity'),
+              decoration: InputDecoration(labelText: l10n.quantity),
               keyboardType: TextInputType.number,
               onChanged: (_) => setState(() {}),
-              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _percentageController,
-              decoration: const InputDecoration(labelText: 'Damage Percentage (%)'),
+              decoration: InputDecoration(labelText: l10n.damagePercentage),
               keyboardType: TextInputType.number,
               onChanged: (_) => setState(() {}),
               validator: (v) {
                 final val = double.tryParse(v ?? '');
-                if (val == null) return 'Required';
-                if (val < 0 || val > 100) return 'Must be 0-100';
+                if (val == null) return l10n.requiredField;
+                if (val < 0 || val > 100) return l10n.invalidValue;
                 return null;
               },
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _areaController,
-              decoration: const InputDecoration(labelText: 'Affected Area (Optional)'),
+              decoration: InputDecoration(labelText: l10n.affectedAreaOptional),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 32),
-            _buildValuationPreview(estimatedLoss),
+            _buildValuationPreview(estimatedLoss, l10n),
             const SizedBox(height: 32),
             ElevatedButton(
-              onPressed: costing == null ? null : _save,
-              child: const Text('Add to Report'),
+              onPressed: costing == null ? null : () => _save(unitName),
+              child: Text(l10n.save),
             ),
             TextButton(
               onPressed: () => ref.read(classificationWizardProvider.notifier).reset(),
-              child: const Text('Change Classification'),
+              child: Text(l10n.cancel),
             ),
           ],
         ),
@@ -165,7 +179,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     );
   }
 
-  Widget _buildPricingMissingWarning() {
+  Widget _buildPricingMissingWarning(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -173,14 +187,14 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.red[200]!),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.warning, color: Colors.red),
-          SizedBox(width: 12),
+          const Icon(Icons.warning, color: Colors.red),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Pricing not found. Please contact support or sync reference data.',
-              style: TextStyle(color: Colors.red),
+              l10n.pricingNotFound,
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -188,14 +202,14 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     );
   }
 
-  Widget _buildPricingPreview(dynamic costing) {
+  Widget _buildPricingPreview(dynamic costing, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Unit Price (Snapshot)', style: TextStyle(fontSize: 12)),
+            Text(l10n.unitPriceSnapshot, style: const TextStyle(fontSize: 12)),
             Text(
               '${costing.unitPrice} EUR',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -213,7 +227,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     );
   }
 
-  Widget _buildValuationPreview(double loss) {
+  Widget _buildValuationPreview(double loss, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -223,9 +237,9 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Technical Valuation:',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Text(
+            l10n.technicalValuation,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Text(
             '$loss EUR',
@@ -240,7 +254,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     );
   }
 
-  void _save() {
+  void _save(String unitName) {
     if (!_formKey.currentState!.validate()) return;
 
     final state = ref.read(classificationWizardProvider);
@@ -253,7 +267,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
       costingSheetId: costing.id,
       costingSheetItemId: costing.id,
       calculatedUnitPrice: costing.unitPrice,
-      measurementUnitSnapshot: 'Unit', // TODO: Get from costing/classification
+      measurementUnitSnapshot: unitName,
       affectedArea: double.tryParse(_areaController.text) ?? 0.0,
       damagePercentage: _percentage,
       quantity: _quantity,

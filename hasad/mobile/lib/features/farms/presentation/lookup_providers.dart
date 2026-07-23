@@ -60,3 +60,8 @@ final relationshipToOwnersProvider = FutureProvider<List<RelationshipToOwner>>((
   final data = await ref.watch(referenceDataProvider.future);
   return data.relationshipToOwners;
 });
+
+final measurementUnitByIdProvider = FutureProvider.family<MeasurementUnit?, int>((ref, id) async {
+  final units = await ref.watch(measurementUnitsProvider.future);
+  return units.where((u) => u.id == id).firstOrNull;
+});

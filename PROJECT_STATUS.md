@@ -14,7 +14,31 @@ Damage Assessment & Valuation Engine:
     - Implemented `ICostingService` for authoritative price resolution.
     - Hardened `CreateDamageReport` and `UpdateDamageItem` handlers to recalculate technical loss.
     - Added valuation mismatch auditing via server logs.
-- **Phase 2 (Pending)**: Pricing Administration & Evidence Locking.
+- **Phase 2A (Completed)**: Pricing Catalog Backend Implementation.
+    - Implemented `CostingSheetCatalog`, `CostingSheetVersion`, and `CostingSheetItem` hierarchy.
+    - Consolidated `AreaUnit` into a universal `MeasurementUnit` entity.
+    - Implemented Data Preservation migration for existing pricing and snapshots.
+    - Refactored all backend commands and tests to align with the new architecture.
+    - Maintained backward compatibility for existing offline mobile payloads.
+- **Phase 2B (Completed)**: Flutter Domain & Repository Migration.
+    - Upgraded Drift schema to v16 with hierarchical pricing support.
+    - Refactored domain models (`DamageItem`, `Farm`, `ReferenceData`) to align with the new architecture.
+    - Updated `OfflineFirstReferenceDataRepository` to resolve the `Active` pricing version via database joins.
+    - Implemented legacy pricing compatibility wrapper for unsynced offline data.
+    - **Hardening**: Implemented JSON aliases (`areaUnitId`) on the backend to restore compatibility with legacy Farm sync payloads.
+    - **Validation**: Completed Production Readiness Gate with 115 backend and 23 critical sync tests passing.
+- **Phase 2C (Completed)**: Flutter Client Terminology Update.
+    - Aligned UI terminology with universal `MeasurementUnit` domain model.
+    - Updated localization (Ar/En) for "Measurement Unit" and unit categories (Area, Weight, Count, Volume).
+    - Hardened `DamageItemFormSheet` to dynamically resolve measurement units from costing snapshots.
+    - Verified full backward compatibility for legacy `areaUnitId` and `costingSheetId` fields.
+    - Passed all 152 mobile tests and static analysis.
+- **Roadmap Review (Completed)**: Post Sprint 13.2 Architecture Gate.
+    - Performed comprehensive DamageReport Roadmap Review.
+    - Defined "Evidence Lifecycle" (Captured -> Uploaded -> Validated -> Locked -> Archived).
+    - Analyzed "Assistance Integration" requirements.
+    - Verified sync impact for locking and metadata.
+- **Phase 3 (Pending)**: Sync DTO Alignment & UI Refinement.
 
 ## Sprint 13.1 — COMPLETED
 

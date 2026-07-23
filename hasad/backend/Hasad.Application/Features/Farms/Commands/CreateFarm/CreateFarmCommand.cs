@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
@@ -26,7 +27,11 @@ public record CreateFarmCommand(
     int PoliticalClassificationId,
     double? Latitude,
     double? Longitude,
-    string? Notes) : IRequest<Result<FarmDto>>;
+    string? Notes) : IRequest<Result<FarmDto>>
+{
+    [JsonPropertyName("areaUnitId")]
+    public int? AreaUnitId { init => MeasurementUnitId = value ?? MeasurementUnitId; }
+}
 
 public class CreateFarmCommandHandler : IRequestHandler<CreateFarmCommand, Result<FarmDto>>
 {

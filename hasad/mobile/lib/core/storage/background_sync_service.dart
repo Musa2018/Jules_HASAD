@@ -261,6 +261,17 @@ class BackgroundSyncService {
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'completed'));
       await _updateEntitySyncStatus(item.entityType, item.localId, 'completed');
+    } on SyncDependencyException catch (e) {
+      // Defer sync: Increase retry count and set back to pending for next loop
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'pending',
+          retryCount: item.retryCount + 1,
+          lastAttemptAt: Value(now),
+          lastError: Value(e.toString()),
+        ),
+      );
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'pending');
     } on SyncValidationException catch (e) {
       await _db.update(_db.syncQueue).replace(
         item.copyWith(status: 'invalid', lastError: Value(e.toString())),
@@ -418,6 +429,15 @@ class BackgroundSyncService {
       return;
     }
 
+    // --- ID RESOLUTION (Late Binding) ---
+    final originalReportId = data['damageReportId'] as String;
+    final resolvedReportId = await _resolveDamageReportId(originalReportId);
+    if (resolvedReportId != null) {
+      data['damageReportId'] = resolvedReportId;
+    } else {
+      throw SyncDependencyException(['Waiting for Damage Report ($originalReportId) to synchronize.']);
+    }
+
     final attachment = attachment_domain.DamageReportAttachment.fromJson(data);
 
     if (item.operation == 'upload') {
@@ -487,8 +507,6 @@ class BackgroundSyncService {
     if (DebugLogger.enableSyncDebug) {
       DebugLogger.logHeader('FARM SYNC');
       DebugLogger.log('Operation: ${item.operation}');
-      DebugLogger.log('Payload:');
-      DebugLogger.logJson(data);
     }
 
     if (item.operation == 'delete') {
@@ -501,7 +519,39 @@ class BackgroundSyncService {
       return;
     }
 
+    // --- ID RESOLUTION (Late Binding) ---
+    final originalFarmerId = data['farmerId'] as String;
+    final resolvedFarmerId = await _resolveFarmerId(originalFarmerId);
+    if (resolvedFarmerId != null) {
+      data['farmerId'] = resolvedFarmerId;
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.log('Resolved farmerId: $originalFarmerId -> $resolvedFarmerId');
+      }
+    } else {
+      // If we can't resolve a mandatory ID, we must wait for the parent to sync
+      throw SyncDependencyException(['Waiting for Farmer ($originalFarmerId) to synchronize.']);
+    }
+
+    final originalOwnerId = data['ownerFarmerId'] as String?;
+    if (originalOwnerId != null && originalOwnerId.isNotEmpty) {
+      final resolvedOwnerId = await _resolveFarmerId(originalOwnerId);
+      if (resolvedOwnerId != null) {
+        data['ownerFarmerId'] = resolvedOwnerId;
+        if (DebugLogger.enableSyncDebug) {
+          DebugLogger.log('Resolved ownerFarmerId: $originalOwnerId -> $resolvedOwnerId');
+        }
+      } else {
+        throw SyncDependencyException(['Waiting for Owner Farmer ($originalOwnerId) to synchronize.']);
+      }
+    }
+
+    if (DebugLogger.enableSyncDebug) {
+      DebugLogger.log('Payload after resolution:');
+      DebugLogger.logJson(data);
+    }
+
     final farm = farm_domain.Farm.fromJson(data);
+    // ... rest of the method
 
     if (item.operation == 'create') {
       final result = await _remoteFarmRepository.createFarm(farm);
@@ -540,6 +590,23 @@ class BackgroundSyncService {
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
       return;
+    }
+
+    // --- ID RESOLUTION (Late Binding) ---
+    final originalFarmId = data['farmId'] as String;
+    final resolvedFarmId = await _resolveFarmId(originalFarmId);
+    if (resolvedFarmId != null) {
+      data['farmId'] = resolvedFarmId;
+    } else {
+      throw SyncDependencyException(['Waiting for Farm ($originalFarmId) to synchronize.']);
+    }
+
+    final originalFarmerId = data['farmerId'] as String;
+    final resolvedFarmerId = await _resolveFarmerId(originalFarmerId);
+    if (resolvedFarmerId != null) {
+      data['farmerId'] = resolvedFarmerId;
+    } else {
+      throw SyncDependencyException(['Waiting for Farmer ($originalFarmerId) to synchronize.']);
     }
 
     final report = report_domain.DamageReport.fromJson(data);
@@ -598,6 +665,15 @@ class BackgroundSyncService {
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
       return;
+    }
+
+    // --- ID RESOLUTION (Late Binding) ---
+    final originalReportId = data['damageReportId'] as String;
+    final resolvedReportId = await _resolveDamageReportId(originalReportId);
+    if (resolvedReportId != null) {
+      data['damageReportId'] = resolvedReportId;
+    } else {
+      throw SyncDependencyException(['Waiting for Damage Report ($originalReportId) to synchronize.']);
     }
 
     final damageItem = item_domain.DamageItem.fromJson(data);
@@ -847,5 +923,29 @@ class BackgroundSyncService {
         // Log
       }
     }
+  }
+
+  // --- ID RESOLUTION HELPERS (Late Binding) ---
+
+  Future<String?> _resolveFarmerId(String localId) async {
+    final farmer = await (_db.select(_db.farmers)..where((t) => t.id.equals(localId))).getSingleOrNull();
+    if (farmer == null) {
+      // Not found in local DB. Assume it's already a server ID (e.g. from previously synced session)
+      return localId;
+    }
+    // Found locally. If serverId exists, use it. If not, it's a pending dependency.
+    return farmer.serverId;
+  }
+
+  Future<String?> _resolveFarmId(String localId) async {
+    final farm = await (_db.select(_db.farms)..where((t) => t.id.equals(localId))).getSingleOrNull();
+    if (farm == null) return localId;
+    return farm.serverId;
+  }
+
+  Future<String?> _resolveDamageReportId(String localId) async {
+    final report = await (_db.select(_db.damageReports)..where((t) => t.id.equals(localId))).getSingleOrNull();
+    if (report == null) return localId;
+    return report.serverId;
   }
 }

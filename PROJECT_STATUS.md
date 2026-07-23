@@ -2,10 +2,17 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.9.4-alpha (Authorization Hardened)
-- **Current Sprint**: Sprint 11.9 — Authorization Hardening & Token Fix
+- **Current Version**: v0.9.5-alpha (Dependency Sync Fixed)
+- **Current Sprint**: Sprint 11.10 — Late Binding ID Resolution
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-23
+
+## Sprint 11.10 — COMPLETED
+Late Binding ID Resolution:
+- **Dependency Sync**: Resolved the "Farmer not found" failure by implementing late-binding resolution of local IDs to server IDs during the sync process.
+- **Ordered Execution**: The sync engine now automatically deferrs dependent tasks (like Farm creation) until their parent records (like Farmer) are successfully created on the server.
+- **Improved Logging**: Added detailed debug logs tracing the resolution of `ClientId` to `serverId` for all relational fields.
+- **Test Coverage**: Added `late_binding_sync_test.dart` verifying the complete lifecycle of ordered offline creation and synchronization.
 
 ## Sprint 11.9 — COMPLETED
 Authorization Hardening & Token Fix:

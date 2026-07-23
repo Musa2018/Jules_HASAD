@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Sprint 11.10 — Late Binding ID Resolution
+
+#### Fixed
+- Synchronization failure ("Farmer not found") when a Farm and its linked Farmer were created offline.
+
+#### Added
+- **Late Binding ID Resolution Pattern**: The sync engine now resolves local IDs to server IDs just-in-time before API calls.
+- **Dependency Deferral**: Dependent sync tasks are automatically deferred until their parents successfully synchronize.
+- Detailed sync logging for ID resolution troubleshooting.
+
 ### Sprint 11.9 — Authorization Hardening & Token Fix
 
 #### Fixed

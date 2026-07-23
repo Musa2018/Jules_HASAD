@@ -47,6 +47,11 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 11.10 - Late Binding ID Resolution
+- **Dependency Resolution**: Hardened the `BackgroundSyncService` to resolve local `ClientId`s to server-assigned `serverId`s just before synchronization. This enables seamless offline creation of Farmers and linked Farms.
+- **Ordered Sync**: Implemented dependency-aware deferral where dependent entities (Farms, Damage Reports) wait for their parent entities (Farmers) to successfully synchronize before attempting their own sync.
+- **Architecture**: Formally adopted the **Late Binding ID Resolution Pattern** as the standard for cross-entity synchronization in the HASAD sync engine.
+
 ### Sprint 11.9 - Authorization Hardening & Token Fix
 - **JWT Claim Fix**: Resolved a critical authorization failure by adding `governorate_id` and `directorate_id` claims to the JWT access token. This allows `ICurrentUserService` to correctly identify user scopes during request processing.
 - **Regional Scoping Enforcement**: Hardened `CreateFarmer`, `UpdateFarmer`, and `CreateDamageReport` command handlers by implementing mandatory regional scoping checks (Governorate/Directorate), ensuring consistency with the Farm module.

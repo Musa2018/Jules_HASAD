@@ -15,6 +15,10 @@ class SyncConflictException extends SyncException {
   SyncConflictException(super.errors);
 }
 
+class SyncDependencyException extends SyncException {
+  SyncDependencyException(super.errors);
+}
+
 // Entity-specific aliases for backward compatibility if needed, 
 // or just use generic everywhere.
 class FarmerException extends SyncException {

@@ -41,6 +41,16 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
     - **Preserve State**: The parent form MUST receive the returned entity, update the selection, and preserve all other field states without a reset.
 - **Reasoning**: This pattern reduces duplicate data entry, ensures regional scoping is maintained, and provides a seamless user experience for field officers working offline.
 
+### ADR 0011: Late Binding ID Resolution Pattern
+- **Status**: Accepted
+- **Decision**: Implement "Late Binding" in the `BackgroundSyncService` to resolve cross-entity dependencies just before synchronization.
+- **Requirements**:
+    - **Dependency Resolution**: Before an entity (e.g., Farm) is sent to the backend, the sync engine MUST check if its dependent IDs (e.g., `farmerId`, `ownerFarmerId`) are local `ClientId`s.
+    - **Mapping Lookup**: If a dependent `ClientId` is found, the sync engine MUST query the local database to find the corresponding server-assigned `serverId`.
+    - **Deferral**: If a required `serverId` is not yet available (parent entity hasn't synced), the dependent sync task MUST be deferred (kept as `pending`) and retried in the next loop.
+    - **Logging**: Clear logs MUST be provided showing the transition from `ClientId` to `ServerId` for troubleshooting.
+- **Reasoning**: This allows users to create complex relational data (Farmer -> Farm -> Damage Report) while offline without worrying about the order of creation or the technical details of server identity.
+
 ## Folder Structure (Mobile)
 - `lib/core`: Cross-cutting logic (Networking, Storage, Config).
 - `lib/features`: Domain-driven feature modules.

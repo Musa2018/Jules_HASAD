@@ -38,7 +38,10 @@ Damage Assessment & Valuation Engine:
     - Defined "Evidence Lifecycle" (Captured -> Uploaded -> Validated -> Locked -> Archived).
     - Analyzed "Assistance Integration" requirements.
     - Verified sync impact for locking and metadata.
-- **Phase 3 (Pending)**: Sync DTO Alignment & UI Refinement.
+- **Phase 3 (In Progress)**: DamageReport Form Completion & Evidence Foundation.
+    - **Gap Analysis (Completed)**: Identified missing Hierarchical Cause Selection and Form Integration on mobile.
+    - **UI Polish (Pending)**: Integrate `DamageItemFormSheet` and implement `DamageCauseSelector`.
+    - **Evidence Foundation (Pending)**: Domain migration from Attachments to Evidence Lifecycle.
 
 ## Sprint 13.1 — COMPLETED
 

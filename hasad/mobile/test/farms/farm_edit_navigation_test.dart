@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -12,7 +11,6 @@ import 'package:mobile/features/farms/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/features/farms/domain/reference_data.dart';
-import 'package:mobile/features/farms/domain/lookup_entities.dart' as domain;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 

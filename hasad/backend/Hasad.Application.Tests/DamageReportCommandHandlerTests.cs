@@ -24,7 +24,7 @@ public class DamageReportCommandHandlerTests
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]

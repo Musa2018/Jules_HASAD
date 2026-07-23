@@ -21,7 +21,9 @@ Farm _$FarmFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Farm {
+  @JsonKey(name: 'clientId')
   String get id => throw _privateConstructorUsedError; // ClientId
+  @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
   String get farmerId => throw _privateConstructorUsedError;
   String get localFarmName => throw _privateConstructorUsedError;
@@ -68,8 +70,8 @@ abstract class $FarmCopyWith<$Res> {
       _$FarmCopyWithImpl<$Res, Farm>;
   @useResult
   $Res call({
-    String id,
-    String? serverId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     String farmerId,
     String localFarmName,
     int ownershipTypeId,
@@ -272,8 +274,8 @@ abstract class _$$FarmImplCopyWith<$Res> implements $FarmCopyWith<$Res> {
   @override
   @useResult
   $Res call({
-    String id,
-    String? serverId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     String farmerId,
     String localFarmName,
     int ownershipTypeId,
@@ -467,8 +469,8 @@ class __$$FarmImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$FarmImpl implements _Farm {
   const _$FarmImpl({
-    required this.id,
-    this.serverId,
+    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'id') this.serverId,
     required this.farmerId,
     required this.localFarmName,
     required this.ownershipTypeId,
@@ -501,9 +503,11 @@ class _$FarmImpl implements _Farm {
       _$$FarmImplFromJson(json);
 
   @override
+  @JsonKey(name: 'clientId')
   final String id;
   // ClientId
   @override
+  @JsonKey(name: 'id')
   final String? serverId;
   @override
   final String farmerId;
@@ -684,8 +688,8 @@ class _$FarmImpl implements _Farm {
 
 abstract class _Farm implements Farm {
   const factory _Farm({
-    required final String id,
-    final String? serverId,
+    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'id') final String? serverId,
     required final String farmerId,
     required final String localFarmName,
     required final int ownershipTypeId,
@@ -717,8 +721,10 @@ abstract class _Farm implements Farm {
   factory _Farm.fromJson(Map<String, dynamic> json) = _$FarmImpl.fromJson;
 
   @override
+  @JsonKey(name: 'clientId')
   String get id; // ClientId
   @override
+  @JsonKey(name: 'id')
   String? get serverId;
   @override
   String get farmerId;

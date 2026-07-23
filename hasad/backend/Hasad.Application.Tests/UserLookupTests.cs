@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.Location.Queries.GetDirectorates;
 using Hasad.Application.Features.Location.Queries.GetGovernorates;
 using Hasad.Application.Features.Users.Queries.GetRoles;
@@ -12,12 +13,19 @@ namespace Hasad.Application.Tests;
 
 public class UserLookupTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public UserLookupTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+    }
+
     private ApplicationDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]

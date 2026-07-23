@@ -1,8 +1,10 @@
 using System;
 
+using Hasad.Domain.Common;
+
 namespace Hasad.Domain.Entities;
 
-public class Farm
+public class Farm : ISoftDelete
 {
     public Guid Id { get; set; }
 

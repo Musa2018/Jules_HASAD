@@ -28,7 +28,7 @@ public class FarmerCommandHandlerTests
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]
@@ -179,13 +179,41 @@ public class FarmerCommandHandlerTests
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
-        var handler = new DeleteFarmerCommandHandler(context);
+        var handler = new DeleteFarmerCommandHandler(context, _currentUserMock.Object);
         var command = new DeleteFarmerCommand(farmer.Id);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.True(context.Farmers.IgnoreQueryFilters().First(f => f.Id == farmer.Id).IsDeleted);
+
+        var deletedFarmer = await context.Farmers
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(f => f.Id == farmer.Id);
+
+        Assert.NotNull(deletedFarmer);
+        Assert.True(deletedFarmer.IsDeleted);
+        Assert.NotNull(deletedFarmer.DeletedAt);
+        Assert.Equal(_currentUserMock.Object.UserId, deletedFarmer.DeletedBy);
+    }
+
+    [Fact]
+    public async Task DeleteFarmer_Fails_WhenLinkedToFarm()
+    {
+        var context = CreateContext();
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), FarmerId = farmer.Id };
+
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        await context.SaveChangesAsync();
+
+        var handler = new DeleteFarmerCommandHandler(context, _currentUserMock.Object);
+        var command = new DeleteFarmerCommand(farmer.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("لا يمكن حذف المزارع", result.Errors[0]);
     }
 
     [Fact]

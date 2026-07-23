@@ -78,6 +78,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFarmer => 'Add Farmer';
 
   @override
+  String get addNewFarmerAction => '+ Add New Farmer';
+
+  @override
   String get editFarmer => 'Edit Farmer';
 
   @override
@@ -111,6 +114,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDelete => 'Are you sure you want to delete this farmer?';
 
   @override
+  String get cancelDelete => 'Cancel Delete';
+
+  @override
+  String get pendingDelete => 'Pending Delete';
+
+  @override
   String get noFarmers => 'No farmers found.';
 
   @override
@@ -127,6 +136,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get search => 'Search';
+
+  @override
+  String get farm => 'Farm';
 
   @override
   String get farmerDetails => 'Farmer Details';

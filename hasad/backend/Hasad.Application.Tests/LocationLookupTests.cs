@@ -1,22 +1,26 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.Location.Queries.GetGovernorates;
 using Hasad.Application.Features.Location.Queries.GetLocalities;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace Hasad.Application.Tests;
 
 public class LocationLookupTests
 {
     private readonly ApplicationDbContext _context;
+    private readonly Mock<ICurrentUserService> _currentUserMock;
 
     public LocationLookupTests()
     {
+        _currentUserMock = new Mock<ICurrentUserService>();
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        _context = new ApplicationDbContext(options);
+        _context = new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]

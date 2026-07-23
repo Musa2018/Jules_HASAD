@@ -347,7 +347,12 @@ class BackgroundSyncService {
           lastError: Value(e.toString()),
         ),
       );
-      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+      await _updateEntitySyncStatus(
+        item.entityType,
+        item.localId,
+        'failed',
+        error: e.toString(),
+      );
     } catch (e, stackTrace) {
       if (DebugLogger.enableSyncDebug) {
         DebugLogger.logHeader('SYNC ERROR TRACE');
@@ -363,7 +368,12 @@ class BackgroundSyncService {
           lastError: Value(e.toString()),
         ),
       );
-      await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+      await _updateEntitySyncStatus(
+        item.entityType,
+        item.localId,
+        'failed',
+        error: e.toString(),
+      );
     }
   }
 
@@ -448,7 +458,7 @@ class BackgroundSyncService {
         _db.damageReportAttachments,
       )..where((t) => t.id.equals(item.localId))).write(
         DamageReportAttachmentsCompanion(
-          serverId: Value(result.id), // In this case clientId is Id on backend
+          serverId: Value(result.serverId ?? result.id), // For attachments, sometimes id is used
           remotePath: Value(result.remotePath),
           uploadStatus: const Value('completed'),
           syncStatus: const Value('completed'),
@@ -481,7 +491,7 @@ class BackgroundSyncService {
         _db.farmers,
       )..where((t) => t.id.equals(item.localId))).write(
         FarmersCompanion(
-          serverId: Value(result.id),
+          serverId: Value(result.serverId),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),
@@ -620,7 +630,7 @@ class BackgroundSyncService {
           _db.damageReports,
         )..where((t) => t.id.equals(item.localId))).write(
           DamageReportsCompanion(
-            serverId: Value(result.id),
+            serverId: Value(result.serverId),
             rowVersion: Value(result.rowVersion),
             syncStatus: const Value('completed'),
             lastSyncError: const Value(null),
@@ -631,7 +641,7 @@ class BackgroundSyncService {
             _db.damageItems,
           )..where((t) => t.id.equals(i.id))).write(
             DamageItemsCompanion(
-              serverId: Value(i.id),
+              serverId: Value(i.serverId),
               rowVersion: Value(i.rowVersion),
               syncStatus: const Value('completed'),
               lastSyncError: const Value(null),
@@ -686,7 +696,7 @@ class BackgroundSyncService {
         _db.damageItems,
       )..where((t) => t.id.equals(item.localId))).write(
         DamageItemsCompanion(
-          serverId: Value(result.id),
+          serverId: Value(result.serverId),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),

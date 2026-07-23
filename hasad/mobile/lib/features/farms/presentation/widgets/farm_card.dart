@@ -63,112 +63,139 @@ class FarmCard extends ConsumerWidget {
       if (item != null) areaUnitText = isAr ? item.nameAr : item.nameEn;
     });
 
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => context.push(AppRoutes.farmDetails, extra: farm),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
+    return Opacity(
+      opacity: farm.isPendingDelete ? 0.6 : 1.0,
+      child: Card(
+        elevation: 2,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: InkWell(
+          onTap: () => context.push(AppRoutes.farmDetails, extra: farm),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        farm.localFarmName,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                              decoration: farm.isPendingDelete ? TextDecoration.lineThrough : null,
+                            ),
+                      ),
+                    ),
+                    FarmerSyncStatusBadge(
+                      status: farm.isPendingDelete ? 'pending_delete' : farm.syncStatus,
+                    ),
+                  ],
+                ),
+                if (farm.lastSyncError != null && farm.isPendingDelete)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      farm.localFarmName,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                            decoration: farm.isPendingDelete ? TextDecoration.lineThrough : null,
-                          ),
+                      '${l10n.syncError}: ${farm.lastSyncError}',
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  FarmerSyncStatusBadge(
-                    status: farm.isPendingDelete ? 'pending_delete' : farm.syncStatus,
+                const Divider(height: 24),
+                _InfoRow(
+                  icon: Icons.person_outline,
+                  label: l10n.farmerName,
+                  value: operatorAsync.when(
+                    data: (f) => f.fullName,
+                    loading: () => "...",
+                    error: (_, _) => farm.farmerId,
+                  ),
+                ),
+                if (farm.ownerFarmerId != null) ...[
+                  const SizedBox(height: 8),
+                  _InfoRow(
+                    icon: Icons.person_search_outlined,
+                    label: l10n.ownerFarmer,
+                    value: ownerAsync.when(
+                      data: (f) => f?.fullName ?? farm.ownerFarmerId!,
+                      loading: () => "...",
+                      error: (_, _) => farm.ownerFarmerId!,
+                    ),
                   ),
                 ],
-              ),
-              const Divider(height: 24),
-              _InfoRow(
-                icon: Icons.person_outline,
-                label: l10n.farmerName,
-                value: operatorAsync.when(
-                  data: (f) => f.fullName,
-                  loading: () => "...",
-                  error: (_, _) => farm.farmerId,
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _InfoRow(
+                        icon: Icons.square_foot_outlined,
+                        label: l10n.landArea,
+                        value: "${farm.area} $areaUnitText",
+                      ),
+                    ),
+                    Expanded(
+                      child: _InfoRow(
+                        icon: Icons.agriculture_outlined,
+                        label: l10n.agriculturalSector,
+                        value: sectorText,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              if (farm.ownerFarmerId != null) ...[
                 const SizedBox(height: 8),
                 _InfoRow(
-                  icon: Icons.person_search_outlined,
-                  label: l10n.ownerFarmer,
-                  value: ownerAsync.when(
-                    data: (f) => f?.fullName ?? farm.ownerFarmerId!,
-                    loading: () => "...",
-                    error: (_, _) => farm.ownerFarmerId!,
-                  ),
+                  icon: Icons.location_on_outlined,
+                  label: l10n.locationSection,
+                  value: locationText,
+                ),
+                const SizedBox(height: 8),
+                _InfoRow(
+                  icon: Icons.grid_3x3_outlined,
+                  label: "${l10n.basin} / ${l10n.parcel}",
+                  value: "${farm.basin} / ${farm.parcel}",
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (!farm.isPendingDelete) ...[
+                      TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.farmDetails, extra: farm),
+                        icon: const Icon(Icons.visibility_outlined, size: 18),
+                        label: Text(l10n.search), // Using search as "view"
+                      ),
+                      TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.editFarm, extra: farm),
+                        icon: const Icon(Icons.edit_outlined, size: 18),
+                        label: Text(l10n.editFarm),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => _confirmDelete(context, ref),
+                        icon: const Icon(Icons.delete_outline, size: 18),
+                        label: Text(l10n.delete),
+                        style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      ),
+                    ] else ...[
+                      TextButton.icon(
+                        onPressed: () => ref.read(farmRepositoryProvider).cancelDeleteFarm(farm.id),
+                        icon: const Icon(Icons.undo),
+                        label: Text(l10n.cancelDelete),
+                      ),
+                      if (farm.syncStatus == 'failed')
+                        TextButton.icon(
+                          onPressed: () => ref.read(farmFormProvider.notifier).deleteFarm(farm.id),
+                          icon: const Icon(Icons.refresh),
+                          label: Text(l10n.retry),
+                        ),
+                    ],
+                  ],
                 ),
               ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _InfoRow(
-                      icon: Icons.square_foot_outlined,
-                      label: l10n.landArea,
-                      value: "${farm.area} $areaUnitText",
-                    ),
-                  ),
-                  Expanded(
-                    child: _InfoRow(
-                      icon: Icons.agriculture_outlined,
-                      label: l10n.agriculturalSector,
-                      value: sectorText,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              _InfoRow(
-                icon: Icons.location_on_outlined,
-                label: l10n.locationSection,
-                value: locationText,
-              ),
-              const SizedBox(height: 8),
-              _InfoRow(
-                icon: Icons.grid_3x3_outlined,
-                label: "${l10n.basin} / ${l10n.parcel}",
-                value: "${farm.basin} / ${farm.parcel}",
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: () => context.push(AppRoutes.farmDetails, extra: farm),
-                    icon: const Icon(Icons.visibility_outlined, size: 18),
-                    label: Text(l10n.search), // Using search as "view"
-                  ),
-                  TextButton.icon(
-                    onPressed: () => context.push(AppRoutes.editFarm, extra: farm),
-                    icon: const Icon(Icons.edit_outlined, size: 18),
-                    label: Text(l10n.editFarm),
-                  ),
-                  TextButton.icon(
-                    onPressed: () => _confirmDelete(context, ref),
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    label: Text(l10n.delete),
-                    style: TextButton.styleFrom(foregroundColor: Colors.red),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

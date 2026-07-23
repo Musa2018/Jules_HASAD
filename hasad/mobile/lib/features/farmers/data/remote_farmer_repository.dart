@@ -17,6 +17,7 @@ class RemoteFarmerRepository implements FarmerRepository {
     int pageSize = 10,
     String? idNumber,
     String? name,
+    String? searchText,
   }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -26,6 +27,7 @@ class RemoteFarmerRepository implements FarmerRepository {
           'pageSize': pageSize,
           'idNumber': idNumber,
           'name': name,
+          'searchText': searchText,
         },
       );
       final envelope = response.data;
@@ -150,6 +152,11 @@ class RemoteFarmerRepository implements FarmerRepository {
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Future<void> cancelDeleteFarmer(String id) {
+    throw UnimplementedError('cancelDeleteFarmer is a local-only operation.');
   }
 
   List<String> _errorsFromDio(DioException e) {

@@ -78,6 +78,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addFarmer => 'إضافة مزارع';
 
   @override
+  String get addNewFarmerAction => '+ إضافة مزارع جديد';
+
+  @override
   String get editFarmer => 'تعديل مزارع';
 
   @override
@@ -111,6 +114,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get confirmDelete => 'هل أنت متأكد من حذف هذا المزارع؟';
 
   @override
+  String get cancelDelete => 'إلغاء الحذف';
+
+  @override
+  String get pendingDelete => 'معلق للحذف';
+
+  @override
   String get noFarmers => 'لا يوجد مزارعون.';
 
   @override
@@ -127,6 +136,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get search => 'بحث';
+
+  @override
+  String get farm => 'مزرعة';
 
   @override
   String get farmerDetails => 'تفاصيل المزارع';

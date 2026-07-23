@@ -21,7 +21,9 @@ DamageItem _$DamageItemFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$DamageItem {
+  @JsonKey(name: 'clientId')
   String get id => throw _privateConstructorUsedError; // ClientId
+  @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
   String get damageReportId => throw _privateConstructorUsedError;
   String get agriculturalSectorId => throw _privateConstructorUsedError;
@@ -54,8 +56,8 @@ abstract class $DamageItemCopyWith<$Res> {
   ) = _$DamageItemCopyWithImpl<$Res, DamageItem>;
   @useResult
   $Res call({
-    String id,
-    String? serverId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     String damageReportId,
     String agriculturalSectorId,
     String subSectorId,
@@ -175,8 +177,8 @@ abstract class _$$DamageItemImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String id,
-    String? serverId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     String damageReportId,
     String agriculturalSectorId,
     String subSectorId,
@@ -288,8 +290,8 @@ class __$$DamageItemImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageItemImpl implements _DamageItem {
   const _$DamageItemImpl({
-    required this.id,
-    this.serverId,
+    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'id') this.serverId,
     required this.damageReportId,
     required this.agriculturalSectorId,
     required this.subSectorId,
@@ -308,9 +310,11 @@ class _$DamageItemImpl implements _DamageItem {
       _$$DamageItemImplFromJson(json);
 
   @override
+  @JsonKey(name: 'clientId')
   final String id;
   // ClientId
   @override
+  @JsonKey(name: 'id')
   final String? serverId;
   @override
   final String damageReportId;
@@ -413,8 +417,8 @@ class _$DamageItemImpl implements _DamageItem {
 
 abstract class _DamageItem implements DamageItem {
   const factory _DamageItem({
-    required final String id,
-    final String? serverId,
+    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'id') final String? serverId,
     required final String damageReportId,
     required final String agriculturalSectorId,
     required final String subSectorId,
@@ -433,8 +437,10 @@ abstract class _DamageItem implements DamageItem {
       _$DamageItemImpl.fromJson;
 
   @override
+  @JsonKey(name: 'clientId')
   String get id; // ClientId
   @override
+  @JsonKey(name: 'id')
   String? get serverId;
   @override
   String get damageReportId;

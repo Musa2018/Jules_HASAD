@@ -113,6 +113,11 @@ class RemoteFarmRepository implements FarmRepository {
     }
   }
 
+  @override
+  Future<void> cancelDeleteFarm(String id) {
+    throw UnimplementedError('cancelDeleteFarm is a local-only operation.');
+  }
+
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
     if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {

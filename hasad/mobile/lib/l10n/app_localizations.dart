@@ -230,6 +230,12 @@ abstract class AppLocalizations {
   /// **'Add Farmer'**
   String get addFarmer;
 
+  /// No description provided for @addNewFarmerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add New Farmer'**
+  String get addNewFarmerAction;
+
   /// No description provided for @editFarmer.
   ///
   /// In en, this message translates to:
@@ -296,6 +302,18 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete this farmer?'**
   String get confirmDelete;
 
+  /// No description provided for @cancelDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Delete'**
+  String get cancelDelete;
+
+  /// No description provided for @pendingDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Delete'**
+  String get pendingDelete;
+
   /// No description provided for @noFarmers.
   ///
   /// In en, this message translates to:
@@ -331,6 +349,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get search;
+
+  /// No description provided for @farm.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm'**
+  String get farm;
 
   /// No description provided for @farmerDetails.
   ///

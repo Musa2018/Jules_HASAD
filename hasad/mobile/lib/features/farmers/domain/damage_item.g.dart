@@ -8,8 +8,8 @@ part of 'damage_item.dart';
 
 _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
     _$DamageItemImpl(
-      id: json['id'] as String,
-      serverId: json['serverId'] as String?,
+      id: json['clientId'] as String,
+      serverId: json['id'] as String?,
       damageReportId: json['damageReportId'] as String,
       agriculturalSectorId: json['agriculturalSectorId'] as String,
       subSectorId: json['subSectorId'] as String,
@@ -26,8 +26,8 @@ _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$DamageItemImplToJson(_$DamageItemImpl instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'serverId': instance.serverId,
+      'clientId': instance.id,
+      'id': instance.serverId,
       'damageReportId': instance.damageReportId,
       'agriculturalSectorId': instance.agriculturalSectorId,
       'subSectorId': instance.subSectorId,

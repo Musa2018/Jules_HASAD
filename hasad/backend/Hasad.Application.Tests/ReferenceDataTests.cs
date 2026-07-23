@@ -1,21 +1,25 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.ReferenceData.Queries.GetReferenceData;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace Hasad.Application.Tests;
 
 public class ReferenceDataTests
 {
     private readonly ApplicationDbContext _context;
+    private readonly Mock<ICurrentUserService> _currentUserMock;
 
     public ReferenceDataTests()
     {
+        _currentUserMock = new Mock<ICurrentUserService>();
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        _context = new ApplicationDbContext(options);
+        _context = new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]

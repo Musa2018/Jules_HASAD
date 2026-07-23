@@ -36,7 +36,7 @@ class FarmerSyncStatusBadge extends StatelessWidget {
         break;
       case 'pending_delete':
         color = Colors.red;
-        label = l10n.delete; // or l10n.pendingDelete
+        label = l10n.pendingDelete;
         icon = Icons.delete_sweep;
         break;
       case 'invalid':

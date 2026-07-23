@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using Moq;
 
 namespace Hasad.Application.Tests;
 
@@ -17,6 +19,7 @@ public class DatabaseVerificationTests
     private static ServiceProvider CreateServices()
     {
         var services = new ServiceCollection();
+        services.AddSingleton(new Mock<ICurrentUserService>().Object);
         services.AddDbContext<ApplicationDbContext>(o =>
             o.UseSqlServer("Data Source=MUSA_PC;Initial Catalog=hasad;Persist Security Info=True;User ID=sa;Password=Pass@word2023m;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Application Name=\"HASAD API\";Command Timeout=30"));
         services.AddLogging();

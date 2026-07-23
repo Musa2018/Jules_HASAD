@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart';
 
@@ -7,8 +8,8 @@ part 'damage_report.g.dart';
 @freezed
 class DamageReport with _$DamageReport {
   const factory DamageReport({
-    required String id, // ClientId
-    String? serverId,
+    @JsonKey(name: 'clientId') required String id, // ClientId
+    @JsonKey(name: 'id') String? serverId,
     required String farmId,
     required String farmerId,
     required DateTime damageDate,

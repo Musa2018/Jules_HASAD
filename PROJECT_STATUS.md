@@ -2,10 +2,59 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.9.6-alpha (Navigation Hardened)
-- **Current Sprint**: Sprint 11.11 — Navigation Type Mismatch Fix
+- **Current Version**: v0.10.2-alpha (Domain Hardened)
+- **Current Sprint**: Sprint 11.17 — Domain Integrity Hardening
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-23
+
+## Sprint 11.17 — COMPLETED
+Domain Integrity Hardening:
+- **Deletion Protection**: Hardened the domain layer by implementing dependency checks in delete commands, preventing orphaned records.
+- **Business Rule Enforcement**: Farmers can no longer be deleted if linked to any Farm; Farms can no longer be deleted if linked to any Damage Report.
+- **Error Transparency**: Enhanced the sync engine and UI to propagate and display localized business error messages from the backend (e.g., "لا يمكن حذف المزارع...").
+- **Test Coverage**: Expanded both backend and mobile test suites to cover restricted deletion scenarios and error reporting.
+- **Status**: ✅ **Production Ready**.
+
+## Sprint 11.16 — COMPLETED
+Hardened Offline Delete Workflow:
+- **Pending Delete Visibility**: Implemented a new UX rule where records stay visible (dimmed) during the deletion sync process, preventing silent disappearance and data loss.
+- **Undo/Retry Support**: Added "Undo Delete" and "Retry" actions to both `FarmerCard` and `FarmCard` to handle sync failures gracefully.
+- **Repository Hardening**: Updated `FarmerRepository` and `FarmRepository` to include `cancelDelete` methods, ensuring the `SyncQueue` and local storage remain consistent.
+- **Sync Reliability**: Fixed a bug in `BackgroundSyncService` where generic error messages were not being propagated to the local database, hindering user troubleshooting.
+- **Test Coverage**: Added `offline_delete_workflow_test.dart` verifying the complete lifecycle of offline deletion, failure recovery, and undo actions.
+- **Status**: ✅ **Production Ready**.
+
+## Sprint 11.15 — COMPLETED
+Search-First Owner Workflow:
+- **Workflow Standardization**: Implemented the "Search First" pattern for owner selection, supporting ID, Ar/En names, and Phone number searching.
+- **Repository Optimization**: Unified searching logic in `OfflineFirstFarmerRepository` to use a single `searchText` with OR-based SQL queries.
+- **Seamless Creation**: Integrated the "Add New Farmer" action directly into the lookup sheet, with automatic selection upon return and state preservation for the parent form.
+- **Strict Validation**: Hardened `FarmValidator` to ensure all relational dependencies (`OwnerFarmerId`, `RelationshipToOwnerId`) are met for non-owned farms.
+- **Test Coverage**: Added `owner_search_workflow_test.dart` and updated `farm_validator_test.dart` to cover the new workflow and rules.
+
+## Sprint 11.14 — COMPLETED
+Farm Module Production Hardening:
+- **Identity Hardening**: Secured the JWT identity contract by adding the `Name` claim, enabling reliable user-based auditing.
+- **Automated Auditing**: Centralized soft-delete audit logic in the backend persistence layer. All deletions now automatically capture `DeletedAt` and `DeletedBy`.
+- **Entity Alignment**: Upgraded the `Farmer` entity to include audit fields, reaching parity with the `Farm` module.
+- **UX Verification**: Hardened the `FarmFormScreen` against stale data, ensuring switching between "Owned" and "Rented" types correctly nullifies or populates relationships.
+- **Test Coverage**: Reached 91 backend tests and 130 mobile tests with a focus on audit integrity and UX reliability.
+- **Status**: ✅ **Production Ready**.
+
+## Sprint 11.13 — COMPLETED
+Farm UX Enhancement:
+- **Direct Action**: Replaced the "Search" button on the `FarmerCard` with a "Farm" (`مزرعة`) button for quick farm creation.
+- **Form Intelligence**: Enabled `FarmFormScreen` to pre-fill Operator and Owner details based on the navigation context, reducing redundant data entry.
+- **RTL Support**: Ensured the new button and icon align with the Arabic RTL layout and Material Design standards.
+- **Test Coverage**: Added `farmer_card_navigation_test.dart` and `farm_form_prefill_test.dart` verifying the new UX flow.
+
+## Sprint 11.12 — COMPLETED
+Sync Identity Mapping & Lifecycle Fix:
+- **Identity Standard**: Implemented an explicit identity mapping contract across the mobile app. Standardized `serverId` (Backend GUID) and `id` (Local ClientId/UUID) separation to prevent ID collision and 404 errors.
+- **Explicit JSON Mapping**: Updated all synchronized domain models (`Farm`, `Farmer`, `DamageReport`, `DamageItem`, `Attachment`) with `@JsonKey` annotations to ensure deterministic mapping: Backend `Id` -> `serverId`, Backend `ClientId` -> `id`.
+- **Sync Hardening**: Updated `BackgroundSyncService` to correctly persist `serverId` after creation and enforced its usage in update payloads, resolving "Farm not found" errors during ownership type updates.
+- **Documentation**: Formally documented the **Offline Sync Identity Contract** in `AI_CONTEXT.md` as a reusable architectural rule.
+- **Test Coverage**: Added `farm_sync_flow_test.dart` verifying the complete "Create -> Sync -> Edit -> Sync Update" lifecycle and late-binding dependency resolution.
 
 ## Sprint 11.11 — COMPLETED
 Navigation Type Mismatch Fix:

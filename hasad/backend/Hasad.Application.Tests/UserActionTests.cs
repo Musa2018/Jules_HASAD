@@ -13,12 +13,19 @@ namespace Hasad.Application.Tests;
 
 public class UserActionTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public UserActionTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+    }
+
     private ApplicationDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     private UserManager<ApplicationUser> CreateUserManager(ApplicationDbContext context)

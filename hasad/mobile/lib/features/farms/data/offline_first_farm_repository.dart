@@ -53,8 +53,6 @@ class OfflineFirstFarmRepository implements FarmRepository {
       leftOuterJoin(ownerFarmer, ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId)),
     ]);
 
-    query.where(_db.farms.isPendingDelete.equals(false));
-
     // Enforcement of user scope
     if (session != null) {
       final roles = session.roles;
@@ -250,5 +248,20 @@ class OfflineFirstFarmRepository implements FarmRepository {
         'clientId': local.id,
       },
     );
+  }
+
+  @override
+  Future<void> cancelDeleteFarm(String id) async {
+    await (_db.update(_db.farms)..where((t) => t.id.equals(id))).write(
+      const FarmsCompanion(
+        isPendingDelete: Value(false),
+        syncStatus: Value('completed'),
+        lastSyncError: Value(null),
+      ),
+    );
+
+    await (_db.delete(_db.syncQueue)
+          ..where((t) => t.localId.equals(id) & t.entityType.equals('farm') & t.operation.equals('delete')))
+        .go();
   }
 }

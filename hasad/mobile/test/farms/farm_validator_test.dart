@@ -31,9 +31,10 @@ void main() {
       expect(errors, contains('Local Farm Name is required.'));
     });
 
-    test('requires OwnerFarmerId if not owned', () {
-      final errors = FarmValidator.validate(baseFarm.copyWith(ownershipTypeId: 2, ownerFarmerId: null));
+    test('requires OwnerFarmerId and RelationshipToOwnerId if not owned', () {
+      final errors = FarmValidator.validate(baseFarm.copyWith(ownershipTypeId: 2, ownerFarmerId: null, relationshipToOwnerId: null));
       expect(errors, contains('Owner Farmer is required when ownership type is not Owned (ملك).'));
+      expect(errors, contains('Relationship to Owner is required when ownership type is not Owned (ملك).'));
     });
 
     test('validates directorate scope for engineers', () {

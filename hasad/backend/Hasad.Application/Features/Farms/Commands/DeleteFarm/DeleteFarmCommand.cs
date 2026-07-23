@@ -44,9 +44,16 @@ public class DeleteFarmCommandHandler : IRequestHandler<DeleteFarmCommand, Resul
             }
         }
 
+        // Integrity check: Farm cannot be deleted if linked to any Damage Report
+        var hasReports = await _context.DamageReports
+            .AnyAsync(r => r.FarmId == farm.Id, cancellationToken);
+
+        if (hasReports)
+        {
+            return Result<Unit>.Failure(new[] { "لا يمكن حذف المزرعة لوجود استمارات ضرر مرتبطة بها." });
+        }
+
         farm.IsDeleted = true;
-        farm.DeletedAt = DateTime.UtcNow;
-        farm.DeletedBy = _currentUser.UserName;
 
         await _context.SaveChangesAsync(cancellationToken);
 

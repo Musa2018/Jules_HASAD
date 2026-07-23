@@ -71,7 +71,12 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     _selectedOwnerFarmerId = f?.ownerFarmerId;
     _selectedRelationshipToOwnerId = f?.relationshipToOwnerId;
 
-    if (_selectedOwnerFarmerId != null) {
+    if (f == null && widget.farmer != null) {
+       _selectedOwnerFarmerId = widget.farmer!.id;
+       _selectedOwnerFarmer = widget.farmer;
+    }
+
+    if (_selectedOwnerFarmerId != null && _selectedOwnerFarmer == null) {
       _loadOwnerFarmer();
     }
     _selectedAreaUnitId = f?.areaUnitId ?? 1;
@@ -457,9 +462,9 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       label: l10n.ownerFarmer,
       items: const [],
       onSearch: (text) async {
-         return await ref.read(farmerRepositoryProvider).getFarmers(name: text, idNumber: text);
+         return await ref.read(farmerRepositoryProvider).getFarmers(searchText: text);
       },
-      actionLabel: l10n.addFarmer,
+      actionLabel: l10n.addNewFarmerAction,
       onAction: () async {
         final result = await Navigator.of(context).push<Farmer>(
           MaterialPageRoute(builder: (context) => const FarmerFormScreen()),

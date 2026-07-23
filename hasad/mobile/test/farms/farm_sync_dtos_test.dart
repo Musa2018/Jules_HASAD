@@ -50,9 +50,8 @@ void main() {
       expect(json['rowVersion'], 'v1');
     });
 
-    test('toUpdateJson falls back to id when serverId is null', () {
-      final json = FarmSyncDto.toUpdateJson(baseFarm);
-      expect(json['id'], 'local-f1');
+    test('toUpdateJson throws ArgumentError when serverId is null', () {
+      expect(() => FarmSyncDto.toUpdateJson(baseFarm), throwsArgumentError);
     });
   });
 }

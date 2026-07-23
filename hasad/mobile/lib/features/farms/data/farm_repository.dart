@@ -10,4 +10,5 @@ abstract class FarmRepository {
   Future<Farm> createFarm(Farm farm, {AuthSession? session});
   Future<Farm> updateFarm(Farm farm, {AuthSession? session});
   Future<void> deleteFarm(String id, {AuthSession? session});
+  Future<void> cancelDeleteFarm(String id);
 }

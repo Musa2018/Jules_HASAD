@@ -25,8 +25,11 @@ class FarmSyncDto {
   }
 
   static Map<String, dynamic> toUpdateJson(Farm farm) {
+    if (farm.serverId == null) {
+      throw ArgumentError('ServerId is required for update synchronization.');
+    }
     return {
-      'id': farm.serverId ?? farm.id,
+      'id': farm.serverId,
       'clientId': farm.id,
       'farmerId': farm.farmerId,
       'localFarmName': farm.localFarmName,

@@ -21,10 +21,10 @@ Farmer _$FarmerFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Farmer {
+  @JsonKey(name: 'clientId')
   String get id => throw _privateConstructorUsedError; // Local ClientId
+  @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
-  String get clientId =>
-      throw _privateConstructorUsedError; // Redundant but kept for sync contract consistency
   int get idTypeId => throw _privateConstructorUsedError;
   String get idNumber => throw _privateConstructorUsedError;
   String get firstNameAr => throw _privateConstructorUsedError;
@@ -64,9 +64,8 @@ abstract class $FarmerCopyWith<$Res> {
       _$FarmerCopyWithImpl<$Res, Farmer>;
   @useResult
   $Res call({
-    String id,
-    String? serverId,
-    String clientId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     int idTypeId,
     String idNumber,
     String firstNameAr,
@@ -110,7 +109,6 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
   $Res call({
     Object? id = null,
     Object? serverId = freezed,
-    Object? clientId = null,
     Object? idTypeId = null,
     Object? idNumber = null,
     Object? firstNameAr = null,
@@ -145,10 +143,6 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
                 ? _value.serverId
                 : serverId // ignore: cast_nullable_to_non_nullable
                       as String?,
-            clientId: null == clientId
-                ? _value.clientId
-                : clientId // ignore: cast_nullable_to_non_nullable
-                      as String,
             idTypeId: null == idTypeId
                 ? _value.idTypeId
                 : idTypeId // ignore: cast_nullable_to_non_nullable
@@ -256,9 +250,8 @@ abstract class _$$FarmerImplCopyWith<$Res> implements $FarmerCopyWith<$Res> {
   @override
   @useResult
   $Res call({
-    String id,
-    String? serverId,
-    String clientId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     int idTypeId,
     String idNumber,
     String firstNameAr,
@@ -301,7 +294,6 @@ class __$$FarmerImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? serverId = freezed,
-    Object? clientId = null,
     Object? idTypeId = null,
     Object? idNumber = null,
     Object? firstNameAr = null,
@@ -336,10 +328,6 @@ class __$$FarmerImplCopyWithImpl<$Res>
             ? _value.serverId
             : serverId // ignore: cast_nullable_to_non_nullable
                   as String?,
-        clientId: null == clientId
-            ? _value.clientId
-            : clientId // ignore: cast_nullable_to_non_nullable
-                  as String,
         idTypeId: null == idTypeId
             ? _value.idTypeId
             : idTypeId // ignore: cast_nullable_to_non_nullable
@@ -441,9 +429,8 @@ class __$$FarmerImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$FarmerImpl extends _Farmer {
   const _$FarmerImpl({
-    required this.id,
-    this.serverId,
-    this.clientId = '',
+    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'id') this.serverId,
     required this.idTypeId,
     required this.idNumber,
     required this.firstNameAr,
@@ -473,14 +460,12 @@ class _$FarmerImpl extends _Farmer {
       _$$FarmerImplFromJson(json);
 
   @override
+  @JsonKey(name: 'clientId')
   final String id;
   // Local ClientId
   @override
+  @JsonKey(name: 'id')
   final String? serverId;
-  @override
-  @JsonKey()
-  final String clientId;
-  // Redundant but kept for sync contract consistency
   @override
   final int idTypeId;
   @override
@@ -533,7 +518,7 @@ class _$FarmerImpl extends _Farmer {
 
   @override
   String toString() {
-    return 'Farmer(id: $id, serverId: $serverId, clientId: $clientId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isPendingDelete: $isPendingDelete, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Farmer(id: $id, serverId: $serverId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isPendingDelete: $isPendingDelete, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -544,8 +529,6 @@ class _$FarmerImpl extends _Farmer {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.serverId, serverId) ||
                 other.serverId == serverId) &&
-            (identical(other.clientId, clientId) ||
-                other.clientId == clientId) &&
             (identical(other.idTypeId, idTypeId) ||
                 other.idTypeId == idTypeId) &&
             (identical(other.idNumber, idNumber) ||
@@ -598,7 +581,6 @@ class _$FarmerImpl extends _Farmer {
     runtimeType,
     id,
     serverId,
-    clientId,
     idTypeId,
     idNumber,
     firstNameAr,
@@ -640,9 +622,8 @@ class _$FarmerImpl extends _Farmer {
 
 abstract class _Farmer extends Farmer {
   const factory _Farmer({
-    required final String id,
-    final String? serverId,
-    final String clientId,
+    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'id') final String? serverId,
     required final int idTypeId,
     required final String idNumber,
     required final String firstNameAr,
@@ -672,11 +653,11 @@ abstract class _Farmer extends Farmer {
   factory _Farmer.fromJson(Map<String, dynamic> json) = _$FarmerImpl.fromJson;
 
   @override
+  @JsonKey(name: 'clientId')
   String get id; // Local ClientId
   @override
+  @JsonKey(name: 'id')
   String? get serverId;
-  @override
-  String get clientId; // Redundant but kept for sync contract consistency
   @override
   int get idTypeId;
   @override

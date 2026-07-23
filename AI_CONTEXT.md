@@ -47,6 +47,40 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 11.17 - Deletion Integrity Rules
+- **Referential Integrity**: Implemented business validation in `DeleteFarmerCommandHandler` and `DeleteFarmCommandHandler` to block deletion if dependencies exist (e.g., a Farmer linked to a Farm, or a Farm linked to a Damage Report).
+- **Localized Error Feedback**: The backend now returns meaningful, localized error messages for restricted deletions, which are captured and displayed by the Flutter sync engine.
+- **Audit Consistency**: Verified that all soft-deletable entities implement the `ISoftDelete` interface and follow the system-wide automated auditing mechanism.
+
+### Sprint 11.16 - Hardened Offline Delete Workflow
+- **Visibility Standard**: Entities marked for deletion offline now remain visible in the mobile app as "Pending Delete" until the server confirms the operation.
+- **Error Recovery**: If a delete synchronization fails, the entity remains in the list with a clear error status, allowing users to "Retry" or "Undo Delete."
+- **Undo Logic**: Implemented `cancelDelete` logic in repositories to safely restore entities from the "Pending Delete" state by removing the task from the `SyncQueue`.
+- **Sync Hardening**: Updated `BackgroundSyncService` to consistently propagate detailed error messages to entity tables during generic sync failures, improving visibility of offline errors.
+
+### Sprint 11.15 - Search-First Owner Workflow
+- **Search-First Standard**: Standardized the owner selection flow to use a "Search First" pattern. Users must search by ID, Name, or Phone before creating a new farmer.
+- **Unified Repository Search**: Updated `FarmerRepository.getFarmers` to support a single `searchText` parameter that OR-queries all identity and name fields.
+- **Integrated Farmer Creation**: Enhanced the selection action to show "+ إضافة مزارع جديد" when no results are found, opening the `FarmerFormScreen` and automatically selecting the result upon return while preserving the Farm form's state.
+- **Enhanced Validation**: Added mandatory relationship validation for non-owned farms, requiring both an `OwnerFarmerId` and `RelationshipToOwnerId`.
+
+### Sprint 11.14 - Farm Module Production Hardening
+- **JWT Identity Hardening**: Added `ClaimTypes.Name` to the JWT access token to ensure `User.Identity.Name` is consistently available on the backend.
+- **Global Soft Delete Audit**: Implemented a system-wide automated audit mechanism in `ApplicationDbContext`. `DeletedAt` and `DeletedBy` are now automatically populated whenever an entity implementing `ISoftDelete` is marked as deleted.
+- **Soft Delete Contract**: Standardized the soft-delete contract across all entities (`Farmer`, `Farm`, etc.), ensuring consistent audit tracking and query filtering.
+- **UX Reliability**: Verified and hardened state cleanup logic in the `FarmFormScreen` to prevent stale relationship data when toggling ownership types.
+
+### Sprint 11.13 - Farm UX Enhancement
+- **Integrated Action**: Added a direct "Farm" (`مزرعة`) action button to the `FarmerCard`, replacing the redundant search button.
+- **Form Prefilling**: Enhanced `FarmFormScreen` to automatically pre-fill the Operator and Owner fields when navigated from a Farmer context, streamlining the offline-first creation flow.
+- **UX Standards**: Adopted the **Contextual Action Pattern** for quick entity creation from parent cards.
+
+### Sprint 11.12 - Sync Identity Mapping & Lifecycle Fix
+- **Identity Standard**: Implemented an explicit identity mapping contract across the mobile app. Standardized `serverId` (Backend GUID) and `id` (Local ClientId/UUID) separation.
+- **Explicit JSON Mapping**: Updated `Farm`, `Farmer`, `DamageReport`, and `DamageItem` domain models with `@JsonKey` annotations to ensure deterministic mapping from backend DTOs (`Id` -> `serverId`, `ClientId` -> `id`).
+- **Sync Hardening**: Updated `BackgroundSyncService` to correctly persist `serverId` after creation and enforced its usage in update payloads, resolving "Farm not found" errors during sync.
+- **Late Binding**: Verified and hardened the late-binding resolution of parent IDs (e.g., `farmerId` in a Farm) using server-assigned IDs after the parent entity synchronizes.
+
 ### Sprint 11.11 - Navigation Type Mismatch Fix
 - **Type Safety**: Resolved a critical runtime error where `Farm` objects were incorrectly cast to `Map<String, dynamic>` during navigation to the edit form.
 - **Strongly Typed Navigation**: Updated `app_router.dart` and `FarmFormScreen` to use the `Farm` model directly, ensuring type safety and consistency across the app.

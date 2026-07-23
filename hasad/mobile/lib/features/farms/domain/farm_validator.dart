@@ -14,8 +14,13 @@ class FarmValidator {
     }
 
     // Ownership: If OwnershipType is not "ملك" (Owned, usually ID 1)
-    if (farm.ownershipTypeId != 1 && (farm.ownerFarmerId == null || farm.ownerFarmerId!.isEmpty)) {
-      errors.add('Owner Farmer is required when ownership type is not Owned (ملك).');
+    if (farm.ownershipTypeId != 1) {
+      if (farm.ownerFarmerId == null || farm.ownerFarmerId!.isEmpty) {
+        errors.add('Owner Farmer is required when ownership type is not Owned (ملك).');
+      }
+      if (farm.relationshipToOwnerId == null) {
+        errors.add('Relationship to Owner is required when ownership type is not Owned (ملك).');
+      }
     }
 
     // Geography

@@ -1,4 +1,5 @@
 using Hasad.Application.Common.Interfaces;
+using Hasad.Domain.Common;
 using Hasad.Domain.Entities;
 using Hasad.Domain.Enums;
 using Hasad.Domain.Identity;
@@ -13,10 +14,30 @@ namespace Hasad.Infrastructure.Persistence;
 /// </summary>
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
+    private readonly ICurrentUserService _currentUser;
+
     /// <summary>Initializes the context.</summary>
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        ICurrentUserService currentUser)
         : base(options)
     {
+        _currentUser = currentUser;
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<ISoftDelete>())
+        {
+            if (entry.State == EntityState.Modified && entry.Entity.IsDeleted)
+            {
+                // Only set audit fields if they haven't been set yet (or we can always overwrite for consistency)
+                entry.Entity.DeletedAt ??= DateTime.UtcNow;
+                entry.Entity.DeletedBy ??= _currentUser.UserId;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>Persisted refresh tokens.</summary>

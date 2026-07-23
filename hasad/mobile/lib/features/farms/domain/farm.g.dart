@@ -7,8 +7,8 @@ part of 'farm.dart';
 // **************************************************************************
 
 _$FarmImpl _$$FarmImplFromJson(Map<String, dynamic> json) => _$FarmImpl(
-  id: json['id'] as String,
-  serverId: json['serverId'] as String?,
+  id: json['clientId'] as String,
+  serverId: json['id'] as String?,
   farmerId: json['farmerId'] as String,
   localFarmName: json['localFarmName'] as String,
   ownershipTypeId: (json['ownershipTypeId'] as num).toInt(),
@@ -45,8 +45,8 @@ _$FarmImpl _$$FarmImplFromJson(Map<String, dynamic> json) => _$FarmImpl(
 
 Map<String, dynamic> _$$FarmImplToJson(_$FarmImpl instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'serverId': instance.serverId,
+      'clientId': instance.id,
+      'id': instance.serverId,
       'farmerId': instance.farmerId,
       'localFarmName': instance.localFarmName,
       'ownershipTypeId': instance.ownershipTypeId,

@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
@@ -7,9 +8,8 @@ part 'farmer.g.dart';
 @freezed
 class Farmer with _$Farmer {
   const factory Farmer({
-    required String id, // Local ClientId
-    String? serverId,
-    @Default('') String clientId, // Redundant but kept for sync contract consistency
+    @JsonKey(name: 'clientId') required String id, // Local ClientId
+    @JsonKey(name: 'id') String? serverId,
     required int idTypeId,
     required String idNumber,
     required String firstNameAr,

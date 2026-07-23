@@ -41,8 +41,8 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 4. Current Project Status
 - **Current Branch**: `Farms`
-- **Latest Completed Sprint**: Sprint 11.4 — Farm Management UI
-- **Latest Commit Hash**: `7a4146f` (Branch: Farms)
+- **Latest Completed Sprint**: Sprint 12.2 — Hierarchical Classification UI
+- **Latest Commit Hash**: `e073d75` (Branch: DamageReport)
 - **main**: Stable production-ready code.
 - **Farms**: Completed and hardened.
 - **DamageReport**: Active development branch for Sprint 12.

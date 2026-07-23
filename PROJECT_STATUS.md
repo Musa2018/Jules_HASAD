@@ -3,9 +3,10 @@
 > Living document — updated at the end of every sprint.
 
 - **Current Version**: v0.12.0-alpha (Architecture Design)
-- **Current Sprint**: Sprint 12.0 — Damage Report Engineering Audit
+- **Current Sprint**: Sprint 12.3 — Form & Sync Hardening
 - **Current Branch**: `DamageReport`
 - **Last Updated**: 2026-07-23
+- **Latest Commit**: `e073d75`
 
 ## Sprint 12.2 — COMPLETED
 Hierarchical Classification UI:

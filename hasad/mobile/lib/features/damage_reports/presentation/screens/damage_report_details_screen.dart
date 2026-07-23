@@ -5,7 +5,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/generated/l10n/app_localizations.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 String _getStatusLabel(BuildContext context, String status) {
   final l10n = AppLocalizations.of(context)!;
@@ -194,7 +194,7 @@ class _HistorySection extends ConsumerWidget {
                     final header = _HeaderSection(report: DamageReport(
                       id: '', farmId: '', farmerId: '', damageDate: DateTime.now(), documentationDate: DateTime.now(),
                       governorateId: '', directorateId: '', localityId: '', statusId: '', notes: ''
-                    )); // Dummy to access helpers, or better move helpers to shared
+                    ));
                     
                     // Actually, I'll use a local function or move the label logic
                     return ListTile(

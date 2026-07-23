@@ -52,7 +52,8 @@ void main() {
     registerFallbackValue(
       DamageReport(
         id: '', farmId: '', farmerId: '', damageDate: DateTime.now(),
-        documentationDate: DateTime.now(), governorateId: '', localityId: '',
+        documentationDate: DateTime.now(), governorateId: '', 
+        directorateId: '', localityId: '',
         statusId: '', notes: '',
       ),
     );
@@ -88,6 +89,7 @@ void main() {
         documentationDate: DateTime.now(),
         damageCauseId: 1,
         governorateId: 'G1',
+        directorateId: 'D1',
         localityId: 'L1',
         statusId: 'Draft',
         notes: 'Notes',
@@ -119,7 +121,7 @@ void main() {
        final report = DamageReport(
         id: 'r1', farmId: 'farm1', farmerId: 'f1',
         damageDate: DateTime.now(), documentationDate: DateTime.now(),
-        governorateId: 'G1', localityId: 'L1', statusId: 'Draft', notes: '',
+        governorateId: 'G1', directorateId: 'D1', localityId: 'L1', statusId: 'Draft', notes: '',
       );
       await localRepo.createDamageReport(report);
 

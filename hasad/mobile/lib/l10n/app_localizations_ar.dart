@@ -426,4 +426,34 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get directorate => 'مديرية';
+
+  @override
+  String get status_Draft => 'مسودة';
+
+  @override
+  String get status_TechReview => 'مراجعة فنية';
+
+  @override
+  String get status_ArchiveDir => 'أرشفة المديرية';
+
+  @override
+  String get status_DirManager => 'مدير المديرية';
+
+  @override
+  String get status_MinTechReview => 'مراجعة فنية (وزارة)';
+
+  @override
+  String get status_LegalReview => 'مراجعة قانونية';
+
+  @override
+  String get status_ProcReview => 'مراجعة إجرائية';
+
+  @override
+  String get status_MinArchive => 'أرشفة الوزارة';
+
+  @override
+  String get status_GenManager => 'المدير العام';
+
+  @override
+  String get status_Completed => 'مكتمل';
 }

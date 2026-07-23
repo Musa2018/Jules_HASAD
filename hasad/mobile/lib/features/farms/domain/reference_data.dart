@@ -11,6 +11,7 @@ class ReferenceData with _$ReferenceData {
     required List<AgriculturalSector> agriculturalSectors,
     required List<PoliticalClassification> politicalClassifications,
     required List<AreaUnit> areaUnits,
+    required List<MeasurementUnit> measurementUnits,
     required List<RelationshipToOwner> relationshipToOwners,
 
     // Damage Hierarchy
@@ -23,7 +24,12 @@ class ReferenceData with _$ReferenceData {
     required List<DamageCauseCategory> damageCauseCategories,
     required List<DamageCause> damageCauses,
 
-    required List<CostingSheetVersion> costingSheets,
+    @Default([]) List<CostingSheetCatalog> costingSheetCatalogs,
+    @Default([]) List<CostingSheetVersion> costingSheetVersions,
+    @Default([]) List<CostingSheetItem> costingSheetItems,
+    
+    // Kept for backward compatibility during transition
+    @JsonKey(name: 'costingSheets') @Default([]) List<CostingSheetItem> legacyCostingSheets,
   }) = _ReferenceData;
 
   factory ReferenceData.fromJson(Map<String, dynamic> json) =>

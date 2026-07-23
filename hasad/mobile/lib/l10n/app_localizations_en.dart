@@ -426,4 +426,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get directorate => 'Directorate';
+
+  @override
+  String get status_Draft => 'Draft';
+
+  @override
+  String get status_TechReview => 'Technical Review';
+
+  @override
+  String get status_ArchiveDir => 'Directorate Archive';
+
+  @override
+  String get status_DirManager => 'Directorate Manager';
+
+  @override
+  String get status_MinTechReview => 'Ministry Technical Review';
+
+  @override
+  String get status_LegalReview => 'Legal Review';
+
+  @override
+  String get status_ProcReview => 'Procedural Review';
+
+  @override
+  String get status_MinArchive => 'Ministry Archive';
+
+  @override
+  String get status_GenManager => 'General Manager';
+
+  @override
+  String get status_Completed => 'Completed';
 }

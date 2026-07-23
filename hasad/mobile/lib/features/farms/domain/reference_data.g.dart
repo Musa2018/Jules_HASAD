@@ -21,6 +21,9 @@ _$ReferenceDataImpl _$$ReferenceDataImplFromJson(
   areaUnits: (json['areaUnits'] as List<dynamic>)
       .map((e) => AreaUnit.fromJson(e as Map<String, dynamic>))
       .toList(),
+  measurementUnits: (json['measurementUnits'] as List<dynamic>)
+      .map((e) => MeasurementUnit.fromJson(e as Map<String, dynamic>))
+      .toList(),
   relationshipToOwners: (json['relationshipToOwners'] as List<dynamic>)
       .map((e) => RelationshipToOwner.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -42,9 +45,26 @@ _$ReferenceDataImpl _$$ReferenceDataImplFromJson(
   damageCauses: (json['damageCauses'] as List<dynamic>)
       .map((e) => DamageCause.fromJson(e as Map<String, dynamic>))
       .toList(),
-  costingSheets: (json['costingSheets'] as List<dynamic>)
-      .map((e) => CostingSheetVersion.fromJson(e as Map<String, dynamic>))
-      .toList(),
+  costingSheetCatalogs:
+      (json['costingSheetCatalogs'] as List<dynamic>?)
+          ?.map((e) => CostingSheetCatalog.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  costingSheetVersions:
+      (json['costingSheetVersions'] as List<dynamic>?)
+          ?.map((e) => CostingSheetVersion.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  costingSheetItems:
+      (json['costingSheetItems'] as List<dynamic>?)
+          ?.map((e) => CostingSheetItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  legacyCostingSheets:
+      (json['costingSheets'] as List<dynamic>?)
+          ?.map((e) => CostingSheetItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$$ReferenceDataImplToJson(_$ReferenceDataImpl instance) =>
@@ -53,6 +73,7 @@ Map<String, dynamic> _$$ReferenceDataImplToJson(_$ReferenceDataImpl instance) =>
       'agriculturalSectors': instance.agriculturalSectors,
       'politicalClassifications': instance.politicalClassifications,
       'areaUnits': instance.areaUnits,
+      'measurementUnits': instance.measurementUnits,
       'relationshipToOwners': instance.relationshipToOwners,
       'damageNatures': instance.damageNatures,
       'damageCategories': instance.damageCategories,
@@ -60,5 +81,8 @@ Map<String, dynamic> _$$ReferenceDataImplToJson(_$ReferenceDataImpl instance) =>
       'damageClassifications': instance.damageClassifications,
       'damageCauseCategories': instance.damageCauseCategories,
       'damageCauses': instance.damageCauses,
-      'costingSheets': instance.costingSheets,
+      'costingSheetCatalogs': instance.costingSheetCatalogs,
+      'costingSheetVersions': instance.costingSheetVersions,
+      'costingSheetItems': instance.costingSheetItems,
+      'costingSheets': instance.legacyCostingSheets,
     };

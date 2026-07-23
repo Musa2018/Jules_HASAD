@@ -68,26 +68,32 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
   }
 
   @override
-  Future<domain.CostingSheetVersion?> getActiveCostingSheet(
+  Future<domain.CostingSheetItem?> getActiveCostingSheet(
     int classificationId,
   ) async {
-    final item = await (_db.select(_db.costingSheets)
-          ..where((t) =>
-              t.classificationId.equals(classificationId) &
-              t.isActive.equals(true))
-          ..limit(1))
-        .getSingleOrNull();
+    // Resolve price from the Active version
+    final query = _db.select(_db.costingSheetItems).join([
+      innerJoin(
+        _db.costingSheetVersions,
+        _db.costingSheetVersions.id.equalsExp(_db.costingSheetItems.versionId),
+      ),
+    ])
+      ..where(_db.costingSheetItems.classificationId.equals(classificationId) &
+          _db.costingSheetVersions.status.equals(2)); // 2: Active
 
-    if (item == null) return null;
+    final row = await query.getSingleOrNull();
 
-    return domain.CostingSheetVersion(
+    if (row == null) return null;
+
+    final item = row.readTable(_db.costingSheetItems);
+
+    return domain.CostingSheetItem(
       id: item.id,
+      versionId: item.versionId,
       classificationId: item.classificationId,
+      measurementUnitId: item.measurementUnitId,
       unitPrice: item.unitPrice,
-      effectiveFrom: item.effectiveFrom,
-      effectiveTo: item.effectiveTo,
-      isActive: item.isActive,
-      versionNumber: item.versionNumber,
+      createdAt: item.createdAt,
     );
   }
 
@@ -111,7 +117,8 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
     final ownership = await _db.select(_db.ownershipTypes).get();
     final sectors = await _db.select(_db.agriculturalSectors).get();
     final political = await _db.select(_db.politicalClassifications).get();
-    final units = await _db.select(_db.areaUnits).get();
+    final areaUnits = await _db.select(_db.areaUnits).get(); // Legacy
+    final measurementUnits = await _db.select(_db.measurementUnits).get();
     final relationships = await _db.select(_db.relationshipToOwners).get();
 
     // Damage Hierarchy
@@ -124,7 +131,10 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
     final causeCategories = await _db.select(_db.damageCauseCategories).get();
     final causes = await _db.select(_db.damageCauses).get();
 
-    final costs = await _db.select(_db.costingSheets).get();
+    // Costing Hierarchy
+    final catalogs = await _db.select(_db.costingSheetCatalogs).get();
+    final versions = await _db.select(_db.costingSheetVersions).get();
+    final items = await _db.select(_db.costingSheetItems).get();
 
     return ReferenceData(
       ownershipTypes: ownership
@@ -136,8 +146,16 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       politicalClassifications: political
           .map((e) => domain.PoliticalClassification(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
           .toList(),
-      areaUnits: units
+      areaUnits: areaUnits
           .map((e) => domain.AreaUnit(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
+          .toList(),
+      measurementUnits: measurementUnits
+          .map((e) => domain.MeasurementUnit(
+              id: e.id, 
+              nameAr: e.nameAr, 
+              nameEn: e.nameEn, 
+              code: e.code, 
+              category: e.category))
           .toList(),
       relationshipToOwners: relationships
           .map((e) => domain.RelationshipToOwner(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
@@ -164,16 +182,37 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
           .map((e) => domain.DamageCause(
               id: e.id, parentId: e.parentId, nameAr: e.nameAr, nameEn: e.nameEn))
           .toList(),
-      costingSheets: costs
+      costingSheetCatalogs: catalogs
+          .map((e) => domain.CostingSheetCatalog(
+              id: e.id, 
+              name: e.name, 
+              description: e.description, 
+              createdAt: e.createdAt, 
+              createdBy: e.createdBy))
+          .toList(),
+      costingSheetVersions: versions
           .map((e) => domain.CostingSheetVersion(
               id: e.id,
-              classificationId: e.classificationId,
-              unitPrice: e.unitPrice,
+              catalogId: e.catalogId,
+              versionNumber: e.versionNumber,
+              status: e.status,
               effectiveFrom: e.effectiveFrom,
               effectiveTo: e.effectiveTo,
-              isActive: e.isActive,
-              versionNumber: e.versionNumber))
+              createdAt: e.createdAt,
+              createdBy: e.createdBy,
+              approvedAt: e.approvedAt,
+              approvedBy: e.approvedBy))
           .toList(),
+      costingSheetItems: items
+          .map((e) => domain.CostingSheetItem(
+              id: e.id,
+              versionId: e.versionId,
+              classificationId: e.classificationId,
+              measurementUnitId: e.measurementUnitId,
+              unitPrice: e.unitPrice,
+              createdAt: e.createdAt))
+          .toList(),
+      legacyCostingSheets: [], // Handled by backend compatibility during sync
     );
   }
 
@@ -181,7 +220,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
     return data.ownershipTypes.isNotEmpty &&
         data.agriculturalSectors.isNotEmpty &&
         data.politicalClassifications.isNotEmpty &&
-        data.areaUnits.isNotEmpty &&
+        data.measurementUnits.isNotEmpty &&
         data.relationshipToOwners.isNotEmpty &&
         data.damageNatures.isNotEmpty;
   }
@@ -193,6 +232,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       batch.deleteWhere(_db.agriculturalSectors, (t) => const Constant(true));
       batch.deleteWhere(_db.politicalClassifications, (t) => const Constant(true));
       batch.deleteWhere(_db.areaUnits, (t) => const Constant(true));
+      batch.deleteWhere(_db.measurementUnits, (t) => const Constant(true));
       batch.deleteWhere(_db.relationshipToOwners, (t) => const Constant(true));
       batch.deleteWhere(_db.damageNatures, (t) => const Constant(true));
       batch.deleteWhere(_db.damageCategories, (t) => const Constant(true));
@@ -200,7 +240,10 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       batch.deleteWhere(_db.damageClassifications, (t) => const Constant(true));
       batch.deleteWhere(_db.damageCauseCategories, (t) => const Constant(true));
       batch.deleteWhere(_db.damageCauses, (t) => const Constant(true));
-      batch.deleteWhere(_db.costingSheets, (t) => const Constant(true));
+      
+      batch.deleteWhere(_db.costingSheetCatalogs, (t) => const Constant(true));
+      batch.deleteWhere(_db.costingSheetVersions, (t) => const Constant(true));
+      batch.deleteWhere(_db.costingSheetItems, (t) => const Constant(true));
 
       batch.insertAll(_db.ownershipTypes, data.ownershipTypes.map((e) => OwnershipTypesCompanion.insert(
         id: Value(e.id),
@@ -224,6 +267,14 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
+      )));
+
+      batch.insertAll(_db.measurementUnits, data.measurementUnits.map((e) => MeasurementUnitsCompanion.insert(
+        id: Value(e.id),
+        nameAr: e.nameAr,
+        nameEn: e.nameEn,
+        code: Value(e.code),
+        category: e.category,
       )));
 
       batch.insertAll(_db.relationshipToOwners, data.relationshipToOwners.map((e) => RelationshipToOwnersCompanion.insert(
@@ -272,15 +323,68 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         nameEn: e.nameEn,
       )));
 
-      batch.insertAll(_db.costingSheets, data.costingSheets.map((e) => CostingSheetsCompanion.insert(
+      // Hierarchical Pricing
+      batch.insertAll(_db.costingSheetCatalogs, data.costingSheetCatalogs.map((e) => CostingSheetCatalogsCompanion.insert(
         id: e.id,
-        classificationId: e.classificationId,
-        unitPrice: e.unitPrice,
+        name: e.name,
+        description: Value(e.description),
+        createdAt: Value(e.createdAt),
+        createdBy: e.createdBy,
+      )));
+
+      batch.insertAll(_db.costingSheetVersions, data.costingSheetVersions.map((e) => CostingSheetVersionsCompanion.insert(
+        id: e.id,
+        catalogId: e.catalogId,
+        versionNumber: e.versionNumber,
+        status: e.status,
         effectiveFrom: e.effectiveFrom,
         effectiveTo: Value(e.effectiveTo),
-        isActive: Value(e.isActive),
-        versionNumber: e.versionNumber,
+        createdAt: Value(e.createdAt),
+        createdBy: e.createdBy,
+        approvedAt: Value(e.approvedAt),
+        approvedBy: Value(e.approvedBy),
       )));
+
+      batch.insertAll(_db.costingSheetItems, data.costingSheetItems.map((e) => CostingSheetItemsCompanion.insert(
+        id: e.id,
+        versionId: e.versionId,
+        classificationId: e.classificationId,
+        measurementUnitId: Value(e.measurementUnitId),
+        unitPrice: e.unitPrice,
+        createdAt: Value(e.createdAt),
+      )));
+
+      // Backward compatibility: If the server sends flat costingSheets, 
+      // we map them to a special Local Server Version for now.
+      if (data.legacyCostingSheets.isNotEmpty) {
+        final serverLegacyCatalogId = 'LEGACY-CATALOG-SERVER';
+        final serverLegacyVersionId = 'LEGACY-VERSION-SERVER';
+
+        batch.insert(_db.costingSheetCatalogs, CostingSheetCatalogsCompanion.insert(
+          id: serverLegacyCatalogId,
+          name: 'Server Legacy Catalog',
+          description: const Value('Wrapper for flat pricing items from server.'),
+          createdBy: 'System',
+        ), mode: InsertMode.insertOrIgnore);
+
+        batch.insert(_db.costingSheetVersions, CostingSheetVersionsCompanion.insert(
+          id: serverLegacyVersionId,
+          catalogId: serverLegacyCatalogId,
+          versionNumber: 1,
+          status: 2, // Active
+          effectiveFrom: DateTime(2000),
+          createdBy: 'System',
+        ), mode: InsertMode.insertOrIgnore);
+
+        batch.insertAll(_db.costingSheetItems, data.legacyCostingSheets.map((e) => CostingSheetItemsCompanion.insert(
+          id: e.id,
+          versionId: serverLegacyVersionId,
+          classificationId: e.classificationId,
+          measurementUnitId: Value(e.measurementUnitId),
+          unitPrice: e.unitPrice,
+          createdAt: Value(e.createdAt),
+        )));
+      }
     });
   }
 }

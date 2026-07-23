@@ -36,6 +36,26 @@ final areaUnitsProvider = FutureProvider<List<AreaUnit>>((ref) async {
   return data.areaUnits;
 });
 
+final measurementUnitsProvider = FutureProvider<List<MeasurementUnit>>((ref) async {
+  final data = await ref.watch(referenceDataProvider.future);
+  return data.measurementUnits;
+});
+
+final costingSheetCatalogsProvider = FutureProvider<List<CostingSheetCatalog>>((ref) async {
+  final data = await ref.watch(referenceDataProvider.future);
+  return data.costingSheetCatalogs;
+});
+
+final costingSheetVersionsProvider = FutureProvider<List<CostingSheetVersion>>((ref) async {
+  final data = await ref.watch(referenceDataProvider.future);
+  return data.costingSheetVersions;
+});
+
+final costingSheetItemsProvider = FutureProvider<List<CostingSheetItem>>((ref) async {
+  final data = await ref.watch(referenceDataProvider.future);
+  return data.costingSheetItems;
+});
+
 final relationshipToOwnersProvider = FutureProvider<List<RelationshipToOwner>>((ref) async {
   final data = await ref.watch(referenceDataProvider.future);
   return data.relationshipToOwners;

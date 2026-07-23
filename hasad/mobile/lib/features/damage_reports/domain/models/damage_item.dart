@@ -12,6 +12,7 @@ class DamageItem with _$DamageItem {
     required String damageReportId,
     @Default(0) int classificationId,
     @Default('') String costingSheetId,
+    String? costingSheetItemId,
     @Default(0.0) double calculatedUnitPrice,
     @Default('') String measurementUnitSnapshot,
     required double affectedArea,

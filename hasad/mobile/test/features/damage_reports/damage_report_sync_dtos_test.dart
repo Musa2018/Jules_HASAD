@@ -14,6 +14,7 @@ void main() {
       damageDate: DateTime(2024, 5, 20),
       documentationDate: DateTime(2024, 5, 21),
       governorateId: 'gov1',
+      directorateId: 'dir1',
       localityId: 'loc1',
       statusId: 'Draft',
       notes: 'Test',

@@ -251,6 +251,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
       damageReportId: widget.reportId,
       classificationId: state.selectedClassification!.id,
       costingSheetId: costing.id,
+      costingSheetItemId: costing.id,
       calculatedUnitPrice: costing.unitPrice,
       measurementUnitSnapshot: 'Unit', // TODO: Get from costing/classification
       affectedArea: double.tryParse(_areaController.text) ?? 0.0,

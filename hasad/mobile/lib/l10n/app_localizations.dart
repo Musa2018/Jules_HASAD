@@ -925,6 +925,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Directorate'**
   String get directorate;
+
+  /// No description provided for @status_Draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get status_Draft;
+
+  /// No description provided for @status_TechReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Review'**
+  String get status_TechReview;
+
+  /// No description provided for @status_ArchiveDir.
+  ///
+  /// In en, this message translates to:
+  /// **'Directorate Archive'**
+  String get status_ArchiveDir;
+
+  /// No description provided for @status_DirManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Directorate Manager'**
+  String get status_DirManager;
+
+  /// No description provided for @status_MinTechReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Ministry Technical Review'**
+  String get status_MinTechReview;
+
+  /// No description provided for @status_LegalReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Review'**
+  String get status_LegalReview;
+
+  /// No description provided for @status_ProcReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Procedural Review'**
+  String get status_ProcReview;
+
+  /// No description provided for @status_MinArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Ministry Archive'**
+  String get status_MinArchive;
+
+  /// No description provided for @status_GenManager.
+  ///
+  /// In en, this message translates to:
+  /// **'General Manager'**
+  String get status_GenManager;
+
+  /// No description provided for @status_Completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get status_Completed;
 }
 
 class _AppLocalizationsDelegate

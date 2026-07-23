@@ -42,7 +42,7 @@ class RemoteReferenceDataRepository implements ReferenceDataRepository {
       throw UnimplementedError();
 
   @override
-  Future<CostingSheetVersion?> getActiveCostingSheet(int classificationId) =>
+  Future<CostingSheetItem?> getActiveCostingSheet(int classificationId) =>
       throw UnimplementedError();
 
   @override

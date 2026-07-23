@@ -13,6 +13,7 @@ _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
       damageReportId: json['damageReportId'] as String,
       classificationId: (json['classificationId'] as num?)?.toInt() ?? 0,
       costingSheetId: json['costingSheetId'] as String? ?? '',
+      costingSheetItemId: json['costingSheetItemId'] as String?,
       calculatedUnitPrice:
           (json['calculatedUnitPrice'] as num?)?.toDouble() ?? 0.0,
       measurementUnitSnapshot: json['measurementUnitSnapshot'] as String? ?? '',
@@ -37,6 +38,7 @@ Map<String, dynamic> _$$DamageItemImplToJson(_$DamageItemImpl instance) =>
       'damageReportId': instance.damageReportId,
       'classificationId': instance.classificationId,
       'costingSheetId': instance.costingSheetId,
+      'costingSheetItemId': instance.costingSheetItemId,
       'calculatedUnitPrice': instance.calculatedUnitPrice,
       'measurementUnitSnapshot': instance.measurementUnitSnapshot,
       'affectedArea': instance.affectedArea,

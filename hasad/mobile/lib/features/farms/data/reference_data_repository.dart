@@ -9,7 +9,7 @@ abstract class ReferenceDataRepository {
   Future<List<DamageCategory>> getCategories(int natureId);
   Future<List<DamageSubCategory>> getSubCategories(int categoryId);
   Future<List<DamageClassification>> getClassifications(int subCategoryId);
-  Future<CostingSheetVersion?> getActiveCostingSheet(int classificationId);
+  Future<CostingSheetItem?> getActiveCostingSheet(int classificationId);
 
   // Search
   Future<List<DamageClassification>> searchClassifications(String query);

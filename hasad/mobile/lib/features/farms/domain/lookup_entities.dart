@@ -52,6 +52,20 @@ class AreaUnit with _$AreaUnit {
 }
 
 @freezed
+class MeasurementUnit with _$MeasurementUnit {
+  const factory MeasurementUnit({
+    required int id,
+    required String nameAr,
+    required String nameEn,
+    String? code,
+    required String category,
+  }) = _MeasurementUnit;
+
+  factory MeasurementUnit.fromJson(Map<String, dynamic> json) =>
+      _$MeasurementUnitFromJson(json);
+}
+
+@freezed
 class RelationshipToOwner with _$RelationshipToOwner {
   const factory RelationshipToOwner({
     required int id,
@@ -140,17 +154,49 @@ class DamageCause with _$DamageCause {
 }
 
 @freezed
+class CostingSheetCatalog with _$CostingSheetCatalog {
+  const factory CostingSheetCatalog({
+    required String id,
+    required String name,
+    String? description,
+    required DateTime createdAt,
+    required String createdBy,
+  }) = _CostingSheetCatalog;
+
+  factory CostingSheetCatalog.fromJson(Map<String, dynamic> json) =>
+      _$CostingSheetCatalogFromJson(json);
+}
+
+@freezed
 class CostingSheetVersion with _$CostingSheetVersion {
   const factory CostingSheetVersion({
     required String id,
-    required int classificationId,
-    required double unitPrice,
+    required String catalogId,
+    required int versionNumber,
+    required int status, // 0: Draft, 1: PendingApproval, 2: Active, 3: Archived
     required DateTime effectiveFrom,
     DateTime? effectiveTo,
-    @Default(true) bool isActive,
-    required int versionNumber,
+    required DateTime createdAt,
+    required String createdBy,
+    DateTime? approvedAt,
+    String? approvedBy,
   }) = _CostingSheetVersion;
 
   factory CostingSheetVersion.fromJson(Map<String, dynamic> json) =>
       _$CostingSheetVersionFromJson(json);
+}
+
+@freezed
+class CostingSheetItem with _$CostingSheetItem {
+  const factory CostingSheetItem({
+    required String id,
+    required String versionId,
+    required int classificationId,
+    int? measurementUnitId,
+    required double unitPrice,
+    required DateTime createdAt,
+  }) = _CostingSheetItem;
+
+  factory CostingSheetItem.fromJson(Map<String, dynamic> json) =>
+      _$CostingSheetItemFromJson(json);
 }

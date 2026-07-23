@@ -16,12 +16,12 @@ void main() {
   final category = const DamageCategory(id: 10, parentId: 1, nameAr: 'C1', nameEn: 'CE1');
   final subCategory = const DamageSubCategory(id: 100, parentId: 10, nameAr: 'SC1', nameEn: 'SE1');
   final classification = const DamageClassification(id: 1000, parentId: 100, nameAr: 'Cl1', nameEn: 'CLE1');
-  final costing = CostingSheetVersion(
+  final costing = CostingSheetItem(
     id: 'cs1',
+    versionId: 'v1',
     classificationId: 1000,
     unitPrice: 50.0,
-    effectiveFrom: DateTime.now(),
-    versionNumber: 1,
+    createdAt: DateTime.now(),
   );
 
   setUp(() {

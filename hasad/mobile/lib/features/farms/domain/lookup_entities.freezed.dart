@@ -776,6 +776,254 @@ abstract class _AreaUnit implements AreaUnit {
       throw _privateConstructorUsedError;
 }
 
+MeasurementUnit _$MeasurementUnitFromJson(Map<String, dynamic> json) {
+  return _MeasurementUnit.fromJson(json);
+}
+
+/// @nodoc
+mixin _$MeasurementUnit {
+  int get id => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+  String? get code => throw _privateConstructorUsedError;
+  String get category => throw _privateConstructorUsedError;
+
+  /// Serializes this MeasurementUnit to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of MeasurementUnit
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MeasurementUnitCopyWith<MeasurementUnit> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MeasurementUnitCopyWith<$Res> {
+  factory $MeasurementUnitCopyWith(
+    MeasurementUnit value,
+    $Res Function(MeasurementUnit) then,
+  ) = _$MeasurementUnitCopyWithImpl<$Res, MeasurementUnit>;
+  @useResult
+  $Res call({
+    int id,
+    String nameAr,
+    String nameEn,
+    String? code,
+    String category,
+  });
+}
+
+/// @nodoc
+class _$MeasurementUnitCopyWithImpl<$Res, $Val extends MeasurementUnit>
+    implements $MeasurementUnitCopyWith<$Res> {
+  _$MeasurementUnitCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of MeasurementUnit
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+    Object? code = freezed,
+    Object? category = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+            code: freezed == code
+                ? _value.code
+                : code // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            category: null == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$MeasurementUnitImplCopyWith<$Res>
+    implements $MeasurementUnitCopyWith<$Res> {
+  factory _$$MeasurementUnitImplCopyWith(
+    _$MeasurementUnitImpl value,
+    $Res Function(_$MeasurementUnitImpl) then,
+  ) = __$$MeasurementUnitImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    int id,
+    String nameAr,
+    String nameEn,
+    String? code,
+    String category,
+  });
+}
+
+/// @nodoc
+class __$$MeasurementUnitImplCopyWithImpl<$Res>
+    extends _$MeasurementUnitCopyWithImpl<$Res, _$MeasurementUnitImpl>
+    implements _$$MeasurementUnitImplCopyWith<$Res> {
+  __$$MeasurementUnitImplCopyWithImpl(
+    _$MeasurementUnitImpl _value,
+    $Res Function(_$MeasurementUnitImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of MeasurementUnit
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+    Object? code = freezed,
+    Object? category = null,
+  }) {
+    return _then(
+      _$MeasurementUnitImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+        code: freezed == code
+            ? _value.code
+            : code // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        category: null == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$MeasurementUnitImpl implements _MeasurementUnit {
+  const _$MeasurementUnitImpl({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+    this.code,
+    required this.category,
+  });
+
+  factory _$MeasurementUnitImpl.fromJson(Map<String, dynamic> json) =>
+      _$$MeasurementUnitImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final String nameAr;
+  @override
+  final String nameEn;
+  @override
+  final String? code;
+  @override
+  final String category;
+
+  @override
+  String toString() {
+    return 'MeasurementUnit(id: $id, nameAr: $nameAr, nameEn: $nameEn, code: $code, category: $category)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$MeasurementUnitImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn) &&
+            (identical(other.code, code) || other.code == code) &&
+            (identical(other.category, category) ||
+                other.category == category));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, id, nameAr, nameEn, code, category);
+
+  /// Create a copy of MeasurementUnit
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MeasurementUnitImplCopyWith<_$MeasurementUnitImpl> get copyWith =>
+      __$$MeasurementUnitImplCopyWithImpl<_$MeasurementUnitImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$MeasurementUnitImplToJson(this);
+  }
+}
+
+abstract class _MeasurementUnit implements MeasurementUnit {
+  const factory _MeasurementUnit({
+    required final int id,
+    required final String nameAr,
+    required final String nameEn,
+    final String? code,
+    required final String category,
+  }) = _$MeasurementUnitImpl;
+
+  factory _MeasurementUnit.fromJson(Map<String, dynamic> json) =
+      _$MeasurementUnitImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+  @override
+  String? get code;
+  @override
+  String get category;
+
+  /// Create a copy of MeasurementUnit
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MeasurementUnitImplCopyWith<_$MeasurementUnitImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 RelationshipToOwner _$RelationshipToOwnerFromJson(Map<String, dynamic> json) {
   return _RelationshipToOwner.fromJson(json);
 }
@@ -2212,6 +2460,256 @@ abstract class _DamageCause implements DamageCause {
       throw _privateConstructorUsedError;
 }
 
+CostingSheetCatalog _$CostingSheetCatalogFromJson(Map<String, dynamic> json) {
+  return _CostingSheetCatalog.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CostingSheetCatalog {
+  String get id => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  String get createdBy => throw _privateConstructorUsedError;
+
+  /// Serializes this CostingSheetCatalog to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CostingSheetCatalog
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CostingSheetCatalogCopyWith<CostingSheetCatalog> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CostingSheetCatalogCopyWith<$Res> {
+  factory $CostingSheetCatalogCopyWith(
+    CostingSheetCatalog value,
+    $Res Function(CostingSheetCatalog) then,
+  ) = _$CostingSheetCatalogCopyWithImpl<$Res, CostingSheetCatalog>;
+  @useResult
+  $Res call({
+    String id,
+    String name,
+    String? description,
+    DateTime createdAt,
+    String createdBy,
+  });
+}
+
+/// @nodoc
+class _$CostingSheetCatalogCopyWithImpl<$Res, $Val extends CostingSheetCatalog>
+    implements $CostingSheetCatalogCopyWith<$Res> {
+  _$CostingSheetCatalogCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CostingSheetCatalog
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? description = freezed,
+    Object? createdAt = null,
+    Object? createdBy = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            createdBy: null == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CostingSheetCatalogImplCopyWith<$Res>
+    implements $CostingSheetCatalogCopyWith<$Res> {
+  factory _$$CostingSheetCatalogImplCopyWith(
+    _$CostingSheetCatalogImpl value,
+    $Res Function(_$CostingSheetCatalogImpl) then,
+  ) = __$$CostingSheetCatalogImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String name,
+    String? description,
+    DateTime createdAt,
+    String createdBy,
+  });
+}
+
+/// @nodoc
+class __$$CostingSheetCatalogImplCopyWithImpl<$Res>
+    extends _$CostingSheetCatalogCopyWithImpl<$Res, _$CostingSheetCatalogImpl>
+    implements _$$CostingSheetCatalogImplCopyWith<$Res> {
+  __$$CostingSheetCatalogImplCopyWithImpl(
+    _$CostingSheetCatalogImpl _value,
+    $Res Function(_$CostingSheetCatalogImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CostingSheetCatalog
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? description = freezed,
+    Object? createdAt = null,
+    Object? createdBy = null,
+  }) {
+    return _then(
+      _$CostingSheetCatalogImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        createdBy: null == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CostingSheetCatalogImpl implements _CostingSheetCatalog {
+  const _$CostingSheetCatalogImpl({
+    required this.id,
+    required this.name,
+    this.description,
+    required this.createdAt,
+    required this.createdBy,
+  });
+
+  factory _$CostingSheetCatalogImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CostingSheetCatalogImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final String? description;
+  @override
+  final DateTime createdAt;
+  @override
+  final String createdBy;
+
+  @override
+  String toString() {
+    return 'CostingSheetCatalog(id: $id, name: $name, description: $description, createdAt: $createdAt, createdBy: $createdBy)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CostingSheetCatalogImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, description, createdAt, createdBy);
+
+  /// Create a copy of CostingSheetCatalog
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CostingSheetCatalogImplCopyWith<_$CostingSheetCatalogImpl> get copyWith =>
+      __$$CostingSheetCatalogImplCopyWithImpl<_$CostingSheetCatalogImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CostingSheetCatalogImplToJson(this);
+  }
+}
+
+abstract class _CostingSheetCatalog implements CostingSheetCatalog {
+  const factory _CostingSheetCatalog({
+    required final String id,
+    required final String name,
+    final String? description,
+    required final DateTime createdAt,
+    required final String createdBy,
+  }) = _$CostingSheetCatalogImpl;
+
+  factory _CostingSheetCatalog.fromJson(Map<String, dynamic> json) =
+      _$CostingSheetCatalogImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get name;
+  @override
+  String? get description;
+  @override
+  DateTime get createdAt;
+  @override
+  String get createdBy;
+
+  /// Create a copy of CostingSheetCatalog
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CostingSheetCatalogImplCopyWith<_$CostingSheetCatalogImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 CostingSheetVersion _$CostingSheetVersionFromJson(Map<String, dynamic> json) {
   return _CostingSheetVersion.fromJson(json);
 }
@@ -2219,12 +2717,16 @@ CostingSheetVersion _$CostingSheetVersionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$CostingSheetVersion {
   String get id => throw _privateConstructorUsedError;
-  int get classificationId => throw _privateConstructorUsedError;
-  double get unitPrice => throw _privateConstructorUsedError;
+  String get catalogId => throw _privateConstructorUsedError;
+  int get versionNumber => throw _privateConstructorUsedError;
+  int get status =>
+      throw _privateConstructorUsedError; // 0: Draft, 1: PendingApproval, 2: Active, 3: Archived
   DateTime get effectiveFrom => throw _privateConstructorUsedError;
   DateTime? get effectiveTo => throw _privateConstructorUsedError;
-  bool get isActive => throw _privateConstructorUsedError;
-  int get versionNumber => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  String get createdBy => throw _privateConstructorUsedError;
+  DateTime? get approvedAt => throw _privateConstructorUsedError;
+  String? get approvedBy => throw _privateConstructorUsedError;
 
   /// Serializes this CostingSheetVersion to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2245,12 +2747,15 @@ abstract class $CostingSheetVersionCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    int classificationId,
-    double unitPrice,
+    String catalogId,
+    int versionNumber,
+    int status,
     DateTime effectiveFrom,
     DateTime? effectiveTo,
-    bool isActive,
-    int versionNumber,
+    DateTime createdAt,
+    String createdBy,
+    DateTime? approvedAt,
+    String? approvedBy,
   });
 }
 
@@ -2270,12 +2775,15 @@ class _$CostingSheetVersionCopyWithImpl<$Res, $Val extends CostingSheetVersion>
   @override
   $Res call({
     Object? id = null,
-    Object? classificationId = null,
-    Object? unitPrice = null,
+    Object? catalogId = null,
+    Object? versionNumber = null,
+    Object? status = null,
     Object? effectiveFrom = null,
     Object? effectiveTo = freezed,
-    Object? isActive = null,
-    Object? versionNumber = null,
+    Object? createdAt = null,
+    Object? createdBy = null,
+    Object? approvedAt = freezed,
+    Object? approvedBy = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -2283,14 +2791,18 @@ class _$CostingSheetVersionCopyWithImpl<$Res, $Val extends CostingSheetVersion>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            classificationId: null == classificationId
-                ? _value.classificationId
-                : classificationId // ignore: cast_nullable_to_non_nullable
+            catalogId: null == catalogId
+                ? _value.catalogId
+                : catalogId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            versionNumber: null == versionNumber
+                ? _value.versionNumber
+                : versionNumber // ignore: cast_nullable_to_non_nullable
                       as int,
-            unitPrice: null == unitPrice
-                ? _value.unitPrice
-                : unitPrice // ignore: cast_nullable_to_non_nullable
-                      as double,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as int,
             effectiveFrom: null == effectiveFrom
                 ? _value.effectiveFrom
                 : effectiveFrom // ignore: cast_nullable_to_non_nullable
@@ -2299,14 +2811,22 @@ class _$CostingSheetVersionCopyWithImpl<$Res, $Val extends CostingSheetVersion>
                 ? _value.effectiveTo
                 : effectiveTo // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            isActive: null == isActive
-                ? _value.isActive
-                : isActive // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            versionNumber: null == versionNumber
-                ? _value.versionNumber
-                : versionNumber // ignore: cast_nullable_to_non_nullable
-                      as int,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            createdBy: null == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as String,
+            approvedAt: freezed == approvedAt
+                ? _value.approvedAt
+                : approvedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            approvedBy: freezed == approvedBy
+                ? _value.approvedBy
+                : approvedBy // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -2324,12 +2844,15 @@ abstract class _$$CostingSheetVersionImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    int classificationId,
-    double unitPrice,
+    String catalogId,
+    int versionNumber,
+    int status,
     DateTime effectiveFrom,
     DateTime? effectiveTo,
-    bool isActive,
-    int versionNumber,
+    DateTime createdAt,
+    String createdBy,
+    DateTime? approvedAt,
+    String? approvedBy,
   });
 }
 
@@ -2348,12 +2871,15 @@ class __$$CostingSheetVersionImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? classificationId = null,
-    Object? unitPrice = null,
+    Object? catalogId = null,
+    Object? versionNumber = null,
+    Object? status = null,
     Object? effectiveFrom = null,
     Object? effectiveTo = freezed,
-    Object? isActive = null,
-    Object? versionNumber = null,
+    Object? createdAt = null,
+    Object? createdBy = null,
+    Object? approvedAt = freezed,
+    Object? approvedBy = freezed,
   }) {
     return _then(
       _$CostingSheetVersionImpl(
@@ -2361,14 +2887,18 @@ class __$$CostingSheetVersionImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        classificationId: null == classificationId
-            ? _value.classificationId
-            : classificationId // ignore: cast_nullable_to_non_nullable
+        catalogId: null == catalogId
+            ? _value.catalogId
+            : catalogId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        versionNumber: null == versionNumber
+            ? _value.versionNumber
+            : versionNumber // ignore: cast_nullable_to_non_nullable
                   as int,
-        unitPrice: null == unitPrice
-            ? _value.unitPrice
-            : unitPrice // ignore: cast_nullable_to_non_nullable
-                  as double,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as int,
         effectiveFrom: null == effectiveFrom
             ? _value.effectiveFrom
             : effectiveFrom // ignore: cast_nullable_to_non_nullable
@@ -2377,14 +2907,22 @@ class __$$CostingSheetVersionImplCopyWithImpl<$Res>
             ? _value.effectiveTo
             : effectiveTo // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        isActive: null == isActive
-            ? _value.isActive
-            : isActive // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        versionNumber: null == versionNumber
-            ? _value.versionNumber
-            : versionNumber // ignore: cast_nullable_to_non_nullable
-                  as int,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        createdBy: null == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as String,
+        approvedAt: freezed == approvedAt
+            ? _value.approvedAt
+            : approvedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        approvedBy: freezed == approvedBy
+            ? _value.approvedBy
+            : approvedBy // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -2395,12 +2933,15 @@ class __$$CostingSheetVersionImplCopyWithImpl<$Res>
 class _$CostingSheetVersionImpl implements _CostingSheetVersion {
   const _$CostingSheetVersionImpl({
     required this.id,
-    required this.classificationId,
-    required this.unitPrice,
+    required this.catalogId,
+    required this.versionNumber,
+    required this.status,
     required this.effectiveFrom,
     this.effectiveTo,
-    this.isActive = true,
-    required this.versionNumber,
+    required this.createdAt,
+    required this.createdBy,
+    this.approvedAt,
+    this.approvedBy,
   });
 
   factory _$CostingSheetVersionImpl.fromJson(Map<String, dynamic> json) =>
@@ -2409,22 +2950,28 @@ class _$CostingSheetVersionImpl implements _CostingSheetVersion {
   @override
   final String id;
   @override
-  final int classificationId;
+  final String catalogId;
   @override
-  final double unitPrice;
+  final int versionNumber;
+  @override
+  final int status;
+  // 0: Draft, 1: PendingApproval, 2: Active, 3: Archived
   @override
   final DateTime effectiveFrom;
   @override
   final DateTime? effectiveTo;
   @override
-  @JsonKey()
-  final bool isActive;
+  final DateTime createdAt;
   @override
-  final int versionNumber;
+  final String createdBy;
+  @override
+  final DateTime? approvedAt;
+  @override
+  final String? approvedBy;
 
   @override
   String toString() {
-    return 'CostingSheetVersion(id: $id, classificationId: $classificationId, unitPrice: $unitPrice, effectiveFrom: $effectiveFrom, effectiveTo: $effectiveTo, isActive: $isActive, versionNumber: $versionNumber)';
+    return 'CostingSheetVersion(id: $id, catalogId: $catalogId, versionNumber: $versionNumber, status: $status, effectiveFrom: $effectiveFrom, effectiveTo: $effectiveTo, createdAt: $createdAt, createdBy: $createdBy, approvedAt: $approvedAt, approvedBy: $approvedBy)';
   }
 
   @override
@@ -2433,18 +2980,23 @@ class _$CostingSheetVersionImpl implements _CostingSheetVersion {
         (other.runtimeType == runtimeType &&
             other is _$CostingSheetVersionImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.classificationId, classificationId) ||
-                other.classificationId == classificationId) &&
-            (identical(other.unitPrice, unitPrice) ||
-                other.unitPrice == unitPrice) &&
+            (identical(other.catalogId, catalogId) ||
+                other.catalogId == catalogId) &&
+            (identical(other.versionNumber, versionNumber) ||
+                other.versionNumber == versionNumber) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.effectiveFrom, effectiveFrom) ||
                 other.effectiveFrom == effectiveFrom) &&
             (identical(other.effectiveTo, effectiveTo) ||
                 other.effectiveTo == effectiveTo) &&
-            (identical(other.isActive, isActive) ||
-                other.isActive == isActive) &&
-            (identical(other.versionNumber, versionNumber) ||
-                other.versionNumber == versionNumber));
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            (identical(other.approvedAt, approvedAt) ||
+                other.approvedAt == approvedAt) &&
+            (identical(other.approvedBy, approvedBy) ||
+                other.approvedBy == approvedBy));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2452,12 +3004,15 @@ class _$CostingSheetVersionImpl implements _CostingSheetVersion {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    classificationId,
-    unitPrice,
+    catalogId,
+    versionNumber,
+    status,
     effectiveFrom,
     effectiveTo,
-    isActive,
-    versionNumber,
+    createdAt,
+    createdBy,
+    approvedAt,
+    approvedBy,
   );
 
   /// Create a copy of CostingSheetVersion
@@ -2480,12 +3035,15 @@ class _$CostingSheetVersionImpl implements _CostingSheetVersion {
 abstract class _CostingSheetVersion implements CostingSheetVersion {
   const factory _CostingSheetVersion({
     required final String id,
-    required final int classificationId,
-    required final double unitPrice,
+    required final String catalogId,
+    required final int versionNumber,
+    required final int status,
     required final DateTime effectiveFrom,
     final DateTime? effectiveTo,
-    final bool isActive,
-    required final int versionNumber,
+    required final DateTime createdAt,
+    required final String createdBy,
+    final DateTime? approvedAt,
+    final String? approvedBy,
   }) = _$CostingSheetVersionImpl;
 
   factory _CostingSheetVersion.fromJson(Map<String, dynamic> json) =
@@ -2494,22 +3052,307 @@ abstract class _CostingSheetVersion implements CostingSheetVersion {
   @override
   String get id;
   @override
-  int get classificationId;
+  String get catalogId;
   @override
-  double get unitPrice;
+  int get versionNumber;
+  @override
+  int get status; // 0: Draft, 1: PendingApproval, 2: Active, 3: Archived
   @override
   DateTime get effectiveFrom;
   @override
   DateTime? get effectiveTo;
   @override
-  bool get isActive;
+  DateTime get createdAt;
   @override
-  int get versionNumber;
+  String get createdBy;
+  @override
+  DateTime? get approvedAt;
+  @override
+  String? get approvedBy;
 
   /// Create a copy of CostingSheetVersion
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CostingSheetVersionImplCopyWith<_$CostingSheetVersionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+CostingSheetItem _$CostingSheetItemFromJson(Map<String, dynamic> json) {
+  return _CostingSheetItem.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CostingSheetItem {
+  String get id => throw _privateConstructorUsedError;
+  String get versionId => throw _privateConstructorUsedError;
+  int get classificationId => throw _privateConstructorUsedError;
+  int? get measurementUnitId => throw _privateConstructorUsedError;
+  double get unitPrice => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+
+  /// Serializes this CostingSheetItem to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CostingSheetItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CostingSheetItemCopyWith<CostingSheetItem> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CostingSheetItemCopyWith<$Res> {
+  factory $CostingSheetItemCopyWith(
+    CostingSheetItem value,
+    $Res Function(CostingSheetItem) then,
+  ) = _$CostingSheetItemCopyWithImpl<$Res, CostingSheetItem>;
+  @useResult
+  $Res call({
+    String id,
+    String versionId,
+    int classificationId,
+    int? measurementUnitId,
+    double unitPrice,
+    DateTime createdAt,
+  });
+}
+
+/// @nodoc
+class _$CostingSheetItemCopyWithImpl<$Res, $Val extends CostingSheetItem>
+    implements $CostingSheetItemCopyWith<$Res> {
+  _$CostingSheetItemCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CostingSheetItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? versionId = null,
+    Object? classificationId = null,
+    Object? measurementUnitId = freezed,
+    Object? unitPrice = null,
+    Object? createdAt = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            versionId: null == versionId
+                ? _value.versionId
+                : versionId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            classificationId: null == classificationId
+                ? _value.classificationId
+                : classificationId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            measurementUnitId: freezed == measurementUnitId
+                ? _value.measurementUnitId
+                : measurementUnitId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            unitPrice: null == unitPrice
+                ? _value.unitPrice
+                : unitPrice // ignore: cast_nullable_to_non_nullable
+                      as double,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CostingSheetItemImplCopyWith<$Res>
+    implements $CostingSheetItemCopyWith<$Res> {
+  factory _$$CostingSheetItemImplCopyWith(
+    _$CostingSheetItemImpl value,
+    $Res Function(_$CostingSheetItemImpl) then,
+  ) = __$$CostingSheetItemImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String versionId,
+    int classificationId,
+    int? measurementUnitId,
+    double unitPrice,
+    DateTime createdAt,
+  });
+}
+
+/// @nodoc
+class __$$CostingSheetItemImplCopyWithImpl<$Res>
+    extends _$CostingSheetItemCopyWithImpl<$Res, _$CostingSheetItemImpl>
+    implements _$$CostingSheetItemImplCopyWith<$Res> {
+  __$$CostingSheetItemImplCopyWithImpl(
+    _$CostingSheetItemImpl _value,
+    $Res Function(_$CostingSheetItemImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CostingSheetItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? versionId = null,
+    Object? classificationId = null,
+    Object? measurementUnitId = freezed,
+    Object? unitPrice = null,
+    Object? createdAt = null,
+  }) {
+    return _then(
+      _$CostingSheetItemImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        versionId: null == versionId
+            ? _value.versionId
+            : versionId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        classificationId: null == classificationId
+            ? _value.classificationId
+            : classificationId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        measurementUnitId: freezed == measurementUnitId
+            ? _value.measurementUnitId
+            : measurementUnitId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        unitPrice: null == unitPrice
+            ? _value.unitPrice
+            : unitPrice // ignore: cast_nullable_to_non_nullable
+                  as double,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CostingSheetItemImpl implements _CostingSheetItem {
+  const _$CostingSheetItemImpl({
+    required this.id,
+    required this.versionId,
+    required this.classificationId,
+    this.measurementUnitId,
+    required this.unitPrice,
+    required this.createdAt,
+  });
+
+  factory _$CostingSheetItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CostingSheetItemImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String versionId;
+  @override
+  final int classificationId;
+  @override
+  final int? measurementUnitId;
+  @override
+  final double unitPrice;
+  @override
+  final DateTime createdAt;
+
+  @override
+  String toString() {
+    return 'CostingSheetItem(id: $id, versionId: $versionId, classificationId: $classificationId, measurementUnitId: $measurementUnitId, unitPrice: $unitPrice, createdAt: $createdAt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CostingSheetItemImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.versionId, versionId) ||
+                other.versionId == versionId) &&
+            (identical(other.classificationId, classificationId) ||
+                other.classificationId == classificationId) &&
+            (identical(other.measurementUnitId, measurementUnitId) ||
+                other.measurementUnitId == measurementUnitId) &&
+            (identical(other.unitPrice, unitPrice) ||
+                other.unitPrice == unitPrice) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    versionId,
+    classificationId,
+    measurementUnitId,
+    unitPrice,
+    createdAt,
+  );
+
+  /// Create a copy of CostingSheetItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CostingSheetItemImplCopyWith<_$CostingSheetItemImpl> get copyWith =>
+      __$$CostingSheetItemImplCopyWithImpl<_$CostingSheetItemImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CostingSheetItemImplToJson(this);
+  }
+}
+
+abstract class _CostingSheetItem implements CostingSheetItem {
+  const factory _CostingSheetItem({
+    required final String id,
+    required final String versionId,
+    required final int classificationId,
+    final int? measurementUnitId,
+    required final double unitPrice,
+    required final DateTime createdAt,
+  }) = _$CostingSheetItemImpl;
+
+  factory _CostingSheetItem.fromJson(Map<String, dynamic> json) =
+      _$CostingSheetItemImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get versionId;
+  @override
+  int get classificationId;
+  @override
+  int? get measurementUnitId;
+  @override
+  double get unitPrice;
+  @override
+  DateTime get createdAt;
+
+  /// Create a copy of CostingSheetItem
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CostingSheetItemImplCopyWith<_$CostingSheetItemImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

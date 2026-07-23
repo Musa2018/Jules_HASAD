@@ -28,6 +28,7 @@ mixin _$DamageItem {
   String get damageReportId => throw _privateConstructorUsedError;
   int get classificationId => throw _privateConstructorUsedError;
   String get costingSheetId => throw _privateConstructorUsedError;
+  String? get costingSheetItemId => throw _privateConstructorUsedError;
   double get calculatedUnitPrice => throw _privateConstructorUsedError;
   String get measurementUnitSnapshot => throw _privateConstructorUsedError;
   double get affectedArea => throw _privateConstructorUsedError;
@@ -64,6 +65,7 @@ abstract class $DamageItemCopyWith<$Res> {
     String damageReportId,
     int classificationId,
     String costingSheetId,
+    String? costingSheetItemId,
     double calculatedUnitPrice,
     String measurementUnitSnapshot,
     double affectedArea,
@@ -99,6 +101,7 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
     Object? damageReportId = null,
     Object? classificationId = null,
     Object? costingSheetId = null,
+    Object? costingSheetItemId = freezed,
     Object? calculatedUnitPrice = null,
     Object? measurementUnitSnapshot = null,
     Object? affectedArea = null,
@@ -134,6 +137,10 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
                 ? _value.costingSheetId
                 : costingSheetId // ignore: cast_nullable_to_non_nullable
                       as String,
+            costingSheetItemId: freezed == costingSheetItemId
+                ? _value.costingSheetItemId
+                : costingSheetItemId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             calculatedUnitPrice: null == calculatedUnitPrice
                 ? _value.calculatedUnitPrice
                 : calculatedUnitPrice // ignore: cast_nullable_to_non_nullable
@@ -203,6 +210,7 @@ abstract class _$$DamageItemImplCopyWith<$Res>
     String damageReportId,
     int classificationId,
     String costingSheetId,
+    String? costingSheetItemId,
     double calculatedUnitPrice,
     String measurementUnitSnapshot,
     double affectedArea,
@@ -237,6 +245,7 @@ class __$$DamageItemImplCopyWithImpl<$Res>
     Object? damageReportId = null,
     Object? classificationId = null,
     Object? costingSheetId = null,
+    Object? costingSheetItemId = freezed,
     Object? calculatedUnitPrice = null,
     Object? measurementUnitSnapshot = null,
     Object? affectedArea = null,
@@ -272,6 +281,10 @@ class __$$DamageItemImplCopyWithImpl<$Res>
             ? _value.costingSheetId
             : costingSheetId // ignore: cast_nullable_to_non_nullable
                   as String,
+        costingSheetItemId: freezed == costingSheetItemId
+            ? _value.costingSheetItemId
+            : costingSheetItemId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         calculatedUnitPrice: null == calculatedUnitPrice
             ? _value.calculatedUnitPrice
             : calculatedUnitPrice // ignore: cast_nullable_to_non_nullable
@@ -334,6 +347,7 @@ class _$DamageItemImpl implements _DamageItem {
     required this.damageReportId,
     this.classificationId = 0,
     this.costingSheetId = '',
+    this.costingSheetItemId,
     this.calculatedUnitPrice = 0.0,
     this.measurementUnitSnapshot = '',
     required this.affectedArea,
@@ -367,6 +381,8 @@ class _$DamageItemImpl implements _DamageItem {
   @JsonKey()
   final String costingSheetId;
   @override
+  final String? costingSheetItemId;
+  @override
   @JsonKey()
   final double calculatedUnitPrice;
   @override
@@ -397,7 +413,7 @@ class _$DamageItemImpl implements _DamageItem {
 
   @override
   String toString() {
-    return 'DamageItem(id: $id, serverId: $serverId, damageReportId: $damageReportId, classificationId: $classificationId, costingSheetId: $costingSheetId, calculatedUnitPrice: $calculatedUnitPrice, measurementUnitSnapshot: $measurementUnitSnapshot, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageItem(id: $id, serverId: $serverId, damageReportId: $damageReportId, classificationId: $classificationId, costingSheetId: $costingSheetId, costingSheetItemId: $costingSheetItemId, calculatedUnitPrice: $calculatedUnitPrice, measurementUnitSnapshot: $measurementUnitSnapshot, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -414,6 +430,8 @@ class _$DamageItemImpl implements _DamageItem {
                 other.classificationId == classificationId) &&
             (identical(other.costingSheetId, costingSheetId) ||
                 other.costingSheetId == costingSheetId) &&
+            (identical(other.costingSheetItemId, costingSheetItemId) ||
+                other.costingSheetItemId == costingSheetItemId) &&
             (identical(other.calculatedUnitPrice, calculatedUnitPrice) ||
                 other.calculatedUnitPrice == calculatedUnitPrice) &&
             (identical(
@@ -452,6 +470,7 @@ class _$DamageItemImpl implements _DamageItem {
     damageReportId,
     classificationId,
     costingSheetId,
+    costingSheetItemId,
     calculatedUnitPrice,
     measurementUnitSnapshot,
     affectedArea,
@@ -487,6 +506,7 @@ abstract class _DamageItem implements DamageItem {
     required final String damageReportId,
     final int classificationId,
     final String costingSheetId,
+    final String? costingSheetItemId,
     final double calculatedUnitPrice,
     final String measurementUnitSnapshot,
     required final double affectedArea,
@@ -516,6 +536,8 @@ abstract class _DamageItem implements DamageItem {
   int get classificationId;
   @override
   String get costingSheetId;
+  @override
+  String? get costingSheetItemId;
   @override
   double get calculatedUnitPrice;
   @override

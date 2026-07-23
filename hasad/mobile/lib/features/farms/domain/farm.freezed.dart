@@ -37,7 +37,9 @@ mixin _$Farm {
   String get basin => throw _privateConstructorUsedError;
   String get parcel => throw _privateConstructorUsedError; // Area
   double get area => throw _privateConstructorUsedError;
-  int get areaUnitId => throw _privateConstructorUsedError; // Agriculture
+  int get areaUnitId => throw _privateConstructorUsedError;
+  int? get measurementUnitId =>
+      throw _privateConstructorUsedError; // Agriculture
   int get agriculturalSectorId => throw _privateConstructorUsedError;
   int get politicalClassificationId =>
       throw _privateConstructorUsedError; // Location
@@ -84,6 +86,7 @@ abstract class $FarmCopyWith<$Res> {
     String parcel,
     double area,
     int areaUnitId,
+    int? measurementUnitId,
     int agriculturalSectorId,
     int politicalClassificationId,
     double? latitude,
@@ -130,6 +133,7 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
     Object? parcel = null,
     Object? area = null,
     Object? areaUnitId = null,
+    Object? measurementUnitId = freezed,
     Object? agriculturalSectorId = null,
     Object? politicalClassificationId = null,
     Object? latitude = freezed,
@@ -203,6 +207,10 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
                 ? _value.areaUnitId
                 : areaUnitId // ignore: cast_nullable_to_non_nullable
                       as int,
+            measurementUnitId: freezed == measurementUnitId
+                ? _value.measurementUnitId
+                : measurementUnitId // ignore: cast_nullable_to_non_nullable
+                      as int?,
             agriculturalSectorId: null == agriculturalSectorId
                 ? _value.agriculturalSectorId
                 : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
@@ -288,6 +296,7 @@ abstract class _$$FarmImplCopyWith<$Res> implements $FarmCopyWith<$Res> {
     String parcel,
     double area,
     int areaUnitId,
+    int? measurementUnitId,
     int agriculturalSectorId,
     int politicalClassificationId,
     double? latitude,
@@ -331,6 +340,7 @@ class __$$FarmImplCopyWithImpl<$Res>
     Object? parcel = null,
     Object? area = null,
     Object? areaUnitId = null,
+    Object? measurementUnitId = freezed,
     Object? agriculturalSectorId = null,
     Object? politicalClassificationId = null,
     Object? latitude = freezed,
@@ -404,6 +414,10 @@ class __$$FarmImplCopyWithImpl<$Res>
             ? _value.areaUnitId
             : areaUnitId // ignore: cast_nullable_to_non_nullable
                   as int,
+        measurementUnitId: freezed == measurementUnitId
+            ? _value.measurementUnitId
+            : measurementUnitId // ignore: cast_nullable_to_non_nullable
+                  as int?,
         agriculturalSectorId: null == agriculturalSectorId
             ? _value.agriculturalSectorId
             : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
@@ -483,6 +497,7 @@ class _$FarmImpl implements _Farm {
     required this.parcel,
     required this.area,
     required this.areaUnitId,
+    this.measurementUnitId,
     required this.agriculturalSectorId,
     required this.politicalClassificationId,
     this.latitude,
@@ -535,6 +550,8 @@ class _$FarmImpl implements _Farm {
   final double area;
   @override
   final int areaUnitId;
+  @override
+  final int? measurementUnitId;
   // Agriculture
   @override
   final int agriculturalSectorId;
@@ -574,7 +591,7 @@ class _$FarmImpl implements _Farm {
 
   @override
   String toString() {
-    return 'Farm(id: $id, serverId: $serverId, farmerId: $farmerId, localFarmName: $localFarmName, ownershipTypeId: $ownershipTypeId, ownerFarmerId: $ownerFarmerId, relationshipToOwnerId: $relationshipToOwnerId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, basin: $basin, parcel: $parcel, area: $area, areaUnitId: $areaUnitId, agriculturalSectorId: $agriculturalSectorId, politicalClassificationId: $politicalClassificationId, latitude: $latitude, longitude: $longitude, notes: $notes, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isPendingDelete: $isPendingDelete, createdAt: $createdAt, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'Farm(id: $id, serverId: $serverId, farmerId: $farmerId, localFarmName: $localFarmName, ownershipTypeId: $ownershipTypeId, ownerFarmerId: $ownerFarmerId, relationshipToOwnerId: $relationshipToOwnerId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, basin: $basin, parcel: $parcel, area: $area, areaUnitId: $areaUnitId, measurementUnitId: $measurementUnitId, agriculturalSectorId: $agriculturalSectorId, politicalClassificationId: $politicalClassificationId, latitude: $latitude, longitude: $longitude, notes: $notes, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isPendingDelete: $isPendingDelete, createdAt: $createdAt, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -606,6 +623,8 @@ class _$FarmImpl implements _Farm {
             (identical(other.area, area) || other.area == area) &&
             (identical(other.areaUnitId, areaUnitId) ||
                 other.areaUnitId == areaUnitId) &&
+            (identical(other.measurementUnitId, measurementUnitId) ||
+                other.measurementUnitId == measurementUnitId) &&
             (identical(other.agriculturalSectorId, agriculturalSectorId) ||
                 other.agriculturalSectorId == agriculturalSectorId) &&
             (identical(
@@ -656,6 +675,7 @@ class _$FarmImpl implements _Farm {
     parcel,
     area,
     areaUnitId,
+    measurementUnitId,
     agriculturalSectorId,
     politicalClassificationId,
     latitude,
@@ -702,6 +722,7 @@ abstract class _Farm implements Farm {
     required final String parcel,
     required final double area,
     required final int areaUnitId,
+    final int? measurementUnitId,
     required final int agriculturalSectorId,
     required final int politicalClassificationId,
     final double? latitude,
@@ -749,7 +770,9 @@ abstract class _Farm implements Farm {
   @override
   double get area;
   @override
-  int get areaUnitId; // Agriculture
+  int get areaUnitId;
+  @override
+  int? get measurementUnitId; // Agriculture
   @override
   int get agriculturalSectorId;
   @override

@@ -66,6 +66,26 @@ Map<String, dynamic> _$$AreaUnitImplToJson(_$AreaUnitImpl instance) =>
       'nameEn': instance.nameEn,
     };
 
+_$MeasurementUnitImpl _$$MeasurementUnitImplFromJson(
+  Map<String, dynamic> json,
+) => _$MeasurementUnitImpl(
+  id: (json['id'] as num).toInt(),
+  nameAr: json['nameAr'] as String,
+  nameEn: json['nameEn'] as String,
+  code: json['code'] as String?,
+  category: json['category'] as String,
+);
+
+Map<String, dynamic> _$$MeasurementUnitImplToJson(
+  _$MeasurementUnitImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'nameAr': instance.nameAr,
+  'nameEn': instance.nameEn,
+  'code': instance.code,
+  'category': instance.category,
+};
+
 _$RelationshipToOwnerImpl _$$RelationshipToOwnerImplFromJson(
   Map<String, dynamic> json,
 ) => _$RelationshipToOwnerImpl(
@@ -181,28 +201,78 @@ Map<String, dynamic> _$$DamageCauseImplToJson(_$DamageCauseImpl instance) =>
       'nameEn': instance.nameEn,
     };
 
+_$CostingSheetCatalogImpl _$$CostingSheetCatalogImplFromJson(
+  Map<String, dynamic> json,
+) => _$CostingSheetCatalogImpl(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  description: json['description'] as String?,
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  createdBy: json['createdBy'] as String,
+);
+
+Map<String, dynamic> _$$CostingSheetCatalogImplToJson(
+  _$CostingSheetCatalogImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'description': instance.description,
+  'createdAt': instance.createdAt.toIso8601String(),
+  'createdBy': instance.createdBy,
+};
+
 _$CostingSheetVersionImpl _$$CostingSheetVersionImplFromJson(
   Map<String, dynamic> json,
 ) => _$CostingSheetVersionImpl(
   id: json['id'] as String,
-  classificationId: (json['classificationId'] as num).toInt(),
-  unitPrice: (json['unitPrice'] as num).toDouble(),
+  catalogId: json['catalogId'] as String,
+  versionNumber: (json['versionNumber'] as num).toInt(),
+  status: (json['status'] as num).toInt(),
   effectiveFrom: DateTime.parse(json['effectiveFrom'] as String),
   effectiveTo: json['effectiveTo'] == null
       ? null
       : DateTime.parse(json['effectiveTo'] as String),
-  isActive: json['isActive'] as bool? ?? true,
-  versionNumber: (json['versionNumber'] as num).toInt(),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  createdBy: json['createdBy'] as String,
+  approvedAt: json['approvedAt'] == null
+      ? null
+      : DateTime.parse(json['approvedAt'] as String),
+  approvedBy: json['approvedBy'] as String?,
 );
 
 Map<String, dynamic> _$$CostingSheetVersionImplToJson(
   _$CostingSheetVersionImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'classificationId': instance.classificationId,
-  'unitPrice': instance.unitPrice,
+  'catalogId': instance.catalogId,
+  'versionNumber': instance.versionNumber,
+  'status': instance.status,
   'effectiveFrom': instance.effectiveFrom.toIso8601String(),
   'effectiveTo': instance.effectiveTo?.toIso8601String(),
-  'isActive': instance.isActive,
-  'versionNumber': instance.versionNumber,
+  'createdAt': instance.createdAt.toIso8601String(),
+  'createdBy': instance.createdBy,
+  'approvedAt': instance.approvedAt?.toIso8601String(),
+  'approvedBy': instance.approvedBy,
+};
+
+_$CostingSheetItemImpl _$$CostingSheetItemImplFromJson(
+  Map<String, dynamic> json,
+) => _$CostingSheetItemImpl(
+  id: json['id'] as String,
+  versionId: json['versionId'] as String,
+  classificationId: (json['classificationId'] as num).toInt(),
+  measurementUnitId: (json['measurementUnitId'] as num?)?.toInt(),
+  unitPrice: (json['unitPrice'] as num).toDouble(),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+);
+
+Map<String, dynamic> _$$CostingSheetItemImplToJson(
+  _$CostingSheetItemImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'versionId': instance.versionId,
+  'classificationId': instance.classificationId,
+  'measurementUnitId': instance.measurementUnitId,
+  'unitPrice': instance.unitPrice,
+  'createdAt': instance.createdAt.toIso8601String(),
 };

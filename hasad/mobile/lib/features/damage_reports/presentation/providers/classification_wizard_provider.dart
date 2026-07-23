@@ -8,7 +8,7 @@ class ClassificationWizardState {
   final DamageCategory? selectedCategory;
   final DamageSubCategory? selectedSubCategory;
   final DamageClassification? selectedClassification;
-  final CostingSheetVersion? resolvedCosting;
+  final CostingSheetItem? resolvedCosting;
   final bool isLoading;
   final String? error;
 
@@ -33,7 +33,7 @@ class ClassificationWizardState {
     bool clearSubCategory = false,
     DamageClassification? selectedClassification,
     bool clearClassification = false,
-    CostingSheetVersion? resolvedCosting,
+    CostingSheetItem? resolvedCosting,
     bool clearCosting = false,
     bool? isLoading,
     String? error,

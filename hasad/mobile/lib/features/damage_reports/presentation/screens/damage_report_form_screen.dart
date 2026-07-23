@@ -53,6 +53,7 @@ class _DamageReportFormScreenState
       damageCauseCategoryId: widget.report?.damageCauseCategoryId ?? 1,
       damageCauseId: widget.report?.damageCauseId ?? 1,
       governorateId: widget.farm.governorateId,
+      directorateId: widget.farm.directorateId,
       localityId: widget.farm.localityId,
       statusId: widget.report?.statusId ?? 'Draft',
       notes: _notesController.text.trim(),

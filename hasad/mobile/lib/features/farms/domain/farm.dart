@@ -25,6 +25,7 @@ class Farm with _$Farm {
     // Area
     required double area,
     required int areaUnitId,
+    int? measurementUnitId,
     
     // Agriculture
     required int agriculturalSectorId,

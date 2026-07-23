@@ -2,10 +2,17 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.9.5-alpha (Dependency Sync Fixed)
-- **Current Sprint**: Sprint 11.10 — Late Binding ID Resolution
+- **Current Version**: v0.9.6-alpha (Navigation Hardened)
+- **Current Sprint**: Sprint 11.11 — Navigation Type Mismatch Fix
 - **Current Branch**: `Farms`
 - **Last Updated**: 2026-07-23
+
+## Sprint 11.11 — COMPLETED
+Navigation Type Mismatch Fix:
+- **Type Safety**: Fixed the `_FarmImpl is not a subtype of Map<String, dynamic>` crash by refactoring the edit navigation to use strongly typed `Farm` objects.
+- **Form Resilience**: Enabled `FarmFormScreen` to work without a pre-provided `Farmer` object by fetching it from the local database using the farm's `farmerId`.
+- **Navigation Consistency**: Unified the navigation patterns in `FarmCard`, `FarmsListScreen`, and `FarmDetailsScreen`.
+- **Test Coverage**: Added `farm_edit_navigation_test.dart` to verify the new strongly-typed navigation and lazy-loading of operator data.
 
 ## Sprint 11.10 — COMPLETED
 Late Binding ID Resolution:

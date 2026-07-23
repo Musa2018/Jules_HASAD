@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Sprint 11.11 — Navigation Type Mismatch Fix
+
+#### Fixed
+- Runtime crash when opening the Farm edit form from the Farm list or details screens.
+
+#### Changed
+- Refactored `AppRoutes.editFarm` to use strongly typed `Farm` arguments.
+- Enhanced `FarmFormScreen` to support lazy-loading of operator farmer data.
+- Standardized navigation flow across all farm UI components.
+
 ### Sprint 11.10 — Late Binding ID Resolution
 
 #### Fixed

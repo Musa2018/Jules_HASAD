@@ -217,13 +217,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.editFarm,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return FarmFormScreen(
-            farmer: extra['farmer'] as Farmer,
-            farm: extra['farm'] as Farm,
-          );
-        },
+        builder: (context, state) =>
+            FarmFormScreen(farm: state.extra as Farm),
       ),
       GoRoute(
         path: AppRoutes.damageReports,

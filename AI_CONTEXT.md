@@ -47,6 +47,11 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farms**: Active development branch for the Farm (Land) Management module.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 11.11 - Navigation Type Mismatch Fix
+- **Type Safety**: Resolved a critical runtime error where `Farm` objects were incorrectly cast to `Map<String, dynamic>` during navigation to the edit form.
+- **Strongly Typed Navigation**: Updated `app_router.dart` and `FarmFormScreen` to use the `Farm` model directly, ensuring type safety and consistency across the app.
+- **Resilient Forms**: Enhanced `FarmFormScreen` to independently load operator farmer details if not provided by the caller, enabling direct navigation from cards and list items.
+
 ### Sprint 11.10 - Late Binding ID Resolution
 - **Dependency Resolution**: Hardened the `BackgroundSyncService` to resolve local `ClientId`s to server-assigned `serverId`s just before synchronization. This enables seamless offline creation of Farmers and linked Farms.
 - **Ordered Sync**: Implemented dependency-aware deferral where dependent entities (Farms, Damage Reports) wait for their parent entities (Farmers) to successfully synchronize before attempting their own sync.

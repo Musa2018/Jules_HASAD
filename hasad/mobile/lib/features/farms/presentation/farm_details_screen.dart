@@ -82,11 +82,8 @@ class FarmDetailsScreen extends ConsumerWidget {
     );
   }
 
-  void _navigateToEdit(BuildContext context, WidgetRef ref, Farm currentFarm) async {
-    final operator = await ref.read(farmerRepositoryProvider).getFarmer(currentFarm.farmerId);
-    if (context.mounted) {
-      context.push(AppRoutes.editFarm, extra: {'farmer': operator, 'farm': currentFarm});
-    }
+  void _navigateToEdit(BuildContext context, WidgetRef ref, Farm currentFarm) {
+    context.push(AppRoutes.editFarm, extra: currentFarm);
   }
 
   Widget _buildSyncHeader(BuildContext context, Farm farm) {

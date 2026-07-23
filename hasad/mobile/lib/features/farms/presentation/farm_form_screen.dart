@@ -16,10 +16,11 @@ import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class FarmFormScreen extends ConsumerStatefulWidget {
-  final Farmer farmer;
+  final Farmer? farmer;
   final Farm? farm;
 
-  const FarmFormScreen({super.key, required this.farmer, this.farm});
+  const FarmFormScreen({super.key, this.farmer, this.farm})
+      : assert(farmer != null || farm != null, 'Either farmer or farm must be provided');
 
   @override
   ConsumerState<FarmFormScreen> createState() => _FarmFormScreenState();
@@ -51,6 +52,8 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
   bool _isGovReadOnly = false;
   bool _isDirReadOnly = false;
 
+  Farmer? _resolvedFarmer;
+
   @override
   void initState() {
     super.initState();
@@ -75,10 +78,24 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     _selectedAgriculturalSectorId = f?.agriculturalSectorId ?? 1;
     _selectedPoliticalClassificationId = f?.politicalClassificationId ?? 1;
 
+    _resolvedFarmer = widget.farmer;
+    if (_resolvedFarmer == null && f != null) {
+      _loadOperatorFarmer(f.farmerId);
+    }
+
     // Apply scoping logic on init if creating new farm
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _applyScoping();
     });
+  }
+
+  Future<void> _loadOperatorFarmer(String id) async {
+    try {
+      final farmer = await ref.read(farmerRepositoryProvider).getFarmer(id);
+      if (mounted) {
+        setState(() => _resolvedFarmer = farmer);
+      }
+    } catch (_) {}
   }
 
   void _applyScoping() {
@@ -127,11 +144,17 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_resolvedFarmer == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Operator farmer not loaded.')),
+      );
+      return;
+    }
 
     final farm = Farm(
       id: widget.farm?.id ?? '',
       serverId: widget.farm?.serverId,
-      farmerId: widget.farmer.id,
+      farmerId: _resolvedFarmer!.id,
       localFarmName: _nameController.text.trim(),
       ownershipTypeId: _selectedOwnershipTypeId ?? 1,
       ownerFarmerId: _selectedOwnerFarmerId,
@@ -157,7 +180,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     }
 
     if (mounted && ref.read(farmFormProvider).success) {
-      ref.invalidate(farmsListByFarmerProvider(widget.farmer.id));
+      ref.invalidate(farmsListByFarmerProvider(_resolvedFarmer!.id));
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -174,6 +197,14 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    
+    if (_resolvedFarmer == null && widget.farm != null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.editFarm)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
     final state = ref.watch(farmFormProvider);
 

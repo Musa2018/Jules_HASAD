@@ -32,6 +32,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **User Scoping**:
   - Three levels: Global, Governorate, Directorate.
   - Regional isolation enforced via geographic IDs in session and commands.
+  - **Permanent Rule**: Geographic attributes of referenced entities (e.g., Farmer residence) must never be used as authorization scope. Authorization follows operational ownership of the managed record (e.g., Farm location).
 
 ## 3. Architectural Decisions
 ### Measurement Unit Consolidation (Pending)

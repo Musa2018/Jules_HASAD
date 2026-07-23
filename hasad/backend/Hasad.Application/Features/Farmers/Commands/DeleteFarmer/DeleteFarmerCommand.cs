@@ -30,14 +30,7 @@ public class DeleteFarmerCommandHandler : IRequestHandler<DeleteFarmerCommand, R
             return Result<Unit>.Failure(new[] { "Farmer not found." });
         }
 
-        // Authorization check
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
-        {
-             if (farmer.GovernorateId != _currentUser.GovernorateId?.ToString())
-             {
-                 return Result<Unit>.Failure(new[] { "Access Denied: You can only delete farmers within your assigned governorate." });
-             }
-        }
+
 
         // Integrity check: Farmer cannot be deleted if linked to any Farm
         var hasFarms = await _context.Farms

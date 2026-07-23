@@ -277,24 +277,5 @@ public class FarmerCommandHandlerTests
         Assert.NotEmpty(result.Data!.Items[0].RowVersion);
     }
 
-    [Fact]
-    public async Task CreateFarmer_Fails_WhenGovernorateScopingMismatches()
-    {
-        var context = CreateContext();
-        var userGovId = Guid.NewGuid();
-        _currentUserMock.Setup(x => x.IsInRole("Director")).Returns(true);
-        _currentUserMock.Setup(x => x.GovernorateId).Returns(userGovId);
 
-        var handler = new CreateFarmerCommandHandler(context, _currentUserMock.Object);
-        var command = new CreateFarmerCommand(
-            Guid.NewGuid(), 1, "123", "A", "B", "C", "D", "", "", "", "",
-            new DateOnly(1980, 1, 1), Gender.Male, "059", 1,
-            Guid.NewGuid().ToString(), // Different GovernorateId
-            "L", "Add");
-
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        Assert.False(result.Succeeded);
-        Assert.Contains("Access Denied", result.Errors[0]);
-    }
 }

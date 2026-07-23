@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Sprint 12.3 — Form & Sync Hardening (Geographic Authorization Fix)
+
+#### Fixed
+- **Geographic Authorization Regression**: Resolved issue where Agricultural Engineers were blocked from creating farms for farmers residing in different governorates.
+- **Decoupled Farmer Residency from Authorization**: Removed incorrect `GovernorateId` scoping from `CreateFarmer`, `UpdateFarmer`, and `DeleteFarmer` commands.
+
+#### Added
+- **Cross-Region Authorization Tests**: Verified success of Jericho Engineer + Bethlehem Farmer + Jericho Farm scenario.
+
 ### Sprint 12.2 — Hierarchical Classification UI
 
 #### Added

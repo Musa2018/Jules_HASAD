@@ -3,10 +3,17 @@
 > Living document — updated at the end of every sprint.
 
 - **Current Version**: v0.12.0-alpha (Architecture Design)
-- **Current Sprint**: Sprint 12.3 — Form & Sync Hardening
+- **Current Sprint**: Sprint 12.3 — Form & Sync Hardening (Regression Fix: Geographic Authorization)
 - **Current Branch**: `DamageReport`
 - **Last Updated**: 2026-07-23
 - **Latest Commit**: `e073d75`
+
+## Sprint 12.3 — IN PROGRESS
+Geographic Authorization Regression Fix:
+- **Authorization Decoupling**: Removed residency-based authorization checks from Farmer management commands.
+- **Operational Scoping**: Hardened Farm authorization to rely strictly on the Farm's Directorate regardless of the Farmer's residence.
+- **Regression Testing**: Added backend tests verifying cross-region farmer selection and farm creation.
+- **Architecture Rule**: Formally adopted the rule that referenced entity attributes do not dictate authorization boundaries.
 
 ## Sprint 12.2 — COMPLETED
 Hierarchical Classification UI:

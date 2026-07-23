@@ -50,7 +50,7 @@ class _DamageReportFormScreenState
       farmerId: widget.farm.farmerId,
       damageDate: _damageDate,
       documentationDate: widget.report?.documentationDate ?? DateTime.now(),
-      damageTypeId: widget.report?.damageTypeId ?? 1,
+      damageCauseCategoryId: widget.report?.damageCauseCategoryId ?? 1,
       damageCauseId: widget.report?.damageCauseId ?? 1,
       governorateId: widget.farm.governorateId,
       localityId: widget.farm.localityId,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/classification_selector.dart';
 import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart';

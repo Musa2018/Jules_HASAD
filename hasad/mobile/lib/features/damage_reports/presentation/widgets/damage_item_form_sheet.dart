@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/services/valuation_engine.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
+import 'package:mobile/features/damage_reports/presentation/widgets/classification_selector.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 

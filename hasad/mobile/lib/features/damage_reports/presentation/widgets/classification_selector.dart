@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
-import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class ClassificationSelector extends ConsumerWidget {

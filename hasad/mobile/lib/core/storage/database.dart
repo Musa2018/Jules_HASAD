@@ -492,8 +492,23 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(damageWorkflowHistories);
       }
       if (from < 15) {
-        // Sprint 12.4: Directorate Denormalization for Security
-        await m.addColumn(damageReports, damageReports.directorateId);
+        // Sprint 12.4: Directorate Denormalization for Security - SAFE MIGRATION
+        // 1. Add column as nullable first to allow backfill
+        await customStatement('ALTER TABLE damage_reports ADD COLUMN directorate_id TEXT;');
+        
+        // 2. Backfill from Farms table to preserve authorization scope
+        await customStatement('''
+          UPDATE damage_reports 
+          SET directorate_id = (
+            SELECT directorate_id FROM farms WHERE farms.id = damage_reports.farm_id
+          )
+          WHERE directorate_id IS NULL;
+        ''');
+
+        // 3. Enforce NOT NULL by recreating the table via Drift's alterTable
+        // This handles the SQLite limitation of not being able to ADD NOT NULL columns to existing data
+        // and ensures future integrity without fake defaults.
+        await m.alterTable(TableMigration(damageReports));
       }
       if (from < 16) {
         // Sprint 13.2: Costing Catalog & Measurement Unit Consolidation

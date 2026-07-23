@@ -25,8 +25,8 @@ Damage Assessment & Valuation Engine:
     - Refactored domain models (`DamageItem`, `Farm`, `ReferenceData`) to align with the new architecture.
     - Updated `OfflineFirstReferenceDataRepository` to resolve the `Active` pricing version via database joins.
     - Implemented legacy pricing compatibility wrapper for unsynced offline data.
-    - **Hardening**: Implemented JSON aliases (`areaUnitId`) on the backend to restore compatibility with legacy Farm sync payloads.
-    - **Validation**: Completed Production Readiness Gate with 115 backend and 23 critical sync tests passing.
+    - **Hardening**: Implemented safe multi-step migration for `directorate_id` in `DamageReport` to prevent schema migration failures on existing data while maintaining authorization integrity.
+    - **Validation**: Completed Production Readiness Gate with 115 backend and 25 critical sync tests passing (including v15 backfill verification).
 - **Phase 2C (Completed)**: Flutter Client Terminology Update.
     - Aligned UI terminology with universal `MeasurementUnit` domain model.
     - Updated localization (Ar/En) for "Measurement Unit" and unit categories (Area, Weight, Count, Volume).

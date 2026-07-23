@@ -9,6 +9,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/attachment_gallery_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_report_details_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_report_form_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_reports_list_screen.dart';
 import 'package:mobile/features/agricultural_assistance/presentation/agricultural_assistance_screen.dart';
@@ -79,6 +80,9 @@ abstract final class AppRoutes {
 
   /// Damage reports list.
   static const damageReports = '/damage-reports';
+
+  /// Damage report details.
+  static const damageReportDetails = '/damage-reports/details';
 
   /// Add damage report.
   static const addDamageReport = '/damage-reports/add';
@@ -224,6 +228,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.damageReports,
         builder: (context, state) =>
             DamageReportsListScreen(farm: state.extra as Farm),
+      ),
+      GoRoute(
+        path: AppRoutes.damageReportDetails,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return DamageReportDetailsScreen(
+            report: extra['report'] as DamageReport,
+            farm: extra['farm'] as Farm,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.addDamageReport,

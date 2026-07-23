@@ -11041,6 +11041,594 @@ class CostingSheetsCompanion extends UpdateCompanion<CostingSheet> {
   }
 }
 
+class $DamageWorkflowHistoriesTable extends DamageWorkflowHistories
+    with TableInfo<$DamageWorkflowHistoriesTable, DamageWorkflowHistoryLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DamageWorkflowHistoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _damageReportIdMeta = const VerificationMeta(
+    'damageReportId',
+  );
+  @override
+  late final GeneratedColumn<String> damageReportId = GeneratedColumn<String>(
+    'damage_report_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fromStatusMeta = const VerificationMeta(
+    'fromStatus',
+  );
+  @override
+  late final GeneratedColumn<String> fromStatus = GeneratedColumn<String>(
+    'from_status',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _toStatusMeta = const VerificationMeta(
+    'toStatus',
+  );
+  @override
+  late final GeneratedColumn<String> toStatus = GeneratedColumn<String>(
+    'to_status',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changedByUserIdMeta = const VerificationMeta(
+    'changedByUserId',
+  );
+  @override
+  late final GeneratedColumn<String> changedByUserId = GeneratedColumn<String>(
+    'changed_by_user_id',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 100),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changedAtMeta = const VerificationMeta(
+    'changedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> changedAt = GeneratedColumn<DateTime>(
+    'changed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _commentMeta = const VerificationMeta(
+    'comment',
+  );
+  @override
+  late final GeneratedColumn<String> comment = GeneratedColumn<String>(
+    'comment',
+    aliasedName,
+    true,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 500),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isOverrideMeta = const VerificationMeta(
+    'isOverride',
+  );
+  @override
+  late final GeneratedColumn<bool> isOverride = GeneratedColumn<bool>(
+    'is_override',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_override" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    serverId,
+    damageReportId,
+    fromStatus,
+    toStatus,
+    changedByUserId,
+    changedAt,
+    comment,
+    isOverride,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'damage_workflow_histories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DamageWorkflowHistoryLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('damage_report_id')) {
+      context.handle(
+        _damageReportIdMeta,
+        damageReportId.isAcceptableOrUnknown(
+          data['damage_report_id']!,
+          _damageReportIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_damageReportIdMeta);
+    }
+    if (data.containsKey('from_status')) {
+      context.handle(
+        _fromStatusMeta,
+        fromStatus.isAcceptableOrUnknown(data['from_status']!, _fromStatusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fromStatusMeta);
+    }
+    if (data.containsKey('to_status')) {
+      context.handle(
+        _toStatusMeta,
+        toStatus.isAcceptableOrUnknown(data['to_status']!, _toStatusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_toStatusMeta);
+    }
+    if (data.containsKey('changed_by_user_id')) {
+      context.handle(
+        _changedByUserIdMeta,
+        changedByUserId.isAcceptableOrUnknown(
+          data['changed_by_user_id']!,
+          _changedByUserIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_changedByUserIdMeta);
+    }
+    if (data.containsKey('changed_at')) {
+      context.handle(
+        _changedAtMeta,
+        changedAt.isAcceptableOrUnknown(data['changed_at']!, _changedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_changedAtMeta);
+    }
+    if (data.containsKey('comment')) {
+      context.handle(
+        _commentMeta,
+        comment.isAcceptableOrUnknown(data['comment']!, _commentMeta),
+      );
+    }
+    if (data.containsKey('is_override')) {
+      context.handle(
+        _isOverrideMeta,
+        isOverride.isAcceptableOrUnknown(data['is_override']!, _isOverrideMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DamageWorkflowHistoryLocal map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DamageWorkflowHistoryLocal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      damageReportId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}damage_report_id'],
+      )!,
+      fromStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}from_status'],
+      )!,
+      toStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}to_status'],
+      )!,
+      changedByUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_by_user_id'],
+      )!,
+      changedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}changed_at'],
+      )!,
+      comment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}comment'],
+      ),
+      isOverride: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_override'],
+      )!,
+    );
+  }
+
+  @override
+  $DamageWorkflowHistoriesTable createAlias(String alias) {
+    return $DamageWorkflowHistoriesTable(attachedDatabase, alias);
+  }
+}
+
+class DamageWorkflowHistoryLocal extends DataClass
+    implements Insertable<DamageWorkflowHistoryLocal> {
+  final String id;
+  final String? serverId;
+  final String damageReportId;
+  final String fromStatus;
+  final String toStatus;
+  final String changedByUserId;
+  final DateTime changedAt;
+  final String? comment;
+  final bool isOverride;
+  const DamageWorkflowHistoryLocal({
+    required this.id,
+    this.serverId,
+    required this.damageReportId,
+    required this.fromStatus,
+    required this.toStatus,
+    required this.changedByUserId,
+    required this.changedAt,
+    this.comment,
+    required this.isOverride,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    map['damage_report_id'] = Variable<String>(damageReportId);
+    map['from_status'] = Variable<String>(fromStatus);
+    map['to_status'] = Variable<String>(toStatus);
+    map['changed_by_user_id'] = Variable<String>(changedByUserId);
+    map['changed_at'] = Variable<DateTime>(changedAt);
+    if (!nullToAbsent || comment != null) {
+      map['comment'] = Variable<String>(comment);
+    }
+    map['is_override'] = Variable<bool>(isOverride);
+    return map;
+  }
+
+  DamageWorkflowHistoriesCompanion toCompanion(bool nullToAbsent) {
+    return DamageWorkflowHistoriesCompanion(
+      id: Value(id),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      damageReportId: Value(damageReportId),
+      fromStatus: Value(fromStatus),
+      toStatus: Value(toStatus),
+      changedByUserId: Value(changedByUserId),
+      changedAt: Value(changedAt),
+      comment: comment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(comment),
+      isOverride: Value(isOverride),
+    );
+  }
+
+  factory DamageWorkflowHistoryLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DamageWorkflowHistoryLocal(
+      id: serializer.fromJson<String>(json['id']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      damageReportId: serializer.fromJson<String>(json['damageReportId']),
+      fromStatus: serializer.fromJson<String>(json['fromStatus']),
+      toStatus: serializer.fromJson<String>(json['toStatus']),
+      changedByUserId: serializer.fromJson<String>(json['changedByUserId']),
+      changedAt: serializer.fromJson<DateTime>(json['changedAt']),
+      comment: serializer.fromJson<String?>(json['comment']),
+      isOverride: serializer.fromJson<bool>(json['isOverride']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'serverId': serializer.toJson<String?>(serverId),
+      'damageReportId': serializer.toJson<String>(damageReportId),
+      'fromStatus': serializer.toJson<String>(fromStatus),
+      'toStatus': serializer.toJson<String>(toStatus),
+      'changedByUserId': serializer.toJson<String>(changedByUserId),
+      'changedAt': serializer.toJson<DateTime>(changedAt),
+      'comment': serializer.toJson<String?>(comment),
+      'isOverride': serializer.toJson<bool>(isOverride),
+    };
+  }
+
+  DamageWorkflowHistoryLocal copyWith({
+    String? id,
+    Value<String?> serverId = const Value.absent(),
+    String? damageReportId,
+    String? fromStatus,
+    String? toStatus,
+    String? changedByUserId,
+    DateTime? changedAt,
+    Value<String?> comment = const Value.absent(),
+    bool? isOverride,
+  }) => DamageWorkflowHistoryLocal(
+    id: id ?? this.id,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    damageReportId: damageReportId ?? this.damageReportId,
+    fromStatus: fromStatus ?? this.fromStatus,
+    toStatus: toStatus ?? this.toStatus,
+    changedByUserId: changedByUserId ?? this.changedByUserId,
+    changedAt: changedAt ?? this.changedAt,
+    comment: comment.present ? comment.value : this.comment,
+    isOverride: isOverride ?? this.isOverride,
+  );
+  DamageWorkflowHistoryLocal copyWithCompanion(
+    DamageWorkflowHistoriesCompanion data,
+  ) {
+    return DamageWorkflowHistoryLocal(
+      id: data.id.present ? data.id.value : this.id,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      damageReportId: data.damageReportId.present
+          ? data.damageReportId.value
+          : this.damageReportId,
+      fromStatus: data.fromStatus.present
+          ? data.fromStatus.value
+          : this.fromStatus,
+      toStatus: data.toStatus.present ? data.toStatus.value : this.toStatus,
+      changedByUserId: data.changedByUserId.present
+          ? data.changedByUserId.value
+          : this.changedByUserId,
+      changedAt: data.changedAt.present ? data.changedAt.value : this.changedAt,
+      comment: data.comment.present ? data.comment.value : this.comment,
+      isOverride: data.isOverride.present
+          ? data.isOverride.value
+          : this.isOverride,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageWorkflowHistoryLocal(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('damageReportId: $damageReportId, ')
+          ..write('fromStatus: $fromStatus, ')
+          ..write('toStatus: $toStatus, ')
+          ..write('changedByUserId: $changedByUserId, ')
+          ..write('changedAt: $changedAt, ')
+          ..write('comment: $comment, ')
+          ..write('isOverride: $isOverride')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    serverId,
+    damageReportId,
+    fromStatus,
+    toStatus,
+    changedByUserId,
+    changedAt,
+    comment,
+    isOverride,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DamageWorkflowHistoryLocal &&
+          other.id == this.id &&
+          other.serverId == this.serverId &&
+          other.damageReportId == this.damageReportId &&
+          other.fromStatus == this.fromStatus &&
+          other.toStatus == this.toStatus &&
+          other.changedByUserId == this.changedByUserId &&
+          other.changedAt == this.changedAt &&
+          other.comment == this.comment &&
+          other.isOverride == this.isOverride);
+}
+
+class DamageWorkflowHistoriesCompanion
+    extends UpdateCompanion<DamageWorkflowHistoryLocal> {
+  final Value<String> id;
+  final Value<String?> serverId;
+  final Value<String> damageReportId;
+  final Value<String> fromStatus;
+  final Value<String> toStatus;
+  final Value<String> changedByUserId;
+  final Value<DateTime> changedAt;
+  final Value<String?> comment;
+  final Value<bool> isOverride;
+  final Value<int> rowid;
+  const DamageWorkflowHistoriesCompanion({
+    this.id = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.damageReportId = const Value.absent(),
+    this.fromStatus = const Value.absent(),
+    this.toStatus = const Value.absent(),
+    this.changedByUserId = const Value.absent(),
+    this.changedAt = const Value.absent(),
+    this.comment = const Value.absent(),
+    this.isOverride = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DamageWorkflowHistoriesCompanion.insert({
+    required String id,
+    this.serverId = const Value.absent(),
+    required String damageReportId,
+    required String fromStatus,
+    required String toStatus,
+    required String changedByUserId,
+    required DateTime changedAt,
+    this.comment = const Value.absent(),
+    this.isOverride = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       damageReportId = Value(damageReportId),
+       fromStatus = Value(fromStatus),
+       toStatus = Value(toStatus),
+       changedByUserId = Value(changedByUserId),
+       changedAt = Value(changedAt);
+  static Insertable<DamageWorkflowHistoryLocal> custom({
+    Expression<String>? id,
+    Expression<String>? serverId,
+    Expression<String>? damageReportId,
+    Expression<String>? fromStatus,
+    Expression<String>? toStatus,
+    Expression<String>? changedByUserId,
+    Expression<DateTime>? changedAt,
+    Expression<String>? comment,
+    Expression<bool>? isOverride,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (serverId != null) 'server_id': serverId,
+      if (damageReportId != null) 'damage_report_id': damageReportId,
+      if (fromStatus != null) 'from_status': fromStatus,
+      if (toStatus != null) 'to_status': toStatus,
+      if (changedByUserId != null) 'changed_by_user_id': changedByUserId,
+      if (changedAt != null) 'changed_at': changedAt,
+      if (comment != null) 'comment': comment,
+      if (isOverride != null) 'is_override': isOverride,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DamageWorkflowHistoriesCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? serverId,
+    Value<String>? damageReportId,
+    Value<String>? fromStatus,
+    Value<String>? toStatus,
+    Value<String>? changedByUserId,
+    Value<DateTime>? changedAt,
+    Value<String?>? comment,
+    Value<bool>? isOverride,
+    Value<int>? rowid,
+  }) {
+    return DamageWorkflowHistoriesCompanion(
+      id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      damageReportId: damageReportId ?? this.damageReportId,
+      fromStatus: fromStatus ?? this.fromStatus,
+      toStatus: toStatus ?? this.toStatus,
+      changedByUserId: changedByUserId ?? this.changedByUserId,
+      changedAt: changedAt ?? this.changedAt,
+      comment: comment ?? this.comment,
+      isOverride: isOverride ?? this.isOverride,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (damageReportId.present) {
+      map['damage_report_id'] = Variable<String>(damageReportId.value);
+    }
+    if (fromStatus.present) {
+      map['from_status'] = Variable<String>(fromStatus.value);
+    }
+    if (toStatus.present) {
+      map['to_status'] = Variable<String>(toStatus.value);
+    }
+    if (changedByUserId.present) {
+      map['changed_by_user_id'] = Variable<String>(changedByUserId.value);
+    }
+    if (changedAt.present) {
+      map['changed_at'] = Variable<DateTime>(changedAt.value);
+    }
+    if (comment.present) {
+      map['comment'] = Variable<String>(comment.value);
+    }
+    if (isOverride.present) {
+      map['is_override'] = Variable<bool>(isOverride.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DamageWorkflowHistoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('damageReportId: $damageReportId, ')
+          ..write('fromStatus: $fromStatus, ')
+          ..write('toStatus: $toStatus, ')
+          ..write('changedByUserId: $changedByUserId, ')
+          ..write('changedAt: $changedAt, ')
+          ..write('comment: $comment, ')
+          ..write('isOverride: $isOverride, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11074,6 +11662,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $DamageCauseCategoriesTable(this);
   late final $DamageCausesTable damageCauses = $DamageCausesTable(this);
   late final $CostingSheetsTable costingSheets = $CostingSheetsTable(this);
+  late final $DamageWorkflowHistoriesTable damageWorkflowHistories =
+      $DamageWorkflowHistoriesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -11100,6 +11690,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     damageCauseCategories,
     damageCauses,
     costingSheets,
+    damageWorkflowHistories,
   ];
 }
 
@@ -16812,6 +17403,309 @@ typedef $$CostingSheetsTableProcessedTableManager =
       CostingSheet,
       PrefetchHooks Function()
     >;
+typedef $$DamageWorkflowHistoriesTableCreateCompanionBuilder =
+    DamageWorkflowHistoriesCompanion Function({
+      required String id,
+      Value<String?> serverId,
+      required String damageReportId,
+      required String fromStatus,
+      required String toStatus,
+      required String changedByUserId,
+      required DateTime changedAt,
+      Value<String?> comment,
+      Value<bool> isOverride,
+      Value<int> rowid,
+    });
+typedef $$DamageWorkflowHistoriesTableUpdateCompanionBuilder =
+    DamageWorkflowHistoriesCompanion Function({
+      Value<String> id,
+      Value<String?> serverId,
+      Value<String> damageReportId,
+      Value<String> fromStatus,
+      Value<String> toStatus,
+      Value<String> changedByUserId,
+      Value<DateTime> changedAt,
+      Value<String?> comment,
+      Value<bool> isOverride,
+      Value<int> rowid,
+    });
+
+class $$DamageWorkflowHistoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $DamageWorkflowHistoriesTable> {
+  $$DamageWorkflowHistoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fromStatus => $composableBuilder(
+    column: $table.fromStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get toStatus => $composableBuilder(
+    column: $table.toStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changedByUserId => $composableBuilder(
+    column: $table.changedByUserId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get changedAt => $composableBuilder(
+    column: $table.changedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get comment => $composableBuilder(
+    column: $table.comment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isOverride => $composableBuilder(
+    column: $table.isOverride,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DamageWorkflowHistoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DamageWorkflowHistoriesTable> {
+  $$DamageWorkflowHistoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fromStatus => $composableBuilder(
+    column: $table.fromStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get toStatus => $composableBuilder(
+    column: $table.toStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get changedByUserId => $composableBuilder(
+    column: $table.changedByUserId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get changedAt => $composableBuilder(
+    column: $table.changedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get comment => $composableBuilder(
+    column: $table.comment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isOverride => $composableBuilder(
+    column: $table.isOverride,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DamageWorkflowHistoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DamageWorkflowHistoriesTable> {
+  $$DamageWorkflowHistoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<String> get damageReportId => $composableBuilder(
+    column: $table.damageReportId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fromStatus => $composableBuilder(
+    column: $table.fromStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get toStatus =>
+      $composableBuilder(column: $table.toStatus, builder: (column) => column);
+
+  GeneratedColumn<String> get changedByUserId => $composableBuilder(
+    column: $table.changedByUserId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get changedAt =>
+      $composableBuilder(column: $table.changedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get comment =>
+      $composableBuilder(column: $table.comment, builder: (column) => column);
+
+  GeneratedColumn<bool> get isOverride => $composableBuilder(
+    column: $table.isOverride,
+    builder: (column) => column,
+  );
+}
+
+class $$DamageWorkflowHistoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DamageWorkflowHistoriesTable,
+          DamageWorkflowHistoryLocal,
+          $$DamageWorkflowHistoriesTableFilterComposer,
+          $$DamageWorkflowHistoriesTableOrderingComposer,
+          $$DamageWorkflowHistoriesTableAnnotationComposer,
+          $$DamageWorkflowHistoriesTableCreateCompanionBuilder,
+          $$DamageWorkflowHistoriesTableUpdateCompanionBuilder,
+          (
+            DamageWorkflowHistoryLocal,
+            BaseReferences<
+              _$AppDatabase,
+              $DamageWorkflowHistoriesTable,
+              DamageWorkflowHistoryLocal
+            >,
+          ),
+          DamageWorkflowHistoryLocal,
+          PrefetchHooks Function()
+        > {
+  $$DamageWorkflowHistoriesTableTableManager(
+    _$AppDatabase db,
+    $DamageWorkflowHistoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DamageWorkflowHistoriesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$DamageWorkflowHistoriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DamageWorkflowHistoriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
+                Value<String> damageReportId = const Value.absent(),
+                Value<String> fromStatus = const Value.absent(),
+                Value<String> toStatus = const Value.absent(),
+                Value<String> changedByUserId = const Value.absent(),
+                Value<DateTime> changedAt = const Value.absent(),
+                Value<String?> comment = const Value.absent(),
+                Value<bool> isOverride = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageWorkflowHistoriesCompanion(
+                id: id,
+                serverId: serverId,
+                damageReportId: damageReportId,
+                fromStatus: fromStatus,
+                toStatus: toStatus,
+                changedByUserId: changedByUserId,
+                changedAt: changedAt,
+                comment: comment,
+                isOverride: isOverride,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> serverId = const Value.absent(),
+                required String damageReportId,
+                required String fromStatus,
+                required String toStatus,
+                required String changedByUserId,
+                required DateTime changedAt,
+                Value<String?> comment = const Value.absent(),
+                Value<bool> isOverride = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DamageWorkflowHistoriesCompanion.insert(
+                id: id,
+                serverId: serverId,
+                damageReportId: damageReportId,
+                fromStatus: fromStatus,
+                toStatus: toStatus,
+                changedByUserId: changedByUserId,
+                changedAt: changedAt,
+                comment: comment,
+                isOverride: isOverride,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DamageWorkflowHistoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DamageWorkflowHistoriesTable,
+      DamageWorkflowHistoryLocal,
+      $$DamageWorkflowHistoriesTableFilterComposer,
+      $$DamageWorkflowHistoriesTableOrderingComposer,
+      $$DamageWorkflowHistoriesTableAnnotationComposer,
+      $$DamageWorkflowHistoriesTableCreateCompanionBuilder,
+      $$DamageWorkflowHistoriesTableUpdateCompanionBuilder,
+      (
+        DamageWorkflowHistoryLocal,
+        BaseReferences<
+          _$AppDatabase,
+          $DamageWorkflowHistoriesTable,
+          DamageWorkflowHistoryLocal
+        >,
+      ),
+      DamageWorkflowHistoryLocal,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -16864,4 +17758,9 @@ class $AppDatabaseManager {
       $$DamageCausesTableTableManager(_db, _db.damageCauses);
   $$CostingSheetsTableTableManager get costingSheets =>
       $$CostingSheetsTableTableManager(_db, _db.costingSheets);
+  $$DamageWorkflowHistoriesTableTableManager get damageWorkflowHistories =>
+      $$DamageWorkflowHistoriesTableTableManager(
+        _db,
+        _db.damageWorkflowHistories,
+      );
 }

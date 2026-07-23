@@ -264,13 +264,32 @@ class DamageReportAttachments extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('DamageWorkflowHistoryLocal')
+class DamageWorkflowHistories extends Table {
+  TextColumn get id => text()(); // ClientId/UUID
+  TextColumn get serverId => text().nullable()();
+  TextColumn get damageReportId => text()(); // ClientId
+
+  TextColumn get fromStatus => text().withLength(max: 50)();
+  TextColumn get toStatus => text().withLength(max: 50)();
+
+  TextColumn get changedByUserId => text().withLength(max: 100)();
+  DateTimeColumn get changedAt => dateTime()();
+
+  TextColumn get comment => text().nullable().withLength(max: 500)();
+  BoolColumn get isOverride => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class SyncQueue extends Table {
   TextColumn get id => text()();
   TextColumn get localId => text()();
   TextColumn get entityType =>
-      text()(); // 'farmer', 'farm', 'damage_report', 'damage_item', 'attachment'
+      text()(); // 'farmer', 'farm', 'damage_report', 'damage_item', 'attachment', 'workflow_history'
   TextColumn get operation =>
-      text()(); // 'create', 'update', 'delete', 'upload'
+      text()(); // 'create', 'update', 'delete', 'upload', 'workflow_action'
   TextColumn get data => text()(); // JSON payload
   TextColumn get status => text().withDefault(const Constant('pending'))();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
@@ -369,6 +388,7 @@ class CostingSheets extends Table {
     DamageCauseCategories,
     DamageCauses,
     CostingSheets,
+    DamageWorkflowHistories,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -376,7 +396,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -412,6 +432,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 13) {
         // Sprint 12.3: Duplicate Prevention Index
         await m.createIndex(Index('damage_report_duplicate_idx', 'damage_reports (farm_id, damage_date, damage_cause_id)'));
+      }
+      if (from < 14) {
+        // Sprint 12.4: Workflow History
+        await m.createTable(damageWorkflowHistories);
       }
     },
     beforeOpen: (details) async {

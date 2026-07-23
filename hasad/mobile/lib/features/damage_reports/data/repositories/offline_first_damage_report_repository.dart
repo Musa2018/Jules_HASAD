@@ -7,6 +7,7 @@ import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 import 'package:uuid/uuid.dart';
 
 class OfflineFirstDamageReportRepository implements DamageReportRepository {
@@ -271,6 +272,79 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         'clientId': local.id,
       },
     );
+  }
+
+  @override
+  Future<void> submitReport(String id) async {
+    final report = await getDamageReport(id);
+    // Locally predict state
+    await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+      const DamageReportsCompanion(
+        statusId: Value('Submitted'),
+        syncStatus: Value('pending'),
+      ),
+    );
+
+    await _syncService.addToQueue(
+      localId: id,
+      entityType: 'damage_report',
+      operation: 'workflow_action',
+      data: {
+        'id': report.serverId ?? report.id,
+        'action': 'submit',
+      },
+    );
+  }
+
+  @override
+  Future<void> transitionReport(String id, String toStatus,
+      {String? comment, bool isOverride = false}) async {
+    final report = await getDamageReport(id);
+
+    // Locally predict state
+    await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+      DamageReportsCompanion(
+        statusId: Value(toStatus),
+        syncStatus: const Value('pending'),
+      ),
+    );
+
+    await _syncService.addToQueue(
+      localId: id,
+      entityType: 'damage_report',
+      operation: 'workflow_action',
+      data: {
+        'id': report.serverId ?? report.id,
+        'action': 'transition',
+        'toStatus': toStatus,
+        'comment': comment,
+        'isOverride': isOverride,
+      },
+    );
+  }
+
+  @override
+  Future<List<domain_history.DamageWorkflowHistory>> getReportHistory(
+      String id) async {
+    // Fetch from local DB
+    final histories = await (_db.select(_db.damageWorkflowHistories)
+          ..where((t) => t.damageReportId.equals(id))
+          ..orderBy([(t) => OrderingTerm.desc(t.changedAt)]))
+        .get();
+
+    return histories
+        .map((h) => domain_history.DamageWorkflowHistory(
+              id: h.id,
+              serverId: h.serverId,
+              damageReportId: h.damageReportId,
+              fromStatus: h.fromStatus,
+              toStatus: h.toStatus,
+              changedByUserId: h.changedByUserId,
+              changedAt: h.changedAt,
+              comment: h.comment,
+              isOverride: h.isOverride,
+            ))
+        .toList();
   }
 
   @override

@@ -12,17 +12,24 @@ public static class AppRoles
     public const string ReadOnly = "ReadOnly";
     public const string Director = "Director";
     public const string Finance = "Finance";
+    public const string Supervisor = "Supervisor";
+    public const string TechnicalReviewer = "TechnicalReviewer";
+    public const string ArchiveOfficer = "ArchiveOfficer";
+    public const string MinistryReviewer = "MinistryReviewer";
+    public const string GeneralManager = "GeneralManager";
 
     public static RoleScopeType GetScopeType(string roleName) => roleName switch
     {
-        Director => RoleScopeType.Governorate,
-        AgriculturalEngineer or FieldSurveyor => RoleScopeType.Directorate,
+        Director or Supervisor => RoleScopeType.Governorate,
+        AgriculturalEngineer or FieldSurveyor or TechnicalReviewer or ArchiveOfficer => RoleScopeType.Directorate,
         _ => RoleScopeType.Global
     };
 
     public static string[] All() => new[]
     {
         SuperAdmin, Administrator, AgriculturalEngineer,
-        FieldSurveyor, Farmer, ReadOnly, Director, Finance
+        FieldSurveyor, Farmer, ReadOnly, Director, Finance,
+        Supervisor, TechnicalReviewer, ArchiveOfficer,
+        MinistryReviewer, GeneralManager
     };
 }

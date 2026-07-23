@@ -4,6 +4,7 @@ import 'package:mobile/features/damage_reports/data/repositories/damage_report_r
 import 'package:mobile/features/damage_reports/data/dto/damage_report_sync_dto.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 
 class RemoteDamageReportRepository implements DamageReportRepository {
   final Dio _dio;
@@ -97,6 +98,63 @@ class RemoteDamageReportRepository implements DamageReportRepository {
       if (response.data?['succeeded'] != true) {
         throw SyncException(_errorsFromEnvelope(response.data));
       }
+    } on DioException catch (e) {
+      throw SyncException(_errorsFromDio(e));
+    }
+  }
+
+  @override
+  Future<void> submitReport(String id) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        "/v1/damage-reports/$id/submit",
+      );
+      if (response.data?["succeeded"] != true) {
+        throw SyncException(_errorsFromEnvelope(response.data));
+      }
+    } on DioException catch (e) {
+      throw SyncException(_errorsFromDio(e));
+    }
+  }
+
+  @override
+  Future<void> transitionReport(String id, String toStatus,
+      {String? comment, bool isOverride = false}) async {
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        "/v1/damage-reports/$id/transition",
+        data: {
+          'id': id,
+          'toStatus': toStatus,
+          'comment': comment,
+          'isOverride': isOverride,
+        },
+      );
+      if (response.data?["succeeded"] != true) {
+        throw SyncException(_errorsFromEnvelope(response.data));
+      }
+    } on DioException catch (e) {
+      throw SyncException(_errorsFromDio(e));
+    }
+  }
+
+  @override
+  Future<List<domain_history.DamageWorkflowHistory>> getReportHistory(
+      String id) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        "/v1/damage-reports/$id/history",
+      );
+      final envelope = response.data;
+      final data = envelope?["data"];
+      if (envelope?["succeeded"] != true || data == null) {
+        throw SyncException(_errorsFromEnvelope(envelope));
+      }
+      final items = data as List;
+      return items
+          .map((e) => domain_history.DamageWorkflowHistory.fromJson(
+              e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
     }

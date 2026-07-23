@@ -132,6 +132,9 @@ class AuthState {
 
   /// Convenience flag for router guards.
   bool get isAuthenticated => status == AuthStatus.authenticated;
+
+  /// Checks if the current user has a specific role.
+  bool hasRole(String role) => session?.roles.contains(role) ?? false;
 }
 
 /// Manages login, logout, and session restoration.

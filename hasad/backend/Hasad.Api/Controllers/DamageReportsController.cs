@@ -3,10 +3,13 @@ using Hasad.Application.Features.DamageReports.Commands.AddDamageItem;
 using Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
 using Hasad.Application.Features.DamageReports.Commands.DeleteDamageItem;
 using Hasad.Application.Features.DamageReports.Commands.DeleteDamageReport;
+using Hasad.Application.Features.DamageReports.Commands.SubmitDamageReport;
+using Hasad.Application.Features.DamageReports.Commands.TransitionDamageReport;
 using Hasad.Application.Features.DamageReports.Commands.UpdateDamageItem;
 using Hasad.Application.Features.DamageReports.Commands.UpdateDamageReport;
 using Hasad.Application.Features.DamageReports.Commands.UploadAttachment;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportById;
+using Hasad.Application.Features.DamageReports.Queries.GetDamageReportHistory;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsByFarm;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -77,6 +80,32 @@ public class DamageReportsController : ControllerBase
     {
         var result = await _mediator.Send(new DeleteDamageReportCommand(id));
         return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
+
+    // Workflow endpoints
+
+    [HttpPost("{id}/submit")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor")]
+    public async Task<IActionResult> SubmitDamageReport(Guid id)
+    {
+        var result = await _mediator.Send(new SubmitDamageReportCommand(id));
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpPost("{id}/transition")]
+    [Authorize] // Handled internally by roles
+    public async Task<IActionResult> TransitionDamageReport(Guid id, [FromBody] TransitionDamageReportCommand command)
+    {
+        if (id != command.Id) return BadRequest("ID mismatch.");
+        var result = await _mediator.Send(command);
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpGet("{id}/history")]
+    public async Task<IActionResult> GetDamageReportHistory(Guid id)
+    {
+        var result = await _mediator.Send(new GetDamageReportHistoryQuery(id));
+        return Ok(result);
     }
 
     // Damage Items endpoints

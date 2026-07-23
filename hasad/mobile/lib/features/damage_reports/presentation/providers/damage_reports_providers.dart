@@ -5,8 +5,10 @@ import 'package:mobile/features/damage_reports/data/repositories/damage_report_a
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/offline_first_damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/offline_first_damage_report_repository.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 
 final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   return OfflineFirstDamageReportRepository(
@@ -30,6 +32,62 @@ final damageReportsListByFarmProvider = FutureProvider.autoDispose
           .watch(damageReportRepositoryProvider)
           .getDamageReportsByFarm(farmId);
     });
+
+final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
+  final db = ref.watch(databaseProvider);
+  return (db.select(db.damageReports)..where((t) => t.id.equals(id)))
+      .watchSingleOrNull()
+      .asyncMap((row) async {
+    if (row == null) return null;
+    final items = await (db.select(db.damageItems)..where((t) => t.damageReportId.equals(id))).get();
+    
+    // Convert to domain (Manual mapping since we don't have the repository method yet)
+    return DamageReport(
+      id: row.id,
+      serverId: row.serverId,
+      permanentFormNumber: row.permanentFormNumber,
+      temporaryFormNumber: row.temporaryFormNumber,
+      damageYear: row.damageYear,
+      farmId: row.farmId,
+      farmerId: row.farmerId,
+      damageDate: row.damageDate,
+      documentationDate: row.documentationDate,
+      damageCauseCategoryId: row.damageCauseCategoryId,
+      damageCauseId: row.damageCauseId,
+      settlementName: row.settlementName,
+      companyName: row.companyName,
+      governorateId: row.governorateId,
+      localityId: row.localityId,
+      latitude: row.latitude,
+      longitude: row.longitude,
+      statusId: row.statusId,
+      notes: row.notes,
+      rowVersion: row.rowVersion,
+      syncStatus: row.syncStatus,
+      lastSyncError: row.lastSyncError,
+      items: items.map((i) => DamageItem(
+        id: i.id,
+        serverId: i.serverId,
+        damageReportId: i.damageReportId,
+        classificationId: i.classificationId,
+        costingSheetId: i.costingSheetId,
+        calculatedUnitPrice: i.calculatedUnitPrice,
+        measurementUnitSnapshot: i.measurementUnitSnapshot,
+        affectedArea: i.affectedArea,
+        damagePercentage: i.damagePercentage,
+        quantity: i.quantity,
+        estimatedLoss: i.estimatedLoss,
+        rowVersion: i.rowVersion,
+        syncStatus: i.syncStatus,
+        lastSyncError: i.lastSyncError,
+      )).toList(),
+    );
+  });
+});
+
+final damageReportHistoryProvider = FutureProvider.autoDispose.family<List<DamageWorkflowHistory>, String>((ref, id) {
+  return ref.watch(damageReportRepositoryProvider).getReportHistory(id);
+});
 
 final attachmentsByReportProvider = FutureProvider.autoDispose
     .family<List<DamageReportAttachment>, String>((ref, reportId) async {

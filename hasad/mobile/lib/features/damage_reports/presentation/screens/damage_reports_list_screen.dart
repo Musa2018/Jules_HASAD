@@ -53,7 +53,7 @@ class DamageReportsListScreen extends ConsumerWidget {
                   ],
                 ),
                 onTap: () => context.push(
-                  '/damage-reports/edit',
+                  AppRoutes.damageReportDetails,
                   extra: {'farm': farm, 'report': report},
                 ),
               );

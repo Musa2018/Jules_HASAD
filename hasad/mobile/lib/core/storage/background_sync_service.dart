@@ -252,7 +252,11 @@ class BackgroundSyncService {
       } else if (item.entityType == 'farm') {
         await _syncFarm(item);
       } else if (item.entityType == 'damage_report') {
-        await _syncDamageReport(item);
+        if (item.operation == 'workflow_action') {
+          await _syncDamageReportWorkflow(item);
+        } else {
+          await _syncDamageReport(item);
+        }
       } else if (item.entityType == 'damage_item') {
         await _syncDamageItem(item);
       } else if (item.entityType == 'attachment') {
@@ -653,6 +657,67 @@ class BackgroundSyncService {
         ),
       );
     }
+  }
+
+  Future<void> _syncDamageReportWorkflow(SyncQueueData item) async {
+    final data = jsonDecode(item.data) as Map<String, dynamic>;
+    final originalReportId = item.localId;
+    final resolvedReportId = await _resolveDamageReportId(originalReportId);
+
+    if (resolvedReportId == null) {
+      throw SyncDependencyException(
+          ['Waiting for Damage Report ($originalReportId) to synchronize.']);
+    }
+
+    if (data['action'] == 'submit') {
+      await _remoteDamageReportRepository.submitReport(resolvedReportId);
+    } else if (data['action'] == 'transition') {
+      await _remoteDamageReportRepository.transitionReport(
+        resolvedReportId,
+        data['toStatus'] as String,
+        comment: data['comment'] as String?,
+        isOverride: data['isOverride'] as bool? ?? false,
+      );
+    }
+
+    // Refresh history and report state after successful transition
+    final updatedReport = await _remoteDamageReportRepository.getDamageReport(
+        resolvedReportId);
+    final history = await _remoteDamageReportRepository.getReportHistory(
+        resolvedReportId);
+
+    await _db.transaction(() async {
+      // Update report status
+      await (_db.update(_db.damageReports)
+            ..where((t) => t.id.equals(item.localId)))
+          .write(
+        DamageReportsCompanion(
+          statusId: Value(updatedReport.statusId),
+          syncStatus: const Value('completed'),
+          lastSyncError: const Value(null),
+        ),
+      );
+
+      // Clear old history for this report and insert fresh from server
+      await (_db.delete(_db.damageWorkflowHistories)
+            ..where((t) => t.damageReportId.equals(item.localId)))
+          .go();
+      for (var h in history) {
+        await _db.into(_db.damageWorkflowHistories).insert(
+              DamageWorkflowHistoriesCompanion.insert(
+                id: h.id,
+                serverId: Value(h.serverId),
+                damageReportId: item.localId,
+                fromStatus: h.fromStatus,
+                toStatus: h.toStatus,
+                changedByUserId: h.changedByUserId,
+                changedAt: h.changedAt,
+                comment: Value(h.comment),
+                isOverride: Value(h.isOverride),
+              ),
+            );
+      }
+    });
   }
 
   Future<void> _syncDamageItem(SyncQueueData item) async {

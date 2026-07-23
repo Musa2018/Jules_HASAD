@@ -94,6 +94,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Attachments linked to reports.</summary>
     public DbSet<DamageReportAttachment> DamageReportAttachments => Set<DamageReportAttachment>();
 
+    /// <summary>Workflow history for damage reports.</summary>
+    public DbSet<DamageWorkflowHistory> DamageWorkflowHistories => Set<DamageWorkflowHistory>();
+
     public DbSet<DamageNature> DamageNatures => Set<DamageNature>();
     public DbSet<DamageCategory> DamageCategories => Set<DamageCategory>();
     public DbSet<DamageSubCategory> DamageSubCategories => Set<DamageSubCategory>();
@@ -515,6 +518,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
             entity.HasOne(e => e.DamageReport)
                 .WithMany(r => r.Attachments)
+                .HasForeignKey(e => e.DamageReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DamageWorkflowHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FromStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ToStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ChangedByUserId).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Comment).HasMaxLength(500);
+
+            entity.HasOne(e => e.DamageReport)
+                .WithMany()
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
         });

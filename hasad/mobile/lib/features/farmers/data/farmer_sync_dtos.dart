@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
@@ -38,9 +37,12 @@ class FarmerSyncDto {
     if (farmer.gender == Gender.unspecified) {
       throw SyncValidationException(['Gender must be Male or Female.']);
     }
+    if (farmer.serverId == null) {
+      throw ArgumentError('ServerId is required for update synchronization.');
+    }
 
     return {
-      'id': farmer.serverId ?? farmer.id,
+      'id': farmer.serverId,
       'clientId': farmer.id,
       'idTypeId': farmer.idTypeId,
       'idNumber': farmer.idNumber,
@@ -64,40 +66,6 @@ class FarmerSyncDto {
   }
 }
 
-class FarmSyncDto {
-  static Map<String, dynamic> toCreateJson(Farm farm) {
-    return {
-      'clientId': farm.id,
-      'farmerId': farm.farmerId,
-      'name': farm.name,
-      'governorateId': farm.governorateId,
-      'localityId': farm.localityId,
-      'landArea': farm.landArea,
-      'landAreaUnit': farm.landAreaUnit,
-      'latitude': farm.latitude,
-      'longitude': farm.longitude,
-      'ownershipTypeId': farm.ownershipTypeId,
-    };
-  }
-
-  static Map<String, dynamic> toUpdateJson(Farm farm) {
-    return {
-      'id': farm.serverId ?? farm.id,
-      'clientId': farm.id,
-      'farmerId': farm.farmerId,
-      'name': farm.name,
-      'governorateId': farm.governorateId,
-      'localityId': farm.localityId,
-      'landArea': farm.landArea,
-      'landAreaUnit': farm.landAreaUnit,
-      'latitude': farm.latitude,
-      'longitude': farm.longitude,
-      'ownershipTypeId': farm.ownershipTypeId,
-      'rowVersion': farm.rowVersion,
-    };
-  }
-}
-
 class DamageReportSyncDto {
   static Map<String, dynamic> toCreateJson(DamageReport report) {
     return {
@@ -115,8 +83,11 @@ class DamageReportSyncDto {
   }
 
   static Map<String, dynamic> toUpdateJson(DamageReport report) {
+    if (report.serverId == null) {
+      throw ArgumentError('ServerId is required for update synchronization.');
+    }
     return {
-      'id': report.serverId ?? report.id,
+      'id': report.serverId,
       'damageDate': report.damageDate.toIso8601String(),
       'governorateId': report.governorateId,
       'localityId': report.localityId,
@@ -156,8 +127,11 @@ class DamageReportSyncDto {
   }
 
   static Map<String, dynamic> itemToUpdateJson(DamageItem item) {
+    if (item.serverId == null) {
+      throw ArgumentError('ServerId is required for update synchronization.');
+    }
     return {
-      'id': item.serverId ?? item.id,
+      'id': item.serverId,
       'agriculturalSectorId': item.agriculturalSectorId,
       'subSectorId': item.subSectorId,
       'cropId': item.cropId,

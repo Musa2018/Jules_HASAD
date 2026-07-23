@@ -24,7 +24,7 @@ class FarmerCard extends ConsumerWidget {
 
     // Location lookups
     final govAsync = ref.watch(governoratesProvider);
-    final locAsync = ref.watch(localitiesProvider(farmer.governorateId));
+    final locAsync = ref.watch(localitiesProvider((farmer.governorateId, null)));
 
     String locationText = farmer.governorateId;
     govAsync.whenData((govs) {
@@ -41,95 +41,125 @@ class FarmerCard extends ConsumerWidget {
       }
     });
 
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => context.push(AppRoutes.farmerDetails, extra: farmer),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
+    return Opacity(
+      opacity: farmer.isPendingDelete ? 0.6 : 1.0,
+      child: Card(
+        elevation: 2,
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: InkWell(
+          onTap: () => context.push(AppRoutes.farmerDetails, extra: farmer),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        farmer.fullName,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                              decoration: farmer.isPendingDelete ? TextDecoration.lineThrough : null,
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    FarmerSyncStatusBadge(
+                      status: farmer.isPendingDelete ? 'pending_delete' : farmer.syncStatus,
+                    ),
+                  ],
+                ),
+                if (farmer.lastSyncError != null && farmer.isPendingDelete)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      farmer.fullName,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                      maxLines: 1,
+                      '${l10n.syncError}: ${farmer.lastSyncError}',
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  FarmerSyncStatusBadge(status: farmer.syncStatus),
-                ],
-              ),
-              const Divider(height: 24),
-              _InfoRow(
-                icon: Icons.badge_outlined,
-                label: l10n.idNumber,
-                value: farmer.idNumber,
-              ),
-              const SizedBox(height: 8),
-              _InfoRow(
-                icon: Icons.phone_android_outlined,
-                label: l10n.phoneNumber,
-                value: farmer.phoneNumber,
-              ),
-              const SizedBox(height: 8),
-              _InfoRow(
-                icon: Icons.location_on_outlined,
-                label: l10n.locationSection,
-                value: locationText,
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _InfoRow(
-                      icon: farmer.gender == Gender.male ? Icons.male : (farmer.gender == Gender.female ? Icons.female : Icons.person_outline),
-                      label: l10n.gender,
-                      value: _getGenderLabel(context, farmer.gender),
+                const Divider(height: 24),
+                _InfoRow(
+                  icon: Icons.badge_outlined,
+                  label: l10n.idNumber,
+                  value: farmer.idNumber,
+                ),
+                const SizedBox(height: 8),
+                _InfoRow(
+                  icon: Icons.phone_android_outlined,
+                  label: l10n.phoneNumber,
+                  value: farmer.phoneNumber,
+                ),
+                const SizedBox(height: 8),
+                _InfoRow(
+                  icon: Icons.location_on_outlined,
+                  label: l10n.locationSection,
+                  value: locationText,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _InfoRow(
+                        icon: farmer.gender == Gender.male ? Icons.male : (farmer.gender == Gender.female ? Icons.female : Icons.person_outline),
+                        label: l10n.gender,
+                        value: _getGenderLabel(context, farmer.gender),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: _InfoRow(
-                      icon: Icons.cake_outlined,
-                      label: l10n.dateOfBirth,
-                      value: dateFormat.format(farmer.birthDate),
+                    Expanded(
+                      child: _InfoRow(
+                        icon: Icons.cake_outlined,
+                        label: l10n.dateOfBirth,
+                        value: dateFormat.format(farmer.birthDate),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: () => context.push(AppRoutes.farmerDetails, extra: farmer),
-                    icon: const Icon(Icons.visibility_outlined, size: 18),
-                    label: Text(l10n.search), // Using "Search" as proxy for "View" if no "View" key
-                  ),
-                  TextButton.icon(
-                    onPressed: () => context.push(AppRoutes.editFarmer, extra: farmer),
-                    icon: const Icon(Icons.edit_outlined, size: 18),
-                    label: Text(l10n.editFarmer),
-                  ),
-                  TextButton.icon(
-                    onPressed: () => _confirmDelete(context, ref),
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    label: Text(l10n.delete),
-                    style: TextButton.styleFrom(foregroundColor: Colors.red),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (!farmer.isPendingDelete) ...[
+                      TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.addFarm, extra: farmer),
+                        icon: const Icon(Icons.agriculture, size: 18),
+                        label: Text(l10n.farm),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.editFarmer, extra: farmer),
+                        icon: const Icon(Icons.edit_outlined, size: 18),
+                        label: Text(l10n.editFarmer),
+                      ),
+                      TextButton.icon(
+                        onPressed: () => _confirmDelete(context, ref),
+                        icon: const Icon(Icons.delete_outline, size: 18),
+                        label: Text(l10n.delete),
+                        style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      ),
+                    ] else ...[
+                      TextButton.icon(
+                        onPressed: () => ref.read(farmerRepositoryProvider).cancelDeleteFarmer(farmer.id),
+                        icon: const Icon(Icons.undo),
+                        label: Text(l10n.cancelDelete),
+                      ),
+                      if (farmer.syncStatus == 'failed')
+                        TextButton.icon(
+                          onPressed: () => ref.read(farmerFormProvider.notifier).deleteFarmer(farmer.id),
+                          icon: const Icon(Icons.refresh),
+                          label: Text(l10n.retry),
+                        ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

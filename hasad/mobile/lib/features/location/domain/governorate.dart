@@ -9,6 +9,7 @@ class Governorate with _$Governorate {
     required String id,
     required String nameAr,
     required String nameEn,
+    required String code,
   }) = _Governorate;
 
   factory Governorate.fromJson(Map<String, dynamic> json) =>

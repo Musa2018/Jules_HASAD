@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Domain.Constants;
 using Hasad.Domain.Identity;
 using Hasad.Infrastructure.Persistence;
@@ -5,6 +6,7 @@ using Hasad.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Xunit;
 
 namespace Hasad.Application.Tests;
@@ -14,6 +16,7 @@ public class DbInitializerTests
     private static ServiceProvider CreateServices()
     {
         var services = new ServiceCollection();
+        services.AddSingleton(new Mock<ICurrentUserService>().Object);
         services.AddDbContext<ApplicationDbContext>(o =>
             o.UseInMemoryDatabase(Guid.NewGuid().ToString()));
         services.AddLogging();

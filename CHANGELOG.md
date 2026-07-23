@@ -2,6 +2,235 @@
 
 ## [Unreleased]
 
+### Sprint 11.17 — Domain Integrity Hardening
+
+#### Added
+- **Farmer Deletion Protection**: Added validation to prevent deleting farmers who are linked to existing farms.
+- **Farm Deletion Protection**: Added validation to prevent deleting farms that have associated damage reports.
+- **Meaningful Business Errors**: Backend now returns specific localized reasons for rejection instead of generic errors.
+- **`deleteRestrictedError` Localization**: Added a general fallback key for restricted deletions in Flutter.
+
+#### Fixed
+- Data consistency risk where parent entities could be deleted while children remained active.
+- Bug in `BackgroundSyncService` where business validation errors from the backend were sometimes swallowed.
+
+### Sprint 11.16 — Hardened Offline Delete Workflow
+
+#### Added
+- **Pending Delete Visibility**: Records pending remote deletion now remain in the UI list with a dimmed appearance and specialized badge.
+- **Undo Delete Action**: Users can now cancel a pending deletion, restoring the record and removing the task from the sync queue.
+- **Retry Delete Action**: Added a retry mechanism specifically for failed delete operations.
+- **New Localization Keys**: Added `pendingDelete` and `cancelDelete` for better status reporting.
+
+#### Fixed
+- Critical UX bug where records disappeared immediately upon offline deletion, providing no feedback if the synchronization later failed.
+- Bug in `BackgroundSyncService` where error messages from generic exceptions were not saved to the local entity table.
+
+#### Changed
+- `FarmerRepository` and `FarmRepository` streams now include records in the `isPendingDelete` state.
+
+### Sprint 11.15 — Search-First Owner Workflow
+
+#### Added
+- **"Search First" Owner Selection**: Users must now search for existing farmers before creating new ones during farm setup.
+- **Unified Search Parameter**: `FarmerRepository.getFarmers` now accepts `searchText` for multi-field searching.
+- **Relationship Validation**: Non-owned farms now strictly require both an owner and a relationship selection.
+- **"Add New Farmer" Inline Action**: Integrated a prominent action in the search sheet to create a farmer when no results are found.
+
+#### Fixed
+- Inconsistent search behavior in the owner selection field.
+- Redundant form navigation that could lead to data loss.
+
+### Sprint 11.14 — Farm Module Production Hardening
+
+#### Added
+- **Global Soft Delete Audit Mechanism**: Automated population of `DeletedAt` and `DeletedBy` in `ApplicationDbContext`.
+- **ISoftDelete Interface**: New domain interface for consistent soft-delete support across all entities.
+- **Farmer Entity Audit Fields**: Added `DeletedAt` and `DeletedBy` to the `Farmer` entity for alignment with the `Farm` module.
+- **JWT Identity Claims**: Added `ClaimTypes.Name` to the access token.
+
+#### Fixed
+- Audit tracking failure where `DeletedBy` was consistently null during soft deletion.
+- UX state bug where switching ownership types could leave stale `ownerFarmerId` in the local state.
+
+#### Changed
+- Simplified `DeleteFarmCommandHandler` and `DeleteFarmerCommandHandler` by offloading audit logic to the persistence layer.
+
+### Sprint 11.13 — Farm UX Enhancement
+
+#### Added
+- **"Add Farm" Action on Farmer Card**: Replaced the search button on the `FarmerCard` with a dedicated "Farm" (`مزرعة`) button.
+- **Contextual Pre-filling**: `FarmFormScreen` now automatically pre-fills the Operator and Owner fields when opened from a `FarmerCard`.
+- **New Localization Keys**: Added `farm` key for singular "Farm" in both Arabic and English.
+
+#### Changed
+- Updated `l10n.yaml` to ensure non-synthetic localization generation for better IDE support.
+
+### Sprint 11.12 — Sync Identity Mapping & Lifecycle Fix
+
+#### Added
+- **Explicit Entity Identity Contract**: Standardized the use of `id` (Local ClientId/UUID) and `serverId` (Backend GUID) across all synchronized entities.
+- **Deterministic JSON Mapping**: Integrated `@JsonKey` annotations into `Farm`, `Farmer`, `DamageReport`, `DamageItem`, and `Attachment` domain models to ensure Backend `Id` always maps to `serverId` and `ClientId` to `id`.
+- **Offline Sync Identity Rule**: Documented the architectural standard for identity mapping in `AI_CONTEXT.md`.
+- **Sync Flow Regression Test**: New `farm_sync_flow_test.dart` verifying the complete offline-to-online lifecycle including update scenarios and late-binding resolution.
+
+#### Fixed
+- Synchronization failure ("Farm not found") when updating an existing farm after changing its ownership type.
+- Data inconsistency bug where `BackgroundSyncService` failed to persist the server-assigned `serverId` after successful creation.
+- Update payload pollution where local client identifiers were incorrectly sent as backend primary keys.
+
+#### Changed
+- `BackgroundSyncService` hardened to strictly use `serverId` for all update operations.
+- `FarmSyncDto.toUpdateJson` now enforces the presence of `serverId`, preventing accidental 404s.
+- Cleaned up redundant `clientId` field from the `Farmer` domain model.
+
+### Sprint 11.11 — Navigation Type Mismatch Fix
+
+#### Fixed
+- Runtime crash when opening the Farm edit form from the Farm list or details screens.
+
+#### Changed
+- Refactored `AppRoutes.editFarm` to use strongly typed `Farm` arguments.
+- Enhanced `FarmFormScreen` to support lazy-loading of operator farmer data.
+- Standardized navigation flow across all farm UI components.
+
+### Sprint 11.10 — Late Binding ID Resolution
+
+#### Fixed
+- Synchronization failure ("Farmer not found") when a Farm and its linked Farmer were created offline.
+
+#### Added
+- **Late Binding ID Resolution Pattern**: The sync engine now resolves local IDs to server IDs just-in-time before API calls.
+- **Dependency Deferral**: Dependent sync tasks are automatically deferred until their parents successfully synchronize.
+- Detailed sync logging for ID resolution troubleshooting.
+
+### Sprint 11.9 — Authorization Hardening & Token Fix
+
+#### Fixed
+- Critical sync failure where users with regional roles (Engineers/Surveyors) were incorrectly denied access due to missing geographic claims in the JWT token.
+
+#### Added
+- `governorate_id` and `directorate_id` claims to the JWT access token.
+- Regional scoping authorization checks to `CreateFarmer`, `UpdateFarmer`, and `CreateDamageReport` handlers.
+- `TokenServiceTests` to verify JWT claim integrity.
+
+### Sprint 11.8 — Search-First Owner Selection Workflow
+
+#### Added
+- **Reusable Search-First Selection Pattern**: A new architectural standard for selecting entities.
+- **Actionable SearchableLookupField**: Added support for `onAction` and `actionLabel` to the generic lookup component, enabling "Create New" flows.
+- **Robust Offline Farmer Search**: `OfflineFirstFarmerRepository` now searches across 8 name fields, ID numbers, and phone numbers using optimized SQL-like queries.
+- **Integrated Farmer Creation**: `FarmerFormScreen` now returns the created entity, and `FarmFormScreen` uses this to automatically select new owners without losing form state.
+
+#### Changed
+- `FarmerFormNotifier` now captures the created/updated farmer in its state.
+- `SearchableLookupField` now displays a clear action button when no search results are found.
+
+### Sprint 11.7 — Shared Reference Data Service
+
+#### Added
+- Unified `ReferenceDataController` and `GetReferenceDataQuery` in the backend to serve all farm-related lookups in one request.
+- `ReferenceData` domain model and `ReferenceDataRepository` in Flutter.
+- `OfflineFirstReferenceDataRepository` with Drift caching for OwnershipTypes, AgriculturalSectors, PoliticalClassifications, AreaUnits, and RelationshipToOwners.
+- Automatic lookup synchronization on first access.
+
+#### Fixed
+- Regression where Farm creation dropdowns (Ownership, Sector, etc.) were empty due to missing API and local caching logic.
+
+### Sprint 11.6 — Geographic Regression & API Centralization
+
+#### Fixed
+- Governorate dropdown in User Management and Farm modules by adding the missing `Code` field to `GovernorateDto`.
+- Invalid Dart syntax in `location_repository.dart` (`?governorateId`).
+- Authorization issue where geographic data was restricted to `SuperAdmin` by moving lookups to a shared `LocationController`.
+
+#### Changed
+- Centralized geographic lookup APIs to `/api/v1/Location/`.
+- Updated `LocationRepository` in Flutter to use the new centralized API paths.
+- Consolidated redundant geographic queries in the Backend `Application` layer.
+
+### Sprint 11.5 — Farm Production Acceptance
+
+#### Added
+- Production Readiness Report certifying the Farm module for production use.
+- Optimized `LocationRepository` using Dart 3.8 null-aware map elements.
+
+#### Fixed
+- Minor linting warnings in `FarmDetailsScreen` and `FarmCard` regarding unnecessary null-aware operators.
+- Unused parameter naming conventions in `AsyncValue` handlers.
+
+### Sprint 11.4 — Farm Management UI
+
+#### Added
+- `FarmCard` widget with detailed farm info and sync status.
+- `FarmDetailsScreen` with reactive data and sectioned UI.
+- Advanced filtering sheet in `FarmsListScreen` supporting geography, sector, and ownership.
+- Dashboard integration for Farms.
+- New unit tests for `FarmValidator` and widget tests for `FarmCard` and `FarmsListScreen`.
+
+#### Changed
+- `FarmsListScreen` refactored to use `StreamProvider` and card-based layout.
+- `HomeScreen` updated with Farms feature card.
+- `FarmerCard` and `Farmer` model updated with `isPendingDelete` support.
+- `FarmerSyncStatusBadge` updated to support `pending_delete` status.
+
+### Sprint 11.3 — Farm CRUD & Sync Hardening
+
+#### Added
+- Full offline-first CRUD for Farms in `OfflineFirstFarmRepository`.
+- `FarmValidator` for centralized business rule enforcement (Ownership, Geography, User Scope).
+- `Governorates`, `Directorates`, and `Localities` Drift tables for offline geographic support.
+- `OfflineFirstLocationRepository` with cascading lookup caching.
+- Asynchronous search support in `SearchableLookupField` for large datasets like Farmers.
+- Detailed sync logging for Farms in `BackgroundSyncService`.
+
+#### Changed
+- Geographic hierarchy updated to `Governorate -> Directorate -> Locality` globally.
+- `Locality` domain model and backend entity updated with `DirectorateId`.
+- `BackgroundSyncService` hardened with "Server Wins" policy for Farm conflict resolution.
+- `FarmFormScreen` redesigned with sectioned layout, cascading lookups, and owner farmer selection.
+- `localitiesProvider` updated to support `directorateId` filtering and multi-parameter inputs.
+- Drift schema version upgraded to **11**.
+
+#### Fixed
+- Bug in `BackgroundSyncService` where `SyncConflictException` was not correctly triggering the conflict resolution flow.
+- Scoping issue where Engineers could theoretically manage farms outside their assigned directorate.
+
+#### Added
+- New feature folder `lib/features/farms/` for better code isolation.
+- Drift schema version **10** with redesigned `Farms` table and new lookup tables.
+- Lookup tables for `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, and `RelationshipToOwner`.
+- `OfflineFirstFarmRepository` and `RemoteFarmRepository` in the new farms feature.
+- `FarmSyncDto` refactored for the new backend contract.
+- Added comprehensive unit and widget tests for the new database schema and feature isolation.
+
+#### Changed
+- `Farm` domain model updated with critical fields: `basin`, `parcel`, `area`, `ownerFarmerId`, `directorateId`, etc.
+- `BackgroundSyncService` updated to handle the new `Farm` schema and conflict resolution.
+- `app_router.dart` and `storage_providers.dart` updated to use the new farms feature paths.
+
+### Sprint 11.1 — Backend Farm Foundation
+
+#### Added
+- Redesigned `Farm` entity with new business fields (Basin, Parcel, Area, etc.).
+- New lookup entities: `OwnershipType`, `AgriculturalSector`, `PoliticalClassification`, `AreaUnit`, `RelationshipToOwner`.
+- Seed data for all new lookup tables.
+- Soft Delete support with Global Query Filters for the `Farm` entity.
+- Updated `CreateFarmCommand`, `UpdateFarmCommand`, and `FarmDto`.
+- `FarmSyncDto` for synchronization optimization.
+- Migration `RedesignFarmModule`.
+
+#### Changed
+- `Farms` database indexes updated for better geographic and relationship filtering.
+- Explicit `DeleteBehavior.Restrict` configured for all Farm relationships to prevent unintended cascades.
+
+### Sprint 11.0 — Farm Module Engineering Audit
+
+#### Added
+- Comprehensive engineering audit of the Farm (Land) Management module.
+- Implementation roadmap for Sprints 11.1 through 11.9.
+- Gap analysis and architectural recommendations.
+
 ### Sprint 10.17 — Farmer Soft Delete Workflow Fix
 
 #### Fixed

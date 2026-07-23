@@ -1,7 +1,9 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Options;
 using Hasad.Infrastructure.Persistence;
 using Hasad.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace Hasad.Application.Tests;
 
@@ -16,7 +18,8 @@ public class RefreshTokenStoreTests
     private static ApplicationDbContext CreateContext() =>
         new(new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options);
+            .Options,
+            new Mock<ICurrentUserService>().Object);
 
     private static RefreshTokenStore CreateStore(ApplicationDbContext context, TimeProvider timeProvider) =>
         new(context,

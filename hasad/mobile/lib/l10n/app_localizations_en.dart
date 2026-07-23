@@ -78,6 +78,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFarmer => 'Add Farmer';
 
   @override
+  String get addNewFarmerAction => '+ Add New Farmer';
+
+  @override
   String get editFarmer => 'Edit Farmer';
 
   @override
@@ -111,6 +114,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDelete => 'Are you sure you want to delete this farmer?';
 
   @override
+  String get cancelDelete => 'Cancel Delete';
+
+  @override
+  String get pendingDelete => 'Pending Delete';
+
+  @override
   String get noFarmers => 'No farmers found.';
 
   @override
@@ -127,6 +136,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get search => 'Search';
+
+  @override
+  String get farm => 'Farm';
 
   @override
   String get farmerDetails => 'Farmer Details';
@@ -246,6 +258,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get farmerCreatedSuccessfully => 'Farmer created successfully';
 
   @override
+  String get farmCreatedSuccessfully => 'Farm created successfully';
+
+  @override
+  String get farmUpdatedSuccessfully => 'Farm updated successfully';
+
+  @override
   String get enterFarmerIdToContinue => 'Enter Farmer ID to continue';
 
   @override
@@ -268,6 +286,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unit => 'Unit';
+
+  @override
+  String get basin => 'Basin';
+
+  @override
+  String get parcel => 'Parcel';
+
+  @override
+  String get farmInfoSection => 'Farm Information';
+
+  @override
+  String get areaAndSectorSection => 'Area and Sector';
+
+  @override
+  String get invalidValue => 'Invalid value';
+
+  @override
+  String get agriculturalSector => 'Agricultural Sector';
+
+  @override
+  String get politicalClassification => 'Political Classification';
+
+  @override
+  String get ownershipSection => 'Ownership';
+
+  @override
+  String get relationshipToOwner => 'Relationship to Owner';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get ownerFarmer => 'Owner Farmer';
 
   @override
   String get ownershipType => 'Ownership Type';
@@ -340,9 +391,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get role => 'Role';
 
   @override
-  String get directorate => 'Directorate';
-
-  @override
   String get active => 'Active';
 
   @override
@@ -371,4 +419,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get directorate => 'Directorate';
 }

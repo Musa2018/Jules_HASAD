@@ -230,6 +230,12 @@ abstract class AppLocalizations {
   /// **'Add Farmer'**
   String get addFarmer;
 
+  /// No description provided for @addNewFarmerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add New Farmer'**
+  String get addNewFarmerAction;
+
   /// No description provided for @editFarmer.
   ///
   /// In en, this message translates to:
@@ -296,6 +302,18 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete this farmer?'**
   String get confirmDelete;
 
+  /// No description provided for @cancelDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Delete'**
+  String get cancelDelete;
+
+  /// No description provided for @pendingDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Delete'**
+  String get pendingDelete;
+
   /// No description provided for @noFarmers.
   ///
   /// In en, this message translates to:
@@ -331,6 +349,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get search;
+
+  /// No description provided for @farm.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm'**
+  String get farm;
 
   /// No description provided for @farmerDetails.
   ///
@@ -566,6 +590,18 @@ abstract class AppLocalizations {
   /// **'Farmer created successfully'**
   String get farmerCreatedSuccessfully;
 
+  /// No description provided for @farmCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm created successfully'**
+  String get farmCreatedSuccessfully;
+
+  /// No description provided for @farmUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm updated successfully'**
+  String get farmUpdatedSuccessfully;
+
   /// No description provided for @enterFarmerIdToContinue.
   ///
   /// In en, this message translates to:
@@ -613,6 +649,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unit'**
   String get unit;
+
+  /// No description provided for @basin.
+  ///
+  /// In en, this message translates to:
+  /// **'Basin'**
+  String get basin;
+
+  /// No description provided for @parcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel'**
+  String get parcel;
+
+  /// No description provided for @farmInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm Information'**
+  String get farmInfoSection;
+
+  /// No description provided for @areaAndSectorSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Area and Sector'**
+  String get areaAndSectorSection;
+
+  /// No description provided for @invalidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid value'**
+  String get invalidValue;
+
+  /// No description provided for @agriculturalSector.
+  ///
+  /// In en, this message translates to:
+  /// **'Agricultural Sector'**
+  String get agriculturalSector;
+
+  /// No description provided for @politicalClassification.
+  ///
+  /// In en, this message translates to:
+  /// **'Political Classification'**
+  String get politicalClassification;
+
+  /// No description provided for @ownershipSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Ownership'**
+  String get ownershipSection;
+
+  /// No description provided for @relationshipToOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship to Owner'**
+  String get relationshipToOwner;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @ownerFarmer.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner Farmer'**
+  String get ownerFarmer;
 
   /// No description provided for @ownershipType.
   ///
@@ -752,12 +854,6 @@ abstract class AppLocalizations {
   /// **'Role'**
   String get role;
 
-  /// No description provided for @directorate.
-  ///
-  /// In en, this message translates to:
-  /// **'Directorate'**
-  String get directorate;
-
   /// No description provided for @active.
   ///
   /// In en, this message translates to:
@@ -817,6 +913,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @directorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Directorate'**
+  String get directorate;
 }
 
 class _AppLocalizationsDelegate

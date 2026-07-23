@@ -3,14 +3,11 @@ import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
-import 'package:mobile/features/farmers/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/data/offline_first_damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/offline_first_damage_report_repository.dart';
-import 'package:mobile/features/farmers/data/offline_first_farm_repository.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/damage_report_attachment.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
@@ -30,13 +27,6 @@ final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
 final farmersListProvider = StreamProvider.autoDispose<List<Farmer>>((ref) {
   final filter = ref.watch(farmerFiltersProvider);
   return ref.watch(farmerRepositoryProvider).watchFarmers(filter: filter);
-});
-
-final farmRepositoryProvider = Provider<FarmRepository>((ref) {
-  return OfflineFirstFarmRepository(
-    ref.watch(databaseProvider),
-    ref.watch(syncServiceProvider),
-  );
 });
 
 final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
@@ -65,11 +55,6 @@ final farmerProvider = FutureProvider.autoDispose.family<Farmer, String>((
 final farmerStreamProvider =
     StreamProvider.autoDispose.family<Farmer?, String>((ref, id) {
       return ref.watch(farmerRepositoryProvider).watchFarmer(id);
-    });
-
-final farmsListByFarmerProvider = FutureProvider.autoDispose
-    .family<List<Farm>, String>((ref, farmerId) async {
-      return ref.watch(farmRepositoryProvider).getFarmsByFarmer(farmerId);
     });
 
 final damageReportsListByFarmProvider = FutureProvider.autoDispose
@@ -161,11 +146,13 @@ class FarmerFormState {
   final bool isLoading;
   final List<String> errors;
   final bool success;
+  final Farmer? farmer;
 
   const FarmerFormState({
     this.isLoading = false,
     this.errors = const [],
     this.success = false,
+    this.farmer,
   });
 }
 
@@ -177,8 +164,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
   Future<void> createFarmer(Farmer farmer) async {
     state = const FarmerFormState(isLoading: true);
     try {
-      await _repository.createFarmer(farmer);
-      state = const FarmerFormState(success: true);
+      final result = await _repository.createFarmer(farmer);
+      state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
     } catch (_) {
@@ -189,8 +176,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
   Future<void> updateFarmer(Farmer farmer) async {
     state = const FarmerFormState(isLoading: true);
     try {
-      await _repository.updateFarmer(farmer);
-      state = const FarmerFormState(success: true);
+      final result = await _repository.updateFarmer(farmer);
+      state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
     } catch (_) {
@@ -216,65 +203,6 @@ final farmerFormProvider =
       ref,
     ) {
       return FarmerFormNotifier(ref.watch(farmerRepositoryProvider));
-    });
-
-class FarmFormState {
-  final bool isLoading;
-  final List<String> errors;
-  final bool success;
-
-  const FarmFormState({
-    this.isLoading = false,
-    this.errors = const [],
-    this.success = false,
-  });
-}
-
-class FarmFormNotifier extends StateNotifier<FarmFormState> {
-  final FarmRepository _repository;
-
-  FarmFormNotifier(this._repository) : super(const FarmFormState());
-
-  Future<void> createFarm(Farm farm) async {
-    state = const FarmFormState(isLoading: true);
-    try {
-      await _repository.createFarm(farm);
-      state = const FarmFormState(success: true);
-    } on FarmException catch (e) {
-      state = FarmFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmFormState(errors: ['An unexpected error occurred.']);
-    }
-  }
-
-  Future<void> updateFarm(Farm farm) async {
-    state = const FarmFormState(isLoading: true);
-    try {
-      await _repository.updateFarm(farm);
-      state = const FarmFormState(success: true);
-    } on FarmException catch (e) {
-      state = FarmFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmFormState(errors: ['An unexpected error occurred.']);
-    }
-  }
-
-  Future<void> deleteFarm(String id) async {
-    state = const FarmFormState(isLoading: true);
-    try {
-      await _repository.deleteFarm(id);
-      state = const FarmFormState(success: true);
-    } on FarmException catch (e) {
-      state = FarmFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmFormState(errors: ['An unexpected error occurred.']);
-    }
-  }
-}
-
-final farmFormProvider =
-    StateNotifierProvider.autoDispose<FarmFormNotifier, FarmFormState>((ref) {
-      return FarmFormNotifier(ref.watch(farmRepositoryProvider));
     });
 
 enum FarmerSearchStatus { idle, searching, found, notFound, error }

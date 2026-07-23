@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.Users.Queries.GetUsers;
 using Hasad.Domain.Identity;
 using Hasad.Infrastructure.Persistence;
@@ -10,12 +11,19 @@ namespace Hasad.Application.Tests;
 
 public class GetUsersTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public GetUsersTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+    }
+
     private ApplicationDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     private Mock<UserManager<ApplicationUser>> CreateUserManagerMock()

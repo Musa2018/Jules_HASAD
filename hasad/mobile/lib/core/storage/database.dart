@@ -56,26 +56,115 @@ class Farmers extends Table {
 
 @DataClassName('FarmLocal')
 class Farms extends Table {
-  TextColumn get id => text()(); // ClientId
-  TextColumn get serverId => text().nullable()(); // Server Id
-  TextColumn get farmerId => text()(); // Farmer ClientId
-  TextColumn get name => text().withLength(max: 200)();
+  TextColumn get id => text()(); // local UUID (ClientId)
+  TextColumn get serverId => text().nullable()(); // Authority ID from server
+  TextColumn get farmerId => text()(); // The operator farmer ClientId
+  TextColumn get ownerFarmerId => text().nullable()(); // The owner farmer ClientId
+  
+  TextColumn get localFarmName => text().withLength(max: 200)();
+  IntColumn get ownershipTypeId => integer().withDefault(const Constant(1))();
+  IntColumn get relationshipToOwnerId => integer().nullable()();
+
+  // Geography
   TextColumn get governorateId => text().withLength(max: 50)();
+  TextColumn get directorateId => text().withLength(max: 50)();
   TextColumn get localityId => text().withLength(max: 50)();
-  RealColumn get landArea => real()();
-  TextColumn get landAreaUnit => text().withLength(max: 20)();
+  TextColumn get basin => text().withLength(max: 100)();
+  TextColumn get parcel => text().withLength(max: 100)();
+
+  // Area
+  RealColumn get area => real()();
+  IntColumn get areaUnitId => integer().withDefault(const Constant(1))();
+
+  // Agriculture
+  IntColumn get agriculturalSectorId => integer().withDefault(const Constant(1))();
+  IntColumn get politicalClassificationId => integer().withDefault(const Constant(1))();
+
+  // Location
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();
-  TextColumn get ownershipTypeId => text().withLength(max: 50)();
 
+  TextColumn get notes => text().nullable()();
+
+  // Sync & Metadata
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
-  TextColumn get syncStatus =>
-      text().withDefault(const Constant('completed'))();
+  TextColumn get syncStatus => text().withDefault(const Constant('completed'))();
   TextColumn get lastSyncError => text().nullable()();
   BoolColumn get isPendingDelete => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class OwnershipTypes extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class AgriculturalSectors extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class PoliticalClassifications extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class AreaUnits extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class RelationshipToOwners extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('GovernorateLocal')
+class Governorates extends Table {
+  TextColumn get id => text()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  TextColumn get code => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('DirectorateLocal')
+class Directorates extends Table {
+  TextColumn get id => text()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  TextColumn get governorateId => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('LocalityLocal')
+class Localities extends Table {
+  TextColumn get id => text()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  TextColumn get governorateId => text()();
+  TextColumn get directorateId => text()();
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -188,6 +277,14 @@ class SyncQueue extends Table {
     DamageItems,
     DamageReportAttachments,
     SyncQueue,
+    OwnershipTypes,
+    AgriculturalSectors,
+    PoliticalClassifications,
+    AreaUnits,
+    RelationshipToOwners,
+    Governorates,
+    Directorates,
+    Localities,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -195,7 +292,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -265,6 +362,40 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(damageReports, damageReports.isPendingDelete);
         await m.addColumn(damageItems, damageItems.isPendingDelete);
         await m.addColumn(damageReportAttachments, damageReportAttachments.isPendingDelete);
+      }
+      if (from < 10) {
+        // Migration to v10: Redesign Farms and add Lookup tables
+        await m.createTable(ownershipTypes);
+        await m.createTable(agriculturalSectors);
+        await m.createTable(politicalClassifications);
+        await m.createTable(areaUnits);
+        await m.createTable(relationshipToOwners);
+        
+        // Redesign Farms table
+        // Drift doesn't support easy renaming of columns in alterTable yet (for native sqlite)
+        // We will use the 're-create' strategy or just add missing columns and keep old ones if needed.
+        // Actually, it's cleaner to use a transition: add new, migrate data, drop old (if possible).
+        // Since we are in early alpha, we might just add columns and set defaults.
+        
+        await m.addColumn(farms, farms.ownerFarmerId);
+        await m.addColumn(farms, farms.localFarmName);
+        await m.addColumn(farms, farms.relationshipToOwnerId);
+        await m.addColumn(farms, farms.directorateId);
+        await m.addColumn(farms, farms.basin);
+        await m.addColumn(farms, farms.parcel);
+        await m.addColumn(farms, farms.area);
+        await m.addColumn(farms, farms.areaUnitId);
+        await m.addColumn(farms, farms.agriculturalSectorId);
+        await m.addColumn(farms, farms.politicalClassificationId);
+        await m.addColumn(farms, farms.notes);
+
+        // Note: 'name' and 'landArea' and 'landAreaUnit' from old schema will remain but be unused.
+        // We could use m.alterTable(farms) but adding columns is safer for now.
+      }
+      if (from < 11) {
+        await m.createTable(governorates);
+        await m.createTable(directorates);
+        await m.createTable(localities);
       }
     },
     beforeOpen: (details) async {

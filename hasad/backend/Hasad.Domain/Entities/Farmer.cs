@@ -1,10 +1,10 @@
 using System;
-
+using Hasad.Domain.Common;
 using Hasad.Domain.Enums;
 
 namespace Hasad.Domain.Entities
 {
-    public class Farmer
+    public class Farmer : ISoftDelete
     {
         public Guid Id { get; set; }
 
@@ -54,5 +54,7 @@ namespace Hasad.Domain.Entities
         public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
         public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedAt { get; set; }
+        public string? DeletedBy { get; set; }
     }
 }

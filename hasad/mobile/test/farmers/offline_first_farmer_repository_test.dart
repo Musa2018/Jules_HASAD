@@ -296,6 +296,72 @@ void main() {
     });
   });
 
+  group('Search', () {
+    final farmer1 = Farmer(
+      id: 'f1',
+      idTypeId: 1,
+      idNumber: '12345',
+      firstNameAr: 'أحمد',
+      fatherNameAr: 'محمد',
+      grandfatherNameAr: 'علي',
+      familyNameAr: 'محمود',
+      firstNameEn: 'Ahmed',
+      fatherNameEn: 'Mohammed',
+      grandfatherNameEn: 'Ali',
+      familyNameEn: 'Mahmoud',
+      birthDate: DateTime(1985, 5, 10),
+      gender: Gender.male,
+      phoneNumber: '0599111222',
+      familySize: 5,
+      governorateId: 'G1',
+      localityId: 'L1',
+      address: 'Test Address',
+    );
+
+    final farmer2 = farmer1.copyWith(
+      id: 'f2',
+      idNumber: '67890',
+      firstNameAr: 'محمود',
+      firstNameEn: 'Mahmoud',
+      phoneNumber: '0598333444',
+    );
+
+    setUp(() async {
+      when(() => mockSyncService.addToQueue(
+        localId: any(named: 'localId'),
+        entityType: any(named: 'entityType'),
+        operation: any(named: 'operation'),
+        data: any(named: 'data'),
+      )).thenAnswer((_) async {});
+      
+      await repository.createFarmer(farmer1);
+      await repository.createFarmer(farmer2);
+    });
+
+    test('getFarmers searches by partial Arabic name', () async {
+      final results = await repository.getFarmers(name: 'أحم');
+      expect(results.length, 1);
+      expect(results.first.id, 'f1');
+    });
+
+    test('getFarmers searches by partial English name', () async {
+      final results = await repository.getFarmers(name: 'Mah');
+      expect(results.length, 2); // Both Ahmed Mahmoud and Mahmoud ...
+    });
+
+    test('getFarmers searches by exact ID number', () async {
+      final results = await repository.getFarmers(idNumber: '67890');
+      expect(results.length, 1);
+      expect(results.first.id, 'f2');
+    });
+
+    test('getFarmers searches by partial ID number', () async {
+      final results = await repository.getFarmers(idNumber: '234');
+      expect(results.length, 1);
+      expect(results.first.id, 'f1');
+    });
+  });
+
   group('Soft Delete', () {
     test('getFarmers filters out farmers marked as pending delete', () async {
       when(

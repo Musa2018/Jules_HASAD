@@ -150,7 +150,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
         ref.invalidate(farmerProvider(widget.farmer!.id));
       }
 
-      Navigator.of(context).pop();
+      final result = ref.read(farmerFormProvider).farmer;
+      Navigator.of(context).pop(result);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
@@ -161,7 +162,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     final state = ref.watch(farmerFormProvider);
     final govAsync = ref.watch(governoratesProvider);
     final locAsync = _selectedGovernorateId != null
-        ? ref.watch(localitiesProvider(_selectedGovernorateId))
+        ? ref.watch(localitiesProvider((_selectedGovernorateId, null)))
         : const AsyncValue<List<Locality>>.data([]);
 
     return Scaffold(

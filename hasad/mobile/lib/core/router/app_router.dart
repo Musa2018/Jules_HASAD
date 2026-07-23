@@ -6,16 +6,17 @@ import 'package:mobile/features/auth/presentation/forgot_password_screen.dart';
 import 'package:mobile/features/auth/presentation/reset_password_screen.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/damage_report/attachment_gallery_screen.dart';
 import 'package:mobile/features/farmers/presentation/damage_report/damage_report_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/damage_report/damage_reports_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/compensation/compensation_screen.dart';
-import 'package:mobile/features/farmers/presentation/farm_form_screen.dart';
+import 'package:mobile/features/farms/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
-import 'package:mobile/features/farmers/presentation/farms_list_screen.dart';
+import 'package:mobile/features/farms/presentation/farm_details_screen.dart';
+import 'package:mobile/features/farms/presentation/farms_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_details_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_search_screen.dart';
 import 'package:mobile/features/home/presentation/home_screen.dart';
@@ -72,6 +73,9 @@ abstract final class AppRoutes {
 
   /// Edit farm.
   static const editFarm = '/farms/edit';
+
+  /// Farm details.
+  static const farmDetails = '/farms/details';
 
   /// Damage reports list.
   static const damageReports = '/damage-reports';
@@ -199,7 +203,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.farms,
         builder: (context, state) =>
-            FarmsListScreen(farmer: state.extra as Farmer),
+            FarmsListScreen(farmer: state.extra as Farmer?),
+      ),
+      GoRoute(
+        path: AppRoutes.farmDetails,
+        builder: (context, state) =>
+            FarmDetailsScreen(farm: state.extra as Farm),
       ),
       GoRoute(
         path: AppRoutes.addFarm,
@@ -208,13 +217,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.editFarm,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return FarmFormScreen(
-            farmer: extra['farmer'] as Farmer,
-            farm: extra['farm'] as Farm,
-          );
-        },
+        builder: (context, state) =>
+            FarmFormScreen(farm: state.extra as Farm),
       ),
       GoRoute(
         path: AppRoutes.damageReports,

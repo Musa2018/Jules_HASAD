@@ -15,12 +15,19 @@ namespace Hasad.Application.Tests;
 
 public class CompensationTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public CompensationTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+    }
+
     private ApplicationDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]

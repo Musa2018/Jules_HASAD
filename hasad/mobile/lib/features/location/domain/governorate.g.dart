@@ -11,6 +11,7 @@ _$GovernorateImpl _$$GovernorateImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       nameAr: json['nameAr'] as String,
       nameEn: json['nameEn'] as String,
+      code: json['code'] as String,
     );
 
 Map<String, dynamic> _$$GovernorateImplToJson(_$GovernorateImpl instance) =>
@@ -18,4 +19,5 @@ Map<String, dynamic> _$$GovernorateImplToJson(_$GovernorateImpl instance) =>
       'id': instance.id,
       'nameAr': instance.nameAr,
       'nameEn': instance.nameEn,
+      'code': instance.code,
     };

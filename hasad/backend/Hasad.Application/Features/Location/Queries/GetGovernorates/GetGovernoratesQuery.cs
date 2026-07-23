@@ -27,7 +27,8 @@ public class GetGovernoratesQueryHandler : IRequestHandler<GetGovernoratesQuery,
             {
                 Id = g.Id,
                 NameAr = g.NameAr,
-                NameEn = g.NameEn
+                NameEn = g.NameEn,
+                Code = g.Code
             })
             .ToListAsync(cancellationToken);
 

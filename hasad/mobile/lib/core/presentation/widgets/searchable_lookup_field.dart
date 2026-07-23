@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 /// A generic searchable lookup field that opens a Modal Bottom Sheet for item selection.
@@ -13,6 +14,10 @@ class SearchableLookupField<T> extends StatelessWidget {
   final bool isLoading;
   final String? errorText;
   final String? hintText;
+  final Future<List<T>> Function(String)? onSearch;
+  final bool enabled;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   const SearchableLookupField({
     super.key,
@@ -26,6 +31,10 @@ class SearchableLookupField<T> extends StatelessWidget {
     this.isLoading = false,
     this.errorText,
     this.hintText,
+    this.onSearch,
+    this.enabled = true,
+    this.actionLabel,
+    this.onAction,
   });
 
   @override
@@ -36,11 +45,12 @@ class SearchableLookupField<T> extends StatelessWidget {
       validator: validator,
       builder: (state) {
         return InkWell(
-          onTap: isLoading ? null : () => _showSearchSheet(context, state),
+          onTap: (isLoading || !enabled) ? null : () => _showSearchSheet(context, state),
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: label,
               errorText: state.errorText ?? errorText,
+              enabled: enabled,
               suffixIcon: isLoading
                   ? const SizedBox(
                       width: 24,
@@ -78,6 +88,9 @@ class SearchableLookupField<T> extends StatelessWidget {
           searchStrings: searchStrings,
           initialValue: value,
           hintText: hintText,
+          onSearch: onSearch,
+          actionLabel: actionLabel,
+          onAction: onAction,
           onSelected: (item) {
             onChanged(item);
             state.didChange(item);
@@ -97,6 +110,9 @@ class _SearchSheet<T> extends StatefulWidget {
   final T? initialValue;
   final String? hintText;
   final void Function(T?) onSelected;
+  final Future<List<T>> Function(String)? onSearch;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   const _SearchSheet({
     required this.title,
@@ -106,6 +122,9 @@ class _SearchSheet<T> extends StatefulWidget {
     this.hintText,
     required this.onSelected,
     this.initialValue,
+    this.onSearch,
+    this.actionLabel,
+    this.onAction,
   });
 
   @override
@@ -115,6 +134,8 @@ class _SearchSheet<T> extends StatefulWidget {
 class _SearchSheetState<T> extends State<_SearchSheet<T>> {
   late List<T> _filteredItems;
   final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -131,7 +152,34 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
   @override
   void dispose() {
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (widget.onSearch != null) {
+        _performAsyncSearch(query);
+      } else {
+        _filterItems(query);
+      }
+    });
+  }
+
+  Future<void> _performAsyncSearch(String query) async {
+    setState(() => _isSearching = true);
+    try {
+      final results = await widget.onSearch!(query);
+      if (mounted) {
+        setState(() {
+          _filteredItems = results;
+          _isSearching = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isSearching = false);
+    }
   }
 
   void _filterItems(String query) {
@@ -193,12 +241,36 @@ class _SearchSheetState<T> extends State<_SearchSheet<T>> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            onChanged: _filterItems,
+            onChanged: _onSearchChanged,
           ),
           const SizedBox(height: 16),
-          Expanded(
-            child: _filteredItems.isEmpty
-                ? const Center(child: Text('No results found.'))
+          if (_isSearching)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 32.0),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else
+            Expanded(
+              child: _filteredItems.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('No results found.'),
+                        if (widget.onAction != null && widget.actionLabel != null) ...[
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.add),
+                            label: Text(widget.actionLabel!),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              widget.onAction!();
+                            },
+                          ),
+                        ],
+                      ],
+                    ),
+                  )
                 : ListView.separated(
                     itemCount: _filteredItems.length,
                     separatorBuilder: (context, index) =>

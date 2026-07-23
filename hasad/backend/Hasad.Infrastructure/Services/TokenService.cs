@@ -30,9 +30,21 @@ public class TokenService : ITokenService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.Name, user.UserName!),
             new(ClaimTypes.Email, user.Email!),
             new("FullName", user.FullName)
         };
+
+        if (user.GovernorateId.HasValue)
+        {
+            claims.Add(new Claim("governorate_id", user.GovernorateId.Value.ToString()));
+        }
+
+        if (user.DirectorateId.HasValue)
+        {
+            claims.Add(new Claim("directorate_id", user.DirectorateId.Value.ToString()));
+        }
+
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var tokenDescriptor = new SecurityTokenDescriptor

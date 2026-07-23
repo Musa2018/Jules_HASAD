@@ -17,6 +17,7 @@ abstract class FarmerRepository {
     int pageSize = 10,
     String? idNumber,
     String? name,
+    String? searchText,
   });
 
   Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()});
@@ -27,6 +28,7 @@ abstract class FarmerRepository {
   Future<domain.Farmer> createFarmer(domain.Farmer farmer);
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer);
   Future<void> deleteFarmer(String id);
+  Future<void> cancelDeleteFarmer(String id);
 }
 
 class OfflineFirstFarmerRepository implements FarmerRepository {
@@ -55,9 +57,8 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     int pageSize = 10,
     String? idNumber,
     String? name,
+    String? searchText,
   }) async {
-    // For the list, we currently only show local data or we could merge.
-    // For Sprint 10.4, we focus on searchById.
     final query = _db.select(_db.farmers)
       ..where((t) => t.isPendingDelete.equals(false))
       ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
@@ -66,10 +67,34 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     if (idNumber != null && idNumber.isNotEmpty) {
       query.where((t) => t.idNumber.contains(idNumber));
     }
-    
-    // Simplification: name search is complex across 8 fields, 
-    // but we can implement basic contains if needed.
-    // For now, let's just use the existing ordering.
+
+    if (name != null && name.isNotEmpty) {
+      final search = '%$name%';
+      query.where((t) =>
+          t.firstNameAr.like(search) |
+          t.fatherNameAr.like(search) |
+          t.grandfatherNameAr.like(search) |
+          t.familyNameAr.like(search) |
+          t.firstNameEn.like(search) |
+          t.fatherNameEn.like(search) |
+          t.grandfatherNameEn.like(search) |
+          t.familyNameEn.like(search));
+    }
+
+    if (searchText != null && searchText.isNotEmpty) {
+      final search = '%$searchText%';
+      query.where((t) =>
+          t.firstNameAr.like(search) |
+          t.fatherNameAr.like(search) |
+          t.grandfatherNameAr.like(search) |
+          t.familyNameAr.like(search) |
+          t.firstNameEn.like(search) |
+          t.fatherNameEn.like(search) |
+          t.grandfatherNameEn.like(search) |
+          t.familyNameEn.like(search) |
+          t.idNumber.like(search) |
+          t.phoneNumber.like(search));
+    }
 
     final items = await query.get();
 
@@ -130,8 +155,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()}) {
-    final query = _db.select(_db.farmers)
-      ..where((t) => t.isPendingDelete.equals(false));
+    final query = _db.select(_db.farmers);
 
     if (filter.searchText.isNotEmpty) {
       final search = '%${filter.searchText}%';
@@ -173,7 +197,6 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     return domain.Farmer(
       id: e.id,
       serverId: e.serverId,
-      clientId: e.id,
       idTypeId: e.idTypeId,
       idNumber: e.idNumber,
       firstNameAr: e.firstNameAr,
@@ -194,6 +217,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       rowVersion: e.rowVersion,
       syncStatus: e.syncStatus,
       lastSyncError: e.lastSyncError,
+      isPendingDelete: e.isPendingDelete,
       createdAt: e.createdAt,
       updatedAt: e.updatedAt,
     );
@@ -237,7 +261,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
     await _db.into(_db.farmers).insert(companion);
 
-    final createdFarmer = farmer.copyWith(id: localId, clientId: localId);
+    final createdFarmer = farmer.copyWith(id: localId);
 
     await _syncService.addToQueue(
       localId: localId,
@@ -294,5 +318,20 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
         'clientId': local.id,
       },
     );
+  }
+
+  @override
+  Future<void> cancelDeleteFarmer(String id) async {
+    await (_db.update(_db.farmers)..where((t) => t.id.equals(id))).write(
+      const FarmersCompanion(
+        isPendingDelete: Value(false),
+        syncStatus: Value('completed'),
+        lastSyncError: Value(null),
+      ),
+    );
+
+    await (_db.delete(_db.syncQueue)
+          ..where((t) => t.localId.equals(id) & t.entityType.equals('farmer') & t.operation.equals('delete')))
+        .go();
   }
 }

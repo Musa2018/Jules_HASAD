@@ -9,13 +9,12 @@ import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/damage_report_repository.dart';
-import 'package:mobile/features/farmers/data/farm_repository.dart';
+import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/damage_report_attachment.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
-
 import 'package:mobile/features/farmers/domain/gender.dart';
 
 class MockFarmerRepository extends Mock implements FarmerRepository {}
@@ -91,12 +90,17 @@ void main() {
       const Farm(
         id: '',
         farmerId: '',
-        name: '',
+        localFarmName: '',
+        ownershipTypeId: 1,
         governorateId: '',
+        directorateId: '',
         localityId: '',
-        landArea: 0,
-        landAreaUnit: '',
-        ownershipTypeId: '',
+        basin: '',
+        parcel: '',
+        area: 0,
+        areaUnitId: 1,
+        agriculturalSectorId: 1,
+        politicalClassificationId: 1,
       ),
     );
     registerFallbackValue(
@@ -624,8 +628,8 @@ void main() {
 
   test('addToQueue preserves CREATE operation during offline edits', () async {
     const localId = 'collapsing-1';
-    final data1 = {'name': 'Initial'};
-    final data2 = {'name': 'Updated'};
+    final data1 = {'firstNameAr': 'Initial'};
+    final data2 = {'firstNameAr': 'Updated'};
 
     when(
       () => mockConnectivity.checkConnectivity(),
@@ -654,7 +658,7 @@ void main() {
     items = await db.select(db.syncQueue).get();
     expect(items.length, 1);
     expect(items.first.operation, 'create'); // Preserved!
-    expect(jsonDecode(items.first.data)['name'], 'Updated');
+    expect(jsonDecode(items.first.data)['firstNameAr'], 'Updated');
   });
 
   test('addToQueue handles multiple offline updates by collapsing', () async {
@@ -831,7 +835,7 @@ void main() {
         localId: localId,
         entityType: 'farmer',
         operation: 'create',
-        data: {'name': 'New'},
+        data: {'firstNameAr': 'New'},
       );
 
       // 2. DELETE before sync

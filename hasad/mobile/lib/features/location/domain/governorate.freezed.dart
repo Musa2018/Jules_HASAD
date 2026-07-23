@@ -24,6 +24,7 @@ mixin _$Governorate {
   String get id => throw _privateConstructorUsedError;
   String get nameAr => throw _privateConstructorUsedError;
   String get nameEn => throw _privateConstructorUsedError;
+  String get code => throw _privateConstructorUsedError;
 
   /// Serializes this Governorate to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,7 +43,7 @@ abstract class $GovernorateCopyWith<$Res> {
     $Res Function(Governorate) then,
   ) = _$GovernorateCopyWithImpl<$Res, Governorate>;
   @useResult
-  $Res call({String id, String nameAr, String nameEn});
+  $Res call({String id, String nameAr, String nameEn, String code});
 }
 
 /// @nodoc
@@ -59,7 +60,12 @@ class _$GovernorateCopyWithImpl<$Res, $Val extends Governorate>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? nameAr = null, Object? nameEn = null}) {
+  $Res call({
+    Object? id = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+    Object? code = null,
+  }) {
     return _then(
       _value.copyWith(
             id: null == id
@@ -73,6 +79,10 @@ class _$GovernorateCopyWithImpl<$Res, $Val extends Governorate>
             nameEn: null == nameEn
                 ? _value.nameEn
                 : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+            code: null == code
+                ? _value.code
+                : code // ignore: cast_nullable_to_non_nullable
                       as String,
           )
           as $Val,
@@ -89,7 +99,7 @@ abstract class _$$GovernorateImplCopyWith<$Res>
   ) = __$$GovernorateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String nameAr, String nameEn});
+  $Res call({String id, String nameAr, String nameEn, String code});
 }
 
 /// @nodoc
@@ -105,7 +115,12 @@ class __$$GovernorateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? nameAr = null, Object? nameEn = null}) {
+  $Res call({
+    Object? id = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+    Object? code = null,
+  }) {
     return _then(
       _$GovernorateImpl(
         id: null == id
@@ -120,6 +135,10 @@ class __$$GovernorateImplCopyWithImpl<$Res>
             ? _value.nameEn
             : nameEn // ignore: cast_nullable_to_non_nullable
                   as String,
+        code: null == code
+            ? _value.code
+            : code // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -132,6 +151,7 @@ class _$GovernorateImpl implements _Governorate {
     required this.id,
     required this.nameAr,
     required this.nameEn,
+    required this.code,
   });
 
   factory _$GovernorateImpl.fromJson(Map<String, dynamic> json) =>
@@ -143,10 +163,12 @@ class _$GovernorateImpl implements _Governorate {
   final String nameAr;
   @override
   final String nameEn;
+  @override
+  final String code;
 
   @override
   String toString() {
-    return 'Governorate(id: $id, nameAr: $nameAr, nameEn: $nameEn)';
+    return 'Governorate(id: $id, nameAr: $nameAr, nameEn: $nameEn, code: $code)';
   }
 
   @override
@@ -156,12 +178,13 @@ class _$GovernorateImpl implements _Governorate {
             other is _$GovernorateImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
-            (identical(other.nameEn, nameEn) || other.nameEn == nameEn));
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn) &&
+            (identical(other.code, code) || other.code == code));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, nameAr, nameEn);
+  int get hashCode => Object.hash(runtimeType, id, nameAr, nameEn, code);
 
   /// Create a copy of Governorate
   /// with the given fields replaced by the non-null parameter values.
@@ -182,6 +205,7 @@ abstract class _Governorate implements Governorate {
     required final String id,
     required final String nameAr,
     required final String nameEn,
+    required final String code,
   }) = _$GovernorateImpl;
 
   factory _Governorate.fromJson(Map<String, dynamic> json) =
@@ -193,6 +217,8 @@ abstract class _Governorate implements Governorate {
   String get nameAr;
   @override
   String get nameEn;
+  @override
+  String get code;
 
   /// Create a copy of Governorate
   /// with the given fields replaced by the non-null parameter values.

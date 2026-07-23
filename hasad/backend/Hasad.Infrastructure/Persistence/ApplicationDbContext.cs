@@ -1,4 +1,5 @@
 using Hasad.Application.Common.Interfaces;
+using Hasad.Domain.Common;
 using Hasad.Domain.Entities;
 using Hasad.Domain.Enums;
 using Hasad.Domain.Identity;
@@ -13,10 +14,30 @@ namespace Hasad.Infrastructure.Persistence;
 /// </summary>
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
+    private readonly ICurrentUserService _currentUser;
+
     /// <summary>Initializes the context.</summary>
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        ICurrentUserService currentUser)
         : base(options)
     {
+        _currentUser = currentUser;
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var entry in ChangeTracker.Entries<ISoftDelete>())
+        {
+            if (entry.State == EntityState.Modified && entry.Entity.IsDeleted)
+            {
+                // Only set audit fields if they haven't been set yet (or we can always overwrite for consistency)
+                entry.Entity.DeletedAt ??= DateTime.UtcNow;
+                entry.Entity.DeletedBy ??= _currentUser.UserId;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>Persisted refresh tokens.</summary>
@@ -36,6 +57,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
    /// <summary>Types of identification for farmers.</summary>
    public DbSet<IdType> IdTypes => Set<IdType>();
+
+    /// <summary>Types of ownership for farms.</summary>
+    public DbSet<OwnershipType> OwnershipTypes => Set<OwnershipType>();
+
+    /// <summary>Units of area for land.</summary>
+    public DbSet<AreaUnit> AreaUnits => Set<AreaUnit>();
+
+    /// <summary>Agricultural sectors (Plant, Animal, Mixed).</summary>
+    public DbSet<AgriculturalSector> AgriculturalSectors => Set<AgriculturalSector>();
+
+    /// <summary>Political classifications (A, B, C).</summary>
+    public DbSet<PoliticalClassification> PoliticalClassifications => Set<PoliticalClassification>();
+
+    /// <summary>Relationships between operator and owner.</summary>
+    public DbSet<RelationshipToOwner> RelationshipToOwners => Set<RelationshipToOwner>();
 
     /// <summary>Registered farms.</summary>
     public DbSet<Farm> Farms => Set<Farm>();
@@ -116,12 +152,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
             entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
 
+            entity.HasOne(e => e.Directorate)
+                .WithMany()
+                .HasForeignKey(e => e.DirectorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Governorate)
                 .WithMany(g => g.Localities)
                 .HasForeignKey(e => e.GovernorateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.GovernorateId);
+            entity.HasIndex(e => e.DirectorateId);
         });
 
         builder.Entity<ApplicationUser>(entity =>
@@ -150,13 +192,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                     // التزامن - Partial index to allow reusing ClientId from deleted records
                     entity.HasIndex(f => f.ClientId)
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false");
+                        .HasFilter("[IsDeleted] = 0");
 
                     // الهوية - Partial index to allow reusing ID Number from deleted records
                     entity.Property(f => f.IdNumber).IsRequired().HasMaxLength(20);
                     entity.HasIndex(f => new { f.IdTypeId, f.IdNumber })
                         .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false");
+                        .HasFilter("[IsDeleted] = 0");
 
                     // الأسماء
                     entity.Property(f => f.FirstNameAr).IsRequired().HasMaxLength(50);
@@ -195,21 +237,123 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<Farm>(entity =>
         {
             entity.HasKey(f => f.Id);
-            entity.Property(f => f.Name).IsRequired().HasMaxLength(200);
-            entity.Property(f => f.GovernorateId).IsRequired().HasMaxLength(50);
-            entity.Property(f => f.LocalityId).IsRequired().HasMaxLength(50);
-            entity.Property(f => f.LandArea).HasPrecision(18, 2);
-            entity.Property(f => f.LandAreaUnit).IsRequired().HasMaxLength(20);
-            entity.Property(f => f.OwnershipTypeId).IsRequired().HasMaxLength(50);
+
+            // Soft Delete
+            entity.HasQueryFilter(f => !f.IsDeleted);
+
+            entity.Property(f => f.LocalFarmName).IsRequired().HasMaxLength(200);
+            entity.Property(f => f.Basin).IsRequired().HasMaxLength(100);
+            entity.Property(f => f.Parcel).IsRequired().HasMaxLength(100);
+            entity.Property(f => f.Area).HasPrecision(18, 2);
             entity.Property(f => f.RowVersion).IsRowVersion();
 
             entity.HasIndex(f => f.ClientId).IsUnique();
             entity.HasIndex(f => f.FarmerId);
+            entity.HasIndex(f => f.OwnerFarmerId);
+            entity.HasIndex(f => new { f.GovernorateId, f.DirectorateId, f.LocalityId });
 
             entity.HasOne(f => f.Farmer)
                 .WithMany()
                 .HasForeignKey(f => f.FarmerId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.OwnerFarmer)
+                .WithMany()
+                .HasForeignKey(f => f.OwnerFarmerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.OwnershipType)
+                .WithMany()
+                .HasForeignKey(f => f.OwnershipTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.RelationshipToOwner)
+                .WithMany()
+                .HasForeignKey(f => f.RelationshipToOwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.Governorate)
+                .WithMany()
+                .HasForeignKey(f => f.GovernorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.Directorate)
+                .WithMany()
+                .HasForeignKey(f => f.DirectorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.Locality)
+                .WithMany()
+                .HasForeignKey(f => f.LocalityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.AreaUnit)
+                .WithMany()
+                .HasForeignKey(f => f.AreaUnitId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.AgriculturalSector)
+                .WithMany()
+                .HasForeignKey(f => f.AgriculturalSectorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(f => f.PoliticalClassification)
+                .WithMany()
+                .HasForeignKey(f => f.PoliticalClassificationId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // --- Seed Data for Lookups ---
+        builder.Entity<OwnershipType>(entity =>
+        {
+            entity.HasData(
+                new OwnershipType { Id = 1, NameAr = "ملك", NameEn = "Owned" },
+                new OwnershipType { Id = 2, NameAr = "تأجير", NameEn = "Leased" },
+                new OwnershipType { Id = 3, NameAr = "مزارعة", NameEn = "Sharecropping" },
+                new OwnershipType { Id = 4, NameAr = "شراكة", NameEn = "Partnership" },
+                new OwnershipType { Id = 5, NameAr = "أخرى", NameEn = "Other" }
+            );
+        });
+
+        builder.Entity<AgriculturalSector>(entity =>
+        {
+            entity.HasData(
+                new AgriculturalSector { Id = 1, NameAr = "نباتي", NameEn = "Plant" },
+                new AgriculturalSector { Id = 2, NameAr = "حيواني", NameEn = "Animal" },
+                new AgriculturalSector { Id = 3, NameAr = "مختلط", NameEn = "Mixed" }
+            );
+        });
+
+        builder.Entity<PoliticalClassification>(entity =>
+        {
+            entity.HasData(
+                new PoliticalClassification { Id = 1, NameAr = "A", NameEn = "A" },
+                new PoliticalClassification { Id = 2, NameAr = "B", NameEn = "B" },
+                new PoliticalClassification { Id = 3, NameAr = "C", NameEn = "C" }
+            );
+        });
+
+        builder.Entity<AreaUnit>(entity =>
+        {
+            entity.HasData(
+                new AreaUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum" },
+                new AreaUnit { Id = 2, NameAr = "متر مربع", NameEn = "Square Meter" },
+                new AreaUnit { Id = 3, NameAr = "هكتار", NameEn = "Hectare" },
+                new AreaUnit { Id = 4, NameAr = "أخرى", NameEn = "Other" }
+            );
+        });
+
+        builder.Entity<RelationshipToOwner>(entity =>
+        {
+            entity.HasData(
+                new RelationshipToOwner { Id = 1, NameAr = "المالك نفسه", NameEn = "Owner Himself" },
+                new RelationshipToOwner { Id = 2, NameAr = "مستأجر", NameEn = "Tenant" },
+                new RelationshipToOwner { Id = 3, NameAr = "شريك", NameEn = "Partner" },
+                new RelationshipToOwner { Id = 4, NameAr = "وكيل", NameEn = "Agent" },
+                new RelationshipToOwner { Id = 5, NameAr = "وريث", NameEn = "Heir" },
+                new RelationshipToOwner { Id = 6, NameAr = "منتفع", NameEn = "Beneficiary" },
+                new RelationshipToOwner { Id = 7, NameAr = "أخرى", NameEn = "Other" }
+            );
         });
 
         builder.Entity<DamageReport>(entity =>

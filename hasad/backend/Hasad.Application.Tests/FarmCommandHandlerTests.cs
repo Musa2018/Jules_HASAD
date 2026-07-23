@@ -1,29 +1,39 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.Farms.Commands.CreateFarm;
 using Hasad.Application.Features.Farms.Commands.UpdateFarm;
+using Hasad.Application.Features.Farms.Commands.DeleteFarm;
 using Hasad.Application.Features.Farms.Queries.GetFarmById;
 using Hasad.Application.Features.Farms.Queries.GetFarmsByFarmer;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 
 namespace Hasad.Application.Tests;
 
 public class FarmCommandHandlerTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public FarmCommandHandlerTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+        _currentUserMock.Setup(x => x.UserId).Returns(Guid.NewGuid().ToString());
+    }
+
     private ApplicationDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]
     public async Task CreateFarm_Succeeds_WhenDataIsValid()
     {
         var context = CreateContext();
-        // تم استبدال Name بالحقول الجديدة
         var farmer = new Farmer
         {
             Id = Guid.NewGuid(),
@@ -34,24 +44,32 @@ public class FarmCommandHandlerTests
         context.Farmers.Add(farmer);
         await context.SaveChangesAsync();
 
-        var handler = new CreateFarmCommandHandler(context);
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
         var command = new CreateFarmCommand(
             Guid.NewGuid(),
             farmer.Id,
             "My Farm",
-            "Gov1",
-            "Loc1",
+            1, // OwnershipTypeId (ملك)
+            null, // OwnerFarmerId
+            null, // RelationshipToOwnerId
+            Guid.NewGuid(), // GovernorateId
+            Guid.NewGuid(), // DirectorateId
+            Guid.NewGuid(), // LocalityId
+            "Basin 1",
+            "Parcel 2",
             100.5m,
-            "Dunam",
+            1, // AreaUnitId
+            1, // AgriculturalSectorId
+            1, // PoliticalClassificationId
             31.5,
             34.5,
-            "Owned");
+            "Notes");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
         Assert.NotNull(result.Data);
-        Assert.Equal("My Farm", result.Data.Name);
+        Assert.Equal("My Farm", result.Data.LocalFarmName);
         Assert.Single(context.Farms);
     }
 
@@ -68,16 +86,28 @@ public class FarmCommandHandlerTests
             IdNumber = "123456789"
         };
         context.Farmers.Add(farmer);
-        context.Farms.Add(new Farm { Id = Guid.NewGuid(), ClientId = clientId, FarmerId = farmer.Id, Name = "Existing", RowVersion = new byte[] { 1 } });
+        context.Farms.Add(new Farm
+        {
+            Id = Guid.NewGuid(),
+            ClientId = clientId,
+            FarmerId = farmer.Id,
+            LocalFarmName = "Existing",
+            RowVersion = new byte[] { 1 }
+        });
         await context.SaveChangesAsync();
 
-        var handler = new CreateFarmCommandHandler(context);
-        var command = new CreateFarmCommand(clientId, farmer.Id, "New Name", "G1", "L1", 1, "U", null, null, "O");
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new CreateFarmCommand(
+            clientId,
+            farmer.Id,
+            "New Name",
+            1, null, null, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
+            "B", "P", 1, 1, 1, 1, null, null, "O");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.Equal("Existing", result.Data!.Name);
+        Assert.Equal("Existing", result.Data!.LocalFarmName);
         Assert.Single(context.Farms);
     }
 
@@ -92,17 +122,109 @@ public class FarmCommandHandlerTests
             IdTypeId = 1,
             IdNumber = "123456789"
         };
-        var farm = new Farm { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), FarmerId = farmer.Id, Name = "Old", RowVersion = new byte[] { 1 } };
+        var farm = new Farm
+        {
+            Id = Guid.NewGuid(),
+            ClientId = Guid.NewGuid(),
+            FarmerId = farmer.Id,
+            LocalFarmName = "Old",
+            RowVersion = new byte[] { 1 }
+        };
         context.Farmers.Add(farmer);
         context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
-        var handler = new UpdateFarmCommandHandler(context);
-        var command = new UpdateFarmCommand(farm.Id, farm.ClientId, farmer.Id, "New", "G", "L", 2, "U", null, null, "O", Convert.ToBase64String(new byte[] { 2 }));
+        var handler = new UpdateFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new UpdateFarmCommand(
+            farm.Id,
+            farm.ClientId,
+            farmer.Id,
+            "New",
+            1, null, null, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
+            "B", "P", 2, 1, 1, 1, null, null, "O",
+            Convert.ToBase64String(new byte[] { 2 }));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.False(result.Succeeded);
         Assert.Contains("CONFLICT", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task CreateFarm_Fails_WhenDirectorateScopingMismatches()
+    {
+        var context = CreateContext();
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        context.Farmers.Add(farmer);
+        await context.SaveChangesAsync();
+
+        var userDirectorateId = Guid.NewGuid();
+        _currentUserMock.Setup(x => x.IsInRole("FieldSurveyor")).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(userDirectorateId);
+
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new CreateFarmCommand(
+            Guid.NewGuid(), farmer.Id, "Farm", 1, null, null,
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), // Different DirectorateId
+            "B", "P", 10, 1, 1, 1, null, null, null);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task DeleteFarm_PopulatesAuditFields_Automatically()
+    {
+        var context = CreateContext();
+        var userId = Guid.NewGuid().ToString();
+        _currentUserMock.Setup(x => x.UserId).Returns(userId);
+
+        var farm = new Farm
+        {
+            Id = Guid.NewGuid(),
+            LocalFarmName = "To Delete",
+            DirectorateId = Guid.NewGuid() // Match default if any roles set
+        };
+        context.Farms.Add(farm);
+        await context.SaveChangesAsync();
+
+        var handler = new DeleteFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new DeleteFarmCommand(farm.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.True(result.Succeeded);
+
+        // We need a fresh context or use IgnoreQueryFilters to see the deleted record
+        var deletedFarm = await context.Farms
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(f => f.Id == farm.Id);
+
+        Assert.NotNull(deletedFarm);
+        Assert.True(deletedFarm.IsDeleted);
+        Assert.NotNull(deletedFarm.DeletedAt);
+        Assert.Equal(userId, deletedFarm.DeletedBy);
+    }
+
+    [Fact]
+    public async Task DeleteFarm_Fails_WhenLinkedToDamageReport()
+    {
+        var context = CreateContext();
+        var farm = new Farm { Id = Guid.NewGuid() };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, GovernorateId = "G", LocalityId = "L", StatusId = "Draft" };
+
+        context.Farms.Add(farm);
+        context.DamageReports.Add(report);
+        await context.SaveChangesAsync();
+
+        var handler = new DeleteFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new DeleteFarmCommand(farm.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("لا يمكن حذف المزرعة", result.Errors[0]);
     }
 }

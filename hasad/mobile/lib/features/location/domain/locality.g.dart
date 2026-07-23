@@ -12,6 +12,7 @@ _$LocalityImpl _$$LocalityImplFromJson(Map<String, dynamic> json) =>
       nameAr: json['nameAr'] as String,
       nameEn: json['nameEn'] as String,
       governorateId: json['governorateId'] as String,
+      directorateId: json['directorateId'] as String,
     );
 
 Map<String, dynamic> _$$LocalityImplToJson(_$LocalityImpl instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$$LocalityImplToJson(_$LocalityImpl instance) =>
       'nameAr': instance.nameAr,
       'nameEn': instance.nameEn,
       'governorateId': instance.governorateId,
+      'directorateId': instance.directorateId,
     };

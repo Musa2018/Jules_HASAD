@@ -32,14 +32,33 @@ public record CreateFarmerCommand(
 public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, Result<FarmerDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public CreateFarmerCommandHandler(IApplicationDbContext context)
+    public CreateFarmerCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<FarmerDto>> Handle(CreateFarmerCommand request, CancellationToken cancellationToken)
     {
+        // Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            // Farmers don't have DirectorateId in this command, so we check GovernorateId
+            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
+            {
+                return Result<FarmerDto>.Failure(new[] { "Access Denied: You can only manage farmers within your assigned governorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
+            {
+                return Result<FarmerDto>.Failure(new[] { "Access Denied: You can only manage farmers within your assigned governorate." });
+            }
+        }
+
         // Idempotency check: if a farmer with this ClientId already exists, return it.
         var existingByClientId = await _context.Farmers
             .AsNoTracking()

@@ -22,6 +22,94 @@ namespace Hasad.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Hasad.Domain.Entities.AgriculturalSector", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AgriculturalSectors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "نباتي",
+                            NameEn = "Plant"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "حيواني",
+                            NameEn = "Animal"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "مختلط",
+                            NameEn = "Mixed"
+                        });
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.AreaUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AreaUnits");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "دونم",
+                            NameEn = "Dunum"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "متر مربع",
+                            NameEn = "Square Meter"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "هكتار",
+                            NameEn = "Hectare"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            NameAr = "أخرى",
+                            NameEn = "Other"
+                        });
+                });
+
             modelBuilder.Entity("Hasad.Domain.Entities.Compensation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -404,49 +492,78 @@ namespace Hasad.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AgriculturalSectorId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Area")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("AreaUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Basin")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("DirectorateId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("FarmerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("GovernorateId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<Guid>("GovernorateId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("LandArea")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("LandAreaUnit")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("float");
 
-                    b.Property<string>("LocalityId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("LocalFarmName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("OwnershipTypeId")
+                    b.Property<Guid>("LocalityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("OwnerFarmerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("OwnershipTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Parcel")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("PoliticalClassificationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RelationshipToOwnerId")
+                        .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -459,10 +576,28 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AgriculturalSectorId");
+
+                    b.HasIndex("AreaUnitId");
+
                     b.HasIndex("ClientId")
                         .IsUnique();
 
+                    b.HasIndex("DirectorateId");
+
                     b.HasIndex("FarmerId");
+
+                    b.HasIndex("LocalityId");
+
+                    b.HasIndex("OwnerFarmerId");
+
+                    b.HasIndex("OwnershipTypeId");
+
+                    b.HasIndex("PoliticalClassificationId");
+
+                    b.HasIndex("RelationshipToOwnerId");
+
+                    b.HasIndex("GovernorateId", "DirectorateId", "LocalityId");
 
                     b.ToTable("Farms");
                 });
@@ -582,10 +717,12 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("IdTypeId", "IdNumber")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("Farmers");
                 });
@@ -677,6 +814,9 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("DirectorateId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("GovernorateId")
                         .HasColumnType("uniqueidentifier");
 
@@ -698,9 +838,105 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DirectorateId");
+
                     b.HasIndex("GovernorateId");
 
                     b.ToTable("Localities");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.OwnershipType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OwnershipTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "ملك",
+                            NameEn = "Owned"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "تأجير",
+                            NameEn = "Leased"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "مزارعة",
+                            NameEn = "Sharecropping"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            NameAr = "شراكة",
+                            NameEn = "Partnership"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            NameAr = "أخرى",
+                            NameEn = "Other"
+                        });
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.PoliticalClassification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PoliticalClassifications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "A",
+                            NameEn = "A"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "B",
+                            NameEn = "B"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "C",
+                            NameEn = "C"
+                        });
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.RefreshToken", b =>
@@ -741,6 +977,71 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasIndex("UserId", "FamilyId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.RelationshipToOwner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RelationshipToOwners");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "المالك نفسه",
+                            NameEn = "Owner Himself"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "مستأجر",
+                            NameEn = "Tenant"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "شريك",
+                            NameEn = "Partner"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            NameAr = "وكيل",
+                            NameEn = "Agent"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            NameAr = "وريث",
+                            NameEn = "Heir"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            NameAr = "منتفع",
+                            NameEn = "Beneficiary"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            NameAr = "أخرى",
+                            NameEn = "Other"
+                        });
                 });
 
             modelBuilder.Entity("Hasad.Domain.Identity.ApplicationUser", b =>
@@ -1048,13 +1349,83 @@ namespace Hasad.Infrastructure.Migrations
 
             modelBuilder.Entity("Hasad.Domain.Entities.Farm", b =>
                 {
+                    b.HasOne("Hasad.Domain.Entities.AgriculturalSector", "AgriculturalSector")
+                        .WithMany()
+                        .HasForeignKey("AgriculturalSectorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.AreaUnit", "AreaUnit")
+                        .WithMany()
+                        .HasForeignKey("AreaUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.Directorate", "Directorate")
+                        .WithMany()
+                        .HasForeignKey("DirectorateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Hasad.Domain.Entities.Farmer", "Farmer")
                         .WithMany()
                         .HasForeignKey("FarmerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Hasad.Domain.Entities.Governorate", "Governorate")
+                        .WithMany()
+                        .HasForeignKey("GovernorateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.Locality", "Locality")
+                        .WithMany()
+                        .HasForeignKey("LocalityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.Farmer", "OwnerFarmer")
+                        .WithMany()
+                        .HasForeignKey("OwnerFarmerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Hasad.Domain.Entities.OwnershipType", "OwnershipType")
+                        .WithMany()
+                        .HasForeignKey("OwnershipTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.PoliticalClassification", "PoliticalClassification")
+                        .WithMany()
+                        .HasForeignKey("PoliticalClassificationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.RelationshipToOwner", "RelationshipToOwner")
+                        .WithMany()
+                        .HasForeignKey("RelationshipToOwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AgriculturalSector");
+
+                    b.Navigation("AreaUnit");
+
+                    b.Navigation("Directorate");
+
                     b.Navigation("Farmer");
+
+                    b.Navigation("Governorate");
+
+                    b.Navigation("Locality");
+
+                    b.Navigation("OwnerFarmer");
+
+                    b.Navigation("OwnershipType");
+
+                    b.Navigation("PoliticalClassification");
+
+                    b.Navigation("RelationshipToOwner");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.Farmer", b =>
@@ -1070,11 +1441,19 @@ namespace Hasad.Infrastructure.Migrations
 
             modelBuilder.Entity("Hasad.Domain.Entities.Locality", b =>
                 {
+                    b.HasOne("Hasad.Domain.Entities.Directorate", "Directorate")
+                        .WithMany()
+                        .HasForeignKey("DirectorateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Hasad.Domain.Entities.Governorate", "Governorate")
                         .WithMany("Localities")
                         .HasForeignKey("GovernorateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Directorate");
 
                     b.Navigation("Governorate");
                 });

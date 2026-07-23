@@ -1,3 +1,4 @@
+using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Features.Users.Commands.CreateUser;
 using Hasad.Application.Features.Users.Models;
 using Hasad.Domain.Entities;
@@ -13,6 +14,13 @@ namespace Hasad.Application.Tests;
 
 public class CreateUserTests
 {
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+
+    public CreateUserTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+    }
+
     private ServiceProvider CreateServices(ApplicationDbContext context)
     {
         var services = new ServiceCollection();
@@ -30,7 +38,7 @@ public class CreateUserTests
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, _currentUserMock.Object);
     }
 
     [Fact]

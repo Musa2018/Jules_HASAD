@@ -25,6 +25,7 @@ mixin _$Locality {
   String get nameAr => throw _privateConstructorUsedError;
   String get nameEn => throw _privateConstructorUsedError;
   String get governorateId => throw _privateConstructorUsedError;
+  String get directorateId => throw _privateConstructorUsedError;
 
   /// Serializes this Locality to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +42,13 @@ abstract class $LocalityCopyWith<$Res> {
   factory $LocalityCopyWith(Locality value, $Res Function(Locality) then) =
       _$LocalityCopyWithImpl<$Res, Locality>;
   @useResult
-  $Res call({String id, String nameAr, String nameEn, String governorateId});
+  $Res call({
+    String id,
+    String nameAr,
+    String nameEn,
+    String governorateId,
+    String directorateId,
+  });
 }
 
 /// @nodoc
@@ -63,6 +70,7 @@ class _$LocalityCopyWithImpl<$Res, $Val extends Locality>
     Object? nameAr = null,
     Object? nameEn = null,
     Object? governorateId = null,
+    Object? directorateId = null,
   }) {
     return _then(
       _value.copyWith(
@@ -82,6 +90,10 @@ class _$LocalityCopyWithImpl<$Res, $Val extends Locality>
                 ? _value.governorateId
                 : governorateId // ignore: cast_nullable_to_non_nullable
                       as String,
+            directorateId: null == directorateId
+                ? _value.directorateId
+                : directorateId // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -97,7 +109,13 @@ abstract class _$$LocalityImplCopyWith<$Res>
   ) = __$$LocalityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String nameAr, String nameEn, String governorateId});
+  $Res call({
+    String id,
+    String nameAr,
+    String nameEn,
+    String governorateId,
+    String directorateId,
+  });
 }
 
 /// @nodoc
@@ -118,6 +136,7 @@ class __$$LocalityImplCopyWithImpl<$Res>
     Object? nameAr = null,
     Object? nameEn = null,
     Object? governorateId = null,
+    Object? directorateId = null,
   }) {
     return _then(
       _$LocalityImpl(
@@ -137,6 +156,10 @@ class __$$LocalityImplCopyWithImpl<$Res>
             ? _value.governorateId
             : governorateId // ignore: cast_nullable_to_non_nullable
                   as String,
+        directorateId: null == directorateId
+            ? _value.directorateId
+            : directorateId // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -150,6 +173,7 @@ class _$LocalityImpl implements _Locality {
     required this.nameAr,
     required this.nameEn,
     required this.governorateId,
+    required this.directorateId,
   });
 
   factory _$LocalityImpl.fromJson(Map<String, dynamic> json) =>
@@ -163,10 +187,12 @@ class _$LocalityImpl implements _Locality {
   final String nameEn;
   @override
   final String governorateId;
+  @override
+  final String directorateId;
 
   @override
   String toString() {
-    return 'Locality(id: $id, nameAr: $nameAr, nameEn: $nameEn, governorateId: $governorateId)';
+    return 'Locality(id: $id, nameAr: $nameAr, nameEn: $nameEn, governorateId: $governorateId, directorateId: $directorateId)';
   }
 
   @override
@@ -178,13 +204,21 @@ class _$LocalityImpl implements _Locality {
             (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
             (identical(other.nameEn, nameEn) || other.nameEn == nameEn) &&
             (identical(other.governorateId, governorateId) ||
-                other.governorateId == governorateId));
+                other.governorateId == governorateId) &&
+            (identical(other.directorateId, directorateId) ||
+                other.directorateId == directorateId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, nameAr, nameEn, governorateId);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    nameAr,
+    nameEn,
+    governorateId,
+    directorateId,
+  );
 
   /// Create a copy of Locality
   /// with the given fields replaced by the non-null parameter values.
@@ -206,6 +240,7 @@ abstract class _Locality implements Locality {
     required final String nameAr,
     required final String nameEn,
     required final String governorateId,
+    required final String directorateId,
   }) = _$LocalityImpl;
 
   factory _Locality.fromJson(Map<String, dynamic> json) =
@@ -219,6 +254,8 @@ abstract class _Locality implements Locality {
   String get nameEn;
   @override
   String get governorateId;
+  @override
+  String get directorateId;
 
   /// Create a copy of Locality
   /// with the given fields replaced by the non-null parameter values.

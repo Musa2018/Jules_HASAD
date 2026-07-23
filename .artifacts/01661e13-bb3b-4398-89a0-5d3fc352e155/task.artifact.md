@@ -1,0 +1,19 @@
+- [x] Backend: Update `GovernorateDto` and query handlers
+    - [x] Add `Code` to `GovernorateDto`
+    - [x] Update `GetGovernoratesQueryHandler` (Location)
+    - [x] Update `GetGovernoratesQueryHandler` (Users)
+- [x] Backend: Centralize Geographic APIs in `LocationController`
+    - [x] Add `GetDirectorates` to `LocationController`
+    - [x] Remove/Deprecate geographic endpoints from `UsersController`
+- [x] Flutter: Refactor `LocationRepository`
+    - [x] Fix syntax errors in `location_repository.dart`
+    - [x] Update API paths to use centralized `LocationController`
+    - [x] Ensure `Governorate` parsing includes `Code`
+- [x] Verification & Testing
+    - [x] Add/Run backend tests for geographic lookups
+    - [x] Add/Run Flutter tests for location dropdowns
+- [/] Documentation & VCS
+    - [ ] Update `AI_CONTEXT.md`
+    - [ ] Update `PROJECT_STATUS.md`
+    - [ ] Update `CHANGELOG.md`
+    - [ ] Commit and push changes

@@ -9,8 +9,8 @@ part of 'damage_report_attachment.dart';
 _$DamageReportAttachmentImpl _$$DamageReportAttachmentImplFromJson(
   Map<String, dynamic> json,
 ) => _$DamageReportAttachmentImpl(
-  id: json['id'] as String,
-  serverId: json['serverId'] as String?,
+  id: json['clientId'] as String,
+  serverId: json['id'] as String?,
   damageReportId: json['damageReportId'] as String,
   localPath: json['localPath'] as String,
   remotePath: json['remotePath'] as String?,
@@ -22,8 +22,8 @@ _$DamageReportAttachmentImpl _$$DamageReportAttachmentImplFromJson(
 Map<String, dynamic> _$$DamageReportAttachmentImplToJson(
   _$DamageReportAttachmentImpl instance,
 ) => <String, dynamic>{
-  'id': instance.id,
-  'serverId': instance.serverId,
+  'clientId': instance.id,
+  'id': instance.serverId,
   'damageReportId': instance.damageReportId,
   'localPath': instance.localPath,
   'remotePath': instance.remotePath,

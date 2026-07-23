@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';

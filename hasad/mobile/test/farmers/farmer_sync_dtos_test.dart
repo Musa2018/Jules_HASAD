@@ -3,7 +3,6 @@ import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/farmers/data/farmer_sync_dtos.dart';
 import 'package:mobile/features/farmers/domain/damage_item.dart';
 import 'package:mobile/features/farmers/domain/damage_report.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
@@ -68,33 +67,6 @@ void main() {
         () => FarmerSyncDto.toCreateJson(invalidFarmer),
         throwsA(isA<SyncValidationException>()),
       );
-    });
-  });
-
-  group('FarmSyncDto', () {
-    final baseFarm = Farm(
-      id: 'local-f1',
-      farmerId: 'farmer-1',
-      name: 'Farm 1',
-      governorateId: 'G1',
-      localityId: 'L1',
-      landArea: 10.5,
-      landAreaUnit: 'Dunum',
-      ownershipTypeId: 'Owned',
-    );
-
-    test('toUpdateJson uses serverId when available', () {
-      final farm = baseFarm.copyWith(serverId: 'remote-f1', rowVersion: 'v1');
-      final json = FarmSyncDto.toUpdateJson(farm);
-
-      expect(json['id'], 'remote-f1');
-      expect(json['clientId'], 'local-f1');
-      expect(json['rowVersion'], 'v1');
-    });
-
-    test('toUpdateJson falls back to id when serverId is null', () {
-      final json = FarmSyncDto.toUpdateJson(baseFarm);
-      expect(json['id'], 'local-f1');
     });
   });
 

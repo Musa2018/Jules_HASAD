@@ -78,6 +78,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addFarmer => 'إضافة مزارع';
 
   @override
+  String get addNewFarmerAction => '+ إضافة مزارع جديد';
+
+  @override
   String get editFarmer => 'تعديل مزارع';
 
   @override
@@ -111,6 +114,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get confirmDelete => 'هل أنت متأكد من حذف هذا المزارع؟';
 
   @override
+  String get cancelDelete => 'إلغاء الحذف';
+
+  @override
+  String get pendingDelete => 'معلق للحذف';
+
+  @override
   String get noFarmers => 'لا يوجد مزارعون.';
 
   @override
@@ -127,6 +136,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get search => 'بحث';
+
+  @override
+  String get farm => 'مزرعة';
 
   @override
   String get farmerDetails => 'تفاصيل المزارع';
@@ -246,6 +258,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get farmerCreatedSuccessfully => 'تم إنشاء المزارع بنجاح';
 
   @override
+  String get farmCreatedSuccessfully => 'تم إنشاء المزرعة بنجاح';
+
+  @override
+  String get farmUpdatedSuccessfully => 'تم تحديث المزرعة بنجاح';
+
+  @override
   String get enterFarmerIdToContinue => 'أدخل رقم هوية المزارع للمتابعة';
 
   @override
@@ -268,6 +286,39 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unit => 'الوحدة';
+
+  @override
+  String get basin => 'الحوض';
+
+  @override
+  String get parcel => 'القطعة';
+
+  @override
+  String get farmInfoSection => 'معلومات المزرعة';
+
+  @override
+  String get areaAndSectorSection => 'المساحة والقطاع';
+
+  @override
+  String get invalidValue => 'قيمة غير صالحة';
+
+  @override
+  String get agriculturalSector => 'القطاع الزراعي';
+
+  @override
+  String get politicalClassification => 'التصنيف السياسي';
+
+  @override
+  String get ownershipSection => 'الملكية';
+
+  @override
+  String get relationshipToOwner => 'العلاقة بالمالك';
+
+  @override
+  String get notes => 'ملاحظات';
+
+  @override
+  String get ownerFarmer => 'المزارع المالك';
 
   @override
   String get ownershipType => 'نوع الملكية';
@@ -340,9 +391,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get role => 'الصلاحية';
 
   @override
-  String get directorate => 'المديرية';
-
-  @override
   String get active => 'نشط';
 
   @override
@@ -371,4 +419,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get all => 'الكل';
+
+  @override
+  String get directorate => 'مديرية';
 }

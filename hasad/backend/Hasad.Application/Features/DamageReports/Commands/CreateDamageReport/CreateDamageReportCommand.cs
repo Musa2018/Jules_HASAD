@@ -34,14 +34,32 @@ public record CreateDamageReportCommand(
 public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageReportCommand, Result<DamageReportDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public CreateDamageReportCommandHandler(IApplicationDbContext context)
+    public CreateDamageReportCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<DamageReportDto>> Handle(CreateDamageReportCommand request, CancellationToken cancellationToken)
     {
+        // Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
+            }
+        }
+
         // Idempotency
         var existing = await _context.DamageReports
             .AsNoTracking()

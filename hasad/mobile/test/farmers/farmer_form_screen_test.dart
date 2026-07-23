@@ -84,8 +84,8 @@ void main() {
   });
 
   testWidgets('FarmerFormScreen handles Cascading Lookups', (tester) async {
-    final govs = [const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1')];
-    final locs = [const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1')];
+    final govs = [const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1', code: 'G1')];
+    final locs = [const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1', directorateId: 'd1')];
 
     when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => govs);
     when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId')))
@@ -126,8 +126,8 @@ void main() {
   testWidgets('FarmerFormScreen saves edited farmer', (tester) async {
     final farmer = Farmer(
       id: '1',
-      idTypeId: 1,
-      idNumber: '123',
+      idTypeId: 2,
+      idNumber: '123456789',
       firstNameAr: 'أ',
       fatherNameAr: 'ب',
       grandfatherNameAr: 'ج',
@@ -147,11 +147,11 @@ void main() {
     );
 
     when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => [
-      const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1')
+      const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1', code: 'G1')
     ]);
     when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId')))
         .thenAnswer((_) async => [
-      const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1')
+      const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1', directorateId: 'd1')
     ]);
     when(() => mockFarmerRepo.updateFarmer(any())).thenAnswer((_) async => farmer);
 

@@ -5,7 +5,7 @@ import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
 import 'package:mobile/features/farmers/data/remote_damage_report_repository.dart';
-import 'package:mobile/features/farmers/data/remote_farm_repository.dart';
+import 'package:mobile/features/farms/data/remote_farm_repository.dart';
 import 'package:mobile/features/farmers/data/remote_farmer_repository.dart';
 
 final databaseProvider = Provider<AppDatabase>((ref) {

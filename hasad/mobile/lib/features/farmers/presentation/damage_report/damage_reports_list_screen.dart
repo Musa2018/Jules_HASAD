@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/router/app_router.dart';
-import 'package:mobile/features/farmers/domain/farm.dart';
+import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -18,7 +18,7 @@ class DamageReportsListScreen extends ConsumerWidget {
     final reportsAsync = ref.watch(damageReportsListByFarmProvider(farm.id));
 
     return Scaffold(
-      appBar: AppBar(title: Text('${l10n.damageReports}: ${farm.name}')),
+      appBar: AppBar(title: Text('${l10n.damageReports}: ${farm.localFarmName}')),
       body: reportsAsync.when(
         data: (reports) {
           if (reports.isEmpty) {

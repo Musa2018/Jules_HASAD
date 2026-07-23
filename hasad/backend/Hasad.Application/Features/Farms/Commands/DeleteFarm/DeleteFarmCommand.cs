@@ -10,10 +10,12 @@ public record DeleteFarmCommand(Guid Id) : IRequest<Result<Unit>>;
 public class DeleteFarmCommandHandler : IRequestHandler<DeleteFarmCommand, Result<Unit>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public DeleteFarmCommandHandler(IApplicationDbContext context)
+    public DeleteFarmCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<Unit>> Handle(DeleteFarmCommand request, CancellationToken cancellationToken)
@@ -26,7 +28,33 @@ public class DeleteFarmCommandHandler : IRequestHandler<DeleteFarmCommand, Resul
             return Result<Unit>.Failure(new[] { "Farm not found." });
         }
 
-        _context.Farms.Remove(farm);
+        // Authorization check
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (farm.DirectorateId != _currentUser.DirectorateId)
+            {
+                return Result<Unit>.Failure(new[] { "Access Denied: You can only delete farms within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (farm.GovernorateId != _currentUser.GovernorateId)
+            {
+                return Result<Unit>.Failure(new[] { "Access Denied: You can only delete farms within your assigned governorate." });
+            }
+        }
+
+        // Integrity check: Farm cannot be deleted if linked to any Damage Report
+        var hasReports = await _context.DamageReports
+            .AnyAsync(r => r.FarmId == farm.Id, cancellationToken);
+
+        if (hasReports)
+        {
+            return Result<Unit>.Failure(new[] { "لا يمكن حذف المزرعة لوجود استمارات ضرر مرتبطة بها." });
+        }
+
+        farm.IsDeleted = true;
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);

@@ -11,6 +11,9 @@ namespace Hasad.Domain.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
+        public Guid DirectorateId { get; set; }
+        public Directorate? Directorate { get; set; }
+
         public Guid GovernorateId { get; set; }
         public Governorate? Governorate { get; set; }
     }

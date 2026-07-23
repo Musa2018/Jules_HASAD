@@ -21,7 +21,9 @@ DamageReport _$DamageReportFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$DamageReport {
+  @JsonKey(name: 'clientId')
   String get id => throw _privateConstructorUsedError; // ClientId
+  @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
   String get farmId => throw _privateConstructorUsedError;
   String get farmerId => throw _privateConstructorUsedError;
@@ -56,8 +58,8 @@ abstract class $DamageReportCopyWith<$Res> {
   ) = _$DamageReportCopyWithImpl<$Res, DamageReport>;
   @useResult
   $Res call({
-    String id,
-    String? serverId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     String farmId,
     String farmerId,
     DateTime damageDate,
@@ -189,8 +191,8 @@ abstract class _$$DamageReportImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String id,
-    String? serverId,
+    @JsonKey(name: 'clientId') String id,
+    @JsonKey(name: 'id') String? serverId,
     String farmId,
     String farmerId,
     DateTime damageDate,
@@ -314,8 +316,8 @@ class __$$DamageReportImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageReportImpl implements _DamageReport {
   const _$DamageReportImpl({
-    required this.id,
-    this.serverId,
+    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'id') this.serverId,
     required this.farmId,
     required this.farmerId,
     required this.damageDate,
@@ -336,9 +338,11 @@ class _$DamageReportImpl implements _DamageReport {
       _$$DamageReportImplFromJson(json);
 
   @override
+  @JsonKey(name: 'clientId')
   final String id;
   // ClientId
   @override
+  @JsonKey(name: 'id')
   final String? serverId;
   @override
   final String farmId;
@@ -456,8 +460,8 @@ class _$DamageReportImpl implements _DamageReport {
 
 abstract class _DamageReport implements DamageReport {
   const factory _DamageReport({
-    required final String id,
-    final String? serverId,
+    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'id') final String? serverId,
     required final String farmId,
     required final String farmerId,
     required final DateTime damageDate,
@@ -478,8 +482,10 @@ abstract class _DamageReport implements DamageReport {
       _$DamageReportImpl.fromJson;
 
   @override
+  @JsonKey(name: 'clientId')
   String get id; // ClientId
   @override
+  @JsonKey(name: 'id')
   String? get serverId;
   @override
   String get farmId;

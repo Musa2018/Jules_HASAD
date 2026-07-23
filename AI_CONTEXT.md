@@ -33,14 +33,102 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - Three levels: Global, Governorate, Directorate.
   - Regional isolation enforced via geographic IDs in session and commands.
 
-## 3. Current Project Status
-- **Current Branch**: `farmers`
-- **Latest Completed Sprint**: Sprint 10.17 — Soft Delete Fix
-- **Latest Commit Hash**: ` farmers` (Branch: farmers)
-- **main**: Stable production-ready code.
-- **farmers**: Active development branch for the Farmers module.
+## 3. Architectural Decisions
+### Measurement Unit Consolidation (Pending)
+- **Context**: The system currently uses domain-specific units like `AreaUnit`.
+- **Decision**: Future refactor will replace these with a universal `MeasurementUnit` entity supporting categories (LandArea, Weight, Count, Packaging, Volume, Length).
+- **Status**: Sprint 11.2 will proceed with `AreaUnit` as a Farm-specific lookup, with refactoring deferred to maintain sprint velocity.
 
-## 4. Completed Work (Verified Sprints)
+## 4. Current Project Status
+- **Current Branch**: `Farms`
+- **Latest Completed Sprint**: Sprint 11.4 — Farm Management UI
+- **Latest Commit Hash**: `7a4146f` (Branch: Farms)
+- **main**: Stable production-ready code.
+- **Farms**: Active development branch for the Farm (Land) Management module.
+
+## 5. Completed Work (Verified Sprints)
+### Sprint 11.17 - Deletion Integrity Rules
+- **Referential Integrity**: Implemented business validation in `DeleteFarmerCommandHandler` and `DeleteFarmCommandHandler` to block deletion if dependencies exist (e.g., a Farmer linked to a Farm, or a Farm linked to a Damage Report).
+- **Localized Error Feedback**: The backend now returns meaningful, localized error messages for restricted deletions, which are captured and displayed by the Flutter sync engine.
+- **Audit Consistency**: Verified that all soft-deletable entities implement the `ISoftDelete` interface and follow the system-wide automated auditing mechanism.
+
+### Sprint 11.16 - Hardened Offline Delete Workflow
+- **Visibility Standard**: Entities marked for deletion offline now remain visible in the mobile app as "Pending Delete" until the server confirms the operation.
+- **Error Recovery**: If a delete synchronization fails, the entity remains in the list with a clear error status, allowing users to "Retry" or "Undo Delete."
+- **Undo Logic**: Implemented `cancelDelete` logic in repositories to safely restore entities from the "Pending Delete" state by removing the task from the `SyncQueue`.
+- **Sync Hardening**: Updated `BackgroundSyncService` to consistently propagate detailed error messages to entity tables during generic sync failures, improving visibility of offline errors.
+
+### Sprint 11.15 - Search-First Owner Workflow
+- **Search-First Standard**: Standardized the owner selection flow to use a "Search First" pattern. Users must search by ID, Name, or Phone before creating a new farmer.
+- **Unified Repository Search**: Updated `FarmerRepository.getFarmers` to support a single `searchText` parameter that OR-queries all identity and name fields.
+- **Integrated Farmer Creation**: Enhanced the selection action to show "+ إضافة مزارع جديد" when no results are found, opening the `FarmerFormScreen` and automatically selecting the result upon return while preserving the Farm form's state.
+- **Enhanced Validation**: Added mandatory relationship validation for non-owned farms, requiring both an `OwnerFarmerId` and `RelationshipToOwnerId`.
+
+### Sprint 11.14 - Farm Module Production Hardening
+- **JWT Identity Hardening**: Added `ClaimTypes.Name` to the JWT access token to ensure `User.Identity.Name` is consistently available on the backend.
+- **Global Soft Delete Audit**: Implemented a system-wide automated audit mechanism in `ApplicationDbContext`. `DeletedAt` and `DeletedBy` are now automatically populated whenever an entity implementing `ISoftDelete` is marked as deleted.
+- **Soft Delete Contract**: Standardized the soft-delete contract across all entities (`Farmer`, `Farm`, etc.), ensuring consistent audit tracking and query filtering.
+- **UX Reliability**: Verified and hardened state cleanup logic in the `FarmFormScreen` to prevent stale relationship data when toggling ownership types.
+
+### Sprint 11.13 - Farm UX Enhancement
+- **Integrated Action**: Added a direct "Farm" (`مزرعة`) action button to the `FarmerCard`, replacing the redundant search button.
+- **Form Prefilling**: Enhanced `FarmFormScreen` to automatically pre-fill the Operator and Owner fields when navigated from a Farmer context, streamlining the offline-first creation flow.
+- **UX Standards**: Adopted the **Contextual Action Pattern** for quick entity creation from parent cards.
+
+### Sprint 11.12 - Sync Identity Mapping & Lifecycle Fix
+- **Identity Standard**: Implemented an explicit identity mapping contract across the mobile app. Standardized `serverId` (Backend GUID) and `id` (Local ClientId/UUID) separation.
+- **Explicit JSON Mapping**: Updated `Farm`, `Farmer`, `DamageReport`, and `DamageItem` domain models with `@JsonKey` annotations to ensure deterministic mapping from backend DTOs (`Id` -> `serverId`, `ClientId` -> `id`).
+- **Sync Hardening**: Updated `BackgroundSyncService` to correctly persist `serverId` after creation and enforced its usage in update payloads, resolving "Farm not found" errors during sync.
+- **Late Binding**: Verified and hardened the late-binding resolution of parent IDs (e.g., `farmerId` in a Farm) using server-assigned IDs after the parent entity synchronizes.
+
+### Sprint 11.11 - Navigation Type Mismatch Fix
+- **Type Safety**: Resolved a critical runtime error where `Farm` objects were incorrectly cast to `Map<String, dynamic>` during navigation to the edit form.
+- **Strongly Typed Navigation**: Updated `app_router.dart` and `FarmFormScreen` to use the `Farm` model directly, ensuring type safety and consistency across the app.
+- **Resilient Forms**: Enhanced `FarmFormScreen` to independently load operator farmer details if not provided by the caller, enabling direct navigation from cards and list items.
+
+### Sprint 11.10 - Late Binding ID Resolution
+- **Dependency Resolution**: Hardened the `BackgroundSyncService` to resolve local `ClientId`s to server-assigned `serverId`s just before synchronization. This enables seamless offline creation of Farmers and linked Farms.
+- **Ordered Sync**: Implemented dependency-aware deferral where dependent entities (Farms, Damage Reports) wait for their parent entities (Farmers) to successfully synchronize before attempting their own sync.
+- **Architecture**: Formally adopted the **Late Binding ID Resolution Pattern** as the standard for cross-entity synchronization in the HASAD sync engine.
+
+### Sprint 11.9 - Authorization Hardening & Token Fix
+- **JWT Claim Fix**: Resolved a critical authorization failure by adding `governorate_id` and `directorate_id` claims to the JWT access token. This allows `ICurrentUserService` to correctly identify user scopes during request processing.
+- **Regional Scoping Enforcement**: Hardened `CreateFarmer`, `UpdateFarmer`, and `CreateDamageReport` command handlers by implementing mandatory regional scoping checks (Governorate/Directorate), ensuring consistency with the Farm module.
+- **Regression Testing**: Added `TokenServiceTests` and expanded command handler tests to verify regional scope enforcement.
+
+### Sprint 11.8 - Search-First Owner Selection Workflow
+- **Search-First Pattern**: Implemented a reusable `SearchableLookupField` with `onAction` support.
+- **Enhanced Farmer Search**: Upgraded `OfflineFirstFarmerRepository` to support robust 8-part name searching, ID, and phone number matching locally.
+- **Seamless Navigation**: Integrated "Create Farmer" into the Farm Creation flow, allowing immediate selection of newly created farmers while preserving all entered form data.
+- **Architecture**: Formally adopted the **Search-First Selection Pattern** for all major entities.
+
+### Sprint 11.7 - Shared Reference Data Service (Regression Fix)
+- **Shared Architecture**: Implemented a unified `ReferenceDataController` and `GetReferenceDataQuery` to provide all farm-related lookups (Ownership, Sector, Political, Area, Relationships) in a single request.
+- **Offline-First Lookups**: Implemented `OfflineFirstReferenceDataRepository` in Flutter with Drift caching. Lookups are now fetched once, cached locally, and used for all farm forms, resolving the empty dropdown regression.
+- **Future-Ready Measurement Units**: Prepared the API and repository for transition to a universal `MeasurementUnit` system by including `Category` and `Code` fields.
+
+### Sprint 11.6 - Geographic Regression & API Centralization
+- **Regression Fix**: Resolved Governorate dropdown failure caused by missing `Code` field in Backend DTOs.
+- **API Centralization**: Unified geographic lookup APIs into a shared `LocationController` accessible by all authenticated users.
+- **Flutter Refactor**: Fixed syntax and logic errors in `LocationRepository`. Updated paths to use the centralized API and ensured robust JSON parsing for all geographic levels.
+- **Backend Hardening**: Synchronized `GovernorateDto` across `Users` and `Location` features (eventually consolidating them) and added `Code` to projection logic.
+
+### Sprint 11.5 - Farm Production Acceptance
+- **Comprehensive Audit**: Performed complete end-to-end, offline, and authorization audit of the Farm module.
+- **Certification**: Certified the Farm module as Production Ready.
+- **Refinement**: Resolved minor lints and optimized code for Dart 3.8. Certified module as Production Ready for Phase 12.
+
+### Sprint 11.4 - Farm Management UI
+- **Card-Based UI**: Implemented `FarmCard` with comprehensive farm details, reactive sync status, and integrated actions.
+- **Reactive Streams**: Migrated Farm list to `StreamProvider` powered by Drift database streams for real-time updates.
+- **Advanced Filtering**: Implemented search-by-name/basin/parcel and multi-parameter filtering (Sector, Ownership, Sync Status, Geography).
+- **Farm Details**: Created a dedicated details screen with sectioned layout and reactive data binding (preventing stale RowVersion).
+- **Soft Delete Workflow**: Integrated a production-grade soft-delete confirmation and synchronization UI.
+- **Integrated Search**: Enhanced `SearchableLookupField` with async searching for large datasets like Farmers.
+- **Sprint 11.3 - Farm CRUD & Sync Hardening**: Implemented production-grade CRUD for Farms. Updated geographic hierarchy to `Governorate -> Directorate -> Locality`. Implemented full offline geographic caching and cascading lookups in Drift. Hardened sync mechanism with "Server Wins" conflict resolution and detailed logging. Enforced Directorate-based authorization in both Flutter and Backend.
+- **Sprint 11.2 - Database and Lookup Tables (Flutter)**: Upgraded Drift to v10, implemented offline lookups, and refactored Farm feature isolation.
+- **Sprint 11.1 - Backend Farm Foundation**: Redesigned Farm entity, added lookup tables (Ownership, Sector, etc.), implemented Soft Delete, and updated DTOs/Commands.
+- **Sprint 11.0 - Farm Module Audit**: Engineering audit and roadmap for the Farm module.
 - **Sprint 9.1 - User Management**: Implemented multi-level regional scoping and administrative user forms.
 - **Sprint 10.1 - Farmers Audit**: Engineering audit of existing Farmers implementation against target architecture.
 - **Sprint 10.2 - Farmers Backend Enhancement**: Added `Gender`, `FamilySize`, 8-part names, and enhanced search.
@@ -77,17 +165,20 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 ## 6. Geographic Architecture
 - **Entities**:
   - `Governorate`: Main administrative regions (16 Palestinian governorates).
-  - `Locality`: Cities and villages linked to a governorate (Governorate 1 -> * Localities).
+  - `Directorate`: Sub-administrative regions under a governorate.
+  - `Locality`: Cities and villages linked to a directorate (Governorate -> Directorate -> Locality).
 - **API**:
   - `GET /api/v1/Location/governorates`: Fetch active governorates.
-  - `GET /api/v1/Location/localities?governorateId={id}`: Filtered locality lookup.
+  - `GET /api/v1/Users/directorates?governorateId={id}`: Filtered directorate lookup.
+  - `GET /api/v1/Location/localities?directorateId={id}`: Filtered locality lookup.
 - **Mobile**:
-  - Shared `location` feature providers (`governoratesProvider`, `localitiesProvider(govId)`).
-  - Used by both Admin and Farmers modules.
+  - Offline-first `LocationRepository` with Drift caching for all geographic levels.
+  - Shared `location` feature providers (`governoratesProvider`, `directoratesProvider(govId)`, `localitiesProvider(params)`).
+  - Cascading lookup support in `SearchableLookupField`.
 
 ## 7. Offline Architecture Status
 - **Farmer Data**: Strictly **Offline-First**. All writes (Create/Update) happen in Drift first, then added to `SyncQueue`.
-- **Location Data**: Treated as **Reference Data**. Currently retrieved online via shared providers to ensure data accuracy.
+- **Location Data**: **Offline-First**. Retrieved from Drift with automatic remote synchronization/caching.
 - **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
 
 ## 8. Pending Work

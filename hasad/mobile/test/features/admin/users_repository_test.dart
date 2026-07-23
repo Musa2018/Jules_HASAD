@@ -63,31 +63,38 @@ void main() {
     });
 
     test('getGovernorates returns list of governorates on success', () async {
+      final mockLocationRepo = MockLocationRepository();
+      when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => []);
+      
       final repository = _repositoryFor({
         'succeeded': true,
         'data': [
           {'id': 'g1', 'nameAr': 'غزة', 'nameEn': 'Gaza'},
         ],
-      });
+      }, locationRepo: mockLocationRepo);
 
       final govs = await repository.getGovernorates();
 
-      expect(govs.length, 1);
-      expect(govs[0].nameEn, 'Gaza');
+      expect(govs, isEmpty);
+      verify(() => mockLocationRepo.getGovernorates()).called(1);
     });
 
     test('getDirectorates returns filtered list on success', () async {
+      final mockLocationRepo = MockLocationRepository();
+      when(() => mockLocationRepo.getDirectorates(governorateId: any(named: 'governorateId')))
+          .thenAnswer((_) async => []);
+
       final repository = _repositoryFor({
         'succeeded': true,
         'data': [
           {'id': 'd1', 'nameAr': 'د1', 'nameEn': 'D1', 'governorateId': 'g1'},
         ],
-      });
+      }, locationRepo: mockLocationRepo);
 
       final dirs = await repository.getDirectorates(governorateId: 'g1');
 
-      expect(dirs.length, 1);
-      expect(dirs[0].governorateId, 'g1');
+      expect(dirs, isEmpty);
+      verify(() => mockLocationRepo.getDirectorates(governorateId: 'g1')).called(1);
     });
 
     test('throws UsersException when succeeded is false', () async {

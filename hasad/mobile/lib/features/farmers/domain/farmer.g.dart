@@ -7,9 +7,8 @@ part of 'farmer.dart';
 // **************************************************************************
 
 _$FarmerImpl _$$FarmerImplFromJson(Map<String, dynamic> json) => _$FarmerImpl(
-  id: json['id'] as String,
-  serverId: json['serverId'] as String?,
-  clientId: json['clientId'] as String? ?? '',
+  id: json['clientId'] as String,
+  serverId: json['id'] as String?,
   idTypeId: (json['idTypeId'] as num).toInt(),
   idNumber: json['idNumber'] as String,
   firstNameAr: json['firstNameAr'] as String,
@@ -30,6 +29,7 @@ _$FarmerImpl _$$FarmerImplFromJson(Map<String, dynamic> json) => _$FarmerImpl(
   rowVersion: json['rowVersion'] as String? ?? '',
   syncStatus: json['syncStatus'] as String? ?? 'completed',
   lastSyncError: json['lastSyncError'] as String?,
+  isPendingDelete: json['isPendingDelete'] as bool? ?? false,
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -40,9 +40,8 @@ _$FarmerImpl _$$FarmerImplFromJson(Map<String, dynamic> json) => _$FarmerImpl(
 
 Map<String, dynamic> _$$FarmerImplToJson(_$FarmerImpl instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'serverId': instance.serverId,
-      'clientId': instance.clientId,
+      'clientId': instance.id,
+      'id': instance.serverId,
       'idTypeId': instance.idTypeId,
       'idNumber': instance.idNumber,
       'firstNameAr': instance.firstNameAr,
@@ -63,6 +62,7 @@ Map<String, dynamic> _$$FarmerImplToJson(_$FarmerImpl instance) =>
       'rowVersion': instance.rowVersion,
       'syncStatus': instance.syncStatus,
       'lastSyncError': instance.lastSyncError,
+      'isPendingDelete': instance.isPendingDelete,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

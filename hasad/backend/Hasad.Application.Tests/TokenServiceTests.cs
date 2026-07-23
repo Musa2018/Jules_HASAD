@@ -51,4 +51,36 @@ public class TokenServiceTests
         var expectedExpiry = DateTime.UtcNow.AddMinutes(Options.AccessTokenMinutes);
         Assert.InRange(token.ValidTo, expectedExpiry.AddMinutes(-2), expectedExpiry.AddMinutes(2));
     }
+
+    [Fact]
+    public void CreateAccessToken_EmbedsRegionalClaims_WhenUserHasThem()
+    {
+        var user = CreateUser();
+        user.GovernorateId = Guid.NewGuid();
+        user.DirectorateId = Guid.NewGuid();
+
+        var service = new TokenService(Microsoft.Extensions.Options.Options.Create(Options));
+
+        var jwt = service.CreateAccessToken(user, Array.Empty<string>());
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
+
+        Assert.Equal(user.GovernorateId.Value.ToString(), token.Claims.Single(c => c.Type == "governorate_id").Value);
+        Assert.Equal(user.DirectorateId.Value.ToString(), token.Claims.Single(c => c.Type == "directorate_id").Value);
+    }
+
+    [Fact]
+    public void CreateAccessToken_OmittedRegionalClaims_WhenUserDoesNotHaveThem()
+    {
+        var user = CreateUser();
+        user.GovernorateId = null;
+        user.DirectorateId = null;
+
+        var service = new TokenService(Microsoft.Extensions.Options.Options.Create(Options));
+
+        var jwt = service.CreateAccessToken(user, Array.Empty<string>());
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
+
+        Assert.DoesNotContain(token.Claims, c => c.Type == "governorate_id");
+        Assert.DoesNotContain(token.Claims, c => c.Type == "directorate_id");
+    }
 }

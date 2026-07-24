@@ -46,7 +46,7 @@ class ClassificationSelector extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          if (state.currentStep > 1)
+          if (state.currentStep > 1 && !(state.currentStep == 2 && state.selectedNature != null))
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () =>

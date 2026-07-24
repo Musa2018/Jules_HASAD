@@ -4,6 +4,7 @@ public class DamageReportDto
 {
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }
+    public string ReportNumber { get; set; } = string.Empty;
     public string PermanentFormNumber { get; set; } = string.Empty;
     public string TemporaryFormNumber { get; set; } = string.Empty;
     public int DamageYear { get; set; }
@@ -11,6 +12,7 @@ public class DamageReportDto
     public Guid FarmerId { get; set; }
     public DateTime DamageDate { get; set; }
     public DateTime DocumentationDate { get; set; }
+    public int DamageNatureId { get; set; }
     public int DamageCauseCategoryId { get; set; }
     public int DamageCauseId { get; set; }
     public string? SettlementName { get; set; }

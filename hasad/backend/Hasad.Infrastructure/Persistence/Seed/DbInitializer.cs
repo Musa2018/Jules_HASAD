@@ -91,24 +91,24 @@ public static class DbInitializer
     /// </summary>
     public static async Task SeedGeographicsAsync(ApplicationDbContext context)
     {
-        var geographics = new List<(string Code, string NameAr, string NameEn, (string NameAr, string NameEn)[] Directorates, (string NameAr, string NameEn)[] Localities)>
+        var geographics = new List<(string Code, string NameAr, string NameEn, (string NameAr, string NameEn, string Code)[] Directorates, (string NameAr, string NameEn)[] Localities)>
         {
-            ("JN", "جنين", "Jenin", new[] { ("مديرية جنين", "Jenin Directorate") }, new[] { ("مدينة جنين", "Jenin City"), ("قباطية", "Qabatiya"), ("اليامون", "Ya'bad") }),
-            ("TB", "طوباس", "Tubas", new[] { ("مديرية طوباس", "Tubas Directorate") }, new[] { ("طوباس", "Tubas"), ("طمون", "Tammun"), ("عقابا", "Aqqaba") }),
-            ("TK", "طولكرم", "Tulkarm", new[] { ("مديرية طولكرم", "Tulkarm Directorate") }, new[] { ("طولكرم", "Tulkarm City"), ("عتيل", "Attil"), ("دير الغصون", "Deir al-Ghusun") }),
-            ("NB", "نابلس", "Nablus", new[] { ("مديرية نابلس", "Nablus Directorate") }, new[] { ("مدينة نابلس", "Nablus City"), ("عصيرة الشمالية", "Asira al-Shamaliya"), ("بيتا", "Beita") }),
-            ("QL", "قلقيلية", "Qalqilya", new[] { ("مديرية قلقيلية", "Qalqilya Directorate") }, new[] { ("قلقيلية", "Qalqilya City"), ("عزون", "Azzun"), ("حبلة", "Habla") }),
-            ("SL", "سلفيت", "Salfit", new[] { ("مديرية سلفيت", "Salfit Directorate") }, new[] { ("سلفيت", "Salfit City"), ("بديا", "Biddya"), ("الزاوية", "Zawiya") }),
-            ("RM", "رام الله والبيرة", "Ramallah & Al-Bireh", new[] { ("مديرية رام الله", "Ramallah Directorate") }, new[] { ("رام الله", "Ramallah City"), ("البيرة", "Al-Bireh"), ("بيتونيا", "Beituniya") }),
-            ("JR", "أريحا", "Jericho", new[] { ("مديرية أريحا", "Jericho Directorate") }, new[] { ("أريحا", "Jericho City"), ("العوجا", "Al-Auja"), ("الجفتلك", "Al-Jiftlik") }),
-            ("JS", "القدس", "Jerusalem", new[] { ("مديرية القدس", "Jerusalem Directorate") }, new[] { ("القدس", "Jerusalem City"), ("العيزرية", "Al-Eizariya"), ("أبو ديس", "Abu Dis") }),
-            ("BT", "بيت لحم", "Bethlehem", new[] { ("مديرية بيت لحم", "Bethlehem Directorate") }, new[] { ("بيت لحم", "Bethlehem City"), ("بيت جالا", "Beit Jala"), ("بيت ساحور", "Beit Sahour") }),
-            ("HB", "الخليل", "Hebron", new[] { ("مديرية شمال الخليل", "North Hebron"), ("مديرية جنوب الخليل", "South Hebron"), ("مديرية الخليل", "Hebron Directorate") }, new[] { ("مدينة الخليل", "Hebron City"), ("حلحول", "Halhul"), ("دورا", "Dura"), ("يطا", "Yatta") }),
-            ("NG", "شمال غزة", "North Gaza", new[] { ("مديرية شمال غزة", "North Gaza Directorate") }, new[] { ("جباليا", "Jabalia"), ("بيت لاهيا", "Beit Lahiya"), ("بيت حانون", "Beit Hanoun") }),
-            ("GZ", "غزة", "Gaza", new[] { ("مديرية غزة", "Gaza Directorate") }, new[] { ("مدينة غزة", "Gaza City"), ("المغراقة", "Al-Mughraqa") }),
-            ("DB", "دير البلح", "Deir al-Balah", new[] { ("مديرية الوسطى", "Central Directorate") }, new[] { ("دير البلح", "Deir al-Balah City"), ("النصيرات", "Nuseirat"), ("البريج", "Maghazi") }),
-            ("KY", "خانيونس", "Khan Yunis", new[] { ("مديرية خانيونس", "Khan Yunis Directorate") }, new[] { ("خانيونس", "Khan Yunis City"), ("بني سهيلا", "Bani Suheila"), ("عبسان الكبيرة", "Abasan al-Kabira") }),
-            ("RF", "رفح", "Rafah", new[] { ("مديرية رفح", "Rafah Directorate") }, new[] { ("رفح", "Rafah City"), ("شوكة الصوفي", "Al-Shoka") })
+            ("JN", "جنين", "Jenin", new[] { ("مديرية جنين", "Jenin Directorate", "JEN") }, new[] { ("مدينة جنين", "Jenin City"), ("قباطية", "Qabatiya"), ("اليامون", "Ya'bad") }),
+            ("TB", "طوباس", "Tubas", new[] { ("مديرية طوباس", "Tubas Directorate", "TUB") }, new[] { ("طوباس", "Tubas"), ("طمون", "Tammun"), ("عقابا", "Aqqaba") }),
+            ("TK", "طولكرم", "Tulkarm", new[] { ("مديرية طولكرم", "Tulkarm Directorate", "TUL") }, new[] { ("طولكرم", "Tulkarm City"), ("عتيل", "Attil"), ("دير الغصون", "Deir al-Ghusun") }),
+            ("NB", "نابلس", "Nablus", new[] { ("مديرية نابلس", "Nablus Directorate", "NAB") }, new[] { ("مدينة نابلس", "Nablus City"), ("عصيرة الشمالية", "Asira al-Shamaliya"), ("بيتا", "Beita") }),
+            ("QL", "قلقيلية", "Qalqilya", new[] { ("مديرية قلقيلية", "Qalqilya Directorate", "QAL") }, new[] { ("قلقيلية", "Qalqilya City"), ("عزون", "Azzun"), ("حبلة", "Habla") }),
+            ("SL", "سلفيت", "Salfit", new[] { ("مديرية سلفيت", "Salfit Directorate", "SLF") }, new[] { ("سلفيت", "Salfit City"), ("بديا", "Biddya"), ("الزاوية", "Zawiya") }),
+            ("RM", "رام الله والبيرة", "Ramallah & Al-Bireh", new[] { ("مديرية رام الله", "Ramallah Directorate", "RAM") }, new[] { ("رام الله", "Ramallah City"), ("البيرة", "Al-Bireh"), ("بيتونيا", "Beituniya") }),
+            ("JR", "أريحا", "Jericho", new[] { ("مديرية أريحا", "Jericho Directorate", "JER") }, new[] { ("أريحا", "Jericho City"), ("العوجا", "Al-Auja"), ("الجفتلك", "Al-Jiftlik") }),
+            ("JS", "القدس", "Jerusalem", new[] { ("مديرية القدس", "Jerusalem Directorate", "JRS") }, new[] { ("القدس", "Jerusalem City"), ("العيزرية", "Al-Eizariya"), ("أبو ديس", "Abu Dis") }),
+            ("BT", "بيت لحم", "Bethlehem", new[] { ("مديرية بيت لحم", "Bethlehem Directorate", "BTH") }, new[] { ("بيت لحم", "Bethlehem City"), ("بيت جالا", "Beit Jala"), ("بيت ساحور", "Beit Sahour") }),
+            ("HB", "الخليل", "Hebron", new[] { ("مديرية شمال الخليل", "North Hebron", "NHB"), ("مديرية جنوب الخليل", "South Hebron", "SHB"), ("مديرية الخليل", "Hebron Directorate", "HBN") }, new[] { ("مدينة الخليل", "Hebron City"), ("حلحول", "Halhul"), ("دورا", "Dura"), ("يطا", "Yatta") }),
+            ("NG", "شمال غزة", "North Gaza", new[] { ("مديرية شمال غزة", "North Gaza Directorate", "NGZ") }, new[] { ("جباليا", "Jabalia"), ("بيت لاهيا", "Beit Lahiya"), ("بيت حانون", "Beit Hanoun") }),
+            ("GZ", "غزة", "Gaza", new[] { ("مديرية غزة", "Gaza Directorate", "GZA") }, new[] { ("مدينة غزة", "Gaza City"), ("المغراقة", "Al-Mughraqa") }),
+            ("DB", "دير البلح", "Deir al-Balah", new[] { ("مديرية الوسطى", "Central Directorate", "CEN") }, new[] { ("دير البلح", "Deir al-Balah City"), ("النصيرات", "Nuseirat"), ("البريج", "Maghazi") }),
+            ("KY", "خانيونس", "Khan Yunis", new[] { ("مديرية خانيونس", "Khan Yunis Directorate", "KYS") }, new[] { ("خانيونس", "Khan Yunis City"), ("بني سهيلا", "Bani Suheila"), ("عبسان الكبيرة", "Abasan al-Kabira") }),
+            ("RF", "رفح", "Rafah", new[] { ("مديرية رفح", "Rafah Directorate", "RFH") }, new[] { ("رفح", "Rafah City"), ("شوكة الصوفي", "Al-Shoka") })
         };
 
         var existingGovernorates = await context.Governorates
@@ -137,7 +137,7 @@ public static class DbInitializer
                 governorate.NameEn = nameEn;
             }
 
-            foreach (var (dirNameAr, dirNameEn) in directorates)
+            foreach (var (dirNameAr, dirNameEn, dirCode) in directorates)
             {
                 var existingDir = governorate.Directorates
                     .FirstOrDefault(d => d.NameEn == dirNameEn);
@@ -149,6 +149,7 @@ public static class DbInitializer
                         Id = Guid.NewGuid(),
                         NameAr = dirNameAr,
                         NameEn = dirNameEn,
+                        Code = dirCode,
                         GovernorateId = governorate.Id,
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow
@@ -158,6 +159,7 @@ public static class DbInitializer
                 else
                 {
                     existingDir.NameAr = dirNameAr;
+                    existingDir.Code = dirCode;
                 }
 
                 // Temporary logic for seeding localities to directorates:

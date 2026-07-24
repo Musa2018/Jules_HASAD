@@ -75,6 +75,7 @@ public class DamageReportCommandHandlerTests
             farm.Id,
             farmer.Id,
             DateTime.UtcNow,
+            1, // DamageNatureId
             1, // DamageCauseCategoryId
             1, // DamageCauseId
             null,
@@ -92,22 +93,23 @@ public class DamageReportCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.Equal("000001-TEST-2026", result.Data!.PermanentFormNumber);
+        Assert.Equal("000001-TEST-2026", result.Data!.ReportNumber);
         Assert.Single(result.Data!.Items);
         Assert.Equal(DamageReportStatus.Draft, result.Data.StatusId);
     }
 
     [Fact]
-    public async Task CreateDamageReport_Fails_WhenDuplicateIncidentOnSameDay()
+    public async Task CreateDamageReport_OpensExisting_WhenDuplicateOnSameDay()
     {
         var context = CreateContext();
         var farmId = Guid.NewGuid();
         var date = DateTime.UtcNow.Date;
         var causeId = 1;
+        var reportId = Guid.NewGuid();
 
         context.DamageReports.Add(new DamageReport
         {
-            Id = Guid.NewGuid(),
+            Id = reportId,
             FarmId = farmId,
             FarmerId = Guid.NewGuid(),
             DamageDate = date,
@@ -115,7 +117,7 @@ public class DamageReportCommandHandlerTests
             GovernorateId = Guid.NewGuid(),
             DirectorateId = Guid.NewGuid(),
             LocalityId = Guid.NewGuid(),
-            StatusId = "Submitted",
+            StatusId = "Draft",
             RowVersion = new byte[] { 1 }
         });
 
@@ -127,12 +129,12 @@ public class DamageReportCommandHandlerTests
 
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _loggerMock.Object);
         var command = new CreateDamageReportCommand(
-            Guid.NewGuid(), "T1", 2026, farmId, farmer.Id, date, 1, causeId, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
+            Guid.NewGuid(), "T1", 2026, farmId, farmer.Id, date, 1, 1, causeId, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
 
         var result = await handler.Handle(command, CancellationToken.None);
 
-        Assert.False(result.Succeeded);
-        Assert.Contains("already exists", result.Errors[0]);
+        Assert.True(result.Succeeded);
+        Assert.Equal(reportId, result.Data!.Id);
     }
 
     [Fact]
@@ -153,7 +155,7 @@ public class DamageReportCommandHandlerTests
 
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _loggerMock.Object);
         var command = new CreateDamageReportCommand(
-            Guid.NewGuid(), "T1", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
+            Guid.NewGuid(), "T1", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
 
         var result = await handler.Handle(command, CancellationToken.None);
 

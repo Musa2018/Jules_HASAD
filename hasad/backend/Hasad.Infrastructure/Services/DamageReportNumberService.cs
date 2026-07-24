@@ -1,4 +1,5 @@
 using Hasad.Application.Common.Interfaces;
+using Hasad.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hasad.Infrastructure.Services;
@@ -14,7 +15,7 @@ public class DamageReportNumberService : IDamageReportNumberService
 
     public async Task<string> GeneratePermanentNumberAsync(Guid directorateId, int year, CancellationToken cancellationToken = default)
     {
-        // 1. Get the Governorate Code for the Directorate
+        // 1. Get the Governorate Code and Directorate Code
         var directorate = await _context.Directorates
             .Include(d => d.Governorate)
             .FirstOrDefaultAsync(d => d.Id == directorateId, cancellationToken);
@@ -25,33 +26,30 @@ public class DamageReportNumberService : IDamageReportNumberService
         }
 
         var govCode = directorate.Governorate.Code; // e.g., NB
+        var dirCode = directorate.Code; // e.g., NAB
 
-        // 2. Increment Sequence (Global)
-        // For simplicity and multi-DB compatibility in this implementation,
-        // we use a simple count-based approach with a lock or a dedicated sequence table if available.
-        // In a production PostgreSQL environment, we would use:
-        // SELECT nextval('DamageReportSequence')
+        // 2. Manage Sequence (Atomic)
+        var sequence = await _context.DamageReportSequences
+            .FirstOrDefaultAsync(s => s.DirectorateId == directorateId && s.DamageYear == year, cancellationToken);
 
-        // Let's use a simple approach: Find the max number for this year and increment.
-        // Note: This is prone to race conditions if not handled with a DB lock.
-        // We will use a Transaction in the Command Handler which helps.
-
-        var lastNumberStr = await _context.DamageReports
-            .Where(r => r.DamageYear == year)
-            .OrderByDescending(r => r.PermanentFormNumber)
-            .Select(r => r.PermanentFormNumber)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        int nextSequence = 1;
-        if (!string.IsNullOrEmpty(lastNumberStr))
+        if (sequence == null)
         {
-            var parts = lastNumberStr.Split('-');
-            if (parts.Length > 0 && int.TryParse(parts[0], out int lastSeq))
+            sequence = new DamageReportSequence
             {
-                nextSequence = lastSeq + 1;
-            }
+                Id = Guid.NewGuid(),
+                DirectorateId = directorateId,
+                DamageYear = year,
+                LastSequence = 1
+            };
+            _context.DamageReportSequences.Add(sequence);
+        }
+        else
+        {
+            sequence.LastSequence++;
         }
 
-        return $"{nextSequence:D6}-{govCode}-{year}";
+        // Note: SaveChangesAsync will be called by the Command Handler within the transaction.
+
+        return $"{govCode}-{dirCode}-{year}-{sequence.LastSequence:D6}";
     }
 }

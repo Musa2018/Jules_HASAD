@@ -28,6 +28,7 @@ public record CreateDamageReportCommand(
     Guid FarmId,
     Guid FarmerId,
     DateTime DamageDate,
+    int DamageNatureId,
     int DamageCauseCategoryId,
     int DamageCauseId,
     string? SettlementName,
@@ -104,21 +105,20 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             return Result<DamageReportDto>.Success(MapToDto(existingByClientId));
         }
 
-        // 4. Duplicate Prevention (Farm + Date + Cause)
+        // 4. Duplicate Prevention (Farm + Date) - Open existing if found
         var existingDuplicate = await _context.DamageReports
-            .AsNoTracking()
-            .AnyAsync(r => r.FarmId == request.FarmId &&
-                           r.DamageDate.Date == request.DamageDate.Date &&
-                           r.DamageCauseId == request.DamageCauseId,
-                      cancellationToken);
+            .Include(r => r.Items)
+            .FirstOrDefaultAsync(r => r.FarmId == request.FarmId &&
+                                      r.DamageDate.Date == request.DamageDate.Date,
+                                 cancellationToken);
 
-        if (existingDuplicate)
+        if (existingDuplicate != null)
         {
-            return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm, date, and cause." });
+            return Result<DamageReportDto>.Success(MapToDto(existingDuplicate));
         }
 
-        // 5. Generate Permanent Number
-        var permanentNumber = await _numberService.GeneratePermanentNumberAsync(farm.DirectorateId, request.DamageYear, cancellationToken);
+        // 5. Generate Official Report Number
+        var reportNumber = await _numberService.GeneratePermanentNumberAsync(farm.DirectorateId, request.DamageDate.Year, cancellationToken);
 
         // 6. Valuation & Costing Resolution (Authoritative Backend Calculation)
         var items = new List<DamageItem>();
@@ -160,13 +160,15 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         {
             Id = Guid.NewGuid(),
             ClientId = request.ClientId,
-            PermanentFormNumber = permanentNumber,
+            ReportNumber = reportNumber,
+            PermanentFormNumber = reportNumber,
             TemporaryFormNumber = request.TemporaryFormNumber,
-            DamageYear = request.DamageYear,
+            DamageYear = request.DamageDate.Year,
             FarmId = request.FarmId,
             FarmerId = request.FarmerId,
             DamageDate = request.DamageDate,
             DocumentationDate = DateTime.UtcNow,
+            DamageNatureId = request.DamageNatureId,
             DamageCauseCategoryId = request.DamageCauseCategoryId,
             DamageCauseId = request.DamageCauseId,
             SettlementName = request.SettlementName,
@@ -192,6 +194,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
     {
         Id = report.Id,
         ClientId = report.ClientId,
+        ReportNumber = report.ReportNumber,
         PermanentFormNumber = report.PermanentFormNumber,
         TemporaryFormNumber = report.TemporaryFormNumber,
         DamageYear = report.DamageYear,
@@ -199,6 +202,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         FarmerId = report.FarmerId,
         DamageDate = report.DamageDate,
         DocumentationDate = report.DocumentationDate,
+        DamageNatureId = report.DamageNatureId,
         DamageCauseCategoryId = report.DamageCauseCategoryId,
         DamageCauseId = report.DamageCauseId,
         SettlementName = report.SettlementName,

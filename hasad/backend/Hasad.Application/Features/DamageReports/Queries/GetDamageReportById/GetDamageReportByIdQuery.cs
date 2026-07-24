@@ -52,6 +52,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
         {
             Id = report.Id,
             ClientId = report.ClientId,
+            ReportNumber = report.ReportNumber,
             PermanentFormNumber = report.PermanentFormNumber,
             TemporaryFormNumber = report.TemporaryFormNumber,
             DamageYear = report.DamageYear,
@@ -59,6 +60,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
             FarmerId = report.FarmerId,
             DamageDate = report.DamageDate,
             DocumentationDate = report.DocumentationDate,
+            DamageNatureId = report.DamageNatureId,
             DamageCauseCategoryId = report.DamageCauseCategoryId,
             DamageCauseId = report.DamageCauseId,
             SettlementName = report.SettlementName,

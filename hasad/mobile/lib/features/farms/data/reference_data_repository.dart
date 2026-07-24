@@ -11,6 +11,10 @@ abstract class ReferenceDataRepository {
   Future<List<DamageClassification>> getClassifications(int subCategoryId);
   Future<CostingSheetItem?> getActiveCostingSheet(int classificationId);
 
+  // Damage Causes
+  Future<List<DamageCauseCategory>> getDamageCauseCategories();
+  Future<List<DamageCause>> getDamageCauses(int categoryId);
+
   // Search
   Future<List<DamageClassification>> searchClassifications(String query);
 }

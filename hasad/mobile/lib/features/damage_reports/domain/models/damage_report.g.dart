@@ -10,6 +10,7 @@ _$DamageReportImpl _$$DamageReportImplFromJson(Map<String, dynamic> json) =>
     _$DamageReportImpl(
       id: json['clientId'] as String,
       serverId: json['id'] as String?,
+      reportNumber: json['reportNumber'] as String? ?? '',
       permanentFormNumber: json['permanentFormNumber'] as String? ?? '',
       temporaryFormNumber: json['temporaryFormNumber'] as String? ?? '',
       damageYear: (json['damageYear'] as num?)?.toInt() ?? 0,
@@ -17,6 +18,7 @@ _$DamageReportImpl _$$DamageReportImplFromJson(Map<String, dynamic> json) =>
       farmerId: json['farmerId'] as String,
       damageDate: DateTime.parse(json['damageDate'] as String),
       documentationDate: DateTime.parse(json['documentationDate'] as String),
+      damageNatureId: (json['damageNatureId'] as num?)?.toInt() ?? 0,
       damageCauseCategoryId:
           (json['damageCauseCategoryId'] as num?)?.toInt() ?? 0,
       damageCauseId: (json['damageCauseId'] as num?)?.toInt() ?? 0,
@@ -48,6 +50,7 @@ Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
     <String, dynamic>{
       'clientId': instance.id,
       'id': instance.serverId,
+      'reportNumber': instance.reportNumber,
       'permanentFormNumber': instance.permanentFormNumber,
       'temporaryFormNumber': instance.temporaryFormNumber,
       'damageYear': instance.damageYear,
@@ -55,6 +58,7 @@ Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
       'farmerId': instance.farmerId,
       'damageDate': instance.damageDate.toIso8601String(),
       'documentationDate': instance.documentationDate.toIso8601String(),
+      'damageNatureId': instance.damageNatureId,
       'damageCauseCategoryId': instance.damageCauseCategoryId,
       'damageCauseId': instance.damageCauseId,
       'settlementName': instance.settlementName,

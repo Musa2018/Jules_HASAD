@@ -5,11 +5,14 @@ class DamageReportSyncDto {
   static Map<String, dynamic> toCreateJson(DamageReport report) {
     return {
       'clientId': report.id,
+      'reportNumber': report.reportNumber,
       'temporaryFormNumber': report.temporaryFormNumber,
-      'damageYear': report.damageYear,
+      'damageYear': report.damageDate.year,
       'farmId': report.farmId,
       'farmerId': report.farmerId,
       'damageDate': report.damageDate.toIso8601String(),
+      'documentationDate': report.documentationDate.toIso8601String(),
+      'damageNatureId': report.damageNatureId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
       'settlementName': report.settlementName,
@@ -30,7 +33,9 @@ class DamageReportSyncDto {
     }
     return {
       'id': report.serverId,
+      'reportNumber': report.reportNumber,
       'damageDate': report.damageDate.toIso8601String(),
+      'damageNatureId': report.damageNatureId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
       'settlementName': report.settlementName,

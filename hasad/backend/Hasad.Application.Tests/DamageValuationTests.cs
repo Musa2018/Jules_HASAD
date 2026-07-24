@@ -83,7 +83,7 @@ public class DamageValuationTests
         );
 
         var command = new CreateDamageReportCommand(
-            Guid.NewGuid(), "TEMP", 2026, farm.Id, farmer.Id, damageDate, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "",
+            Guid.NewGuid(), "TEMP", 2026, farm.Id, farmer.Id, damageDate, 1, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "",
             new List<CreateDamageItemInput> { itemInput });
 
         // Act
@@ -143,7 +143,7 @@ public class DamageValuationTests
         await context.SaveChangesAsync();
 
         var itemInput = new CreateDamageItemInput(Guid.NewGuid(), classificationId, wrongCostingSheetId, 50m, "U", 1, 50, 10, 250);
-        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput> { itemInput });
+        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", 2026, farm.Id, farmer.Id, DateTime.UtcNow, 1, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput> { itemInput });
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -189,7 +189,7 @@ public class DamageValuationTests
         await context.SaveChangesAsync();
 
         var itemInput = new CreateDamageItemInput(Guid.NewGuid(), classificationId, costingSheetId, 50m, "U", 1, 50, 10, 250);
-        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", 2026, farm.Id, farmer.Id, damageDate, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput> { itemInput });
+        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", 2026, farm.Id, farmer.Id, damageDate, 1, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput> { itemInput });
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);

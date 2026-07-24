@@ -11,9 +11,15 @@ import 'package:uuid/uuid.dart';
 
 class DamageItemFormSheet extends ConsumerStatefulWidget {
   final String reportId;
+  final DamageNature nature;
   final DamageItem? existingItem;
 
-  const DamageItemFormSheet({super.key, required this.reportId, this.existingItem});
+  const DamageItemFormSheet({
+    super.key,
+    required this.reportId,
+    required this.nature,
+    this.existingItem,
+  });
 
   @override
   ConsumerState<DamageItemFormSheet> createState() => _DamageItemFormSheetState();
@@ -33,6 +39,10 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
       _percentageController.text = widget.existingItem!.damagePercentage.toString();
       _areaController.text = widget.existingItem!.affectedArea.toString();
     }
+
+    Future.microtask(() {
+      ref.read(classificationWizardProvider.notifier).setNature(widget.nature);
+    });
   }
 
   @override

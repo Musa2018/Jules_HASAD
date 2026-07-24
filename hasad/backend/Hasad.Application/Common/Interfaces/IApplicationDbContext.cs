@@ -34,6 +34,7 @@ public interface IApplicationDbContext
 
     DbSet<DamageCauseCategory> DamageCauseCategories { get; }
     DbSet<DamageCause> DamageCauses { get; }
+    DbSet<DamageReportSequence> DamageReportSequences { get; }
 
     DbSet<Compensation> Compensations { get; }
     DbSet<CompensationRule> CompensationRules { get; }

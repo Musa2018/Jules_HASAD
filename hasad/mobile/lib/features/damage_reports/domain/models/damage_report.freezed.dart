@@ -25,6 +25,7 @@ mixin _$DamageReport {
   String get id => throw _privateConstructorUsedError; // ClientId
   @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
+  String get reportNumber => throw _privateConstructorUsedError;
   String get permanentFormNumber => throw _privateConstructorUsedError;
   String get temporaryFormNumber => throw _privateConstructorUsedError;
   int get damageYear => throw _privateConstructorUsedError;
@@ -32,6 +33,7 @@ mixin _$DamageReport {
   String get farmerId => throw _privateConstructorUsedError;
   DateTime get damageDate => throw _privateConstructorUsedError;
   DateTime get documentationDate => throw _privateConstructorUsedError;
+  int get damageNatureId => throw _privateConstructorUsedError;
   int get damageCauseCategoryId => throw _privateConstructorUsedError;
   int get damageCauseId => throw _privateConstructorUsedError;
   String? get settlementName => throw _privateConstructorUsedError;
@@ -71,6 +73,7 @@ abstract class $DamageReportCopyWith<$Res> {
   $Res call({
     @JsonKey(name: 'clientId') String id,
     @JsonKey(name: 'id') String? serverId,
+    String reportNumber,
     String permanentFormNumber,
     String temporaryFormNumber,
     int damageYear,
@@ -78,6 +81,7 @@ abstract class $DamageReportCopyWith<$Res> {
     String farmerId,
     DateTime damageDate,
     DateTime documentationDate,
+    int damageNatureId,
     int damageCauseCategoryId,
     int damageCauseId,
     String? settlementName,
@@ -116,6 +120,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
   $Res call({
     Object? id = null,
     Object? serverId = freezed,
+    Object? reportNumber = null,
     Object? permanentFormNumber = null,
     Object? temporaryFormNumber = null,
     Object? damageYear = null,
@@ -123,6 +128,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? farmerId = null,
     Object? damageDate = null,
     Object? documentationDate = null,
+    Object? damageNatureId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
     Object? settlementName = freezed,
@@ -152,6 +158,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.serverId
                 : serverId // ignore: cast_nullable_to_non_nullable
                       as String?,
+            reportNumber: null == reportNumber
+                ? _value.reportNumber
+                : reportNumber // ignore: cast_nullable_to_non_nullable
+                      as String,
             permanentFormNumber: null == permanentFormNumber
                 ? _value.permanentFormNumber
                 : permanentFormNumber // ignore: cast_nullable_to_non_nullable
@@ -180,6 +190,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.documentationDate
                 : documentationDate // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            damageNatureId: null == damageNatureId
+                ? _value.damageNatureId
+                : damageNatureId // ignore: cast_nullable_to_non_nullable
+                      as int,
             damageCauseCategoryId: null == damageCauseCategoryId
                 ? _value.damageCauseCategoryId
                 : damageCauseCategoryId // ignore: cast_nullable_to_non_nullable
@@ -270,6 +284,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
   $Res call({
     @JsonKey(name: 'clientId') String id,
     @JsonKey(name: 'id') String? serverId,
+    String reportNumber,
     String permanentFormNumber,
     String temporaryFormNumber,
     int damageYear,
@@ -277,6 +292,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String farmerId,
     DateTime damageDate,
     DateTime documentationDate,
+    int damageNatureId,
     int damageCauseCategoryId,
     int damageCauseId,
     String? settlementName,
@@ -314,6 +330,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? serverId = freezed,
+    Object? reportNumber = null,
     Object? permanentFormNumber = null,
     Object? temporaryFormNumber = null,
     Object? damageYear = null,
@@ -321,6 +338,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? farmerId = null,
     Object? damageDate = null,
     Object? documentationDate = null,
+    Object? damageNatureId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
     Object? settlementName = freezed,
@@ -350,6 +368,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.serverId
             : serverId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        reportNumber: null == reportNumber
+            ? _value.reportNumber
+            : reportNumber // ignore: cast_nullable_to_non_nullable
+                  as String,
         permanentFormNumber: null == permanentFormNumber
             ? _value.permanentFormNumber
             : permanentFormNumber // ignore: cast_nullable_to_non_nullable
@@ -378,6 +400,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.documentationDate
             : documentationDate // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        damageNatureId: null == damageNatureId
+            ? _value.damageNatureId
+            : damageNatureId // ignore: cast_nullable_to_non_nullable
+                  as int,
         damageCauseCategoryId: null == damageCauseCategoryId
             ? _value.damageCauseCategoryId
             : damageCauseCategoryId // ignore: cast_nullable_to_non_nullable
@@ -461,6 +487,7 @@ class _$DamageReportImpl implements _DamageReport {
   const _$DamageReportImpl({
     @JsonKey(name: 'clientId') required this.id,
     @JsonKey(name: 'id') this.serverId,
+    this.reportNumber = '',
     this.permanentFormNumber = '',
     this.temporaryFormNumber = '',
     this.damageYear = 0,
@@ -468,6 +495,7 @@ class _$DamageReportImpl implements _DamageReport {
     required this.farmerId,
     required this.damageDate,
     required this.documentationDate,
+    this.damageNatureId = 0,
     this.damageCauseCategoryId = 0,
     this.damageCauseId = 0,
     this.settlementName,
@@ -500,6 +528,9 @@ class _$DamageReportImpl implements _DamageReport {
   final String? serverId;
   @override
   @JsonKey()
+  final String reportNumber;
+  @override
+  @JsonKey()
   final String permanentFormNumber;
   @override
   @JsonKey()
@@ -515,6 +546,9 @@ class _$DamageReportImpl implements _DamageReport {
   final DateTime damageDate;
   @override
   final DateTime documentationDate;
+  @override
+  @JsonKey()
+  final int damageNatureId;
   @override
   @JsonKey()
   final int damageCauseCategoryId;
@@ -565,7 +599,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, damageNatureId: $damageNatureId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -576,6 +610,8 @@ class _$DamageReportImpl implements _DamageReport {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.serverId, serverId) ||
                 other.serverId == serverId) &&
+            (identical(other.reportNumber, reportNumber) ||
+                other.reportNumber == reportNumber) &&
             (identical(other.permanentFormNumber, permanentFormNumber) ||
                 other.permanentFormNumber == permanentFormNumber) &&
             (identical(other.temporaryFormNumber, temporaryFormNumber) ||
@@ -589,6 +625,8 @@ class _$DamageReportImpl implements _DamageReport {
                 other.damageDate == damageDate) &&
             (identical(other.documentationDate, documentationDate) ||
                 other.documentationDate == documentationDate) &&
+            (identical(other.damageNatureId, damageNatureId) ||
+                other.damageNatureId == damageNatureId) &&
             (identical(other.damageCauseCategoryId, damageCauseCategoryId) ||
                 other.damageCauseCategoryId == damageCauseCategoryId) &&
             (identical(other.damageCauseId, damageCauseId) ||
@@ -631,6 +669,7 @@ class _$DamageReportImpl implements _DamageReport {
     runtimeType,
     id,
     serverId,
+    reportNumber,
     permanentFormNumber,
     temporaryFormNumber,
     damageYear,
@@ -638,6 +677,7 @@ class _$DamageReportImpl implements _DamageReport {
     farmerId,
     damageDate,
     documentationDate,
+    damageNatureId,
     damageCauseCategoryId,
     damageCauseId,
     settlementName,
@@ -676,6 +716,7 @@ abstract class _DamageReport implements DamageReport {
   const factory _DamageReport({
     @JsonKey(name: 'clientId') required final String id,
     @JsonKey(name: 'id') final String? serverId,
+    final String reportNumber,
     final String permanentFormNumber,
     final String temporaryFormNumber,
     final int damageYear,
@@ -683,6 +724,7 @@ abstract class _DamageReport implements DamageReport {
     required final String farmerId,
     required final DateTime damageDate,
     required final DateTime documentationDate,
+    final int damageNatureId,
     final int damageCauseCategoryId,
     final int damageCauseId,
     final String? settlementName,
@@ -713,6 +755,8 @@ abstract class _DamageReport implements DamageReport {
   @JsonKey(name: 'id')
   String? get serverId;
   @override
+  String get reportNumber;
+  @override
   String get permanentFormNumber;
   @override
   String get temporaryFormNumber;
@@ -726,6 +770,8 @@ abstract class _DamageReport implements DamageReport {
   DateTime get damageDate;
   @override
   DateTime get documentationDate;
+  @override
+  int get damageNatureId;
   @override
   int get damageCauseCategoryId;
   @override

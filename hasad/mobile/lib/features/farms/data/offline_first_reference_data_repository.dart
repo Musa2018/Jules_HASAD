@@ -98,6 +98,26 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
   }
 
   @override
+  Future<List<domain.DamageCauseCategory>> getDamageCauseCategories() async {
+    final items = await _db.select(_db.damageCauseCategories).get();
+    return items
+        .map((e) => domain.DamageCauseCategory(
+            id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
+        .toList();
+  }
+
+  @override
+  Future<List<domain.DamageCause>> getDamageCauses(int categoryId) async {
+    final items = await (_db.select(_db.damageCauses)
+          ..where((t) => t.parentId.equals(categoryId)))
+        .get();
+    return items
+        .map((e) => domain.DamageCause(
+            id: e.id, parentId: e.parentId, nameAr: e.nameAr, nameEn: e.nameEn))
+        .toList();
+  }
+
+  @override
   Future<List<domain.DamageClassification>> searchClassifications(
     String query,
   ) async {

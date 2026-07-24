@@ -49,6 +49,14 @@ class RemoteReferenceDataRepository implements ReferenceDataRepository {
   Future<List<DamageClassification>> searchClassifications(String query) =>
       throw UnimplementedError();
 
+  @override
+  Future<List<DamageCauseCategory>> getDamageCauseCategories() =>
+      throw UnimplementedError();
+
+  @override
+  Future<List<DamageCause>> getDamageCauses(int categoryId) =>
+      throw UnimplementedError();
+
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
     if (body is Map<String, dynamic>) {

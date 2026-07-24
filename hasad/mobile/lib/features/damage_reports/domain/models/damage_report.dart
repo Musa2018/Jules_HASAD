@@ -10,6 +10,7 @@ class DamageReport with _$DamageReport {
   const factory DamageReport({
     @JsonKey(name: 'clientId') required String id, // ClientId
     @JsonKey(name: 'id') String? serverId,
+    @Default('') String reportNumber,
     @Default('') String permanentFormNumber,
     @Default('') String temporaryFormNumber,
     @Default(0) int damageYear,
@@ -17,6 +18,7 @@ class DamageReport with _$DamageReport {
     required String farmerId,
     required DateTime damageDate,
     required DateTime documentationDate,
+    @Default(0) int damageNatureId,
     @Default(0) int damageCauseCategoryId,
     @Default(0) int damageCauseId,
     String? settlementName,

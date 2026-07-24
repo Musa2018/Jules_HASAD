@@ -37,6 +37,7 @@ mixin _$Farm {
   String get basin => throw _privateConstructorUsedError;
   String get parcel => throw _privateConstructorUsedError; // Area
   double get area => throw _privateConstructorUsedError;
+  @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
   int get areaUnitId => throw _privateConstructorUsedError;
   int? get measurementUnitId =>
       throw _privateConstructorUsedError; // Agriculture
@@ -85,6 +86,7 @@ abstract class $FarmCopyWith<$Res> {
     String basin,
     String parcel,
     double area,
+    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
     int areaUnitId,
     int? measurementUnitId,
     int agriculturalSectorId,
@@ -295,6 +297,7 @@ abstract class _$$FarmImplCopyWith<$Res> implements $FarmCopyWith<$Res> {
     String basin,
     String parcel,
     double area,
+    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
     int areaUnitId,
     int? measurementUnitId,
     int agriculturalSectorId,
@@ -496,6 +499,7 @@ class _$FarmImpl implements _Farm {
     required this.basin,
     required this.parcel,
     required this.area,
+    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
     required this.areaUnitId,
     this.measurementUnitId,
     required this.agriculturalSectorId,
@@ -549,6 +553,7 @@ class _$FarmImpl implements _Farm {
   @override
   final double area;
   @override
+  @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
   final int areaUnitId;
   @override
   final int? measurementUnitId;
@@ -721,6 +726,7 @@ abstract class _Farm implements Farm {
     required final String basin,
     required final String parcel,
     required final double area,
+    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
     required final int areaUnitId,
     final int? measurementUnitId,
     required final int agriculturalSectorId,
@@ -770,6 +776,7 @@ abstract class _Farm implements Farm {
   @override
   double get area;
   @override
+  @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
   int get areaUnitId;
   @override
   int? get measurementUnitId; // Agriculture

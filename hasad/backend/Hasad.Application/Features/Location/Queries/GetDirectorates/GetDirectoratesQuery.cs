@@ -33,6 +33,7 @@ public class GetDirectoratesQueryHandler : IRequestHandler<GetDirectoratesQuery,
                 Id = d.Id,
                 NameAr = d.NameAr,
                 NameEn = d.NameEn,
+                Code = d.Code,
                 GovernorateId = d.GovernorateId
             })
             .ToListAsync(cancellationToken);

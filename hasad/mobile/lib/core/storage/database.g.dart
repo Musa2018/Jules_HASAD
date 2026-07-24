@@ -3059,6 +3059,18 @@ class $DamageReportsTable extends DamageReports
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _reportNumberMeta = const VerificationMeta(
+    'reportNumber',
+  );
+  @override
+  late final GeneratedColumn<String> reportNumber = GeneratedColumn<String>(
+    'report_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _permanentFormNumberMeta =
       const VerificationMeta('permanentFormNumber');
   @override
@@ -3138,6 +3150,18 @@ class $DamageReportsTable extends DamageReports
         type: DriftSqlType.dateTime,
         requiredDuringInsert: true,
       );
+  static const VerificationMeta _damageNatureIdMeta = const VerificationMeta(
+    'damageNatureId',
+  );
+  @override
+  late final GeneratedColumn<int> damageNatureId = GeneratedColumn<int>(
+    'damage_nature_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _damageCauseCategoryIdMeta =
       const VerificationMeta('damageCauseCategoryId');
   @override
@@ -3336,6 +3360,7 @@ class $DamageReportsTable extends DamageReports
   List<GeneratedColumn> get $columns => [
     id,
     serverId,
+    reportNumber,
     permanentFormNumber,
     temporaryFormNumber,
     damageYear,
@@ -3343,6 +3368,7 @@ class $DamageReportsTable extends DamageReports
     farmerId,
     damageDate,
     documentationDate,
+    damageNatureId,
     damageCauseCategoryId,
     damageCauseId,
     settlementName,
@@ -3382,6 +3408,15 @@ class $DamageReportsTable extends DamageReports
       context.handle(
         _serverIdMeta,
         serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('report_number')) {
+      context.handle(
+        _reportNumberMeta,
+        reportNumber.isAcceptableOrUnknown(
+          data['report_number']!,
+          _reportNumberMeta,
+        ),
       );
     }
     if (data.containsKey('permanent_form_number')) {
@@ -3442,6 +3477,15 @@ class $DamageReportsTable extends DamageReports
       );
     } else if (isInserting) {
       context.missing(_documentationDateMeta);
+    }
+    if (data.containsKey('damage_nature_id')) {
+      context.handle(
+        _damageNatureIdMeta,
+        damageNatureId.isAcceptableOrUnknown(
+          data['damage_nature_id']!,
+          _damageNatureIdMeta,
+        ),
+      );
     }
     if (data.containsKey('damage_cause_category_id')) {
       context.handle(
@@ -3596,6 +3640,10 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}server_id'],
       ),
+      reportNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}report_number'],
+      )!,
       permanentFormNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}permanent_form_number'],
@@ -3623,6 +3671,10 @@ class $DamageReportsTable extends DamageReports
       documentationDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}documentation_date'],
+      )!,
+      damageNatureId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}damage_nature_id'],
       )!,
       damageCauseCategoryId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -3705,6 +3757,7 @@ class DamageReportLocal extends DataClass
     implements Insertable<DamageReportLocal> {
   final String id;
   final String? serverId;
+  final String reportNumber;
   final String permanentFormNumber;
   final String temporaryFormNumber;
   final int damageYear;
@@ -3712,6 +3765,7 @@ class DamageReportLocal extends DataClass
   final String farmerId;
   final DateTime damageDate;
   final DateTime documentationDate;
+  final int damageNatureId;
   final int damageCauseCategoryId;
   final int damageCauseId;
   final String? settlementName;
@@ -3732,6 +3786,7 @@ class DamageReportLocal extends DataClass
   const DamageReportLocal({
     required this.id,
     this.serverId,
+    required this.reportNumber,
     required this.permanentFormNumber,
     required this.temporaryFormNumber,
     required this.damageYear,
@@ -3739,6 +3794,7 @@ class DamageReportLocal extends DataClass
     required this.farmerId,
     required this.damageDate,
     required this.documentationDate,
+    required this.damageNatureId,
     required this.damageCauseCategoryId,
     required this.damageCauseId,
     this.settlementName,
@@ -3764,6 +3820,7 @@ class DamageReportLocal extends DataClass
     if (!nullToAbsent || serverId != null) {
       map['server_id'] = Variable<String>(serverId);
     }
+    map['report_number'] = Variable<String>(reportNumber);
     map['permanent_form_number'] = Variable<String>(permanentFormNumber);
     map['temporary_form_number'] = Variable<String>(temporaryFormNumber);
     map['damage_year'] = Variable<int>(damageYear);
@@ -3771,6 +3828,7 @@ class DamageReportLocal extends DataClass
     map['farmer_id'] = Variable<String>(farmerId);
     map['damage_date'] = Variable<DateTime>(damageDate);
     map['documentation_date'] = Variable<DateTime>(documentationDate);
+    map['damage_nature_id'] = Variable<int>(damageNatureId);
     map['damage_cause_category_id'] = Variable<int>(damageCauseCategoryId);
     map['damage_cause_id'] = Variable<int>(damageCauseId);
     if (!nullToAbsent || settlementName != null) {
@@ -3809,6 +3867,7 @@ class DamageReportLocal extends DataClass
       serverId: serverId == null && nullToAbsent
           ? const Value.absent()
           : Value(serverId),
+      reportNumber: Value(reportNumber),
       permanentFormNumber: Value(permanentFormNumber),
       temporaryFormNumber: Value(temporaryFormNumber),
       damageYear: Value(damageYear),
@@ -3816,6 +3875,7 @@ class DamageReportLocal extends DataClass
       farmerId: Value(farmerId),
       damageDate: Value(damageDate),
       documentationDate: Value(documentationDate),
+      damageNatureId: Value(damageNatureId),
       damageCauseCategoryId: Value(damageCauseCategoryId),
       damageCauseId: Value(damageCauseId),
       settlementName: settlementName == null && nullToAbsent
@@ -3856,6 +3916,7 @@ class DamageReportLocal extends DataClass
     return DamageReportLocal(
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
+      reportNumber: serializer.fromJson<String>(json['reportNumber']),
       permanentFormNumber: serializer.fromJson<String>(
         json['permanentFormNumber'],
       ),
@@ -3869,6 +3930,7 @@ class DamageReportLocal extends DataClass
       documentationDate: serializer.fromJson<DateTime>(
         json['documentationDate'],
       ),
+      damageNatureId: serializer.fromJson<int>(json['damageNatureId']),
       damageCauseCategoryId: serializer.fromJson<int>(
         json['damageCauseCategoryId'],
       ),
@@ -3896,6 +3958,7 @@ class DamageReportLocal extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
+      'reportNumber': serializer.toJson<String>(reportNumber),
       'permanentFormNumber': serializer.toJson<String>(permanentFormNumber),
       'temporaryFormNumber': serializer.toJson<String>(temporaryFormNumber),
       'damageYear': serializer.toJson<int>(damageYear),
@@ -3903,6 +3966,7 @@ class DamageReportLocal extends DataClass
       'farmerId': serializer.toJson<String>(farmerId),
       'damageDate': serializer.toJson<DateTime>(damageDate),
       'documentationDate': serializer.toJson<DateTime>(documentationDate),
+      'damageNatureId': serializer.toJson<int>(damageNatureId),
       'damageCauseCategoryId': serializer.toJson<int>(damageCauseCategoryId),
       'damageCauseId': serializer.toJson<int>(damageCauseId),
       'settlementName': serializer.toJson<String?>(settlementName),
@@ -3926,6 +3990,7 @@ class DamageReportLocal extends DataClass
   DamageReportLocal copyWith({
     String? id,
     Value<String?> serverId = const Value.absent(),
+    String? reportNumber,
     String? permanentFormNumber,
     String? temporaryFormNumber,
     int? damageYear,
@@ -3933,6 +3998,7 @@ class DamageReportLocal extends DataClass
     String? farmerId,
     DateTime? damageDate,
     DateTime? documentationDate,
+    int? damageNatureId,
     int? damageCauseCategoryId,
     int? damageCauseId,
     Value<String?> settlementName = const Value.absent(),
@@ -3953,6 +4019,7 @@ class DamageReportLocal extends DataClass
   }) => DamageReportLocal(
     id: id ?? this.id,
     serverId: serverId.present ? serverId.value : this.serverId,
+    reportNumber: reportNumber ?? this.reportNumber,
     permanentFormNumber: permanentFormNumber ?? this.permanentFormNumber,
     temporaryFormNumber: temporaryFormNumber ?? this.temporaryFormNumber,
     damageYear: damageYear ?? this.damageYear,
@@ -3960,6 +4027,7 @@ class DamageReportLocal extends DataClass
     farmerId: farmerId ?? this.farmerId,
     damageDate: damageDate ?? this.damageDate,
     documentationDate: documentationDate ?? this.documentationDate,
+    damageNatureId: damageNatureId ?? this.damageNatureId,
     damageCauseCategoryId: damageCauseCategoryId ?? this.damageCauseCategoryId,
     damageCauseId: damageCauseId ?? this.damageCauseId,
     settlementName: settlementName.present
@@ -3986,6 +4054,9 @@ class DamageReportLocal extends DataClass
     return DamageReportLocal(
       id: data.id.present ? data.id.value : this.id,
       serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      reportNumber: data.reportNumber.present
+          ? data.reportNumber.value
+          : this.reportNumber,
       permanentFormNumber: data.permanentFormNumber.present
           ? data.permanentFormNumber.value
           : this.permanentFormNumber,
@@ -4003,6 +4074,9 @@ class DamageReportLocal extends DataClass
       documentationDate: data.documentationDate.present
           ? data.documentationDate.value
           : this.documentationDate,
+      damageNatureId: data.damageNatureId.present
+          ? data.damageNatureId.value
+          : this.damageNatureId,
       damageCauseCategoryId: data.damageCauseCategoryId.present
           ? data.damageCauseCategoryId.value
           : this.damageCauseCategoryId,
@@ -4050,6 +4124,7 @@ class DamageReportLocal extends DataClass
     return (StringBuffer('DamageReportLocal(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
+          ..write('reportNumber: $reportNumber, ')
           ..write('permanentFormNumber: $permanentFormNumber, ')
           ..write('temporaryFormNumber: $temporaryFormNumber, ')
           ..write('damageYear: $damageYear, ')
@@ -4057,6 +4132,7 @@ class DamageReportLocal extends DataClass
           ..write('farmerId: $farmerId, ')
           ..write('damageDate: $damageDate, ')
           ..write('documentationDate: $documentationDate, ')
+          ..write('damageNatureId: $damageNatureId, ')
           ..write('damageCauseCategoryId: $damageCauseCategoryId, ')
           ..write('damageCauseId: $damageCauseId, ')
           ..write('settlementName: $settlementName, ')
@@ -4082,6 +4158,7 @@ class DamageReportLocal extends DataClass
   int get hashCode => Object.hashAll([
     id,
     serverId,
+    reportNumber,
     permanentFormNumber,
     temporaryFormNumber,
     damageYear,
@@ -4089,6 +4166,7 @@ class DamageReportLocal extends DataClass
     farmerId,
     damageDate,
     documentationDate,
+    damageNatureId,
     damageCauseCategoryId,
     damageCauseId,
     settlementName,
@@ -4113,6 +4191,7 @@ class DamageReportLocal extends DataClass
       (other is DamageReportLocal &&
           other.id == this.id &&
           other.serverId == this.serverId &&
+          other.reportNumber == this.reportNumber &&
           other.permanentFormNumber == this.permanentFormNumber &&
           other.temporaryFormNumber == this.temporaryFormNumber &&
           other.damageYear == this.damageYear &&
@@ -4120,6 +4199,7 @@ class DamageReportLocal extends DataClass
           other.farmerId == this.farmerId &&
           other.damageDate == this.damageDate &&
           other.documentationDate == this.documentationDate &&
+          other.damageNatureId == this.damageNatureId &&
           other.damageCauseCategoryId == this.damageCauseCategoryId &&
           other.damageCauseId == this.damageCauseId &&
           other.settlementName == this.settlementName &&
@@ -4142,6 +4222,7 @@ class DamageReportLocal extends DataClass
 class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> id;
   final Value<String?> serverId;
+  final Value<String> reportNumber;
   final Value<String> permanentFormNumber;
   final Value<String> temporaryFormNumber;
   final Value<int> damageYear;
@@ -4149,6 +4230,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> farmerId;
   final Value<DateTime> damageDate;
   final Value<DateTime> documentationDate;
+  final Value<int> damageNatureId;
   final Value<int> damageCauseCategoryId;
   final Value<int> damageCauseId;
   final Value<String?> settlementName;
@@ -4170,6 +4252,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   const DamageReportsCompanion({
     this.id = const Value.absent(),
     this.serverId = const Value.absent(),
+    this.reportNumber = const Value.absent(),
     this.permanentFormNumber = const Value.absent(),
     this.temporaryFormNumber = const Value.absent(),
     this.damageYear = const Value.absent(),
@@ -4177,6 +4260,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.farmerId = const Value.absent(),
     this.damageDate = const Value.absent(),
     this.documentationDate = const Value.absent(),
+    this.damageNatureId = const Value.absent(),
     this.damageCauseCategoryId = const Value.absent(),
     this.damageCauseId = const Value.absent(),
     this.settlementName = const Value.absent(),
@@ -4199,6 +4283,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   DamageReportsCompanion.insert({
     required String id,
     this.serverId = const Value.absent(),
+    this.reportNumber = const Value.absent(),
     this.permanentFormNumber = const Value.absent(),
     this.temporaryFormNumber = const Value.absent(),
     this.damageYear = const Value.absent(),
@@ -4206,6 +4291,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     required String farmerId,
     required DateTime damageDate,
     required DateTime documentationDate,
+    this.damageNatureId = const Value.absent(),
     this.damageCauseCategoryId = const Value.absent(),
     this.damageCauseId = const Value.absent(),
     this.settlementName = const Value.absent(),
@@ -4237,6 +4323,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   static Insertable<DamageReportLocal> custom({
     Expression<String>? id,
     Expression<String>? serverId,
+    Expression<String>? reportNumber,
     Expression<String>? permanentFormNumber,
     Expression<String>? temporaryFormNumber,
     Expression<int>? damageYear,
@@ -4244,6 +4331,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<String>? farmerId,
     Expression<DateTime>? damageDate,
     Expression<DateTime>? documentationDate,
+    Expression<int>? damageNatureId,
     Expression<int>? damageCauseCategoryId,
     Expression<int>? damageCauseId,
     Expression<String>? settlementName,
@@ -4266,6 +4354,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (serverId != null) 'server_id': serverId,
+      if (reportNumber != null) 'report_number': reportNumber,
       if (permanentFormNumber != null)
         'permanent_form_number': permanentFormNumber,
       if (temporaryFormNumber != null)
@@ -4275,6 +4364,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (farmerId != null) 'farmer_id': farmerId,
       if (damageDate != null) 'damage_date': damageDate,
       if (documentationDate != null) 'documentation_date': documentationDate,
+      if (damageNatureId != null) 'damage_nature_id': damageNatureId,
       if (damageCauseCategoryId != null)
         'damage_cause_category_id': damageCauseCategoryId,
       if (damageCauseId != null) 'damage_cause_id': damageCauseId,
@@ -4300,6 +4390,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   DamageReportsCompanion copyWith({
     Value<String>? id,
     Value<String?>? serverId,
+    Value<String>? reportNumber,
     Value<String>? permanentFormNumber,
     Value<String>? temporaryFormNumber,
     Value<int>? damageYear,
@@ -4307,6 +4398,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<String>? farmerId,
     Value<DateTime>? damageDate,
     Value<DateTime>? documentationDate,
+    Value<int>? damageNatureId,
     Value<int>? damageCauseCategoryId,
     Value<int>? damageCauseId,
     Value<String?>? settlementName,
@@ -4329,6 +4421,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return DamageReportsCompanion(
       id: id ?? this.id,
       serverId: serverId ?? this.serverId,
+      reportNumber: reportNumber ?? this.reportNumber,
       permanentFormNumber: permanentFormNumber ?? this.permanentFormNumber,
       temporaryFormNumber: temporaryFormNumber ?? this.temporaryFormNumber,
       damageYear: damageYear ?? this.damageYear,
@@ -4336,6 +4429,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       farmerId: farmerId ?? this.farmerId,
       damageDate: damageDate ?? this.damageDate,
       documentationDate: documentationDate ?? this.documentationDate,
+      damageNatureId: damageNatureId ?? this.damageNatureId,
       damageCauseCategoryId:
           damageCauseCategoryId ?? this.damageCauseCategoryId,
       damageCauseId: damageCauseId ?? this.damageCauseId,
@@ -4367,6 +4461,9 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (serverId.present) {
       map['server_id'] = Variable<String>(serverId.value);
     }
+    if (reportNumber.present) {
+      map['report_number'] = Variable<String>(reportNumber.value);
+    }
     if (permanentFormNumber.present) {
       map['permanent_form_number'] = Variable<String>(
         permanentFormNumber.value,
@@ -4391,6 +4488,9 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     }
     if (documentationDate.present) {
       map['documentation_date'] = Variable<DateTime>(documentationDate.value);
+    }
+    if (damageNatureId.present) {
+      map['damage_nature_id'] = Variable<int>(damageNatureId.value);
     }
     if (damageCauseCategoryId.present) {
       map['damage_cause_category_id'] = Variable<int>(
@@ -4456,6 +4556,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     return (StringBuffer('DamageReportsCompanion(')
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
+          ..write('reportNumber: $reportNumber, ')
           ..write('permanentFormNumber: $permanentFormNumber, ')
           ..write('temporaryFormNumber: $temporaryFormNumber, ')
           ..write('damageYear: $damageYear, ')
@@ -4463,6 +4564,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('farmerId: $farmerId, ')
           ..write('damageDate: $damageDate, ')
           ..write('documentationDate: $documentationDate, ')
+          ..write('damageNatureId: $damageNatureId, ')
           ..write('damageCauseCategoryId: $damageCauseCategoryId, ')
           ..write('damageCauseId: $damageCauseId, ')
           ..write('settlementName: $settlementName, ')
@@ -8413,6 +8515,16 @@ class $DirectoratesTable extends Directorates
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _governorateIdMeta = const VerificationMeta(
     'governorateId',
   );
@@ -8425,7 +8537,13 @@ class $DirectoratesTable extends Directorates
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, nameAr, nameEn, governorateId];
+  List<GeneratedColumn> get $columns => [
+    id,
+    nameAr,
+    nameEn,
+    code,
+    governorateId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -8459,6 +8577,12 @@ class $DirectoratesTable extends Directorates
     } else if (isInserting) {
       context.missing(_nameEnMeta);
     }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    }
     if (data.containsKey('governorate_id')) {
       context.handle(
         _governorateIdMeta,
@@ -8491,6 +8615,10 @@ class $DirectoratesTable extends Directorates
         DriftSqlType.string,
         data['${effectivePrefix}name_en'],
       )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
       governorateId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}governorate_id'],
@@ -8509,11 +8637,13 @@ class DirectorateLocal extends DataClass
   final String id;
   final String nameAr;
   final String nameEn;
+  final String code;
   final String governorateId;
   const DirectorateLocal({
     required this.id,
     required this.nameAr,
     required this.nameEn,
+    required this.code,
     required this.governorateId,
   });
   @override
@@ -8522,6 +8652,7 @@ class DirectorateLocal extends DataClass
     map['id'] = Variable<String>(id);
     map['name_ar'] = Variable<String>(nameAr);
     map['name_en'] = Variable<String>(nameEn);
+    map['code'] = Variable<String>(code);
     map['governorate_id'] = Variable<String>(governorateId);
     return map;
   }
@@ -8531,6 +8662,7 @@ class DirectorateLocal extends DataClass
       id: Value(id),
       nameAr: Value(nameAr),
       nameEn: Value(nameEn),
+      code: Value(code),
       governorateId: Value(governorateId),
     );
   }
@@ -8544,6 +8676,7 @@ class DirectorateLocal extends DataClass
       id: serializer.fromJson<String>(json['id']),
       nameAr: serializer.fromJson<String>(json['nameAr']),
       nameEn: serializer.fromJson<String>(json['nameEn']),
+      code: serializer.fromJson<String>(json['code']),
       governorateId: serializer.fromJson<String>(json['governorateId']),
     );
   }
@@ -8554,6 +8687,7 @@ class DirectorateLocal extends DataClass
       'id': serializer.toJson<String>(id),
       'nameAr': serializer.toJson<String>(nameAr),
       'nameEn': serializer.toJson<String>(nameEn),
+      'code': serializer.toJson<String>(code),
       'governorateId': serializer.toJson<String>(governorateId),
     };
   }
@@ -8562,11 +8696,13 @@ class DirectorateLocal extends DataClass
     String? id,
     String? nameAr,
     String? nameEn,
+    String? code,
     String? governorateId,
   }) => DirectorateLocal(
     id: id ?? this.id,
     nameAr: nameAr ?? this.nameAr,
     nameEn: nameEn ?? this.nameEn,
+    code: code ?? this.code,
     governorateId: governorateId ?? this.governorateId,
   );
   DirectorateLocal copyWithCompanion(DirectoratesCompanion data) {
@@ -8574,6 +8710,7 @@ class DirectorateLocal extends DataClass
       id: data.id.present ? data.id.value : this.id,
       nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
       nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      code: data.code.present ? data.code.value : this.code,
       governorateId: data.governorateId.present
           ? data.governorateId.value
           : this.governorateId,
@@ -8586,13 +8723,14 @@ class DirectorateLocal extends DataClass
           ..write('id: $id, ')
           ..write('nameAr: $nameAr, ')
           ..write('nameEn: $nameEn, ')
+          ..write('code: $code, ')
           ..write('governorateId: $governorateId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, nameAr, nameEn, governorateId);
+  int get hashCode => Object.hash(id, nameAr, nameEn, code, governorateId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -8600,6 +8738,7 @@ class DirectorateLocal extends DataClass
           other.id == this.id &&
           other.nameAr == this.nameAr &&
           other.nameEn == this.nameEn &&
+          other.code == this.code &&
           other.governorateId == this.governorateId);
 }
 
@@ -8607,12 +8746,14 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
   final Value<String> id;
   final Value<String> nameAr;
   final Value<String> nameEn;
+  final Value<String> code;
   final Value<String> governorateId;
   final Value<int> rowid;
   const DirectoratesCompanion({
     this.id = const Value.absent(),
     this.nameAr = const Value.absent(),
     this.nameEn = const Value.absent(),
+    this.code = const Value.absent(),
     this.governorateId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -8620,6 +8761,7 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
     required String id,
     required String nameAr,
     required String nameEn,
+    this.code = const Value.absent(),
     required String governorateId,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -8630,6 +8772,7 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
     Expression<String>? id,
     Expression<String>? nameAr,
     Expression<String>? nameEn,
+    Expression<String>? code,
     Expression<String>? governorateId,
     Expression<int>? rowid,
   }) {
@@ -8637,6 +8780,7 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
       if (id != null) 'id': id,
       if (nameAr != null) 'name_ar': nameAr,
       if (nameEn != null) 'name_en': nameEn,
+      if (code != null) 'code': code,
       if (governorateId != null) 'governorate_id': governorateId,
       if (rowid != null) 'rowid': rowid,
     });
@@ -8646,6 +8790,7 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
     Value<String>? id,
     Value<String>? nameAr,
     Value<String>? nameEn,
+    Value<String>? code,
     Value<String>? governorateId,
     Value<int>? rowid,
   }) {
@@ -8653,6 +8798,7 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
       id: id ?? this.id,
       nameAr: nameAr ?? this.nameAr,
       nameEn: nameEn ?? this.nameEn,
+      code: code ?? this.code,
       governorateId: governorateId ?? this.governorateId,
       rowid: rowid ?? this.rowid,
     );
@@ -8670,6 +8816,9 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
     if (nameEn.present) {
       map['name_en'] = Variable<String>(nameEn.value);
     }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
     if (governorateId.present) {
       map['governorate_id'] = Variable<String>(governorateId.value);
     }
@@ -8685,6 +8834,7 @@ class DirectoratesCompanion extends UpdateCompanion<DirectorateLocal> {
           ..write('id: $id, ')
           ..write('nameAr: $nameAr, ')
           ..write('nameEn: $nameEn, ')
+          ..write('code: $code, ')
           ..write('governorateId: $governorateId, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -14952,6 +15102,7 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
     DamageReportsCompanion Function({
       required String id,
       Value<String?> serverId,
+      Value<String> reportNumber,
       Value<String> permanentFormNumber,
       Value<String> temporaryFormNumber,
       Value<int> damageYear,
@@ -14959,6 +15110,7 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       required String farmerId,
       required DateTime damageDate,
       required DateTime documentationDate,
+      Value<int> damageNatureId,
       Value<int> damageCauseCategoryId,
       Value<int> damageCauseId,
       Value<String?> settlementName,
@@ -14982,6 +15134,7 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
     DamageReportsCompanion Function({
       Value<String> id,
       Value<String?> serverId,
+      Value<String> reportNumber,
       Value<String> permanentFormNumber,
       Value<String> temporaryFormNumber,
       Value<int> damageYear,
@@ -14989,6 +15142,7 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<String> farmerId,
       Value<DateTime> damageDate,
       Value<DateTime> documentationDate,
+      Value<int> damageNatureId,
       Value<int> damageCauseCategoryId,
       Value<int> damageCauseId,
       Value<String?> settlementName,
@@ -15028,6 +15182,11 @@ class $$DamageReportsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get reportNumber => $composableBuilder(
+    column: $table.reportNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get permanentFormNumber => $composableBuilder(
     column: $table.permanentFormNumber,
     builder: (column) => ColumnFilters(column),
@@ -15060,6 +15219,11 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<DateTime> get documentationDate => $composableBuilder(
     column: $table.documentationDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get damageNatureId => $composableBuilder(
+    column: $table.damageNatureId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15168,6 +15332,11 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get reportNumber => $composableBuilder(
+    column: $table.reportNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get permanentFormNumber => $composableBuilder(
     column: $table.permanentFormNumber,
     builder: (column) => ColumnOrderings(column),
@@ -15200,6 +15369,11 @@ class $$DamageReportsTableOrderingComposer
 
   ColumnOrderings<DateTime> get documentationDate => $composableBuilder(
     column: $table.documentationDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get damageNatureId => $composableBuilder(
+    column: $table.damageNatureId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -15304,6 +15478,11 @@ class $$DamageReportsTableAnnotationComposer
   GeneratedColumn<String> get serverId =>
       $composableBuilder(column: $table.serverId, builder: (column) => column);
 
+  GeneratedColumn<String> get reportNumber => $composableBuilder(
+    column: $table.reportNumber,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get permanentFormNumber => $composableBuilder(
     column: $table.permanentFormNumber,
     builder: (column) => column,
@@ -15332,6 +15511,11 @@ class $$DamageReportsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get documentationDate => $composableBuilder(
     column: $table.documentationDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get damageNatureId => $composableBuilder(
+    column: $table.damageNatureId,
     builder: (column) => column,
   );
 
@@ -15446,6 +15630,7 @@ class $$DamageReportsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
+                Value<String> reportNumber = const Value.absent(),
                 Value<String> permanentFormNumber = const Value.absent(),
                 Value<String> temporaryFormNumber = const Value.absent(),
                 Value<int> damageYear = const Value.absent(),
@@ -15453,6 +15638,7 @@ class $$DamageReportsTableTableManager
                 Value<String> farmerId = const Value.absent(),
                 Value<DateTime> damageDate = const Value.absent(),
                 Value<DateTime> documentationDate = const Value.absent(),
+                Value<int> damageNatureId = const Value.absent(),
                 Value<int> damageCauseCategoryId = const Value.absent(),
                 Value<int> damageCauseId = const Value.absent(),
                 Value<String?> settlementName = const Value.absent(),
@@ -15474,6 +15660,7 @@ class $$DamageReportsTableTableManager
               }) => DamageReportsCompanion(
                 id: id,
                 serverId: serverId,
+                reportNumber: reportNumber,
                 permanentFormNumber: permanentFormNumber,
                 temporaryFormNumber: temporaryFormNumber,
                 damageYear: damageYear,
@@ -15481,6 +15668,7 @@ class $$DamageReportsTableTableManager
                 farmerId: farmerId,
                 damageDate: damageDate,
                 documentationDate: documentationDate,
+                damageNatureId: damageNatureId,
                 damageCauseCategoryId: damageCauseCategoryId,
                 damageCauseId: damageCauseId,
                 settlementName: settlementName,
@@ -15504,6 +15692,7 @@ class $$DamageReportsTableTableManager
               ({
                 required String id,
                 Value<String?> serverId = const Value.absent(),
+                Value<String> reportNumber = const Value.absent(),
                 Value<String> permanentFormNumber = const Value.absent(),
                 Value<String> temporaryFormNumber = const Value.absent(),
                 Value<int> damageYear = const Value.absent(),
@@ -15511,6 +15700,7 @@ class $$DamageReportsTableTableManager
                 required String farmerId,
                 required DateTime damageDate,
                 required DateTime documentationDate,
+                Value<int> damageNatureId = const Value.absent(),
                 Value<int> damageCauseCategoryId = const Value.absent(),
                 Value<int> damageCauseId = const Value.absent(),
                 Value<String?> settlementName = const Value.absent(),
@@ -15532,6 +15722,7 @@ class $$DamageReportsTableTableManager
               }) => DamageReportsCompanion.insert(
                 id: id,
                 serverId: serverId,
+                reportNumber: reportNumber,
                 permanentFormNumber: permanentFormNumber,
                 temporaryFormNumber: temporaryFormNumber,
                 damageYear: damageYear,
@@ -15539,6 +15730,7 @@ class $$DamageReportsTableTableManager
                 farmerId: farmerId,
                 damageDate: damageDate,
                 documentationDate: documentationDate,
+                damageNatureId: damageNatureId,
                 damageCauseCategoryId: damageCauseCategoryId,
                 damageCauseId: damageCauseId,
                 settlementName: settlementName,
@@ -17711,6 +17903,7 @@ typedef $$DirectoratesTableCreateCompanionBuilder =
       required String id,
       required String nameAr,
       required String nameEn,
+      Value<String> code,
       required String governorateId,
       Value<int> rowid,
     });
@@ -17719,6 +17912,7 @@ typedef $$DirectoratesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> nameAr,
       Value<String> nameEn,
+      Value<String> code,
       Value<String> governorateId,
       Value<int> rowid,
     });
@@ -17744,6 +17938,11 @@ class $$DirectoratesTableFilterComposer
 
   ColumnFilters<String> get nameEn => $composableBuilder(
     column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17777,6 +17976,11 @@ class $$DirectoratesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get governorateId => $composableBuilder(
     column: $table.governorateId,
     builder: (column) => ColumnOrderings(column),
@@ -17800,6 +18004,9 @@ class $$DirectoratesTableAnnotationComposer
 
   GeneratedColumn<String> get nameEn =>
       $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
 
   GeneratedColumn<String> get governorateId => $composableBuilder(
     column: $table.governorateId,
@@ -17841,12 +18048,14 @@ class $$DirectoratesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> nameAr = const Value.absent(),
                 Value<String> nameEn = const Value.absent(),
+                Value<String> code = const Value.absent(),
                 Value<String> governorateId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DirectoratesCompanion(
                 id: id,
                 nameAr: nameAr,
                 nameEn: nameEn,
+                code: code,
                 governorateId: governorateId,
                 rowid: rowid,
               ),
@@ -17855,12 +18064,14 @@ class $$DirectoratesTableTableManager
                 required String id,
                 required String nameAr,
                 required String nameEn,
+                Value<String> code = const Value.absent(),
                 required String governorateId,
                 Value<int> rowid = const Value.absent(),
               }) => DirectoratesCompanion.insert(
                 id: id,
                 nameAr: nameAr,
                 nameEn: nameEn,
+                code: code,
                 governorateId: governorateId,
                 rowid: rowid,
               ),

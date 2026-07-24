@@ -166,6 +166,7 @@ class Directorates extends Table {
   TextColumn get id => text()();
   TextColumn get nameAr => text()();
   TextColumn get nameEn => text()();
+  TextColumn get code => text().withDefault(const Constant(''))();
   TextColumn get governorateId => text()();
   @override
   Set<Column> get primaryKey => {id};
@@ -186,6 +187,7 @@ class Localities extends Table {
 class DamageReports extends Table {
   TextColumn get id => text()(); // ClientId
   TextColumn get serverId => text().nullable()();
+  TextColumn get reportNumber => text().withDefault(const Constant(''))();
   TextColumn get permanentFormNumber => text().withDefault(const Constant(''))();
   TextColumn get temporaryFormNumber => text().withDefault(const Constant(''))();
   IntColumn get damageYear => integer().withDefault(const Constant(0))();
@@ -196,6 +198,7 @@ class DamageReports extends Table {
   DateTimeColumn get damageDate => dateTime()();
   DateTimeColumn get documentationDate => dateTime()();
 
+  IntColumn get damageNatureId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseCategoryId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseId => integer().withDefault(const Constant(0))();
   TextColumn get settlementName => text().nullable()();
@@ -450,7 +453,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 16;
+  int get schemaVersion => 17;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -554,6 +557,34 @@ class AppDatabase extends _$AppDatabase {
           await customStatement('UPDATE farms SET measurement_unit_id = area_unit_id');
           await customStatement('UPDATE damage_items SET costing_sheet_item_id = costing_sheet_id');
         });
+      }
+      if (from < 17) {
+        // Sprint 14.2.1: Directorate Code and Official Numbering
+        await m.addColumn(directorates, directorates.code);
+        await m.addColumn(damageReports, damageReports.reportNumber);
+        await m.addColumn(damageReports, damageReports.damageNatureId);
+
+        // Data Migration: 
+        // 1. Backfill NatureId from first item's classification hierarchy
+        await customStatement('''
+          UPDATE damage_reports 
+          SET damage_nature_id = (
+            SELECT dc.parent_id FROM damage_items di
+            JOIN damage_classifications dcl ON di.classification_id = dcl.id
+            JOIN damage_sub_categories dsc ON dcl.parent_id = dsc.id
+            JOIN damage_categories dc ON dsc.parent_id = dc.id
+            WHERE di.damage_report_id = damage_reports.id
+            LIMIT 1
+          )
+          WHERE EXISTS (SELECT 1 FROM damage_items WHERE damage_report_id = damage_reports.id);
+        ''');
+
+        // 2. Backfill ReportNumber from PermanentFormNumber
+        await customStatement('UPDATE damage_reports SET report_number = permanent_form_number WHERE permanent_form_number != "";');
+
+        // 3. Hardened Duplicate Prevention: Unique index on FarmId + DamageDate (ADR-0015)
+        await customStatement('DROP INDEX IF EXISTS damage_report_duplicate_idx;');
+        await customStatement('CREATE UNIQUE INDEX damage_report_unique_incident_idx ON damage_reports (farm_id, damage_date);');
       }
     },
     beforeOpen: (details) async {

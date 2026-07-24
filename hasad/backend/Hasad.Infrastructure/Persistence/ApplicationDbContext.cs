@@ -97,6 +97,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Workflow history for damage reports.</summary>
     public DbSet<DamageWorkflowHistory> DamageWorkflowHistories => Set<DamageWorkflowHistory>();
 
+    public DbSet<DamageReportSequence> DamageReportSequences => Set<DamageReportSequence>();
+
     public DbSet<DamageNature> DamageNatures => Set<DamageNature>();
     public DbSet<DamageCategory> DamageCategories => Set<DamageCategory>();
     public DbSet<DamageSubCategory> DamageSubCategories => Set<DamageSubCategory>();
@@ -153,6 +155,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasKey(e => e.Id);
             entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
             entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
+            entity.HasIndex(e => e.Code).IsUnique();
 
             entity.HasOne(e => e.Governorate)
                 .WithMany(g => g.Directorates)
@@ -378,6 +382,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReport>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.ReportNumber).HasMaxLength(100);
             entity.Property(e => e.PermanentFormNumber).HasMaxLength(50);
             entity.Property(e => e.TemporaryFormNumber).HasMaxLength(50);
             entity.Property(e => e.GovernorateId).IsRequired();
@@ -387,8 +392,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.Property(e => e.RowVersion).IsRowVersion();
 
             entity.HasIndex(e => e.ClientId).IsUnique();
+            entity.HasIndex(e => e.ReportNumber).IsUnique();
             entity.HasIndex(e => e.PermanentFormNumber).IsUnique();
-            entity.HasIndex(e => new { e.FarmId, e.DamageDate, e.DamageCauseId }).IsUnique().HasFilter("[IsDeleted] = 0");
+            entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
             entity.HasIndex(e => e.FarmerId);
 
             entity.HasOne(e => e.Farm)
@@ -399,6 +405,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasOne(e => e.Farmer)
                 .WithMany()
                 .HasForeignKey(e => e.FarmerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DamageNature)
+                .WithMany()
+                .HasForeignKey(e => e.DamageNatureId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.DamageCauseCategory)
@@ -570,6 +581,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany()
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DamageReportSequence>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.DirectorateId, e.DamageYear }).IsUnique();
+
+            entity.HasOne(e => e.Directorate)
+                .WithMany()
+                .HasForeignKey(e => e.DirectorateId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<Compensation>(entity =>

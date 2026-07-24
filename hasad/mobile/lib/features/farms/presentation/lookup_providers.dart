@@ -56,6 +56,16 @@ final costingSheetItemsProvider = FutureProvider<List<CostingSheetItem>>((ref) a
   return data.costingSheetItems;
 });
 
+final damageCauseCategoriesProvider = FutureProvider<List<DamageCauseCategory>>((ref) async {
+  final data = await ref.watch(referenceDataProvider.future);
+  return data.damageCauseCategories;
+});
+
+final damageCausesByCategoryProvider = FutureProvider.family<List<DamageCause>, int>((ref, categoryId) async {
+  final data = await ref.watch(referenceDataProvider.future);
+  return data.damageCauses.where((c) => c.parentId == categoryId).toList();
+});
+
 final relationshipToOwnersProvider = FutureProvider<List<RelationshipToOwner>>((ref) async {
   final data = await ref.watch(referenceDataProvider.future);
   return data.relationshipToOwners;

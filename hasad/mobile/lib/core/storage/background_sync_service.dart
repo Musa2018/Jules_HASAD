@@ -624,6 +624,7 @@ class BackgroundSyncService {
         )..where((t) => t.id.equals(item.localId))).write(
           DamageReportsCompanion(
             serverId: Value(result.serverId),
+            reportNumber: Value(result.reportNumber),
             permanentFormNumber: Value(result.permanentFormNumber),
             rowVersion: Value(result.rowVersion),
             syncStatus: const Value('completed'),

@@ -27,6 +27,7 @@ mixin _$DamageItem {
   String? get serverId => throw _privateConstructorUsedError;
   String get damageReportId => throw _privateConstructorUsedError;
   int get classificationId => throw _privateConstructorUsedError;
+  @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
   String get costingSheetId => throw _privateConstructorUsedError;
   String? get costingSheetItemId => throw _privateConstructorUsedError;
   double get calculatedUnitPrice => throw _privateConstructorUsedError;
@@ -64,6 +65,7 @@ abstract class $DamageItemCopyWith<$Res> {
     @JsonKey(name: 'id') String? serverId,
     String damageReportId,
     int classificationId,
+    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     String costingSheetId,
     String? costingSheetItemId,
     double calculatedUnitPrice,
@@ -209,6 +211,7 @@ abstract class _$$DamageItemImplCopyWith<$Res>
     @JsonKey(name: 'id') String? serverId,
     String damageReportId,
     int classificationId,
+    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     String costingSheetId,
     String? costingSheetItemId,
     double calculatedUnitPrice,
@@ -346,6 +349,7 @@ class _$DamageItemImpl implements _DamageItem {
     @JsonKey(name: 'id') this.serverId,
     required this.damageReportId,
     this.classificationId = 0,
+    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     this.costingSheetId = '',
     this.costingSheetItemId,
     this.calculatedUnitPrice = 0.0,
@@ -379,6 +383,7 @@ class _$DamageItemImpl implements _DamageItem {
   final int classificationId;
   @override
   @JsonKey()
+  @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
   final String costingSheetId;
   @override
   final String? costingSheetItemId;
@@ -505,6 +510,7 @@ abstract class _DamageItem implements DamageItem {
     @JsonKey(name: 'id') final String? serverId,
     required final String damageReportId,
     final int classificationId,
+    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     final String costingSheetId,
     final String? costingSheetItemId,
     final double calculatedUnitPrice,
@@ -535,6 +541,7 @@ abstract class _DamageItem implements DamageItem {
   @override
   int get classificationId;
   @override
+  @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
   String get costingSheetId;
   @override
   String? get costingSheetItemId;

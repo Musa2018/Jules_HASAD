@@ -102,11 +102,13 @@ class DamageReportFormState {
   final bool isLoading;
   final List<String> errors;
   final bool success;
+  final DamageReport? createdReport;
 
   const DamageReportFormState({
     this.isLoading = false,
     this.errors = const [],
     this.success = false,
+    this.createdReport,
   });
 }
 
@@ -119,8 +121,8 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
   Future<void> createDamageReport(DamageReport report) async {
     state = const DamageReportFormState(isLoading: true);
     try {
-      await _repository.createDamageReport(report);
-      state = const DamageReportFormState(success: true);
+      final created = await _repository.createDamageReport(report);
+      state = DamageReportFormState(success: true, createdReport: created);
     } on DamageReportException catch (e) {
       state = DamageReportFormState(errors: e.errors);
     } catch (_) {
@@ -133,13 +135,27 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
   Future<void> updateDamageReport(DamageReport report) async {
     state = const DamageReportFormState(isLoading: true);
     try {
-      await _repository.updateDamageReport(report);
-      state = const DamageReportFormState(success: true);
+      final updated = await _repository.updateDamageReport(report);
+      state = DamageReportFormState(success: true, createdReport: updated);
     } on DamageReportException catch (e) {
       state = DamageReportFormState(errors: e.errors);
     } catch (_) {
       state = const DamageReportFormState(
         errors: ['An unexpected error occurred.'],
+      );
+    }
+  }
+
+  Future<void> submitReport(String id) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.submitReport(id);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(
+        errors: ['Failed to submit report.'],
       );
     }
   }

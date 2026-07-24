@@ -11,6 +11,7 @@ namespace Hasad.Application.Features.DamageReports.Commands.UpdateDamageReport;
 public record UpdateDamageReportCommand(
     Guid Id,
     DateTime DamageDate,
+    int DamageNatureId,
     int DamageCauseCategoryId,
     int DamageCauseId,
     string? SettlementName,
@@ -73,24 +74,24 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             return Result<DamageReportDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
-        // Duplicate Prevention (Farm + Date + Cause) - Check if date or cause changed
-        if (report.DamageDate.Date != request.DamageDate.Date || report.DamageCauseId != request.DamageCauseId)
+        // Duplicate Prevention (Farm + Date) - Check if date changed
+        if (report.DamageDate.Date != request.DamageDate.Date)
         {
             var existingDuplicate = await _context.DamageReports
                 .AsNoTracking()
                 .AnyAsync(r => r.Id != request.Id &&
                                r.FarmId == report.FarmId &&
-                               r.DamageDate.Date == request.DamageDate.Date &&
-                               r.DamageCauseId == request.DamageCauseId,
+                               r.DamageDate.Date == request.DamageDate.Date,
                           cancellationToken);
 
             if (existingDuplicate)
             {
-                return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm, date, and cause." });
+                return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm and date." });
             }
         }
 
         report.DamageDate = request.DamageDate;
+        report.DamageNatureId = request.DamageNatureId;
         report.DamageCauseCategoryId = request.DamageCauseCategoryId;
         report.DamageCauseId = request.DamageCauseId;
         report.SettlementName = request.SettlementName;
@@ -115,6 +116,7 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         {
             Id = report.Id,
             ClientId = report.ClientId,
+            ReportNumber = report.ReportNumber,
             PermanentFormNumber = report.PermanentFormNumber,
             TemporaryFormNumber = report.TemporaryFormNumber,
             DamageYear = report.DamageYear,
@@ -122,6 +124,7 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             FarmerId = report.FarmerId,
             DamageDate = report.DamageDate,
             DocumentationDate = report.DocumentationDate,
+            DamageNatureId = report.DamageNatureId,
             DamageCauseCategoryId = report.DamageCauseCategoryId,
             DamageCauseId = report.DamageCauseId,
             SettlementName = report.SettlementName,

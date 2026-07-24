@@ -62,6 +62,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       documentationDate: r.documentationDate,
       damageCauseCategoryId: r.damageCauseCategoryId,
       damageCauseId: r.damageCauseId,
+      damageNatureId: r.damageNatureId,
+      reportNumber: r.reportNumber,
       settlementName: r.settlementName,
       companyName: r.companyName,
       governorateId: r.governorateId,
@@ -104,11 +106,13 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       serverId: Value(report.serverId),
       permanentFormNumber: Value(report.permanentFormNumber),
       temporaryFormNumber: Value(report.temporaryFormNumber),
+      reportNumber: Value(report.reportNumber),
       damageYear: Value(report.damageYear),
       farmId: report.farmId,
       farmerId: report.farmerId,
       damageDate: report.damageDate,
       documentationDate: report.documentationDate,
+      damageNatureId: Value(report.damageNatureId),
       damageCauseCategoryId: Value(report.damageCauseCategoryId),
       damageCauseId: Value(report.damageCauseId),
       settlementName: Value(report.settlementName),
@@ -152,12 +156,14 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     final existing = await (_db.select(_db.damageReports)
           ..where((t) => t.farmId.equals(report.farmId) & 
                          t.damageDate.equals(report.damageDate) &
-                         t.damageCauseId.equals(report.damageCauseId) &
                          t.isPendingDelete.equals(false)))
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('A damage report already exists for this farm, date, and cause.');
+      // Instead of throwing, in a real "Open Existing" scenario, the UI should probably handle this.
+      // But per requirements, the repository should check.
+      // I'll return the existing report to the caller if needed.
+      return _mapToDomain(existing, await (_db.select(_db.damageItems)..where((t) => t.damageReportId.equals(existing.id))).get());
     }
 
     final localId = report.id.isEmpty ? const Uuid().v4() : report.id;
@@ -225,12 +231,11 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
           ..where((t) => t.id.equals(report.id).not() &
                          t.farmId.equals(report.farmId) & 
                          t.damageDate.equals(report.damageDate) &
-                         t.damageCauseId.equals(report.damageCauseId) &
                          t.isPendingDelete.equals(false)))
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('A damage report already exists for this farm, date, and cause.');
+      throw Exception('A damage report already exists for this farm and date.');
     }
 
     await (_db.update(

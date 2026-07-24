@@ -38,10 +38,16 @@ Damage Assessment & Valuation Engine:
     - Defined "Evidence Lifecycle" (Captured -> Uploaded -> Validated -> Locked -> Archived).
     - Analyzed "Assistance Integration" requirements.
     - Verified sync impact for locking and metadata.
-- **Phase 3 (In Progress)**: DamageReport Form Completion & Evidence Foundation.
-    - **Gap Analysis (Completed)**: Identified missing Hierarchical Cause Selection and Form Integration on mobile.
-    - **UI Polish (Pending)**: Integrate `DamageItemFormSheet` and implement `DamageCauseSelector`.
-    - **Evidence Foundation (Pending)**: Domain migration from Attachments to Evidence Lifecycle.
+- **Phase 3 (Completed)**: DamageReport Form Completion & Lifecycle Correction.
+    - **Header Workflow**: Refactored creation into two phases: Header Save (Step 1) -> Assessment (Step 2).
+    - **Official Numbering**: Implemented Palestinian numbering convention `{Gov}-{Dir}-{Year}-{Seq}` per ADR-0014.
+    - **Duplicate Prevention**: Hardened creation logic to detect and open existing reports for same Farm/Date.
+    - **Domain Correction**: Moved Damage Nature from Item level to Report level for categorization consistency.
+- **Sprint 14.2.1 — COMPLETED**
+    - **Database Migration**: Applied missing EF Core migrations for `Directorate.Code`, `DamageReport.ReportNumber`, and `DamageReportSequence`.
+    - **Flutter Drift**: Verified schema v17 migration with backfill logic and automated tests.
+    - **Data Integrity**: Hardened duplicate prevention with unique constraints on `FarmId` + `DamageDate`.
+- **Phase 4 (Pending)**: Evidence Lifecycle Foundation.
 
 ## Sprint 13.1 — COMPLETED
 

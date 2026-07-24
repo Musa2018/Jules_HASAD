@@ -269,25 +269,25 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
       
       batch.insertAll(_db.agriculturalSectors, data.agriculturalSectors.map((e) => AgriculturalSectorsCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.politicalClassifications, data.politicalClassifications.map((e) => PoliticalClassificationsCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.areaUnits, data.areaUnits.map((e) => AreaUnitsCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.measurementUnits, data.measurementUnits.map((e) => MeasurementUnitsCompanion.insert(
         id: Value(e.id),
@@ -295,53 +295,53 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         nameEn: e.nameEn,
         code: Value(e.code),
         category: e.category,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.relationshipToOwners, data.relationshipToOwners.map((e) => RelationshipToOwnersCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageNatures, data.damageNatures.map((e) => DamageNaturesCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageCategories, data.damageCategories.map((e) => DamageCategoriesCompanion.insert(
         id: Value(e.id),
         parentId: e.parentId,
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageSubCategories, data.damageSubCategories.map((e) => DamageSubCategoriesCompanion.insert(
         id: Value(e.id),
         parentId: e.parentId,
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageClassifications, data.damageClassifications.map((e) => DamageClassificationsCompanion.insert(
         id: Value(e.id),
         parentId: e.parentId,
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageCauseCategories, data.damageCauseCategories.map((e) => DamageCauseCategoriesCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageCauses, data.damageCauses.map((e) => DamageCausesCompanion.insert(
         id: Value(e.id),
         parentId: e.parentId,
         nameAr: e.nameAr,
         nameEn: e.nameEn,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       // Hierarchical Pricing
       batch.insertAll(_db.costingSheetCatalogs, data.costingSheetCatalogs.map((e) => CostingSheetCatalogsCompanion.insert(
@@ -350,7 +350,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         description: Value(e.description),
         createdAt: Value(e.createdAt),
         createdBy: e.createdBy,
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.costingSheetVersions, data.costingSheetVersions.map((e) => CostingSheetVersionsCompanion.insert(
         id: e.id,
@@ -363,7 +363,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         createdBy: e.createdBy,
         approvedAt: Value(e.approvedAt),
         approvedBy: Value(e.approvedBy),
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.costingSheetItems, data.costingSheetItems.map((e) => CostingSheetItemsCompanion.insert(
         id: e.id,
@@ -372,11 +372,10 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         measurementUnitId: Value(e.measurementUnitId),
         unitPrice: e.unitPrice,
         createdAt: Value(e.createdAt),
-      )));
+      )), mode: InsertMode.insertOrReplace);
 
-      // Backward compatibility: If the server sends flat costingSheets, 
-      // we map them to a special Local Server Version for now.
-      if (data.legacyCostingSheets.isNotEmpty) {
+      // Backward compatibility: Only process legacy list if modern hierarchy is missing
+      if (data.costingSheetItems.isEmpty && data.legacyCostingSheets.isNotEmpty) {
         final serverLegacyCatalogId = 'LEGACY-CATALOG-SERVER';
         final serverLegacyVersionId = 'LEGACY-VERSION-SERVER';
 
@@ -385,7 +384,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
           name: 'Server Legacy Catalog',
           description: const Value('Wrapper for flat pricing items from server.'),
           createdBy: 'System',
-        ), mode: InsertMode.insertOrIgnore);
+        ), mode: InsertMode.insertOrReplace);
 
         batch.insert(_db.costingSheetVersions, CostingSheetVersionsCompanion.insert(
           id: serverLegacyVersionId,
@@ -394,7 +393,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
           status: 2, // Active
           effectiveFrom: DateTime(2000),
           createdBy: 'System',
-        ), mode: InsertMode.insertOrIgnore);
+        ), mode: InsertMode.insertOrReplace);
 
         batch.insertAll(_db.costingSheetItems, data.legacyCostingSheets.map((e) => CostingSheetItemsCompanion.insert(
           id: e.id,
@@ -403,7 +402,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
           measurementUnitId: Value(e.measurementUnitId),
           unitPrice: e.unitPrice,
           createdAt: Value(e.createdAt),
-        )));
+        )), mode: InsertMode.insertOrReplace);
       }
     });
   }

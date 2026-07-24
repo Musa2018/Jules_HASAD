@@ -3,6 +3,7 @@ namespace Hasad.Domain.Constants;
 public static class DamageReportStatus
 {
     public const string Draft = "Draft";
+    public const string PendingTechnicalVerification = "PendingTechnicalVerification";
     public const string TechReview = "TechReview";
     public const string ArchiveDir = "ArchiveDir";
     public const string DirManager = "DirManager";
@@ -15,7 +16,7 @@ public static class DamageReportStatus
 
     public static string[] All() => new[]
     {
-        Draft, TechReview, ArchiveDir, DirManager, MinTechReview,
+        Draft, PendingTechnicalVerification, TechReview, ArchiveDir, DirManager, MinTechReview,
         LegalReview, ProcReview, MinArchive, GenManager, Completed
     };
 }

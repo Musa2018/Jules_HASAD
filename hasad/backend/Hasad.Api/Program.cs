@@ -133,7 +133,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
-builder.Services.AddScoped<ICompensationService, CompensationService>();
+builder.Services.AddScoped<IAssistanceService, AssistanceService>();
 builder.Services.AddScoped<ICostingService, CostingService>();
 builder.Services.AddScoped<IDamageReportNumberService, DamageReportNumberService>();
 builder.Services.AddScoped<IDamageWorkflowService, DamageWorkflowService>();
@@ -194,7 +194,7 @@ using (var scope = app.Services.CreateScope())
 
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         await DbInitializer.SeedRolesAsync(roleManager);
-        await DbInitializer.SeedCompensationRulesAsync(context);
+            await DbInitializer.SeedAssistanceRulesAsync(context);
         await DbInitializer.SeedGeographicsAsync(context);
         await DbInitializer.SeedDamageReferenceDataAsync(context);
 

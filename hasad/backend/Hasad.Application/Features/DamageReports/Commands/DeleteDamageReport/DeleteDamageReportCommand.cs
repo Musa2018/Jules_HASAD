@@ -22,6 +22,7 @@ public class DeleteDamageReportCommandHandler : IRequestHandler<DeleteDamageRepo
     public async Task<Result<Unit>> Handle(DeleteDamageReportCommand request, CancellationToken cancellationToken)
     {
         var report = await _context.DamageReports
+            .Include(r => r.Farm)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
         if (report == null)
@@ -32,14 +33,14 @@ public class DeleteDamageReportCommandHandler : IRequestHandler<DeleteDamageRepo
         // Authorization check
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
-            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<Unit>.Failure(new[] { "Access Denied: You can only delete reports within your assigned directorate." });
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
-            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<Unit>.Failure(new[] { "Access Denied: You can only delete reports within your assigned governorate." });
             }

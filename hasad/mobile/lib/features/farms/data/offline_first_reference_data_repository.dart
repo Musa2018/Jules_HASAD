@@ -33,6 +33,14 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
   }
 
   @override
+  Future<List<domain.DamageAction>> getActions() async {
+    final items = await _db.select(_db.damageActions).get();
+    return items
+        .map((e) => domain.DamageAction(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
+        .toList();
+  }
+
+  @override
   Future<List<domain.DamageCategory>> getCategories(int natureId) async {
     final items = await (_db.select(_db.damageCategories)
           ..where((t) => t.parentId.equals(natureId)))
@@ -143,6 +151,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
 
     // Damage Hierarchy
     final natures = await _db.select(_db.damageNatures).get();
+    final actions = await _db.select(_db.damageActions).get();
     final categories = await _db.select(_db.damageCategories).get();
     final subCategories = await _db.select(_db.damageSubCategories).get();
     final classifications = await _db.select(_db.damageClassifications).get();
@@ -182,6 +191,9 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
           .toList(),
       damageNatures: natures
           .map((e) => domain.DamageNature(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
+          .toList(),
+      damageActions: actions
+          .map((e) => domain.DamageAction(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
           .toList(),
       damageCategories: categories
           .map((e) => domain.DamageCategory(
@@ -255,6 +267,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       batch.deleteWhere(_db.measurementUnits, (t) => const Constant(true));
       batch.deleteWhere(_db.relationshipToOwners, (t) => const Constant(true));
       batch.deleteWhere(_db.damageNatures, (t) => const Constant(true));
+      batch.deleteWhere(_db.damageActions, (t) => const Constant(true));
       batch.deleteWhere(_db.damageCategories, (t) => const Constant(true));
       batch.deleteWhere(_db.damageSubCategories, (t) => const Constant(true));
       batch.deleteWhere(_db.damageClassifications, (t) => const Constant(true));
@@ -304,6 +317,12 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageNatures, data.damageNatures.map((e) => DamageNaturesCompanion.insert(
+        id: Value(e.id),
+        nameAr: e.nameAr,
+        nameEn: e.nameEn,
+      )), mode: InsertMode.insertOrReplace);
+
+      batch.insertAll(_db.damageActions, data.damageActions.map((e) => DamageActionsCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,

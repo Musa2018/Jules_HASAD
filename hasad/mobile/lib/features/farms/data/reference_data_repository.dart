@@ -6,6 +6,7 @@ abstract class ReferenceDataRepository {
 
   // Hierarchical Lookups
   Future<List<DamageNature>> getNatures();
+  Future<List<DamageAction>> getActions();
   Future<List<DamageCategory>> getCategories(int natureId);
   Future<List<DamageSubCategory>> getSubCategories(int categoryId);
   Future<List<DamageClassification>> getClassifications(int subCategoryId);

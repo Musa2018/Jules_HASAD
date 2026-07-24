@@ -24,6 +24,8 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
     {
         var report = await _context.DamageReports
             .AsNoTracking()
+            .Include(r => r.Farm)
+            .ThenInclude(f => f!.Farmer)
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
@@ -35,14 +37,14 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
         // Authorization check
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
-            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<DamageReportDto>.Failure(new[] { "Access Denied: This report is outside your assigned directorate scope." });
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
-            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<DamageReportDto>.Failure(new[] { "Access Denied: This report is outside your assigned governorate scope." });
             }
@@ -55,21 +57,21 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
             ReportNumber = report.ReportNumber,
             PermanentFormNumber = report.PermanentFormNumber,
             TemporaryFormNumber = report.TemporaryFormNumber,
-            DamageYear = report.DamageYear,
+            DamageYear = report.DamageDate.Year,
             FarmId = report.FarmId,
-            FarmerId = report.FarmerId,
+            FarmerId = report.Farm?.FarmerId ?? Guid.Empty,
             DamageDate = report.DamageDate,
             DocumentationDate = report.DocumentationDate,
-            DamageNatureId = report.DamageNatureId,
+            AgriculturalSectorId = report.AgriculturalSectorId,
             DamageCauseCategoryId = report.DamageCauseCategoryId,
             DamageCauseId = report.DamageCauseId,
             SettlementName = report.SettlementName,
             CompanyName = report.CompanyName,
-            GovernorateId = report.GovernorateId,
-            DirectorateId = report.DirectorateId,
-            LocalityId = report.LocalityId,
-            Latitude = report.Latitude,
-            Longitude = report.Longitude,
+            GovernorateId = report.Farm?.GovernorateId ?? Guid.Empty,
+            DirectorateId = report.Farm?.DirectorateId ?? Guid.Empty,
+            LocalityId = report.Farm?.LocalityId ?? Guid.Empty,
+            Latitude = report.Farm?.Latitude,
+            Longitude = report.Farm?.Longitude,
             StatusId = report.StatusId,
             Notes = report.Notes,
             RowVersion = Convert.ToBase64String(report.RowVersion),
@@ -77,6 +79,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
             {
                 Id = i.Id,
                 ClientId = i.ClientId,
+                DamageNatureId = i.DamageNatureId,
                 ClassificationId = i.ClassificationId,
                 CostingSheetId = i.CostingSheetItemId,
                 CalculatedUnitPrice = i.CalculatedUnitPrice,

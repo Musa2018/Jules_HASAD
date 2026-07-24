@@ -79,14 +79,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Damage reports.</summary>
     public DbSet<DamageReport> DamageReports => Set<DamageReport>();
 
-    /// <summary>Compensations linked to reports.</summary>
-    public DbSet<Compensation> Compensations => Set<Compensation>();
+    /// <summary>Assistances linked to reports.</summary>
+    public DbSet<Assistance> Assistances => Set<Assistance>();
 
-    /// <summary>Compensation rules for calculation.</summary>
-    public DbSet<CompensationRule> CompensationRules => Set<CompensationRule>();
+    /// <summary>Assistance rules for calculation.</summary>
+    public DbSet<AssistanceRule> AssistanceRules => Set<AssistanceRule>();
 
-    /// <summary>Audit logs for compensation status changes.</summary>
-    public DbSet<CompensationAuditLog> CompensationAuditLogs => Set<CompensationAuditLog>();
+    /// <summary>Audit logs for assistance status changes.</summary>
+    public DbSet<AssistanceAuditLog> AssistanceAuditLogs => Set<AssistanceAuditLog>();
 
     /// <summary>Damage items within reports.</summary>
     public DbSet<DamageItem> DamageItems => Set<DamageItem>();
@@ -100,6 +100,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<DamageReportSequence> DamageReportSequences => Set<DamageReportSequence>();
 
     public DbSet<DamageNature> DamageNatures => Set<DamageNature>();
+    public DbSet<DamageAction> DamageActions => Set<DamageAction>();
     public DbSet<DamageCategory> DamageCategories => Set<DamageCategory>();
     public DbSet<DamageSubCategory> DamageSubCategories => Set<DamageSubCategory>();
     public DbSet<DamageClassification> DamageClassifications => Set<DamageClassification>();
@@ -336,9 +337,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<AgriculturalSector>(entity =>
         {
             entity.HasData(
-                new AgriculturalSector { Id = 1, NameAr = "نباتي", NameEn = "Plant" },
-                new AgriculturalSector { Id = 2, NameAr = "حيواني", NameEn = "Animal" },
-                new AgriculturalSector { Id = 3, NameAr = "مختلط", NameEn = "Mixed" }
+                new AgriculturalSector { Id = 1, NameAr = "الإنتاج النباتي", NameEn = "Plant Production" },
+                new AgriculturalSector { Id = 2, NameAr = "الإنتاج الحيواني", NameEn = "Animal Production" },
+                new AgriculturalSector { Id = 3, NameAr = "الإنتاج المختلط", NameEn = "Mixed Production" }
             );
         });
 
@@ -362,7 +363,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 new MeasurementUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum", Category = "Area" },
                 new MeasurementUnit { Id = 2, NameAr = "متر مربع", NameEn = "Square Meter", Category = "Area" },
                 new MeasurementUnit { Id = 3, NameAr = "هكتار", NameEn = "Hectare", Category = "Area" },
-                new MeasurementUnit { Id = 4, NameAr = "أخرى", NameEn = "Other", Category = "Area" }
+                new MeasurementUnit { Id = 4, NameAr = "شجرة", NameEn = "Tree", Category = "Count" },
+                new MeasurementUnit { Id = 5, NameAr = "كغم", NameEn = "Kg", Category = "Weight" },
+                new MeasurementUnit { Id = 6, NameAr = "طن", NameEn = "Ton", Category = "Weight" },
+                new MeasurementUnit { Id = 7, NameAr = "رأس", NameEn = "Head", Category = "Count" },
+                new MeasurementUnit { Id = 8, NameAr = "خلية", NameEn = "Hive", Category = "Count" },
+                new MeasurementUnit { Id = 9, NameAr = "صندوق", NameEn = "Box", Category = "Count" },
+                new MeasurementUnit { Id = 10, NameAr = "لتر", NameEn = "Liter", Category = "Volume" },
+                new MeasurementUnit { Id = 11, NameAr = "أخرى", NameEn = "Other", Category = "General" }
             );
         });
 
@@ -385,9 +393,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.Property(e => e.ReportNumber).HasMaxLength(100);
             entity.Property(e => e.PermanentFormNumber).HasMaxLength(50);
             entity.Property(e => e.TemporaryFormNumber).HasMaxLength(50);
-            entity.Property(e => e.GovernorateId).IsRequired();
-            entity.Property(e => e.DirectorateId).IsRequired();
-            entity.Property(e => e.LocalityId).IsRequired();
             entity.Property(e => e.StatusId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.RowVersion).IsRowVersion();
 
@@ -395,21 +400,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasIndex(e => e.ReportNumber).IsUnique();
             entity.HasIndex(e => e.PermanentFormNumber).IsUnique();
             entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
-            entity.HasIndex(e => e.FarmerId);
 
             entity.HasOne(e => e.Farm)
                 .WithMany()
                 .HasForeignKey(e => e.FarmId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.Farmer)
+            entity.HasOne(e => e.AgriculturalSector)
                 .WithMany()
-                .HasForeignKey(e => e.FarmerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(e => e.DamageNature)
-                .WithMany()
-                .HasForeignKey(e => e.DamageNatureId)
+                .HasForeignKey(e => e.AgriculturalSectorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.DamageCauseCategory)
@@ -442,6 +441,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasOne(e => e.DamageNature)
+                .WithMany()
+                .HasForeignKey(e => e.DamageNatureId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DamageAction)
+                .WithMany()
+                .HasForeignKey(e => e.DamageActionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasOne(e => e.Classification)
                 .WithMany()
                 .HasForeignKey(e => e.ClassificationId)
@@ -458,6 +467,39 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasKey(e => e.Id);
             entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
             entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+
+            entity.HasData(
+                new DamageNature { Id = 1, NameAr = "جفاف", NameEn = "Drought" },
+                new DamageNature { Id = 2, NameAr = "صقيع", NameEn = "Frost" },
+                new DamageNature { Id = 3, NameAr = "فيضانات", NameEn = "Flood" },
+                new DamageNature { Id = 4, NameAr = "عاصفة", NameEn = "Storm" },
+                new DamageNature { Id = 5, NameAr = "حريق", NameEn = "Fire" },
+                new DamageNature { Id = 6, NameAr = "آفة", NameEn = "Pest" },
+                new DamageNature { Id = 7, NameAr = "مرض", NameEn = "Disease" },
+                new DamageNature { Id = 8, NameAr = "موجة حر", NameEn = "Heat Wave" },
+                new DamageNature { Id = 9, NameAr = "موجة برد", NameEn = "Cold Wave" },
+                new DamageNature { Id = 10, NameAr = "أخرى", NameEn = "Other" }
+            );
+        });
+
+        builder.Entity<DamageAction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+
+            entity.HasData(
+                new DamageAction { Id = 1, NameAr = "حرق", NameEn = "Burning" },
+                new DamageAction { Id = 2, NameAr = "تكسير", NameEn = "Breaking" },
+                new DamageAction { Id = 3, NameAr = "تدمير", NameEn = "Destruction" },
+                new DamageAction { Id = 4, NameAr = "سرقة", NameEn = "Theft" },
+                new DamageAction { Id = 5, NameAr = "تسميم", NameEn = "Poisoning" },
+                new DamageAction { Id = 6, NameAr = "قلع", NameEn = "Uprooting" },
+                new DamageAction { Id = 7, NameAr = "قص", NameEn = "Cutting" },
+                new DamageAction { Id = 8, NameAr = "إغراق", NameEn = "Flooding" },
+                new DamageAction { Id = 9, NameAr = "تخريب", NameEn = "Vandalism" },
+                new DamageAction { Id = 10, NameAr = "أخرى", NameEn = "Other" }
+            );
         });
 
         builder.Entity<DamageCategory>(entity =>
@@ -465,10 +507,24 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasKey(e => e.Id);
             entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
             entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
-            entity.HasOne(e => e.Nature)
-                .WithMany(n => n.Categories)
-                .HasForeignKey(e => e.NatureId)
+            entity.HasOne(e => e.AgriculturalSector)
+                .WithMany()
+                .HasForeignKey(e => e.AgriculturalSectorId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasData(
+                new DamageCategory { Id = 1, AgriculturalSectorId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
+                new DamageCategory { Id = 2, AgriculturalSectorId = 1, NameAr = "خضروات", NameEn = "Vegetables" },
+                new DamageCategory { Id = 3, AgriculturalSectorId = 1, NameAr = "أشجار مثمرة", NameEn = "Fruit Trees" },
+                new DamageCategory { Id = 4, AgriculturalSectorId = 1, NameAr = "أشجار زيتون", NameEn = "Olive Trees" },
+                new DamageCategory { Id = 5, AgriculturalSectorId = 1, NameAr = "دفيئات", NameEn = "Greenhouses" },
+                new DamageCategory { Id = 6, AgriculturalSectorId = 1, NameAr = "مشاتل", NameEn = "Nurseries" },
+                new DamageCategory { Id = 7, AgriculturalSectorId = 2, NameAr = "أبقار", NameEn = "Cattle" },
+                new DamageCategory { Id = 8, AgriculturalSectorId = 2, NameAr = "أغنام", NameEn = "Sheep" },
+                new DamageCategory { Id = 9, AgriculturalSectorId = 2, NameAr = "ماعز", NameEn = "Goats" },
+                new DamageCategory { Id = 10, AgriculturalSectorId = 2, NameAr = "دواجن", NameEn = "Poultry" },
+                new DamageCategory { Id = 11, AgriculturalSectorId = 2, NameAr = "نحل", NameEn = "Bees" }
+            );
         });
 
         builder.Entity<DamageSubCategory>(entity =>
@@ -480,6 +536,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(c => c.SubCategories)
                 .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasData(
+                new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "حبوب", NameEn = "Cereals" },
+                new DamageSubCategory { Id = 2, CategoryId = 2, NameAr = "مكشوفة", NameEn = "Open Field" },
+                new DamageSubCategory { Id = 3, CategoryId = 3, NameAr = "حمضيات", NameEn = "Citrus" },
+                new DamageSubCategory { Id = 4, CategoryId = 3, NameAr = "فواكه أخرى", NameEn = "Other Fruits" },
+                new DamageSubCategory { Id = 5, CategoryId = 5, NameAr = "خضروات محمية", NameEn = "Protected Vegetables" },
+                new DamageSubCategory { Id = 6, CategoryId = 7, NameAr = "إنتاج حليب", NameEn = "Dairy" },
+                new DamageSubCategory { Id = 7, CategoryId = 10, NameAr = "لاحم", NameEn = "Broilers" },
+                new DamageSubCategory { Id = 8, CategoryId = 11, NameAr = "خلايا نحل", NameEn = "Hives" }
+            );
         });
 
         builder.Entity<DamageClassification>(entity =>
@@ -491,6 +558,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(s => s.Classifications)
                 .HasForeignKey(e => e.SubCategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasData(
+                new DamageClassification { Id = 1, SubCategoryId = 1, NameAr = "قمح", NameEn = "Wheat" },
+                new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "شعير", NameEn = "Barley" },
+                new DamageClassification { Id = 3, SubCategoryId = 2, NameAr = "بندورة", NameEn = "Tomato" },
+                new DamageClassification { Id = 4, SubCategoryId = 2, NameAr = "خيار", NameEn = "Cucumber" },
+                new DamageClassification { Id = 5, SubCategoryId = 4, NameAr = "زيتون", NameEn = "Olive" },
+                new DamageClassification { Id = 6, SubCategoryId = 4, NameAr = "عنب", NameEn = "Grape" },
+                new DamageClassification { Id = 7, SubCategoryId = 3, NameAr = "حمضيات", NameEn = "Citrus" },
+                new DamageClassification { Id = 8, SubCategoryId = 4, NameAr = "نخيل", NameEn = "Date Palm" }
+            );
         });
 
         builder.Entity<CostingSheetCatalog>(entity =>
@@ -594,7 +672,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<Compensation>(entity =>
+        builder.Entity<Assistance>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.CalculatedAmount).HasPrecision(18, 2);
@@ -607,7 +685,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
             entity.HasOne(e => e.DamageReport)
                 .WithOne()
-                .HasForeignKey<Compensation>(e => e.DamageReportId)
+                .HasForeignKey<Assistance>(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(e => e.Rule)
@@ -616,23 +694,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<CompensationRule>(entity =>
+        builder.Entity<AssistanceRule>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Multiplier).HasPrecision(18, 4);
         });
 
-        builder.Entity<CompensationAuditLog>(entity =>
+        builder.Entity<AssistanceAuditLog>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.PreviousStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.NewStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ChangedBy).IsRequired().HasMaxLength(100);
 
-            entity.HasOne(e => e.Compensation)
+            entity.HasOne(e => e.Assistance)
                 .WithMany(c => c.AuditLogs)
-                .HasForeignKey(e => e.CompensationId)
+                .HasForeignKey(e => e.AssistanceId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

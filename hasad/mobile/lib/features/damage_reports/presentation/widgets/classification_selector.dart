@@ -4,11 +4,12 @@ import 'package:mobile/features/damage_reports/presentation/providers/classifica
 import 'package:mobile/l10n/app_localizations.dart';
 
 class ClassificationSelector extends ConsumerWidget {
-  const ClassificationSelector({super.key});
+  final int sectorId;
+  const ClassificationSelector({super.key, required this.sectorId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(classificationWizardProvider);
+    final state = ref.watch(classificationWizardProvider(sectorId));
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -30,12 +31,15 @@ class ClassificationSelector extends ConsumerWidget {
         title = 'Select Damage Nature';
         break;
       case 2:
-        title = 'Select Category';
+        title = 'Select Damage Action';
         break;
       case 3:
-        title = 'Select Sub-Category';
+        title = 'Select Category';
         break;
       case 4:
+        title = 'Select Sub-Category';
+        break;
+      case 5:
         title = 'Select Classification';
         break;
       default:
@@ -46,11 +50,11 @@ class ClassificationSelector extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          if (state.currentStep > 1 && !(state.currentStep == 2 && state.selectedNature != null))
+          if (state.currentStep > 1)
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () =>
-                  ref.read(classificationWizardProvider.notifier).previousStep(),
+                  ref.read(classificationWizardProvider(sectorId).notifier).previousStep(),
             ),
           Expanded(
             child: Text(
@@ -58,7 +62,7 @@ class ClassificationSelector extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          Text('Step ${state.currentStep} of 4'),
+          Text('Step ${state.currentStep} of 5'),
         ],
       ),
     );
@@ -68,14 +72,16 @@ class ClassificationSelector extends ConsumerWidget {
       ClassificationWizardState state, AppLocalizations l10n) {
     switch (state.currentStep) {
       case 1:
-        return _NatureSelectionList();
+        return _NatureSelectionList(sectorId: sectorId);
       case 2:
-        return _CategorySelectionList(natureId: state.selectedNature!.id);
+        return _ActionSelectionList(sectorId: sectorId);
       case 3:
-        return _SubCategorySelectionList(categoryId: state.selectedCategory!.id);
+        return _CategorySelectionList(sectorId: sectorId);
       case 4:
+        return _SubCategorySelectionList(categoryId: state.selectedCategory!.id, sectorId: sectorId);
+      case 5:
         return _ClassificationSelectionList(
-            subCategoryId: state.selectedSubCategory!.id);
+            subCategoryId: state.selectedSubCategory!.id, sectorId: sectorId);
       default:
         return const SizedBox.shrink();
     }
@@ -83,6 +89,9 @@ class ClassificationSelector extends ConsumerWidget {
 }
 
 class _NatureSelectionList extends ConsumerWidget {
+  final int sectorId;
+  const _NatureSelectionList({required this.sectorId});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final naturesAsync = ref.watch(naturesProvider);
@@ -96,7 +105,34 @@ class _NatureSelectionList extends ConsumerWidget {
             title: Text(item.nameAr),
             subtitle: Text(item.nameEn),
             onTap: () =>
-                ref.read(classificationWizardProvider.notifier).setNature(item),
+                ref.read(classificationWizardProvider(sectorId).notifier).setNature(item),
+          );
+        },
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, _) => Center(child: Text('Error: $err')),
+    );
+  }
+}
+
+class _ActionSelectionList extends ConsumerWidget {
+  final int sectorId;
+  const _ActionSelectionList({required this.sectorId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final actionsAsync = ref.watch(actionsProvider);
+
+    return actionsAsync.when(
+      data: (items) => ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return ListTile(
+            title: Text(item.nameAr),
+            subtitle: Text(item.nameEn),
+            onTap: () =>
+                ref.read(classificationWizardProvider(sectorId).notifier).setAction(item),
           );
         },
       ),
@@ -107,12 +143,12 @@ class _NatureSelectionList extends ConsumerWidget {
 }
 
 class _CategorySelectionList extends ConsumerWidget {
-  final int natureId;
-  const _CategorySelectionList({required this.natureId});
+  final int sectorId;
+  const _CategorySelectionList({required this.sectorId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoriesAsync = ref.watch(categoriesByNatureProvider(natureId));
+    final categoriesAsync = ref.watch(categoriesBySectorProvider(sectorId));
 
     return categoriesAsync.when(
       data: (items) => ListView.builder(
@@ -122,7 +158,7 @@ class _CategorySelectionList extends ConsumerWidget {
           return ListTile(
             title: Text(item.nameAr),
             onTap: () =>
-                ref.read(classificationWizardProvider.notifier).setCategory(item),
+                ref.read(classificationWizardProvider(sectorId).notifier).setCategory(item),
           );
         },
       ),
@@ -134,7 +170,8 @@ class _CategorySelectionList extends ConsumerWidget {
 
 class _SubCategorySelectionList extends ConsumerWidget {
   final int categoryId;
-  const _SubCategorySelectionList({required this.categoryId});
+  final int sectorId;
+  const _SubCategorySelectionList({required this.categoryId, required this.sectorId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -149,7 +186,7 @@ class _SubCategorySelectionList extends ConsumerWidget {
           return ListTile(
             title: Text(item.nameAr),
             onTap: () => ref
-                .read(classificationWizardProvider.notifier)
+                .read(classificationWizardProvider(sectorId).notifier)
                 .setSubCategory(item),
           );
         },
@@ -162,7 +199,8 @@ class _SubCategorySelectionList extends ConsumerWidget {
 
 class _ClassificationSelectionList extends ConsumerWidget {
   final int subCategoryId;
-  const _ClassificationSelectionList({required this.subCategoryId});
+  final int sectorId;
+  const _ClassificationSelectionList({required this.subCategoryId, required this.sectorId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -177,7 +215,7 @@ class _ClassificationSelectionList extends ConsumerWidget {
           return ListTile(
             title: Text(item.nameAr),
             onTap: () => ref
-                .read(classificationWizardProvider.notifier)
+                .read(classificationWizardProvider(sectorId).notifier)
                 .setClassification(item),
           );
         },

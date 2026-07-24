@@ -1,0 +1,27 @@
+# Task: DamageReport Header-First Lifecycle Alignment (Sprint 14.2.2)
+
+- [ ] **Backend: Domain Layer Refinement**
+    - [ ] Update `DamageReport.cs`: Remove redundant fields (`FarmerId`, `GovernorateId`, `DirectorateId`, `LocalityId`, `Latitude`, `Longitude`, `DamageYear`)
+    - [ ] Update `DamageReportStatus.cs`: Ensure `PendingTechnicalVerification` is defined
+- [ ] **Backend: Infrastructure Layer Refinement**
+    - [ ] Update `ApplicationDbContext.cs`: Adjust `DamageReport` model configuration and indices
+    - [ ] Update `DamageReportNumberService.cs`: Use `DamageDate.Year` for sequence year
+    - [ ] Create EF Core Migration: `Sprint14_2_2_DamageReportRefinement`
+- [ ] **Backend: Application Layer Alignment**
+    - [ ] Update `CreateDamageReportCommand.cs`: Support header-only creation, set initial status
+    - [ ] Update `UpdateDamageReportCommand.cs`: Adjust for removed fields
+    - [ ] Update `DamageReportDto.cs` and Mapping: Ensure client receives necessary context from `Farm`
+    - [ ] Update Queries (`GetDamageReportById`, etc.) to reflect entity changes
+- [ ] **Mobile: Storage & Data Layer**
+    - [ ] Update `database.dart`: Remove redundant columns from `DamageReports` table
+    - [ ] Implement Drift Migration (v18): Safe backfill/cleanup
+    - [ ] Update `DamageReport` Domain Model & JSON mapping
+    - [ ] Update `DamageReportSyncDto` mapping
+    - [ ] Update `OfflineFirstDamageReportRepository`: Reflect schema changes and header-first logic
+- [ ] **Mobile: Presentation Layer**
+    - [ ] Update `DamageReportFormScreen`: Refine 2-phase workflow and duplicate handling
+- [ ] **Documentation & Verification**
+    - [ ] Update `ADR-0015.md`
+    - [ ] Update `PROJECT_STATUS.md`
+    - [ ] Verify Backend Tests
+    - [ ] Verify Mobile Tests & Sync Flow

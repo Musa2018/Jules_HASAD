@@ -46,24 +46,24 @@ namespace Hasad.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            NameAr = "نباتي",
-                            NameEn = "Plant"
+                            NameAr = "الإنتاج النباتي",
+                            NameEn = "Plant Production"
                         },
                         new
                         {
                             Id = 2,
-                            NameAr = "حيواني",
-                            NameEn = "Animal"
+                            NameAr = "الإنتاج الحيواني",
+                            NameEn = "Animal Production"
                         },
                         new
                         {
                             Id = 3,
-                            NameAr = "مختلط",
-                            NameEn = "Mixed"
+                            NameAr = "الإنتاج المختلط",
+                            NameEn = "Mixed Production"
                         });
                 });
 
-            modelBuilder.Entity("Hasad.Domain.Entities.Compensation", b =>
+            modelBuilder.Entity("Hasad.Domain.Entities.Assistance", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,13 +117,16 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasIndex("RuleId");
 
-                    b.ToTable("Compensations");
+                    b.ToTable("Assistances");
                 });
 
-            modelBuilder.Entity("Hasad.Domain.Entities.CompensationAuditLog", b =>
+            modelBuilder.Entity("Hasad.Domain.Entities.AssistanceAuditLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssistanceId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("ChangedAt")
@@ -133,9 +136,6 @@ namespace Hasad.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("CompensationId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("NewStatus")
                         .IsRequired()
@@ -153,12 +153,12 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompensationId");
+                    b.HasIndex("AssistanceId");
 
-                    b.ToTable("CompensationAuditLogs");
+                    b.ToTable("AssistanceAuditLogs");
                 });
 
-            modelBuilder.Entity("Hasad.Domain.Entities.CompensationRule", b =>
+            modelBuilder.Entity("Hasad.Domain.Entities.AssistanceRule", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -185,7 +185,7 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CompensationRules");
+                    b.ToTable("AssistanceRules");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.CostingSheetCatalog", b =>
@@ -294,7 +294,7 @@ namespace Hasad.Infrastructure.Migrations
                     b.ToTable("CostingSheetVersions");
                 });
 
-            modelBuilder.Entity("Hasad.Domain.Entities.DamageCategory", b =>
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageAction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -312,14 +312,178 @@ namespace Hasad.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("NatureId")
+                    b.HasKey("Id");
+
+                    b.ToTable("DamageActions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "حرق",
+                            NameEn = "Burning"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "تكسير",
+                            NameEn = "Breaking"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "تدمير",
+                            NameEn = "Destruction"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            NameAr = "سرقة",
+                            NameEn = "Theft"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            NameAr = "تسميم",
+                            NameEn = "Poisoning"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            NameAr = "قلع",
+                            NameEn = "Uprooting"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            NameAr = "قص",
+                            NameEn = "Cutting"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            NameAr = "إغراق",
+                            NameEn = "Flooding"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            NameAr = "تخريب",
+                            NameEn = "Vandalism"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            NameAr = "أخرى",
+                            NameEn = "Other"
+                        });
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.DamageCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AgriculturalSectorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NatureId");
+                    b.HasIndex("AgriculturalSectorId");
 
                     b.ToTable("DamageCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AgriculturalSectorId = 1,
+                            NameAr = "محاصيل حقلية",
+                            NameEn = "Field Crops"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AgriculturalSectorId = 1,
+                            NameAr = "خضروات",
+                            NameEn = "Vegetables"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AgriculturalSectorId = 1,
+                            NameAr = "أشجار مثمرة",
+                            NameEn = "Fruit Trees"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AgriculturalSectorId = 1,
+                            NameAr = "أشجار زيتون",
+                            NameEn = "Olive Trees"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AgriculturalSectorId = 1,
+                            NameAr = "دفيئات",
+                            NameEn = "Greenhouses"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AgriculturalSectorId = 1,
+                            NameAr = "مشاتل",
+                            NameEn = "Nurseries"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AgriculturalSectorId = 2,
+                            NameAr = "أبقار",
+                            NameEn = "Cattle"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AgriculturalSectorId = 2,
+                            NameAr = "أغنام",
+                            NameEn = "Sheep"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AgriculturalSectorId = 2,
+                            NameAr = "ماعز",
+                            NameEn = "Goats"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            AgriculturalSectorId = 2,
+                            NameAr = "دواجن",
+                            NameEn = "Poultry"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            AgriculturalSectorId = 2,
+                            NameAr = "نحل",
+                            NameEn = "Bees"
+                        });
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageCause", b =>
@@ -399,6 +563,64 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasIndex("SubCategoryId");
 
                     b.ToTable("DamageClassifications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "قمح",
+                            NameEn = "Wheat",
+                            SubCategoryId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "شعير",
+                            NameEn = "Barley",
+                            SubCategoryId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "بندورة",
+                            NameEn = "Tomato",
+                            SubCategoryId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            NameAr = "خيار",
+                            NameEn = "Cucumber",
+                            SubCategoryId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            NameAr = "زيتون",
+                            NameEn = "Olive",
+                            SubCategoryId = 4
+                        },
+                        new
+                        {
+                            Id = 6,
+                            NameAr = "عنب",
+                            NameEn = "Grape",
+                            SubCategoryId = 4
+                        },
+                        new
+                        {
+                            Id = 7,
+                            NameAr = "حمضيات",
+                            NameEn = "Citrus",
+                            SubCategoryId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            NameAr = "نخيل",
+                            NameEn = "Date Palm",
+                            SubCategoryId = 4
+                        });
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageItem", b =>
@@ -426,6 +648,12 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DamageActionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DamageNatureId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("DamagePercentage")
                         .HasPrecision(18, 2)
@@ -474,6 +702,10 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasIndex("CostingSheetItemId");
 
+                    b.HasIndex("DamageActionId");
+
+                    b.HasIndex("DamageNatureId");
+
                     b.HasIndex("DamageReportId");
 
                     b.ToTable("DamageItems");
@@ -500,6 +732,68 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DamageNatures");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            NameAr = "جفاف",
+                            NameEn = "Drought"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            NameAr = "صقيع",
+                            NameEn = "Frost"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            NameAr = "فيضانات",
+                            NameEn = "Flood"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            NameAr = "عاصفة",
+                            NameEn = "Storm"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            NameAr = "حريق",
+                            NameEn = "Fire"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            NameAr = "آفة",
+                            NameEn = "Pest"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            NameAr = "مرض",
+                            NameEn = "Disease"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            NameAr = "موجة حر",
+                            NameEn = "Heat Wave"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            NameAr = "موجة برد",
+                            NameEn = "Cold Wave"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            NameAr = "أخرى",
+                            NameEn = "Other"
+                        });
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReport", b =>
@@ -507,6 +801,9 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AgriculturalSectorId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
@@ -526,20 +823,11 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<DateTime>("DamageDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DamageNatureId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DamageYear")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("DirectorateId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DocumentationDate")
                         .HasColumnType("datetime2");
@@ -547,23 +835,8 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("FarmId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("FarmerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GovernorateId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<Guid>("LocalityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("float");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -603,16 +876,14 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AgriculturalSectorId");
+
                     b.HasIndex("ClientId")
                         .IsUnique();
 
                     b.HasIndex("DamageCauseCategoryId");
 
                     b.HasIndex("DamageCauseId");
-
-                    b.HasIndex("DamageNatureId");
-
-                    b.HasIndex("FarmerId");
 
                     b.HasIndex("PermanentFormNumber")
                         .IsUnique();
@@ -755,6 +1026,64 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("DamageSubCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            NameAr = "حبوب",
+                            NameEn = "Cereals"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 2,
+                            NameAr = "مكشوفة",
+                            NameEn = "Open Field"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 3,
+                            NameAr = "حمضيات",
+                            NameEn = "Citrus"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 3,
+                            NameAr = "فواكه أخرى",
+                            NameEn = "Other Fruits"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 5,
+                            NameAr = "خضروات محمية",
+                            NameEn = "Protected Vegetables"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 7,
+                            NameAr = "إنتاج حليب",
+                            NameEn = "Dairy"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 10,
+                            NameAr = "لاحم",
+                            NameEn = "Broilers"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 11,
+                            NameAr = "خلايا نحل",
+                            NameEn = "Hives"
+                        });
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageWorkflowHistory", b =>
@@ -1258,7 +1587,56 @@ namespace Hasad.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            Category = "Area",
+                            Category = "Count",
+                            NameAr = "شجرة",
+                            NameEn = "Tree"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Category = "Weight",
+                            NameAr = "كغم",
+                            NameEn = "Kg"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Category = "Weight",
+                            NameAr = "طن",
+                            NameEn = "Ton"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Category = "Count",
+                            NameAr = "رأس",
+                            NameEn = "Head"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Category = "Count",
+                            NameAr = "خلية",
+                            NameEn = "Hive"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Category = "Count",
+                            NameAr = "صندوق",
+                            NameEn = "Box"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Category = "Volume",
+                            NameAr = "لتر",
+                            NameEn = "Liter"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Category = "General",
                             NameAr = "أخرى",
                             NameEn = "Other"
                         });
@@ -1685,15 +2063,15 @@ namespace Hasad.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Hasad.Domain.Entities.Compensation", b =>
+            modelBuilder.Entity("Hasad.Domain.Entities.Assistance", b =>
                 {
                     b.HasOne("Hasad.Domain.Entities.DamageReport", "DamageReport")
                         .WithOne()
-                        .HasForeignKey("Hasad.Domain.Entities.Compensation", "DamageReportId")
+                        .HasForeignKey("Hasad.Domain.Entities.Assistance", "DamageReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hasad.Domain.Entities.CompensationRule", "Rule")
+                    b.HasOne("Hasad.Domain.Entities.AssistanceRule", "Rule")
                         .WithMany()
                         .HasForeignKey("RuleId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -1703,15 +2081,15 @@ namespace Hasad.Infrastructure.Migrations
                     b.Navigation("Rule");
                 });
 
-            modelBuilder.Entity("Hasad.Domain.Entities.CompensationAuditLog", b =>
+            modelBuilder.Entity("Hasad.Domain.Entities.AssistanceAuditLog", b =>
                 {
-                    b.HasOne("Hasad.Domain.Entities.Compensation", "Compensation")
+                    b.HasOne("Hasad.Domain.Entities.Assistance", "Assistance")
                         .WithMany("AuditLogs")
-                        .HasForeignKey("CompensationId")
+                        .HasForeignKey("AssistanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Compensation");
+                    b.Navigation("Assistance");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.CostingSheetItem", b =>
@@ -1753,13 +2131,13 @@ namespace Hasad.Infrastructure.Migrations
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageCategory", b =>
                 {
-                    b.HasOne("Hasad.Domain.Entities.DamageNature", "Nature")
-                        .WithMany("Categories")
-                        .HasForeignKey("NatureId")
+                    b.HasOne("Hasad.Domain.Entities.AgriculturalSector", "AgriculturalSector")
+                        .WithMany()
+                        .HasForeignKey("AgriculturalSectorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Nature");
+                    b.Navigation("AgriculturalSector");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageCause", b =>
@@ -1798,6 +2176,18 @@ namespace Hasad.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Hasad.Domain.Entities.DamageAction", "DamageAction")
+                        .WithMany()
+                        .HasForeignKey("DamageActionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.DamageNature", "DamageNature")
+                        .WithMany()
+                        .HasForeignKey("DamageNatureId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Hasad.Domain.Entities.DamageReport", "DamageReport")
                         .WithMany("Items")
                         .HasForeignKey("DamageReportId")
@@ -1808,11 +2198,21 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.Navigation("CostingSheetItem");
 
+                    b.Navigation("DamageAction");
+
+                    b.Navigation("DamageNature");
+
                     b.Navigation("DamageReport");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReport", b =>
                 {
+                    b.HasOne("Hasad.Domain.Entities.AgriculturalSector", "AgriculturalSector")
+                        .WithMany()
+                        .HasForeignKey("AgriculturalSectorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Hasad.Domain.Entities.DamageCauseCategory", "DamageCauseCategory")
                         .WithMany()
                         .HasForeignKey("DamageCauseCategoryId")
@@ -1825,33 +2225,19 @@ namespace Hasad.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hasad.Domain.Entities.DamageNature", "DamageNature")
-                        .WithMany()
-                        .HasForeignKey("DamageNatureId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Hasad.Domain.Entities.Farm", "Farm")
                         .WithMany()
                         .HasForeignKey("FarmId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hasad.Domain.Entities.Farmer", "Farmer")
-                        .WithMany()
-                        .HasForeignKey("FarmerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("AgriculturalSector");
 
                     b.Navigation("DamageCause");
 
                     b.Navigation("DamageCauseCategory");
 
-                    b.Navigation("DamageNature");
-
                     b.Navigation("Farm");
-
-                    b.Navigation("Farmer");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReportAttachment", b =>
@@ -2088,7 +2474,7 @@ namespace Hasad.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hasad.Domain.Entities.Compensation", b =>
+            modelBuilder.Entity("Hasad.Domain.Entities.Assistance", b =>
                 {
                     b.Navigation("AuditLogs");
                 });
@@ -2116,11 +2502,6 @@ namespace Hasad.Infrastructure.Migrations
             modelBuilder.Entity("Hasad.Domain.Entities.DamageClassification", b =>
                 {
                     b.Navigation("CostingSheetItems");
-                });
-
-            modelBuilder.Entity("Hasad.Domain.Entities.DamageNature", b =>
-                {
-                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReport", b =>

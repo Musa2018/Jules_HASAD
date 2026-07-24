@@ -10,6 +10,12 @@ public class DamageItem : ISoftDelete
     public Guid DamageReportId { get; set; }
     public DamageReport? DamageReport { get; set; }
 
+    public int DamageNatureId { get; set; }
+    public DamageNature? DamageNature { get; set; }
+
+    public int DamageActionId { get; set; }
+    public DamageAction? DamageAction { get; set; }
+
     public int ClassificationId { get; set; }
     public DamageClassification? Classification { get; set; }
 

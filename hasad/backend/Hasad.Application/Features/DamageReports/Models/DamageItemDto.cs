@@ -4,6 +4,8 @@ public class DamageItemDto
 {
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }
+    public int DamageNatureId { get; set; }
+    public int DamageActionId { get; set; }
     public int ClassificationId { get; set; }
     public Guid CostingSheetId { get; set; }
     public decimal CalculatedUnitPrice { get; set; }

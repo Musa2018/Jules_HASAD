@@ -95,12 +95,22 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             })
             .ToListAsync(cancellationToken);
 
+        dto.DamageActions = await _context.DamageActions
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
+            })
+            .ToListAsync(cancellationToken);
+
         dto.DamageCategories = await _context.DamageCategories
             .AsNoTracking()
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                ParentId = x.NatureId,
+                ParentId = x.AgriculturalSectorId,
                 NameAr = x.NameAr ?? string.Empty,
                 NameEn = x.NameEn ?? string.Empty
             })

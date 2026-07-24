@@ -12,7 +12,7 @@ public class DamageReportDto
     public Guid FarmerId { get; set; }
     public DateTime DamageDate { get; set; }
     public DateTime DocumentationDate { get; set; }
-    public int DamageNatureId { get; set; }
+    public int AgriculturalSectorId { get; set; }
     public int DamageCauseCategoryId { get; set; }
     public int DamageCauseId { get; set; }
     public string? SettlementName { get; set; }

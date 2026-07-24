@@ -16,6 +16,7 @@ class ReferenceData with _$ReferenceData {
 
     // Damage Hierarchy
     required List<DamageNature> damageNatures,
+    required List<DamageAction> damageActions,
     required List<DamageCategory> damageCategories,
     required List<DamageSubCategory> damageSubCategories,
     required List<DamageClassification> damageClassifications,

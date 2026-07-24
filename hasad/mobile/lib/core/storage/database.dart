@@ -190,26 +190,17 @@ class DamageReports extends Table {
   TextColumn get reportNumber => text().withDefault(const Constant(''))();
   TextColumn get permanentFormNumber => text().withDefault(const Constant(''))();
   TextColumn get temporaryFormNumber => text().withDefault(const Constant(''))();
-  IntColumn get damageYear => integer().withDefault(const Constant(0))();
 
   TextColumn get farmId => text()();
-  TextColumn get farmerId => text()();
 
   DateTimeColumn get damageDate => dateTime()();
   DateTimeColumn get documentationDate => dateTime()();
 
-  IntColumn get damageNatureId => integer().withDefault(const Constant(0))();
+  IntColumn get agriculturalSectorId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseCategoryId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseId => integer().withDefault(const Constant(0))();
   TextColumn get settlementName => text().nullable()();
   TextColumn get companyName => text().nullable()();
-
-  TextColumn get governorateId => text()();
-  TextColumn get directorateId => text()();
-  TextColumn get localityId => text()();
-
-  RealColumn get latitude => real().nullable()();
-  RealColumn get longitude => real().nullable()();
 
   TextColumn get statusId => text().withLength(max: 50)();
   TextColumn get notes => text()();
@@ -232,6 +223,8 @@ class DamageItems extends Table {
   TextColumn get serverId => text().nullable()();
   TextColumn get damageReportId => text()();
 
+  IntColumn get damageNatureId => integer().withDefault(const Constant(0))();
+  IntColumn get damageActionId => integer().withDefault(const Constant(0))();
   IntColumn get classificationId => integer().withDefault(const Constant(0))();
   TextColumn get costingSheetId => text().withDefault(const Constant(''))();
   TextColumn get costingSheetItemId => text().nullable()();
@@ -323,9 +316,17 @@ class DamageNatures extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class DamageActions extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class DamageCategories extends Table {
   IntColumn get id => integer()();
-  IntColumn get parentId => integer()(); // natureId
+  IntColumn get parentId => integer()(); // agriculturalSectorId
   TextColumn get nameAr => text()();
   TextColumn get nameEn => text()();
   @override
@@ -435,6 +436,7 @@ class CostingSheetItems extends Table {
     Directorates,
     Localities,
     DamageNatures,
+    DamageActions,
     DamageCategories,
     DamageSubCategories,
     DamageClassifications,
@@ -453,7 +455,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 20;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -585,6 +587,20 @@ class AppDatabase extends _$AppDatabase {
         // 3. Hardened Duplicate Prevention: Unique index on FarmId + DamageDate (ADR-0015)
         await customStatement('DROP INDEX IF EXISTS damage_report_duplicate_idx;');
         await customStatement('CREATE UNIQUE INDEX damage_report_unique_incident_idx ON damage_reports (farm_id, damage_date);');
+      }
+      if (from < 18) {
+        // Sprint 14.2.2: DamageReport Entity Principle - Removing redundant fields
+        await m.alterTable(TableMigration(damageReports));
+      }
+      if (from < 19) {
+        // Sprint 14.2.3: Damage Assessment Reference Data Foundation
+        // Refactor DamageCategories to be sector-based
+        await m.alterTable(TableMigration(damageCategories));
+      }
+      if (from < 20) {
+        // Sprint 14.2.3 Correction: Add Damage Action
+        await m.createTable(damageActions);
+        await m.alterTable(TableMigration(damageItems));
       }
     },
     beforeOpen: (details) async {

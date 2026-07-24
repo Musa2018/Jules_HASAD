@@ -1,5 +1,6 @@
 class DamageReportStatus {
   static const String draft = 'Draft';
+  static const String pendingTechnicalVerification = 'PendingTechnicalVerification';
   static const String techReview = 'TechReview';
   static const String archiveDir = 'ArchiveDir';
   static const String dirManager = 'DirManager';
@@ -11,7 +12,7 @@ class DamageReportStatus {
   static const String completed = 'Completed';
 
   static const List<String> all = [
-    draft, techReview, archiveDir, dirManager, minTechReview,
+    draft, pendingTechnicalVerification, techReview, archiveDir, dirManager, minTechReview,
     legalReview, procReview, minArchive, genManager, completed
   ];
 }

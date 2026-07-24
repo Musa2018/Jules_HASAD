@@ -25,6 +25,7 @@ public interface IApplicationDbContext
     DbSet<DamageWorkflowHistory> DamageWorkflowHistories { get; }
 
     DbSet<DamageNature> DamageNatures { get; }
+    DbSet<DamageAction> DamageActions { get; }
     DbSet<DamageCategory> DamageCategories { get; }
     DbSet<DamageSubCategory> DamageSubCategories { get; }
     DbSet<DamageClassification> DamageClassifications { get; }
@@ -36,8 +37,8 @@ public interface IApplicationDbContext
     DbSet<DamageCause> DamageCauses { get; }
     DbSet<DamageReportSequence> DamageReportSequences { get; }
 
-    DbSet<Compensation> Compensations { get; }
-    DbSet<CompensationRule> CompensationRules { get; }
-    DbSet<CompensationAuditLog> CompensationAuditLogs { get; }
+    DbSet<Assistance> Assistances { get; }
+    DbSet<AssistanceRule> AssistanceRules { get; }
+    DbSet<AssistanceAuditLog> AssistanceAuditLogs { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

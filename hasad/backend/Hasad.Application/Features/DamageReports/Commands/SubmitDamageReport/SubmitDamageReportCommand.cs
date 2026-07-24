@@ -27,6 +27,7 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
     public async Task<Result<Guid>> Handle(SubmitDamageReportCommand request, CancellationToken cancellationToken)
     {
         var report = await _context.DamageReports
+            .Include(r => r.Farm)
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
@@ -35,9 +36,9 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
             return Result<Guid>.Failure(new[] { "Damage report not found." });
         }
 
-        if (report.StatusId != DamageReportStatus.Draft)
+        if (report.StatusId != DamageReportStatus.Draft && report.StatusId != DamageReportStatus.PendingTechnicalVerification)
         {
-            return Result<Guid>.Failure(new[] { "Only draft reports can be submitted." });
+            return Result<Guid>.Failure(new[] { "Only draft or pending reports can be submitted." });
         }
 
         if (!report.Items.Any())
@@ -48,14 +49,14 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
         // Scope validation
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
-            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<Guid>.Failure(new[] { "Access denied. Report is outside your assigned directorate scope." });
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
-            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<Guid>.Failure(new[] { "Access denied. Report is outside your assigned governorate scope." });
             }

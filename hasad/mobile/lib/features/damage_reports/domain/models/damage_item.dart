@@ -10,6 +10,8 @@ class DamageItem with _$DamageItem {
     @JsonKey(name: 'clientId') required String id, // ClientId
     @JsonKey(name: 'id') String? serverId,
     required String damageReportId,
+    @Default(0) int damageNatureId,
+    @Default(0) int damageActionId,
     @Default(0) int classificationId,
     @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     @Default('') String costingSheetId,

@@ -48,6 +48,11 @@ Damage Assessment & Valuation Engine:
     - **Business Codes**: Corrected `Governorate.Code` and `Directorate.Code` to use approved human-readable abbreviations (e.g., NBL, NAB, JEN) for official numbering.
     - **Flutter Drift**: Verified schema v17 migration with backfill logic and automated tests.
     - **Data Integrity**: Hardened duplicate prevention with unique constraints on `FarmId` + `DamageDate`.
+- **Sprint 14.2.2 — COMPLETED**
+    - **Header-First Lifecycle**: Refined the creation workflow to officially register reports and generate official numbering upon Header save.
+    - **Entity Refinement**: Eliminated redundant fields (`FarmerId`, `GovernorateId`, etc.) from the `DamageReport` entity, establishing `Farm` as the single source of truth for geography and ownership.
+    - **Workflow Foundation**: Set the initial status of new reports to `PendingTechnicalVerification`.
+    - **Safe Migrations**: Implemented EF Core and Drift (v18) migrations to align schemas with the refined entity principle.
 - **Phase 4 (Pending)**: Evidence Lifecycle Foundation.
 
 ## Sprint 13.1 — COMPLETED

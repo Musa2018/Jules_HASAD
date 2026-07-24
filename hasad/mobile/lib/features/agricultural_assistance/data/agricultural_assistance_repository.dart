@@ -23,7 +23,7 @@ class AgriculturalAssistanceRepositoryImpl implements AgriculturalAssistanceRepo
 
   @override
   Future<AgriculturalAssistance?> getByReportId(String reportId) async {
-    final response = await _dio.get('/v1/compensations/report/$reportId');
+    final response = await _dio.get('/v1/assistances/report/$reportId');
     if (response.data == null || response.data['data'] == null) {
       return null;
     }
@@ -33,7 +33,7 @@ class AgriculturalAssistanceRepositoryImpl implements AgriculturalAssistanceRepo
   @override
   Future<AgriculturalAssistance> create(String reportId, String remarks) async {
     final response = await _dio.post(
-      '/v1/compensations',
+      '/v1/assistances',
       data: {
         'clientId': DateTime.now().toIso8601String(),
         'damageReportId': reportId,
@@ -46,7 +46,7 @@ class AgriculturalAssistanceRepositoryImpl implements AgriculturalAssistanceRepo
   @override
   Future<AgriculturalAssistance> recalculate(String id, String rowVersion) async {
     final response = await _dio.post(
-      '/v1/compensations/$id/recalculate',
+      '/v1/assistances/$id/recalculate',
       data: {'id': id, 'rowVersion': rowVersion},
     );
     return AgriculturalAssistance.fromJson(response.data['data']);
@@ -55,7 +55,7 @@ class AgriculturalAssistanceRepositoryImpl implements AgriculturalAssistanceRepo
   @override
   Future<AgriculturalAssistance> submit(String id, String rowVersion) async {
     final response = await _dio.post(
-      '/v1/compensations/$id/submit',
+      '/v1/assistances/$id/submit',
       data: {'id': id, 'rowVersion': rowVersion},
     );
     return AgriculturalAssistance.fromJson(response.data['data']);
@@ -69,7 +69,7 @@ class AgriculturalAssistanceRepositoryImpl implements AgriculturalAssistanceRepo
     String rowVersion,
   ) async {
     final response = await _dio.post(
-      '/v1/compensations/$id/approve',
+      '/v1/assistances/$id/approve',
       data: {
         'id': id,
         'approvedAmount': amount,
@@ -87,7 +87,7 @@ class AgriculturalAssistanceRepositoryImpl implements AgriculturalAssistanceRepo
     String rowVersion,
   ) async {
     final response = await _dio.post(
-      '/v1/compensations/$id/reject',
+      '/v1/assistances/$id/reject',
       data: {'id': id, 'remarks': remarks, 'rowVersion': rowVersion},
     );
     return AgriculturalAssistance.fromJson(response.data['data']);
@@ -100,7 +100,7 @@ class AgriculturalAssistanceRepositoryImpl implements AgriculturalAssistanceRepo
     String rowVersion,
   ) async {
     final response = await _dio.post(
-      '/v1/compensations/$id/pay',
+      '/v1/assistances/$id/pay',
       data: {'id': id, 'remarks': remarks, 'rowVersion': rowVersion},
     );
     return AgriculturalAssistance.fromJson(response.data['data']);

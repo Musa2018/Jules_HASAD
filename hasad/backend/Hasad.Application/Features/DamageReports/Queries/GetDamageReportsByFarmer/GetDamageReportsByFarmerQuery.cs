@@ -29,19 +29,19 @@ public class GetDamageReportsByFarmerQueryHandler : IRequestHandler<GetDamageRep
         {
             if (_currentUser.DirectorateId.HasValue)
             {
-                query = query.Where(r => r.DirectorateId == _currentUser.DirectorateId.Value);
+                query = query.Where(r => r.Farm!.DirectorateId == _currentUser.DirectorateId.Value);
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
             if (_currentUser.GovernorateId.HasValue)
             {
-                query = query.Where(r => r.GovernorateId == _currentUser.GovernorateId.Value);
+                query = query.Where(r => r.Farm!.GovernorateId == _currentUser.GovernorateId.Value);
             }
         }
 
         var reports = await query
-            .Where(r => r.FarmerId == request.FarmerId)
+            .Where(r => r.Farm!.FarmerId == request.FarmerId)
             .OrderByDescending(r => r.DamageDate)
             .Select(r => new DamageReportDto
             {
@@ -50,19 +50,19 @@ public class GetDamageReportsByFarmerQueryHandler : IRequestHandler<GetDamageRep
                 ReportNumber = r.ReportNumber,
                 PermanentFormNumber = r.PermanentFormNumber,
                 TemporaryFormNumber = r.TemporaryFormNumber,
-                DamageYear = r.DamageYear,
+                DamageYear = r.DamageDate.Year,
                 FarmId = r.FarmId,
-                FarmerId = r.FarmerId,
+                FarmerId = r.Farm!.FarmerId,
                 DamageDate = r.DamageDate,
                 DocumentationDate = r.DocumentationDate,
-                DamageNatureId = r.DamageNatureId,
+                AgriculturalSectorId = r.AgriculturalSectorId,
                 DamageCauseCategoryId = r.DamageCauseCategoryId,
                 DamageCauseId = r.DamageCauseId,
-                GovernorateId = r.GovernorateId,
-                DirectorateId = r.DirectorateId,
-                LocalityId = r.LocalityId,
-                Latitude = r.Latitude,
-                Longitude = r.Longitude,
+                GovernorateId = r.Farm!.GovernorateId,
+                DirectorateId = r.Farm!.DirectorateId,
+                LocalityId = r.Farm!.LocalityId,
+                Latitude = r.Farm!.Latitude,
+                Longitude = r.Farm!.Longitude,
                 StatusId = r.StatusId,
                 Notes = r.Notes,
                 RowVersion = Convert.ToBase64String(r.RowVersion)

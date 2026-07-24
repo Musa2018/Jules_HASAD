@@ -10,19 +10,15 @@ public class DamageReport : ISoftDelete
     public string ReportNumber { get; set; } = string.Empty;
     public string PermanentFormNumber { get; set; } = string.Empty;
     public string TemporaryFormNumber { get; set; } = string.Empty;
-    public int DamageYear { get; set; }
 
     public Guid FarmId { get; set; }
     public Farm? Farm { get; set; }
 
-    public Guid FarmerId { get; set; }
-    public Farmer? Farmer { get; set; }
-
     public DateTime DamageDate { get; set; }
     public DateTime DocumentationDate { get; set; }
 
-    public int DamageNatureId { get; set; }
-    public DamageNature? DamageNature { get; set; }
+    public int AgriculturalSectorId { get; set; }
+    public AgriculturalSector? AgriculturalSector { get; set; }
 
     public int DamageCauseCategoryId { get; set; }
     public DamageCauseCategory? DamageCauseCategory { get; set; }
@@ -32,13 +28,6 @@ public class DamageReport : ISoftDelete
 
     public string? SettlementName { get; set; }
     public string? CompanyName { get; set; }
-
-    public Guid GovernorateId { get; set; }
-    public Guid DirectorateId { get; set; }
-    public Guid LocalityId { get; set; }
-
-    public double? Latitude { get; set; }
-    public double? Longitude { get; set; }
 
     public string StatusId { get; set; } = "Draft"; // e.g., Draft, Submitted, Verified, Rejected
 

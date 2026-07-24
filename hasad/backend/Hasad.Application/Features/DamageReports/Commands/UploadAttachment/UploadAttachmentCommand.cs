@@ -50,6 +50,7 @@ public class UploadAttachmentCommandHandler : IRequestHandler<UploadAttachmentCo
 
         var report = await _context.DamageReports
             .AsNoTracking()
+            .Include(r => r.Farm)
             .FirstOrDefaultAsync(r => r.Id == request.DamageReportId, cancellationToken);
 
         if (report == null)
@@ -60,14 +61,14 @@ public class UploadAttachmentCommandHandler : IRequestHandler<UploadAttachmentCo
         // Authorization Inheritance (Rule 4)
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
-            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<AttachmentDto>.Failure(new[] { "Access Denied: You can only upload attachments within your assigned directorate." });
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
-            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<AttachmentDto>.Failure(new[] { "Access Denied: You can only upload attachments within your assigned governorate." });
             }

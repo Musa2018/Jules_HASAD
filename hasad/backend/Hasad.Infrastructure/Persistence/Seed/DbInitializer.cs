@@ -64,20 +64,20 @@ public static class DbInitializer
     }
 
     /// <summary>
-    /// Seeds default compensation rules if none exist.
+    /// Seeds default assistance rules if none exist.
     /// </summary>
-    public static async Task SeedCompensationRulesAsync(ApplicationDbContext context)
+    public static async Task SeedAssistanceRulesAsync(ApplicationDbContext context)
     {
-        if (await context.CompensationRules.AnyAsync())
+        if (await context.AssistanceRules.AnyAsync())
         {
             return;
         }
 
-        context.CompensationRules.Add(new CompensationRule
+        context.AssistanceRules.Add(new AssistanceRule
         {
             Id = Guid.NewGuid(),
             Name = "Standard 80% Rule",
-            Description = "Standard compensation rule covering 80% of estimated losses.",
+            Description = "Standard assistance rule covering 80% of technical valuation.",
             Multiplier = 0.8m,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
@@ -223,18 +223,41 @@ public static class DbInitializer
                 // 1. Damage Natures
                 Log.Information("Seeding DamageNatures...");
                 context.DamageNatures.AddRange(
-                    new DamageNature { Id = 1, NameAr = "نباتي", NameEn = "Plant" },
-                    new DamageNature { Id = 2, NameAr = "حيواني", NameEn = "Animal" },
-                    new DamageNature { Id = 3, NameAr = "منشآت وبنية تحتية", NameEn = "Infrastructure" }
+                    new DamageNature { Id = 1, NameAr = "جفاف", NameEn = "Drought" },
+                    new DamageNature { Id = 2, NameAr = "صقيع", NameEn = "Frost" },
+                    new DamageNature { Id = 3, NameAr = "فيضانات", NameEn = "Flood" },
+                    new DamageNature { Id = 4, NameAr = "عاصفة", NameEn = "Storm" },
+                    new DamageNature { Id = 5, NameAr = "حريق", NameEn = "Fire" },
+                    new DamageNature { Id = 6, NameAr = "آفة", NameEn = "Pest" },
+                    new DamageNature { Id = 7, NameAr = "مرض", NameEn = "Disease" },
+                    new DamageNature { Id = 8, NameAr = "موجة حر", NameEn = "Heat Wave" },
+                    new DamageNature { Id = 9, NameAr = "موجة برد", NameEn = "Cold Wave" },
+                    new DamageNature { Id = 10, NameAr = "أخرى", NameEn = "Other" }
                 );
                 await SaveWithIdentityInsertAsync(context, "DamageNatures");
 
-                // 2. Damage Categories
+                // 2. Damage Actions
+                Log.Information("Seeding DamageActions...");
+                context.DamageActions.AddRange(
+                    new DamageAction { Id = 1, NameAr = "حرق", NameEn = "Burning" },
+                    new DamageAction { Id = 2, NameAr = "تكسير", NameEn = "Breaking" },
+                    new DamageAction { Id = 3, NameAr = "تدمير", NameEn = "Destruction" },
+                    new DamageAction { Id = 4, NameAr = "سرقة", NameEn = "Theft" },
+                    new DamageAction { Id = 5, NameAr = "تسميم", NameEn = "Poisoning" },
+                    new DamageAction { Id = 6, NameAr = "قلع", NameEn = "Uprooting" },
+                    new DamageAction { Id = 7, NameAr = "قص", NameEn = "Cutting" },
+                    new DamageAction { Id = 8, NameAr = "إغراق", NameEn = "Flooding" },
+                    new DamageAction { Id = 9, NameAr = "تخريب", NameEn = "Vandalism" },
+                    new DamageAction { Id = 10, NameAr = "أخرى", NameEn = "Other" }
+                );
+                await SaveWithIdentityInsertAsync(context, "DamageActions");
+
+                // 3. Damage Categories
                 Log.Information("Seeding DamageCategories...");
                 context.DamageCategories.AddRange(
-                    new DamageCategory { Id = 1, NatureId = 1, NameAr = "أشجار", NameEn = "Trees" },
-                    new DamageCategory { Id = 2, NatureId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
-                    new DamageCategory { Id = 3, NatureId = 1, NameAr = "خضروات محمية", NameEn = "Protected Crops" }
+                    new DamageCategory { Id = 1, AgriculturalSectorId = 1, NameAr = "أشجار", NameEn = "Trees" },
+                    new DamageCategory { Id = 2, AgriculturalSectorId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
+                    new DamageCategory { Id = 3, AgriculturalSectorId = 1, NameAr = "خضروات محمية", NameEn = "Protected Crops" }
                 );
                 await SaveWithIdentityInsertAsync(context, "DamageCategories");
 

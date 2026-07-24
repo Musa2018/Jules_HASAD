@@ -13,6 +13,7 @@ public class ReferenceDataDto
 
     // Damage Classification Hierarchy
     public List<LookupDto> DamageNatures { get; set; } = new();
+    public List<LookupDto> DamageActions { get; set; } = new();
     public List<LookupDto> DamageCategories { get; set; } = new();
     public List<LookupDto> DamageSubCategories { get; set; } = new();
     public List<LookupDto> DamageClassifications { get; set; } = new();

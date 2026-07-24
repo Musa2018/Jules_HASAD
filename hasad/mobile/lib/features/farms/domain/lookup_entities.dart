@@ -90,6 +90,18 @@ class DamageNature with _$DamageNature {
 }
 
 @freezed
+class DamageAction with _$DamageAction {
+  const factory DamageAction({
+    required int id,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
+  }) = _DamageAction;
+
+  factory DamageAction.fromJson(Map<String, dynamic> json) =>
+      _$DamageActionFromJson(json);
+}
+
+@freezed
 class DamageCategory with _$DamageCategory {
   const factory DamageCategory({
     required int id,

@@ -37,7 +37,7 @@ class _DamageReportFormScreenState
   int _currentStep = 0; // 0: Header, 1: Assessment
 
   DamageReport? _activeReport;
-  DamageNature? _selectedNature;
+  AgriculturalSector? _selectedSector;
 
   @override
   void initState() {
@@ -49,28 +49,35 @@ class _DamageReportFormScreenState
     _notesController = TextEditingController(text: widget.report?.notes);
     _items = widget.report?.items.toList() ?? [];
     
-    if (widget.report != null && widget.report!.reportNumber.isNotEmpty) {
+    if (widget.report != null) {
       _currentStep = 1;
     }
   }
 
   void _initializeWizard() async {
     if (_initialized) return;
+    final refData = await ref.read(referenceDataProvider.future);
+    final categories = await ref.read(damageCauseCategoriesProvider.future);
+
     if (widget.report != null) {
-      final categories = await ref.read(damageCauseCategoriesProvider.future);
-      final refData = await ref.read(referenceDataProvider.future);
-      
-      // Load Nature
-      if (widget.report!.damageNatureId != 0) {
-        _selectedNature = refData.damageNatures.where((n) => n.id == widget.report!.damageNatureId).firstOrNull;
+      // Load Sector from report
+      if (widget.report!.agriculturalSectorId != 0) {
+        _selectedSector = refData.agriculturalSectors
+            .where((n) => n.id == widget.report!.agriculturalSectorId)
+            .firstOrNull;
       }
 
       ref.read(damageCauseWizardProvider.notifier).loadFromIds(
-        widget.report!.damageCauseCategoryId,
-        widget.report!.damageCauseId,
-        categories,
-        refData.damageCauses,
-      );
+            widget.report!.damageCauseCategoryId,
+            widget.report!.damageCauseId,
+            categories,
+            refData.damageCauses,
+          );
+    } else {
+      // Pre-fill from Farm
+      _selectedSector = refData.agriculturalSectors
+          .where((n) => n.id == widget.farm.agriculturalSectorId)
+          .firstOrNull;
     }
     _initialized = true;
   }
@@ -86,10 +93,10 @@ class _DamageReportFormScreenState
 
   Future<void> _save({bool submit = false}) async {
     final causeState = ref.read(damageCauseWizardProvider);
-    
-    if (_selectedNature == null) {
+
+    if (_selectedSector == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a damage nature.')),
+        const SnackBar(content: Text('Please select an agricultural sector.')),
       );
       return;
     }
@@ -114,18 +121,13 @@ class _DamageReportFormScreenState
       id: _localId,
       reportNumber: widget.report?.reportNumber ?? '',
       temporaryFormNumber: widget.report?.temporaryFormNumber ?? '',
-      damageYear: _damageDate.year,
       farmId: widget.farm.id,
-      farmerId: widget.farm.farmerId,
       damageDate: _damageDate,
       documentationDate: _documentationDate,
-      damageNatureId: _selectedNature!.id,
+      agriculturalSectorId: _selectedSector!.id,
       damageCauseCategoryId: causeState.selectedCategory!.id,
       damageCauseId: causeState.selectedCause!.id,
-      governorateId: widget.farm.governorateId,
-      directorateId: widget.farm.directorateId,
-      localityId: widget.farm.localityId,
-      statusId: widget.report?.statusId ?? DamageReportStatus.draft,
+      statusId: widget.report?.statusId ?? DamageReportStatus.pendingTechnicalVerification,
       notes: _notesController.text.trim(),
       rowVersion: widget.report?.rowVersion ?? '',
       items: _items,
@@ -176,7 +178,9 @@ class _DamageReportFormScreenState
     final state = ref.watch(damageReportFormProvider);
     final causeState = ref.watch(damageCauseWizardProvider);
 
-    final isReadOnly = _activeReport != null && _activeReport!.statusId != DamageReportStatus.draft;
+    final isReadOnly = _activeReport != null &&
+        _activeReport!.statusId != DamageReportStatus.draft &&
+        _activeReport!.statusId != DamageReportStatus.pendingTechnicalVerification;
 
     return Scaffold(
       appBar: AppBar(
@@ -223,7 +227,7 @@ class _DamageReportFormScreenState
       _buildDateTile('Damage Date', _damageDate, isReadOnly ? null : (picked) => setState(() => _damageDate = picked)),
       _buildReadOnlyField('Documentation Date', DateFormat.yMMMd().format(_documentationDate)),
       const SizedBox(height: 16),
-      _buildNatureSelector(isReadOnly),
+      _buildSectorSelector(isReadOnly),
       const SizedBox(height: 16),
       _buildCauseSelector(causeState, isReadOnly),
       const SizedBox(height: 16),
@@ -319,17 +323,22 @@ class _DamageReportFormScreenState
     );
   }
 
-  Widget _buildNatureSelector(bool isReadOnly) {
-    final naturesAsync = ref.watch(naturesProvider);
-    return naturesAsync.when(
-      data: (items) => DropdownButtonFormField<DamageNature>(
-        value: _selectedNature,
-        decoration: const InputDecoration(labelText: 'Damage Nature', border: OutlineInputBorder()),
-        items: items.map((n) => DropdownMenuItem(value: n, child: Text(n.nameAr))).toList(),
-        onChanged: isReadOnly ? null : (val) => setState(() => _selectedNature = val),
+  Widget _buildSectorSelector(bool isReadOnly) {
+    final refDataAsync = ref.watch(referenceDataProvider);
+    return refDataAsync.when(
+      data: (data) => DropdownButtonFormField<AgriculturalSector>(
+        value: _selectedSector,
+        decoration: const InputDecoration(
+            labelText: 'Agricultural Sector', border: OutlineInputBorder()),
+        items: data.agriculturalSectors
+            .map((n) => DropdownMenuItem(value: n, child: Text(n.nameAr)))
+            .toList(),
+        onChanged: isReadOnly
+            ? null
+            : (val) => setState(() => _selectedSector = val),
       ),
       loading: () => const LinearProgressIndicator(),
-      error: (err, _) => Text('Error loading natures: $err'),
+      error: (err, _) => Text('Error loading sectors: $err'),
     );
   }
 
@@ -469,7 +478,7 @@ class _DamageReportFormScreenState
       isScrollControlled: true,
       builder: (context) => DamageItemFormSheet(
         reportId: _localId,
-        nature: _selectedNature!,
+        sectorId: _selectedSector!.id,
         existingItem: existingItem,
       ),
     );

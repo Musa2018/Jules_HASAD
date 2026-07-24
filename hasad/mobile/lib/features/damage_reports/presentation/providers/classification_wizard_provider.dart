@@ -5,6 +5,7 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 class ClassificationWizardState {
   final int currentStep;
   final DamageNature? selectedNature;
+  final DamageAction? selectedAction;
   final DamageCategory? selectedCategory;
   final DamageSubCategory? selectedSubCategory;
   final DamageClassification? selectedClassification;
@@ -15,6 +16,7 @@ class ClassificationWizardState {
   const ClassificationWizardState({
     this.currentStep = 1,
     this.selectedNature,
+    this.selectedAction,
     this.selectedCategory,
     this.selectedSubCategory,
     this.selectedClassification,
@@ -27,6 +29,8 @@ class ClassificationWizardState {
     int? currentStep,
     DamageNature? selectedNature,
     bool clearNature = false,
+    DamageAction? selectedAction,
+    bool clearAction = false,
     DamageCategory? selectedCategory,
     bool clearCategory = false,
     DamageSubCategory? selectedSubCategory,
@@ -42,6 +46,7 @@ class ClassificationWizardState {
     return ClassificationWizardState(
       currentStep: currentStep ?? this.currentStep,
       selectedNature: clearNature ? null : (selectedNature ?? this.selectedNature),
+      selectedAction: clearAction ? null : (selectedAction ?? this.selectedAction),
       selectedCategory: clearCategory ? null : (selectedCategory ?? this.selectedCategory),
       selectedSubCategory: clearSubCategory ? null : (selectedSubCategory ?? this.selectedSubCategory),
       selectedClassification: clearClassification ? null : (selectedClassification ?? this.selectedClassification),
@@ -54,17 +59,31 @@ class ClassificationWizardState {
 
 class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardState> {
   final Ref _ref;
+  final int _sectorId;
 
-  ClassificationWizardNotifier(this._ref) : super(const ClassificationWizardState());
+  ClassificationWizardNotifier(this._ref, this._sectorId)
+      : super(const ClassificationWizardState());
 
   void setNature(DamageNature nature) {
     state = state.copyWith(
       selectedNature: nature,
+      clearAction: true,
       clearCategory: true,
       clearSubCategory: true,
       clearClassification: true,
       clearCosting: true,
       currentStep: 2,
+    );
+  }
+
+  void setAction(DamageAction action) {
+    state = state.copyWith(
+      selectedAction: action,
+      clearCategory: true,
+      clearSubCategory: true,
+      clearClassification: true,
+      clearCosting: true,
+      currentStep: 3,
     );
   }
 
@@ -74,7 +93,7 @@ class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardSta
       clearSubCategory: true,
       clearClassification: true,
       clearCosting: true,
-      currentStep: 3,
+      currentStep: 4,
     );
   }
 
@@ -83,7 +102,7 @@ class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardSta
       selectedSubCategory: subCategory,
       clearClassification: true,
       clearCosting: true,
-      currentStep: 4,
+      currentStep: 5,
     );
   }
 
@@ -97,7 +116,7 @@ class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardSta
     try {
       final repo = _ref.read(referenceDataRepositoryProvider);
       final costing = await repo.getActiveCostingSheet(classification.id);
-      
+
       state = state.copyWith(
         resolvedCosting: costing,
         isLoading: false,
@@ -122,9 +141,10 @@ class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardSta
   }
 }
 
-final classificationWizardProvider =
-    StateNotifierProvider.autoDispose<ClassificationWizardNotifier, ClassificationWizardState>((ref) {
-  return ClassificationWizardNotifier(ref);
+final classificationWizardProvider = StateNotifierProvider.family
+    .autoDispose<ClassificationWizardNotifier, ClassificationWizardState, int>(
+        (ref, sectorId) {
+  return ClassificationWizardNotifier(ref, sectorId);
 });
 
 // Cascading Filter Providers
@@ -132,8 +152,14 @@ final naturesProvider = FutureProvider<List<DamageNature>>((ref) {
   return ref.watch(referenceDataRepositoryProvider).getNatures();
 });
 
-final categoriesByNatureProvider = FutureProvider.family<List<DamageCategory>, int>((ref, natureId) {
-  return ref.watch(referenceDataRepositoryProvider).getCategories(natureId);
+final actionsProvider = FutureProvider<List<DamageAction>>((ref) {
+  return ref.watch(referenceDataRepositoryProvider).getActions();
+});
+
+final categoriesBySectorProvider =
+    FutureProvider.family<List<DamageCategory>, int>((ref, sectorId) {
+  // Use parentId as agriculturalSectorId
+  return ref.watch(referenceDataRepositoryProvider).getCategories(sectorId);
 });
 
 final subCategoriesByCategoryProvider = FutureProvider.family<List<DamageSubCategory>, int>((ref, categoryId) {

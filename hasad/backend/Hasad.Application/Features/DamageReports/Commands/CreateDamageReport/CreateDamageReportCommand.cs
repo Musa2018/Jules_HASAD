@@ -12,6 +12,8 @@ namespace Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
 
 public record CreateDamageItemInput(
     Guid ClientId,
+    int DamageNatureId,
+    int DamageActionId,
     int ClassificationId,
     Guid CostingSheetId,
     decimal CalculatedUnitPrice,
@@ -24,21 +26,15 @@ public record CreateDamageItemInput(
 public record CreateDamageReportCommand(
     Guid ClientId,
     string TemporaryFormNumber,
-    int DamageYear,
     Guid FarmId,
-    Guid FarmerId,
     DateTime DamageDate,
-    int DamageNatureId,
+    int AgriculturalSectorId,
     int DamageCauseCategoryId,
     int DamageCauseId,
     string? SettlementName,
     string? CompanyName,
-    Guid GovernorateId,
-    Guid LocalityId,
-    double? Latitude,
-    double? Longitude,
     string Notes,
-    List<CreateDamageItemInput> Items) : IRequest<Result<DamageReportDto>>;
+    List<CreateDamageItemInput>? Items = null) : IRequest<Result<DamageReportDto>>;
 
 public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageReportCommand, Result<DamageReportDto>>
 {
@@ -64,18 +60,14 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
 
     public async Task<Result<DamageReportDto>> Handle(CreateDamageReportCommand request, CancellationToken cancellationToken)
     {
-        // 1. Validation: Farm and Farmer must exist
+        // 1. Validation: Farm must exist
         var farm = await _context.Farms
-            .AsNoTracking()
+            .Include(f => f.Farmer) // Needed for DTO mapping
             .FirstOrDefaultAsync(f => f.Id == request.FarmId, cancellationToken);
 
         if (farm == null)
         {
             return Result<DamageReportDto>.Failure(new[] { "Farm not found." });
-        }
-        if (!await _context.Farmers.AnyAsync(f => f.Id == request.FarmerId, cancellationToken))
-        {
-            return Result<DamageReportDto>.Failure(new[] { "Farmer not found." });
         }
 
         // 2. Authorization check
@@ -96,7 +88,8 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
 
         // 3. Idempotency (ClientId)
         var existingByClientId = await _context.DamageReports
-            .AsNoTracking()
+            .Include(r => r.Farm)
+            .ThenInclude(f => f!.Farmer)
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.ClientId == request.ClientId, cancellationToken);
 
@@ -107,6 +100,8 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
 
         // 4. Duplicate Prevention (Farm + Date) - Open existing if found
         var existingDuplicate = await _context.DamageReports
+            .Include(r => r.Farm)
+            .ThenInclude(f => f!.Farmer)
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.FarmId == request.FarmId &&
                                       r.DamageDate.Date == request.DamageDate.Date,
@@ -122,38 +117,43 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
 
         // 6. Valuation & Costing Resolution (Authoritative Backend Calculation)
         var items = new List<DamageItem>();
-        foreach (var itemInput in request.Items)
+        if (request.Items != null)
         {
-            var priceResult = await _costingService.GetUnitPriceAsync(itemInput.ClassificationId, itemInput.CostingSheetId, request.DamageDate, cancellationToken);
-            if (!priceResult.Succeeded)
+            foreach (var itemInput in request.Items)
             {
-                return Result<DamageReportDto>.Failure(priceResult.Errors);
+                var priceResult = await _costingService.GetUnitPriceAsync(itemInput.ClassificationId, itemInput.CostingSheetId, request.DamageDate, cancellationToken);
+                if (!priceResult.Succeeded)
+                {
+                    return Result<DamageReportDto>.Failure(priceResult.Errors);
+                }
+
+                decimal unitPrice = priceResult.Data;
+                decimal backendCalculatedLoss = itemInput.Quantity * unitPrice * (itemInput.DamagePercentage / 100);
+
+                // Client Audit
+                if (Math.Abs(backendCalculatedLoss - itemInput.EstimatedLoss) > 0.01m)
+                {
+                    _logger.LogWarning("Valuation Mismatch for ClientId {ClientId}: Client sent {ClientLoss}, Backend calculated {BackendLoss}",
+                        itemInput.ClientId, itemInput.EstimatedLoss, backendCalculatedLoss);
+                }
+
+                items.Add(new DamageItem
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = itemInput.ClientId,
+                    DamageNatureId = itemInput.DamageNatureId,
+                    DamageActionId = itemInput.DamageActionId,
+                    ClassificationId = itemInput.ClassificationId,
+                    CostingSheetItemId = itemInput.CostingSheetId,
+                    CalculatedUnitPrice = unitPrice, // Authority price
+                    MeasurementUnitSnapshot = itemInput.MeasurementUnitSnapshot,
+                    AffectedArea = itemInput.AffectedArea,
+                    DamagePercentage = itemInput.DamagePercentage,
+                    Quantity = itemInput.Quantity,
+                    EstimatedLoss = backendCalculatedLoss, // Authority loss
+                    CreatedAt = DateTime.UtcNow
+                });
             }
-
-            decimal unitPrice = priceResult.Data;
-            decimal backendCalculatedLoss = itemInput.Quantity * unitPrice * (itemInput.DamagePercentage / 100);
-
-            // Client Audit
-            if (Math.Abs(backendCalculatedLoss - itemInput.EstimatedLoss) > 0.01m)
-            {
-                _logger.LogWarning("Valuation Mismatch for ClientId {ClientId}: Client sent {ClientLoss}, Backend calculated {BackendLoss}",
-                    itemInput.ClientId, itemInput.EstimatedLoss, backendCalculatedLoss);
-            }
-
-            items.Add(new DamageItem
-            {
-                Id = Guid.NewGuid(),
-                ClientId = itemInput.ClientId,
-                ClassificationId = itemInput.ClassificationId,
-                CostingSheetItemId = itemInput.CostingSheetId,
-                CalculatedUnitPrice = unitPrice, // Authority price
-                MeasurementUnitSnapshot = itemInput.MeasurementUnitSnapshot,
-                AffectedArea = itemInput.AffectedArea,
-                DamagePercentage = itemInput.DamagePercentage,
-                Quantity = itemInput.Quantity,
-                EstimatedLoss = backendCalculatedLoss, // Authority loss
-                CreatedAt = DateTime.UtcNow
-            });
         }
 
         var report = new DamageReport
@@ -163,22 +163,15 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             ReportNumber = reportNumber,
             PermanentFormNumber = reportNumber,
             TemporaryFormNumber = request.TemporaryFormNumber,
-            DamageYear = request.DamageDate.Year,
             FarmId = request.FarmId,
-            FarmerId = request.FarmerId,
             DamageDate = request.DamageDate,
             DocumentationDate = DateTime.UtcNow,
-            DamageNatureId = request.DamageNatureId,
+            AgriculturalSectorId = request.AgriculturalSectorId,
             DamageCauseCategoryId = request.DamageCauseCategoryId,
             DamageCauseId = request.DamageCauseId,
             SettlementName = request.SettlementName,
             CompanyName = request.CompanyName,
-            GovernorateId = request.GovernorateId,
-            DirectorateId = farm.DirectorateId, // Denormalized from Farm (Rule 1)
-            LocalityId = request.LocalityId,
-            Latitude = request.Latitude,
-            Longitude = request.Longitude,
-            StatusId = DamageReportStatus.Draft,
+            StatusId = DamageReportStatus.PendingTechnicalVerification,
             Notes = request.Notes,
             CreatedAt = DateTime.UtcNow,
             Items = items
@@ -186,6 +179,9 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
 
         _context.DamageReports.Add(report);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Reload to ensure Farm is included for DTO
+        report.Farm = farm;
 
         return Result<DamageReportDto>.Success(MapToDto(report));
     }
@@ -197,20 +193,21 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         ReportNumber = report.ReportNumber,
         PermanentFormNumber = report.PermanentFormNumber,
         TemporaryFormNumber = report.TemporaryFormNumber,
-        DamageYear = report.DamageYear,
+        DamageYear = report.DamageDate.Year,
         FarmId = report.FarmId,
-        FarmerId = report.FarmerId,
+        FarmerId = report.Farm?.FarmerId ?? Guid.Empty,
         DamageDate = report.DamageDate,
         DocumentationDate = report.DocumentationDate,
-        DamageNatureId = report.DamageNatureId,
+        AgriculturalSectorId = report.AgriculturalSectorId,
         DamageCauseCategoryId = report.DamageCauseCategoryId,
         DamageCauseId = report.DamageCauseId,
         SettlementName = report.SettlementName,
         CompanyName = report.CompanyName,
-        GovernorateId = report.GovernorateId,
-        LocalityId = report.LocalityId,
-        Latitude = report.Latitude,
-        Longitude = report.Longitude,
+        GovernorateId = report.Farm?.GovernorateId ?? Guid.Empty,
+        DirectorateId = report.Farm?.DirectorateId ?? Guid.Empty,
+        LocalityId = report.Farm?.LocalityId ?? Guid.Empty,
+        Latitude = report.Farm?.Latitude,
+        Longitude = report.Farm?.Longitude,
         StatusId = report.StatusId,
         Notes = report.Notes,
         RowVersion = Convert.ToBase64String(report.RowVersion),
@@ -218,6 +215,8 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         {
             Id = i.Id,
             ClientId = i.ClientId,
+            DamageNatureId = i.DamageNatureId,
+            DamageActionId = i.DamageActionId,
             ClassificationId = i.ClassificationId,
             CostingSheetId = i.CostingSheetItemId,
             CalculatedUnitPrice = i.CalculatedUnitPrice,
@@ -237,12 +236,12 @@ public class CreateDamageReportCommandValidator : AbstractValidator<CreateDamage
     {
         RuleFor(v => v.ClientId).NotEmpty();
         RuleFor(v => v.FarmId).NotEmpty();
-        RuleFor(v => v.FarmerId).NotEmpty();
         RuleFor(v => v.DamageDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
-        RuleFor(v => v.GovernorateId).NotEmpty();
-        RuleFor(v => v.LocalityId).NotEmpty();
 
-        RuleForEach(v => v.Items).SetValidator(new CreateDamageItemInputValidator());
+        When(v => v.Items != null, () =>
+        {
+            RuleForEach(v => v.Items!).SetValidator(new CreateDamageItemInputValidator());
+        });
     }
 }
 
@@ -251,6 +250,8 @@ public class CreateDamageItemInputValidator : AbstractValidator<CreateDamageItem
     public CreateDamageItemInputValidator()
     {
         RuleFor(v => v.ClientId).NotEmpty();
+        RuleFor(v => v.DamageNatureId).NotEmpty();
+        RuleFor(v => v.DamageActionId).NotEmpty();
         RuleFor(v => v.ClassificationId).NotEmpty();
         RuleFor(v => v.CostingSheetId).NotEmpty();
         RuleFor(v => v.CalculatedUnitPrice).GreaterThan(0);

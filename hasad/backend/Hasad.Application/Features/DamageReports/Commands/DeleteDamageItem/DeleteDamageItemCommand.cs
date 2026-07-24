@@ -23,6 +23,7 @@ public class DeleteDamageItemCommandHandler : IRequestHandler<DeleteDamageItemCo
     {
         var item = await _context.DamageItems
             .Include(i => i.DamageReport)
+            .ThenInclude(r => r!.Farm)
             .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
 
         if (item == null)
@@ -38,14 +39,14 @@ public class DeleteDamageItemCommandHandler : IRequestHandler<DeleteDamageItemCo
 
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
-            if (_currentUser.DirectorateId.HasValue && item.DamageReport.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && item.DamageReport.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<Unit>.Failure(new[] { "Access Denied: You can only delete items within your assigned directorate." });
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
-            if (_currentUser.GovernorateId.HasValue && item.DamageReport.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && item.DamageReport.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<Unit>.Failure(new[] { "Access Denied: You can only delete items within your assigned governorate." });
             }

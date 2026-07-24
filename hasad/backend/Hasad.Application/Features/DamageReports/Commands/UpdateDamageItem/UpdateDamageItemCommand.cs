@@ -12,6 +12,8 @@ namespace Hasad.Application.Features.DamageReports.Commands.UpdateDamageItem;
 
 public record UpdateDamageItemCommand(
     Guid Id,
+    int DamageNatureId,
+    int DamageActionId,
     int ClassificationId,
     Guid CostingSheetId,
     decimal CalculatedUnitPrice,
@@ -45,6 +47,7 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
     {
         var item = await _context.DamageItems
             .Include(i => i.DamageReport)
+            .ThenInclude(r => r!.Farm)
             .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
 
         if (item == null)
@@ -60,14 +63,14 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
 
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
-            if (_currentUser.DirectorateId.HasValue && item.DamageReport.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && item.DamageReport.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<DamageItemDto>.Failure(new[] { "Access Denied: You can only manage items within your assigned directorate." });
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
-            if (_currentUser.GovernorateId.HasValue && item.DamageReport.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && item.DamageReport.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<DamageItemDto>.Failure(new[] { "Access Denied: You can only manage items within your assigned governorate." });
             }
@@ -97,6 +100,8 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
                 item.Id, request.EstimatedLoss, backendCalculatedLoss);
         }
 
+        item.DamageNatureId = request.DamageNatureId;
+        item.DamageActionId = request.DamageActionId;
         item.ClassificationId = request.ClassificationId;
         item.CostingSheetItemId = request.CostingSheetId;
         item.CalculatedUnitPrice = unitPrice; // Authority price
@@ -120,6 +125,8 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
         {
             Id = item.Id,
             ClientId = item.ClientId,
+            DamageNatureId = item.DamageNatureId,
+            DamageActionId = item.DamageActionId,
             ClassificationId = item.ClassificationId,
             CostingSheetId = item.CostingSheetItemId,
             CalculatedUnitPrice = item.CalculatedUnitPrice,
@@ -138,6 +145,8 @@ public class UpdateDamageItemCommandValidator : AbstractValidator<UpdateDamageIt
     public UpdateDamageItemCommandValidator()
     {
         RuleFor(v => v.Id).NotEmpty();
+        RuleFor(v => v.DamageNatureId).NotEmpty();
+        RuleFor(v => v.DamageActionId).NotEmpty();
         RuleFor(v => v.ClassificationId).NotEmpty();
         RuleFor(v => v.DamagePercentage).InclusiveBetween(0, 100);
         RuleFor(v => v.RowVersion).NotEmpty();

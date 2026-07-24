@@ -5,25 +5,16 @@ class DamageReportSyncDto {
   static Map<String, dynamic> toCreateJson(DamageReport report) {
     return {
       'clientId': report.id,
-      'reportNumber': report.reportNumber,
       'temporaryFormNumber': report.temporaryFormNumber,
-      'damageYear': report.damageDate.year,
       'farmId': report.farmId,
-      'farmerId': report.farmerId,
       'damageDate': report.damageDate.toIso8601String(),
-      'documentationDate': report.documentationDate.toIso8601String(),
-      'damageNatureId': report.damageNatureId,
+      'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
       'settlementName': report.settlementName,
       'companyName': report.companyName,
-      'governorateId': report.governorateId,
-      'directorateId': report.directorateId,
-      'localityId': report.localityId,
-      'latitude': report.latitude,
-      'longitude': report.longitude,
       'notes': report.notes,
-      'items': report.items.map((i) => itemToCreateJson(i)).toList(),
+      'items': report.items.isEmpty ? null : report.items.map((i) => itemToCreateJson(i)).toList(),
     };
   }
 
@@ -33,18 +24,12 @@ class DamageReportSyncDto {
     }
     return {
       'id': report.serverId,
-      'reportNumber': report.reportNumber,
       'damageDate': report.damageDate.toIso8601String(),
-      'damageNatureId': report.damageNatureId,
+      'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
       'settlementName': report.settlementName,
       'companyName': report.companyName,
-      'governorateId': report.governorateId,
-      'directorateId': report.directorateId,
-      'localityId': report.localityId,
-      'latitude': report.latitude,
-      'longitude': report.longitude,
       'notes': report.notes,
       'rowVersion': report.rowVersion,
     };
@@ -53,6 +38,8 @@ class DamageReportSyncDto {
   static Map<String, dynamic> itemToCreateJson(DamageItem item) {
     return {
       'clientId': item.id,
+      'damageNatureId': item.damageNatureId,
+      'damageActionId': item.damageActionId,
       'classificationId': item.classificationId,
       'costingSheetId': item.costingSheetId,
       'calculatedUnitPrice': item.calculatedUnitPrice,
@@ -70,6 +57,8 @@ class DamageReportSyncDto {
     }
     return {
       'id': item.serverId,
+      'damageNatureId': item.damageNatureId,
+      'damageActionId': item.damageActionId,
       'classificationId': item.classificationId,
       'costingSheetId': item.costingSheetId,
       'calculatedUnitPrice': item.calculatedUnitPrice,

@@ -11,13 +11,13 @@ import 'package:uuid/uuid.dart';
 
 class DamageItemFormSheet extends ConsumerStatefulWidget {
   final String reportId;
-  final DamageNature nature;
+  final int sectorId;
   final DamageItem? existingItem;
 
   const DamageItemFormSheet({
     super.key,
     required this.reportId,
-    required this.nature,
+    required this.sectorId,
     this.existingItem,
   });
 
@@ -39,10 +39,6 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
       _percentageController.text = widget.existingItem!.damagePercentage.toString();
       _areaController.text = widget.existingItem!.affectedArea.toString();
     }
-
-    Future.microtask(() {
-      ref.read(classificationWizardProvider.notifier).setNature(widget.nature);
-    });
   }
 
   @override
@@ -58,7 +54,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(classificationWizardProvider);
+    final state = ref.watch(classificationWizardProvider(widget.sectorId));
     final l10n = AppLocalizations.of(context)!;
 
     return DraggableScrollableSheet(
@@ -79,7 +75,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
             const Divider(),
             Expanded(
               child: state.selectedClassification == null
-                  ? const ClassificationSelector()
+                  ? ClassificationSelector(sectorId: widget.sectorId)
                   : _buildDetailsForm(state, l10n),
             ),
           ],
@@ -156,7 +152,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
               child: Text(l10n.save),
             ),
             TextButton(
-              onPressed: () => ref.read(classificationWizardProvider.notifier).reset(),
+              onPressed: () => ref.read(classificationWizardProvider(widget.sectorId).notifier).reset(),
               child: Text(l10n.cancel),
             ),
           ],
@@ -181,7 +177,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
           ),
           const SizedBox(height: 4),
           Text(
-            '${state.selectedNature!.nameAr} > ${state.selectedCategory!.nameAr} > ${state.selectedSubCategory!.nameAr}',
+            '${state.selectedNature!.nameAr} > ${state.selectedAction!.nameAr} > ${state.selectedCategory!.nameAr} > ${state.selectedSubCategory!.nameAr}',
             style: TextStyle(color: Colors.grey[600], fontSize: 12),
           ),
         ],
@@ -267,12 +263,14 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
   void _save(String unitName) {
     if (!_formKey.currentState!.validate()) return;
 
-    final state = ref.read(classificationWizardProvider);
+    final state = ref.read(classificationWizardProvider(widget.sectorId));
     final costing = state.resolvedCosting!;
 
     final item = DamageItem(
       id: widget.existingItem?.id ?? const Uuid().v4(),
       damageReportId: widget.reportId,
+      damageNatureId: state.selectedNature!.id,
+      damageActionId: state.selectedAction!.id,
       classificationId: state.selectedClassification!.id,
       costingSheetId: costing.id,
       costingSheetItemId: costing.id,

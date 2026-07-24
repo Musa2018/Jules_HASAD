@@ -5,8 +5,8 @@
 - **Current Version**: v0.12.0-alpha (Architecture Design)
 - **Current Sprint**: Sprint 12.3 — Form & Sync Hardening (Regression Fix: Geographic Authorization)
 - **Current Branch**: `DamageReport`
-- **Last Updated**: 2026-07-23
-- **Latest Commit**: `e073d75`
+- **Last Updated**: 2026-07-24
+- **Latest Commit**: `2910df3`
 
 ## Sprint 13.2 — IN PROGRESS
 Damage Assessment & Valuation Engine:
@@ -57,7 +57,9 @@ Damage Assessment & Valuation Engine:
 - **Sprint 14.2.3 — COMPLETED**
     - **Safe Seeding**: Made `DbInitializer.SeedDamageReferenceDataAsync` concurrency-safe using SQL Server application locks (`sp_getapplock`).
     - **Idempotency**: Refactored seeding logic to be fully idempotent, checking for individual records before insertion and preserving existing IDs.
-    - **Ownership Consolidation**: Consolidated reference data ownership in `DbInitializer` by removing duplicate `HasData` definitions from `ApplicationDbContext`.
+    - **Ownership Consolidation**: Established `DbInitializer` as the single owner of Damage Reference Data (ADR-0016), removing duplicate `HasData` definitions from `ApplicationDbContext`.
+    - **Migration Hardening**: Audited and cleaned `TerminologyAudit` migration to remove duplicate `InsertData` operations, ensuring safe upgrades for existing databases.
+    - **Verification**: Successfully validated architecture against existing database upgrade, fresh installation, and concurrent execution scenarios.
     - **Test Coverage**: Added comprehensive idempotency and partial-seeding tests to `DbInitializerTests`.
 - **Phase 4 (Pending)**: Evidence Lifecycle Foundation.
 

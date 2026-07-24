@@ -63,7 +63,7 @@ public class DamageWorkflowTests
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            DirectorateId = directorateId
+            Farm = new Farm { DirectorateId = directorateId }
         };
 
         // Attempting to return TechReview -> Draft without comment
@@ -86,7 +86,7 @@ public class DamageWorkflowTests
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            DirectorateId = directorateId
+            Farm = new Farm { DirectorateId = directorateId }
         };
 
         var result = service.CanTransition(report, DamageReportStatus.Draft, "Correction needed");
@@ -109,7 +109,7 @@ public class DamageWorkflowTests
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            DirectorateId = otherDirectorateId
+            Farm = new Farm { DirectorateId = otherDirectorateId }
         };
 
         var result = service.CanTransition(report, DamageReportStatus.ArchiveDir, null);
@@ -133,9 +133,12 @@ public class DamageWorkflowTests
         {
             Id = Guid.NewGuid(),
             StatusId = DamageReportStatus.Draft,
-            DirectorateId = directorateId,
-            GovernorateId = Guid.NewGuid(),
-            LocalityId = Guid.NewGuid()
+            Farm = new Farm
+            {
+                DirectorateId = directorateId,
+                GovernorateId = Guid.NewGuid(),
+                LocalityId = Guid.NewGuid()
+            }
         };
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();

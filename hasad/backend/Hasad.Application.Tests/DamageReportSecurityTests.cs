@@ -108,23 +108,21 @@ public class DamageReportSecurityTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
         var report = new DamageReport
         {
             Id = Guid.NewGuid(),
-            FarmId = Guid.NewGuid(),
+            FarmId = farm.Id,
+            Farm = farm,
             StatusId = DamageReportStatus.Draft,
-            RowVersion = new byte[] { 1, 2, 3 },
-            DirectorateId = otherDirectorateId
+            RowVersion = new byte[] { 1, 2, 3 }
         };
-        // We'll rely on the Farm join for now if the field isn't there,
-        // but the plan says we add it.
-        // Since we are in Phase 1, we write tests that will fail.
 
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
-        var handler = new UpdateDamageReportCommandHandler(context, _currentUserMock.Object); // Update handler now needs ICurrentUserService
-        var command = new UpdateDamageReportCommand(report.Id, DateTime.UtcNow, 1, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "Notes", Convert.ToBase64String(report.RowVersion));
+        var handler = new UpdateDamageReportCommandHandler(context, _currentUserMock.Object);
+        var command = new UpdateDamageReportCommand(report.Id, DateTime.UtcNow, 1, 1, 1, null, null, "Notes", Convert.ToBase64String(report.RowVersion));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -137,11 +135,13 @@ public class DamageReportSecurityTests
     {
         var context = CreateContext();
         var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
 
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var report = new DamageReport { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
@@ -157,18 +157,20 @@ public class DamageReportSecurityTests
     {
         var context = CreateContext();
         var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
 
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var report = new DamageReport { Id = Guid.NewGuid() };
-        var item = new DamageItem { Id = Guid.NewGuid(), DamageReportId = report.Id, RowVersion = new byte[] { 1 } };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
+        var item = new DamageItem { Id = Guid.NewGuid(), DamageReportId = report.Id, DamageReport = report, RowVersion = new byte[] { 1 } };
         context.DamageReports.Add(report);
         context.DamageItems.Add(item);
         await context.SaveChangesAsync();
 
         var handler = new UpdateDamageItemCommandHandler(context, _currentUserMock.Object, _costingServiceMock.Object, _itemLoggerMock.Object);
-        var command = new UpdateDamageItemCommand(item.Id, 1, Guid.NewGuid(), 10, "U", 1, 1, 1, 1, Convert.ToBase64String(item.RowVersion));
+        var command = new UpdateDamageItemCommand(item.Id, 1, 1, 1, Guid.NewGuid(), 10, "U", 1, 1, 1, 1, Convert.ToBase64String(item.RowVersion));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -181,11 +183,13 @@ public class DamageReportSecurityTests
     {
         var context = CreateContext();
         var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
 
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var report = new DamageReport { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
@@ -201,6 +205,6 @@ public class DamageReportSecurityTests
     private CreateDamageReportCommand CreateValidCreateCommand(Guid farmId, Guid farmerId)
     {
         return new CreateDamageReportCommand(
-            Guid.NewGuid(), "TEMP", 2026, farmId, farmerId, DateTime.UtcNow, 1, 1, 1, null, null, Guid.NewGuid(), Guid.NewGuid(), null, null, "", new List<CreateDamageItemInput>());
+            Guid.NewGuid(), "TEMP", farmId, DateTime.UtcNow, 1, 1, 1, null, null, "", new List<CreateDamageItemInput>());
     }
 }

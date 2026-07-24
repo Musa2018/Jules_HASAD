@@ -277,8 +277,8 @@ public class FarmCommandHandlerTests
     public async Task DeleteFarm_Fails_WhenLinkedToDamageReport()
     {
         var context = CreateContext();
-        var farm = new Farm { Id = Guid.NewGuid() };
-        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(), StatusId = "Draft" };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid() };
+        var report = new DamageReport { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), FarmId = farm.Id, StatusId = "Draft" };
 
         context.Farms.Add(farm);
         context.DamageReports.Add(report);

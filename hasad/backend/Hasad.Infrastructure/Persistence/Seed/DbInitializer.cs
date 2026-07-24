@@ -200,13 +200,14 @@ public static class DbInitializer
     /// </summary>
     public static async Task SeedDamageReferenceDataAsync(ApplicationDbContext context)
     {
-        if (await context.DamageNatures.AnyAsync())
+        Log.Information("Starting Damage Reference Data seeding process...");
+
+        if (!context.Database.IsRelational())
         {
-            Log.Information("Damage reference data already exists; skipping seeding.");
+            Log.Information("Non-relational database detected; using simplified seeding logic without locks/identity insert.");
+            await SeedDamageReferenceDataInternalAsync(context);
             return;
         }
-
-        Log.Information("Starting Damage Reference Data seeding...");
 
         var strategy = context.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
@@ -214,126 +215,14 @@ public static class DbInitializer
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                // Ensure connection is open for IDENTITY_INSERT commands
-                if (context.Database.GetDbConnection().State != System.Data.ConnectionState.Open)
-                {
-                    await context.Database.OpenConnectionAsync();
-                }
+                // Concurrency Protection: SQL Server Application Lock
+                // This prevents multiple instances from running the seed logic simultaneously.
+                await context.Database.ExecuteSqlRawAsync(
+                    "EXEC sp_getapplock @Resource = 'DamageReferenceSeed', @LockMode = 'Exclusive', @LockOwner = 'Transaction', @LockTimeout = 30000");
 
-                // 1. Damage Natures
-                Log.Information("Seeding DamageNatures...");
-                context.DamageNatures.AddRange(
-                    new DamageNature { Id = 1, NameAr = "جفاف", NameEn = "Drought" },
-                    new DamageNature { Id = 2, NameAr = "صقيع", NameEn = "Frost" },
-                    new DamageNature { Id = 3, NameAr = "فيضانات", NameEn = "Flood" },
-                    new DamageNature { Id = 4, NameAr = "عاصفة", NameEn = "Storm" },
-                    new DamageNature { Id = 5, NameAr = "حريق", NameEn = "Fire" },
-                    new DamageNature { Id = 6, NameAr = "آفة", NameEn = "Pest" },
-                    new DamageNature { Id = 7, NameAr = "مرض", NameEn = "Disease" },
-                    new DamageNature { Id = 8, NameAr = "موجة حر", NameEn = "Heat Wave" },
-                    new DamageNature { Id = 9, NameAr = "موجة برد", NameEn = "Cold Wave" },
-                    new DamageNature { Id = 10, NameAr = "أخرى", NameEn = "Other" }
-                );
-                await SaveWithIdentityInsertAsync(context, "DamageNatures");
+                Log.Debug("Acquired database-level lock for seeding.");
 
-                // 2. Damage Actions
-                Log.Information("Seeding DamageActions...");
-                context.DamageActions.AddRange(
-                    new DamageAction { Id = 1, NameAr = "حرق", NameEn = "Burning" },
-                    new DamageAction { Id = 2, NameAr = "تكسير", NameEn = "Breaking" },
-                    new DamageAction { Id = 3, NameAr = "تدمير", NameEn = "Destruction" },
-                    new DamageAction { Id = 4, NameAr = "سرقة", NameEn = "Theft" },
-                    new DamageAction { Id = 5, NameAr = "تسميم", NameEn = "Poisoning" },
-                    new DamageAction { Id = 6, NameAr = "قلع", NameEn = "Uprooting" },
-                    new DamageAction { Id = 7, NameAr = "قص", NameEn = "Cutting" },
-                    new DamageAction { Id = 8, NameAr = "إغراق", NameEn = "Flooding" },
-                    new DamageAction { Id = 9, NameAr = "تخريب", NameEn = "Vandalism" },
-                    new DamageAction { Id = 10, NameAr = "أخرى", NameEn = "Other" }
-                );
-                await SaveWithIdentityInsertAsync(context, "DamageActions");
-
-                // 3. Damage Categories
-                Log.Information("Seeding DamageCategories...");
-                context.DamageCategories.AddRange(
-                    new DamageCategory { Id = 1, AgriculturalSectorId = 1, NameAr = "أشجار", NameEn = "Trees" },
-                    new DamageCategory { Id = 2, AgriculturalSectorId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
-                    new DamageCategory { Id = 3, AgriculturalSectorId = 1, NameAr = "خضروات محمية", NameEn = "Protected Crops" }
-                );
-                await SaveWithIdentityInsertAsync(context, "DamageCategories");
-
-                // 3. Damage SubCategories
-                Log.Information("Seeding DamageSubCategories...");
-                context.DamageSubCategories.AddRange(
-                    new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "زيتون", NameEn = "Olive" },
-                    new DamageSubCategory { Id = 2, CategoryId = 1, NameAr = "لوزيات", NameEn = "Stone Fruits" },
-                    new DamageSubCategory { Id = 3, CategoryId = 1, NameAr = "حمضيات", NameEn = "Citrus" }
-                );
-                await SaveWithIdentityInsertAsync(context, "DamageSubCategories");
-
-                // 4. Damage Classifications
-                Log.Information("Seeding DamageClassifications...");
-                context.DamageClassifications.AddRange(
-                    new DamageClassification { Id = 1, SubCategoryId = 1, NameAr = "عمر 1-5 سنوات", NameEn = "Age 1-5 years" },
-                    new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "عمر 5-10 سنوات", NameEn = "Age 5-10 years" },
-                    new DamageClassification { Id = 3, SubCategoryId = 1, NameAr = "عمر فوق 10 سنوات", NameEn = "Age 10+ years" }
-                );
-                await SaveWithIdentityInsertAsync(context, "DamageClassifications");
-
-                // 5. Costing Sheets (Hierarchy: Catalog -> Version -> Item)
-                Log.Information("Seeding Costing Catalog & Versions...");
-                var catalog = new CostingSheetCatalog
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Official Pricing Catalog 2026",
-                    Description = "Baseline pricing for the 2026 damage assessment cycle.",
-                    CreatedAt = DateTime.UtcNow,
-                    CreatedBy = "System"
-                };
-                context.CostingSheetCatalogs.Add(catalog);
-
-                var version = new CostingSheetVersion
-                {
-                    Id = Guid.NewGuid(),
-                    CatalogId = catalog.Id,
-                    VersionNumber = 1,
-                    Status = CostingSheetStatus.Active,
-                    EffectiveFrom = new DateTime(2026, 1, 1),
-                    CreatedAt = DateTime.UtcNow,
-                    CreatedBy = "System"
-                };
-                context.CostingSheetVersions.Add(version);
-
-                context.CostingSheetItems.Add(new CostingSheetItem
-                {
-                    Id = Guid.NewGuid(),
-                    VersionId = version.Id,
-                    ClassificationId = 2, // Age 5-10 years
-                    UnitPrice = 100,
-                    MeasurementUnitId = 1, // Dunum (from HasData in DbContext)
-                    CreatedAt = DateTime.UtcNow
-                });
-                await context.SaveChangesAsync();
-
-                // 6. Damage Cause Categories
-                Log.Information("Seeding DamageCauseCategories...");
-                context.DamageCauseCategories.AddRange(
-                    new DamageCauseCategory { Id = 1, NameAr = "سياسي", NameEn = "Political" },
-                    new DamageCauseCategory { Id = 2, NameAr = "طبيعي", NameEn = "Natural" }
-                );
-                await SaveWithIdentityInsertAsync(context, "DamageCauseCategories");
-
-                // 7. Damage Causes
-                Log.Information("Seeding DamageCauses...");
-                context.DamageCauses.AddRange(
-                    new DamageCause { Id = 1, CategoryId = 1, NameAr = "جيش الاحتلال", NameEn = "Army" },
-                    new DamageCause { Id = 2, CategoryId = 1, NameAr = "مستوطنين", NameEn = "Settlers" },
-                    new DamageCause { Id = 3, CategoryId = 1, NameAr = "شركات إسرائيلية", NameEn = "Israeli Companies" },
-                    new DamageCause { Id = 4, CategoryId = 2, NameAr = "فيضانات", NameEn = "Flood" },
-                    new DamageCause { Id = 5, CategoryId = 2, NameAr = "حرائق", NameEn = "Fire" },
-                    new DamageCause { Id = 6, CategoryId = 2, NameAr = "جفاف", NameEn = "Drought" },
-                    new DamageCause { Id = 7, CategoryId = 2, NameAr = "عواصف", NameEn = "Storm" }
-                );
-                await SaveWithIdentityInsertAsync(context, "DamageCauses");
+                await SeedDamageReferenceDataInternalAsync(context);
 
                 await transaction.CommitAsync();
                 Log.Information("Damage Reference Data seeding completed successfully.");
@@ -347,8 +236,195 @@ public static class DbInitializer
         });
     }
 
+    private static async Task SeedDamageReferenceDataInternalAsync(ApplicationDbContext context)
+    {
+        // 1. Damage Natures
+        await UpsertLookupsAsync(context, context.DamageNatures, "DamageNatures", new[]
+        {
+            new DamageNature { Id = 1, NameAr = "جفاف", NameEn = "Drought" },
+            new DamageNature { Id = 2, NameAr = "صقيع", NameEn = "Frost" },
+            new DamageNature { Id = 3, NameAr = "فيضانات", NameEn = "Flood" },
+            new DamageNature { Id = 4, NameAr = "عاصفة", NameEn = "Storm" },
+            new DamageNature { Id = 5, NameAr = "حريق", NameEn = "Fire" },
+            new DamageNature { Id = 6, NameAr = "آفة", NameEn = "Pest" },
+            new DamageNature { Id = 7, NameAr = "مرض", NameEn = "Disease" },
+            new DamageNature { Id = 8, NameAr = "موجة حر", NameEn = "Heat Wave" },
+            new DamageNature { Id = 9, NameAr = "موجة برد", NameEn = "Cold Wave" },
+            new DamageNature { Id = 10, NameAr = "أخرى", NameEn = "Other" }
+        });
+
+        // 2. Damage Actions
+        await UpsertLookupsAsync(context, context.DamageActions, "DamageActions", new[]
+        {
+            new DamageAction { Id = 1, NameAr = "حرق", NameEn = "Burning" },
+            new DamageAction { Id = 2, NameAr = "تكسير", NameEn = "Breaking" },
+            new DamageAction { Id = 3, NameAr = "تدمير", NameEn = "Destruction" },
+            new DamageAction { Id = 4, NameAr = "سرقة", NameEn = "Theft" },
+            new DamageAction { Id = 5, NameAr = "تسميم", NameEn = "Poisoning" },
+            new DamageAction { Id = 6, NameAr = "قلع", NameEn = "Uprooting" },
+            new DamageAction { Id = 7, NameAr = "قص", NameEn = "Cutting" },
+            new DamageAction { Id = 8, NameAr = "إغراق", NameEn = "Flooding" },
+            new DamageAction { Id = 9, NameAr = "تخريب", NameEn = "Vandalism" },
+            new DamageAction { Id = 10, NameAr = "أخرى", NameEn = "Other" }
+        });
+
+        // 3. Damage Categories
+        await UpsertLookupsAsync(context, context.DamageCategories, "DamageCategories", new[]
+        {
+            new DamageCategory { Id = 1, AgriculturalSectorId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
+            new DamageCategory { Id = 2, AgriculturalSectorId = 1, NameAr = "خضروات", NameEn = "Vegetables" },
+            new DamageCategory { Id = 3, AgriculturalSectorId = 1, NameAr = "أشجار مثمرة", NameEn = "Fruit Trees" },
+            new DamageCategory { Id = 4, AgriculturalSectorId = 1, NameAr = "أشجار زيتون", NameEn = "Olive Trees" },
+            new DamageCategory { Id = 5, AgriculturalSectorId = 1, NameAr = "دفيئات", NameEn = "Greenhouses" },
+            new DamageCategory { Id = 6, AgriculturalSectorId = 1, NameAr = "مشاتل", NameEn = "Nurseries" },
+            new DamageCategory { Id = 7, AgriculturalSectorId = 2, NameAr = "أبقار", NameEn = "Cattle" },
+            new DamageCategory { Id = 8, AgriculturalSectorId = 2, NameAr = "أغنام", NameEn = "Sheep" },
+            new DamageCategory { Id = 9, AgriculturalSectorId = 2, NameAr = "ماعز", NameEn = "Goats" },
+            new DamageCategory { Id = 10, AgriculturalSectorId = 2, NameAr = "دواجن", NameEn = "Poultry" },
+            new DamageCategory { Id = 11, AgriculturalSectorId = 2, NameAr = "نحل", NameEn = "Bees" }
+        });
+
+        // 4. Damage SubCategories
+        await UpsertLookupsAsync(context, context.DamageSubCategories, "DamageSubCategories", new[]
+        {
+            new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "حبوب", NameEn = "Cereals" },
+            new DamageSubCategory { Id = 2, CategoryId = 2, NameAr = "مكشوفة", NameEn = "Open Field" },
+            new DamageSubCategory { Id = 3, CategoryId = 3, NameAr = "حمضيات", NameEn = "Citrus" },
+            new DamageSubCategory { Id = 4, CategoryId = 3, NameAr = "فواكه أخرى", NameEn = "Other Fruits" },
+            new DamageSubCategory { Id = 5, CategoryId = 5, NameAr = "خضروات محمية", NameEn = "Protected Vegetables" },
+            new DamageSubCategory { Id = 6, CategoryId = 7, NameAr = "إنتاج حليب", NameEn = "Dairy" },
+            new DamageSubCategory { Id = 7, CategoryId = 10, NameAr = "لاحم", NameEn = "Broilers" },
+            new DamageSubCategory { Id = 8, CategoryId = 11, NameAr = "خلايا نحل", NameEn = "Hives" }
+        });
+
+        // 5. Damage Classifications
+        await UpsertLookupsAsync(context, context.DamageClassifications, "DamageClassifications", new[]
+        {
+            new DamageClassification { Id = 1, SubCategoryId = 1, NameAr = "قمح", NameEn = "Wheat" },
+            new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "شعير", NameEn = "Barley" },
+            new DamageClassification { Id = 3, SubCategoryId = 2, NameAr = "بندورة", NameEn = "Tomato" },
+            new DamageClassification { Id = 4, SubCategoryId = 2, NameAr = "خيار", NameEn = "Cucumber" },
+            new DamageClassification { Id = 5, SubCategoryId = 4, NameAr = "زيتون", NameEn = "Olive" },
+            new DamageClassification { Id = 6, SubCategoryId = 4, NameAr = "عنب", NameEn = "Grape" },
+            new DamageClassification { Id = 7, SubCategoryId = 3, NameAr = "حمضيات", NameEn = "Citrus" },
+            new DamageClassification { Id = 8, SubCategoryId = 4, NameAr = "نخيل", NameEn = "Date Palm" }
+        });
+
+        // 6. Damage Cause Categories
+        await UpsertLookupsAsync(context, context.DamageCauseCategories, "DamageCauseCategories", new[]
+        {
+            new DamageCauseCategory { Id = 1, NameAr = "سياسي", NameEn = "Political" },
+            new DamageCauseCategory { Id = 2, NameAr = "طبيعي", NameEn = "Natural" }
+        });
+
+        // 7. Damage Causes
+        await UpsertLookupsAsync(context, context.DamageCauses, "DamageCauses", new[]
+        {
+            new DamageCause { Id = 1, CategoryId = 1, NameAr = "جيش الاحتلال", NameEn = "Army" },
+            new DamageCause { Id = 2, CategoryId = 1, NameAr = "مستوطنين", NameEn = "Settlers" },
+            new DamageCause { Id = 3, CategoryId = 1, NameAr = "شركات إسرائيلية", NameEn = "Israeli Companies" },
+            new DamageCause { Id = 4, CategoryId = 2, NameAr = "فيضانات", NameEn = "Flood" },
+            new DamageCause { Id = 5, CategoryId = 2, NameAr = "حرائق", NameEn = "Fire" },
+            new DamageCause { Id = 6, CategoryId = 2, NameAr = "جفاف", NameEn = "Drought" },
+            new DamageCause { Id = 7, CategoryId = 2, NameAr = "عواصف", NameEn = "Storm" }
+        });
+
+        // 8. Costing Sheets (Idempotent by business name)
+        const string catalogName = "Official Pricing Catalog 2026";
+        var catalog = await context.CostingSheetCatalogs
+            .FirstOrDefaultAsync(c => c.Name == catalogName);
+
+        if (catalog == null)
+        {
+            Log.Information("Seeding Costing Catalog: {Name}", catalogName);
+            catalog = new CostingSheetCatalog
+            {
+                Id = Guid.NewGuid(),
+                Name = catalogName,
+                Description = "Baseline pricing for the 2026 damage assessment cycle.",
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System"
+            };
+            context.CostingSheetCatalogs.Add(catalog);
+            await context.SaveChangesAsync();
+        }
+
+        var version = await context.CostingSheetVersions
+            .FirstOrDefaultAsync(v => v.CatalogId == catalog.Id && v.VersionNumber == 1);
+
+        if (version == null)
+        {
+            Log.Information("Seeding Costing Version 1 for {Name}", catalogName);
+            version = new CostingSheetVersion
+            {
+                Id = Guid.NewGuid(),
+                CatalogId = catalog.Id,
+                VersionNumber = 1,
+                Status = CostingSheetStatus.Active,
+                EffectiveFrom = new DateTime(2026, 1, 1),
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "System"
+            };
+            context.CostingSheetVersions.Add(version);
+            await context.SaveChangesAsync();
+        }
+
+        // Seed a baseline item for "Olive" (Id 5) if it doesn't exist
+        var existingItem = await context.CostingSheetItems
+            .AnyAsync(i => i.VersionId == version.Id && i.ClassificationId == 5);
+
+        if (!existingItem)
+        {
+            Log.Information("Seeding baseline Costing Item for Olive (Classification 5)");
+            context.CostingSheetItems.Add(new CostingSheetItem
+            {
+                Id = Guid.NewGuid(),
+                VersionId = version.Id,
+                ClassificationId = 5,
+                UnitPrice = 100,
+                MeasurementUnitId = 1, // Dunum
+                CreatedAt = DateTime.UtcNow
+            });
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private static async Task UpsertLookupsAsync<T>(ApplicationDbContext context, DbSet<T> dbSet, string tableName, T[] items) where T : class
+    {
+        var existingIds = await dbSet.Select(e => EF.Property<int>(e, "Id")).ToListAsync();
+
+        var toAdd = new List<T>();
+        foreach (var item in items)
+        {
+            var idProperty = typeof(T).GetProperty("Id");
+            if (idProperty == null) continue;
+
+            var idValue = (int)idProperty.GetValue(item)!;
+            if (!existingIds.Contains(idValue))
+            {
+                toAdd.Add(item);
+            }
+        }
+
+        if (toAdd.Count == 0)
+        {
+            Log.Debug("All items for {Table} already exist; skipping.", tableName);
+            return;
+        }
+
+        Log.Information("Seeding {Count} new items into {Table}...", toAdd.Count, tableName);
+        dbSet.AddRange(toAdd);
+        await SaveWithIdentityInsertAsync(context, tableName);
+    }
+
     private static async Task SaveWithIdentityInsertAsync(ApplicationDbContext context, string tableName)
     {
+        if (!context.Database.IsRelational())
+        {
+            await context.SaveChangesAsync();
+            return;
+        }
+
         try
         {
             Log.Debug("Enabling IDENTITY_INSERT for {Table}", tableName);

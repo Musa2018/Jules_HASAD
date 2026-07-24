@@ -54,6 +54,11 @@ Damage Assessment & Valuation Engine:
     - **Entity Refinement**: Eliminated redundant fields (`FarmerId`, `GovernorateId`, etc.) from the `DamageReport` entity, establishing `Farm` as the single source of truth for geography and ownership.
     - **Workflow Foundation**: Set the initial status of new reports to `PendingTechnicalVerification`.
     - **Safe Migrations**: Implemented EF Core and Drift (v18) migrations to align schemas with the refined entity principle.
+- **Sprint 14.2.3 — COMPLETED**
+    - **Safe Seeding**: Made `DbInitializer.SeedDamageReferenceDataAsync` concurrency-safe using SQL Server application locks (`sp_getapplock`).
+    - **Idempotency**: Refactored seeding logic to be fully idempotent, checking for individual records before insertion and preserving existing IDs.
+    - **Ownership Consolidation**: Consolidated reference data ownership in `DbInitializer` by removing duplicate `HasData` definitions from `ApplicationDbContext`.
+    - **Test Coverage**: Added comprehensive idempotency and partial-seeding tests to `DbInitializerTests`.
 - **Phase 4 (Pending)**: Evidence Lifecycle Foundation.
 
 ## Sprint 13.1 — COMPLETED

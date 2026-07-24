@@ -23,6 +23,7 @@ void main() {
     measurementUnits: [const domain.MeasurementUnit(id: 1, nameAr: 'دونم', nameEn: 'Dunum', category: 'Area')],
     relationshipToOwners: [const domain.RelationshipToOwner(id: 1, nameAr: 'المالك نفسه', nameEn: 'Owner Himself')],
     damageNatures: [const domain.DamageNature(id: 1, nameAr: 'نباتي', nameEn: 'Plant')],
+    damageActions: [],
     damageCategories: [const domain.DamageCategory(id: 1, parentId: 1, nameAr: 'أشجار', nameEn: 'Trees')],
     damageSubCategories: [const domain.DamageSubCategory(id: 1, parentId: 1, nameAr: 'زيتون', nameEn: 'Olive')],
     damageClassifications: [const domain.DamageClassification(id: 1, parentId: 1, nameAr: 'عمر 1-5', nameEn: 'Age 1-5')],

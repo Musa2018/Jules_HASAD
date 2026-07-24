@@ -88,6 +88,7 @@ void main() {
       measurementUnits: [const MeasurementUnit(id: 1, nameAr: 'U', nameEn: 'U', category: 'Area')],
       relationshipToOwners: [],
       damageNatures: [const DamageNature(id: 1, nameAr: 'N', nameEn: 'N')],
+      damageActions: [],
       damageCategories: [],
       damageSubCategories: [],
       damageClassifications: [],

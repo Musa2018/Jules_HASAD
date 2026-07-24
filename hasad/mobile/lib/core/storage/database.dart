@@ -190,17 +190,26 @@ class DamageReports extends Table {
   TextColumn get reportNumber => text().withDefault(const Constant(''))();
   TextColumn get permanentFormNumber => text().withDefault(const Constant(''))();
   TextColumn get temporaryFormNumber => text().withDefault(const Constant(''))();
+  IntColumn get damageYear => integer().withDefault(const Constant(0))();
 
   TextColumn get farmId => text()();
+  TextColumn get farmerId => text().withDefault(const Constant(''))();
 
   DateTimeColumn get damageDate => dateTime()();
   DateTimeColumn get documentationDate => dateTime()();
 
+  IntColumn get damageNatureId => integer().withDefault(const Constant(0))();
   IntColumn get agriculturalSectorId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseCategoryId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseId => integer().withDefault(const Constant(0))();
   TextColumn get settlementName => text().nullable()();
   TextColumn get companyName => text().nullable()();
+
+  TextColumn get governorateId => text().withDefault(const Constant(''))();
+  TextColumn get directorateId => text().withDefault(const Constant(''))();
+  TextColumn get localityId => text().withDefault(const Constant(''))();
+  RealColumn get latitude => real().nullable()();
+  RealColumn get longitude => real().nullable()();
 
   TextColumn get statusId => text().withLength(max: 50)();
   TextColumn get notes => text()();
@@ -455,7 +464,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 20;
+  int get schemaVersion => 21;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -601,6 +610,32 @@ class AppDatabase extends _$AppDatabase {
         // Sprint 14.2.3 Correction: Add Damage Action
         await m.createTable(damageActions);
         await m.alterTable(TableMigration(damageItems));
+      }
+      if (from < 21) {
+        // Sprint 14.x: DamageReport Synchronization & Denormalization
+        await m.addColumn(damageReports, damageReports.damageYear);
+        await m.addColumn(damageReports, damageReports.farmerId);
+        await m.addColumn(damageReports, damageReports.governorateId);
+        await m.addColumn(damageReports, damageReports.directorateId);
+        await m.addColumn(damageReports, damageReports.localityId);
+        await m.addColumn(damageReports, damageReports.latitude);
+        await m.addColumn(damageReports, damageReports.longitude);
+        
+        // Backfill from Farms
+        await transaction(() async {
+          await customStatement('''
+            UPDATE damage_reports 
+            SET 
+              farmer_id = (SELECT farmer_id FROM farms WHERE farms.id = damage_reports.farm_id),
+              governorate_id = (SELECT governorate_id FROM farms WHERE farms.id = damage_reports.farm_id),
+              directorate_id = (SELECT directorate_id FROM farms WHERE farms.id = damage_reports.farm_id),
+              locality_id = (SELECT locality_id FROM farms WHERE farms.id = damage_reports.farm_id),
+              latitude = (SELECT latitude FROM farms WHERE farms.id = damage_reports.farm_id),
+              longitude = (SELECT longitude FROM farms WHERE farms.id = damage_reports.farm_id),
+              damage_year = strftime('%Y', damage_date)
+            WHERE EXISTS (SELECT 1 FROM farms WHERE farms.id = damage_reports.farm_id);
+          ''');
+        });
       }
     },
     beforeOpen: (details) async {

@@ -39,16 +39,16 @@ void main() {
 
   group('ClassificationWizardNotifier', () {
     test('initial state is correct', () {
-      final state = container.read(classificationWizardProvider);
+      final state = container.read(classificationWizardProvider(1));
       expect(state.currentStep, 1);
       expect(state.selectedNature, isNull);
     });
 
     test('setting nature moves to step 2 and clears children', () {
-      final notifier = container.read(classificationWizardProvider.notifier);
+      final notifier = container.read(classificationWizardProvider(1).notifier);
       notifier.setNature(nature);
       
-      final state = container.read(classificationWizardProvider);
+      final state = container.read(classificationWizardProvider(1));
       expect(state.currentStep, 2);
       expect(state.selectedNature, nature);
     });
@@ -57,14 +57,14 @@ void main() {
       when(() => mockRepo.getActiveCostingSheet(1000))
           .thenAnswer((_) async => costing);
 
-      final notifier = container.read(classificationWizardProvider.notifier);
+      final notifier = container.read(classificationWizardProvider(1).notifier);
       notifier.setNature(nature);
       notifier.setCategory(category);
       notifier.setSubCategory(subCategory);
       
       await notifier.setClassification(classification);
 
-      final state = container.read(classificationWizardProvider);
+      final state = container.read(classificationWizardProvider(1));
       expect(state.selectedClassification, classification);
       expect(state.resolvedCosting, costing);
       expect(state.error, isNull);
@@ -74,20 +74,20 @@ void main() {
       when(() => mockRepo.getActiveCostingSheet(1000))
           .thenAnswer((_) async => costing);
 
-      final notifier = container.read(classificationWizardProvider.notifier);
+      final notifier = container.read(classificationWizardProvider(1).notifier);
       notifier.setNature(nature);
       notifier.setCategory(category);
       notifier.setSubCategory(subCategory);
       await notifier.setClassification(classification);
 
       // Sanity check
-      expect(container.read(classificationWizardProvider).selectedClassification, isNotNull);
+      expect(container.read(classificationWizardProvider(1)).selectedClassification, isNotNull);
 
       // Change Nature
       final newNature = const DamageNature(id: 2, nameAr: 'N2', nameEn: 'E2');
       notifier.setNature(newNature);
 
-      final state = container.read(classificationWizardProvider);
+      final state = container.read(classificationWizardProvider(1));
       expect(state.currentStep, 2);
       expect(state.selectedNature, newNature);
       expect(state.selectedCategory, isNull);
@@ -100,10 +100,10 @@ void main() {
       when(() => mockRepo.getActiveCostingSheet(1000))
           .thenAnswer((_) async => null);
 
-      final notifier = container.read(classificationWizardProvider.notifier);
+      final notifier = container.read(classificationWizardProvider(1).notifier);
       await notifier.setClassification(classification);
 
-      final state = container.read(classificationWizardProvider);
+      final state = container.read(classificationWizardProvider(1));
       expect(state.resolvedCosting, isNull);
       expect(state.error, contains('No active pricing found'));
     });

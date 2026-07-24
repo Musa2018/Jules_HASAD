@@ -103,6 +103,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       temporaryFormNumber: Value(report.temporaryFormNumber),
       reportNumber: Value(report.reportNumber),
       farmId: report.farmId,
+      farmerId: Value(report.farmerId),
+      damageYear: Value(report.damageYear),
       damageDate: report.damageDate,
       documentationDate: report.documentationDate,
       agriculturalSectorId: Value(report.agriculturalSectorId),
@@ -110,6 +112,11 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       damageCauseId: Value(report.damageCauseId),
       settlementName: Value(report.settlementName),
       companyName: Value(report.companyName),
+      governorateId: Value(report.governorateId),
+      directorateId: Value(report.directorateId),
+      localityId: Value(report.localityId),
+      latitude: Value(report.latitude),
+      longitude: Value(report.longitude),
       statusId: report.statusId,
       notes: report.notes,
       rowVersion: Value(report.rowVersion),
@@ -150,10 +157,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         .getSingleOrNull();
     
     if (existing != null) {
-      // Instead of throwing, in a real "Open Existing" scenario, the UI should probably handle this.
-      // But per requirements, the repository should check.
-      // I'll return the existing report to the caller if needed.
-      return _mapToDomain(existing, await (_db.select(_db.damageItems)..where((t) => t.damageReportId.equals(existing.id))).get());
+      throw Exception('A damage report already exists for this farm and date.');
     }
 
     final localId = report.id.isEmpty ? const Uuid().v4() : report.id;

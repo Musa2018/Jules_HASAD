@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 
 part 'damage_report.freezed.dart';
 part 'damage_report.g.dart';
@@ -13,7 +14,9 @@ class DamageReport with _$DamageReport {
     @Default('') String reportNumber,
     @Default('') String permanentFormNumber,
     @Default('') String temporaryFormNumber,
+    @Default(0) int damageYear,
     required String farmId,
+    @Default('') String farmerId,
     required DateTime damageDate,
     required DateTime documentationDate,
     @Default(0) int agriculturalSectorId,
@@ -21,6 +24,11 @@ class DamageReport with _$DamageReport {
     @Default(0) int damageCauseId,
     String? settlementName,
     String? companyName,
+    @Default('') String governorateId,
+    @Default('') String directorateId,
+    @Default('') String localityId,
+    double? latitude,
+    double? longitude,
     @Default(DamageReportStatus.pendingTechnicalVerification) String statusId,
     required String notes,
     @Default('') String rowVersion,

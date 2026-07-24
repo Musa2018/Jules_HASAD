@@ -1,0 +1,13 @@
+- [ ] Refactor `DbInitializer.cs` for concurrency safety and idempotency
+    - [ ] Implement `sp_getapplock`
+    - [ ] Implement idempotent lookup seeding
+    - [ ] Implement idempotent CostingSheet seeding
+- [ ] Modify `ApplicationDbContext.cs` to remove duplicate `HasData`
+- [ ] Generate and verify migration (ensure no `DELETE` statements)
+- [ ] Add/Update tests in `DbInitializerTests.cs`
+- [ ] Verification
+    - [ ] Fresh database initialization
+    - [ ] Existing database upgrade
+    - [ ] Multiple seed runs
+    - [ ] Concurrent startup simulation (Logic check)
+- [ ] Update `PROJECT_STATUS.md`

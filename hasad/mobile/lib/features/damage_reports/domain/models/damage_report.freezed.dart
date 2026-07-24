@@ -28,7 +28,9 @@ mixin _$DamageReport {
   String get reportNumber => throw _privateConstructorUsedError;
   String get permanentFormNumber => throw _privateConstructorUsedError;
   String get temporaryFormNumber => throw _privateConstructorUsedError;
+  int get damageYear => throw _privateConstructorUsedError;
   String get farmId => throw _privateConstructorUsedError;
+  String get farmerId => throw _privateConstructorUsedError;
   DateTime get damageDate => throw _privateConstructorUsedError;
   DateTime get documentationDate => throw _privateConstructorUsedError;
   int get agriculturalSectorId => throw _privateConstructorUsedError;
@@ -36,6 +38,11 @@ mixin _$DamageReport {
   int get damageCauseId => throw _privateConstructorUsedError;
   String? get settlementName => throw _privateConstructorUsedError;
   String? get companyName => throw _privateConstructorUsedError;
+  String get governorateId => throw _privateConstructorUsedError;
+  String get directorateId => throw _privateConstructorUsedError;
+  String get localityId => throw _privateConstructorUsedError;
+  double? get latitude => throw _privateConstructorUsedError;
+  double? get longitude => throw _privateConstructorUsedError;
   String get statusId => throw _privateConstructorUsedError;
   String get notes => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
@@ -69,7 +76,9 @@ abstract class $DamageReportCopyWith<$Res> {
     String reportNumber,
     String permanentFormNumber,
     String temporaryFormNumber,
+    int damageYear,
     String farmId,
+    String farmerId,
     DateTime damageDate,
     DateTime documentationDate,
     int agriculturalSectorId,
@@ -77,6 +86,11 @@ abstract class $DamageReportCopyWith<$Res> {
     int damageCauseId,
     String? settlementName,
     String? companyName,
+    String governorateId,
+    String directorateId,
+    String localityId,
+    double? latitude,
+    double? longitude,
     String statusId,
     String notes,
     String rowVersion,
@@ -109,7 +123,9 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? reportNumber = null,
     Object? permanentFormNumber = null,
     Object? temporaryFormNumber = null,
+    Object? damageYear = null,
     Object? farmId = null,
+    Object? farmerId = null,
     Object? damageDate = null,
     Object? documentationDate = null,
     Object? agriculturalSectorId = null,
@@ -117,6 +133,11 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? damageCauseId = null,
     Object? settlementName = freezed,
     Object? companyName = freezed,
+    Object? governorateId = null,
+    Object? directorateId = null,
+    Object? localityId = null,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
     Object? statusId = null,
     Object? notes = null,
     Object? rowVersion = null,
@@ -149,9 +170,17 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.temporaryFormNumber
                 : temporaryFormNumber // ignore: cast_nullable_to_non_nullable
                       as String,
+            damageYear: null == damageYear
+                ? _value.damageYear
+                : damageYear // ignore: cast_nullable_to_non_nullable
+                      as int,
             farmId: null == farmId
                 ? _value.farmId
                 : farmId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            farmerId: null == farmerId
+                ? _value.farmerId
+                : farmerId // ignore: cast_nullable_to_non_nullable
                       as String,
             damageDate: null == damageDate
                 ? _value.damageDate
@@ -181,6 +210,26 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.companyName
                 : companyName // ignore: cast_nullable_to_non_nullable
                       as String?,
+            governorateId: null == governorateId
+                ? _value.governorateId
+                : governorateId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            directorateId: null == directorateId
+                ? _value.directorateId
+                : directorateId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            localityId: null == localityId
+                ? _value.localityId
+                : localityId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            latitude: freezed == latitude
+                ? _value.latitude
+                : latitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            longitude: freezed == longitude
+                ? _value.longitude
+                : longitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
             statusId: null == statusId
                 ? _value.statusId
                 : statusId // ignore: cast_nullable_to_non_nullable
@@ -238,7 +287,9 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String reportNumber,
     String permanentFormNumber,
     String temporaryFormNumber,
+    int damageYear,
     String farmId,
+    String farmerId,
     DateTime damageDate,
     DateTime documentationDate,
     int agriculturalSectorId,
@@ -246,6 +297,11 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     int damageCauseId,
     String? settlementName,
     String? companyName,
+    String governorateId,
+    String directorateId,
+    String localityId,
+    double? latitude,
+    double? longitude,
     String statusId,
     String notes,
     String rowVersion,
@@ -277,7 +333,9 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? reportNumber = null,
     Object? permanentFormNumber = null,
     Object? temporaryFormNumber = null,
+    Object? damageYear = null,
     Object? farmId = null,
+    Object? farmerId = null,
     Object? damageDate = null,
     Object? documentationDate = null,
     Object? agriculturalSectorId = null,
@@ -285,6 +343,11 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? damageCauseId = null,
     Object? settlementName = freezed,
     Object? companyName = freezed,
+    Object? governorateId = null,
+    Object? directorateId = null,
+    Object? localityId = null,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
     Object? statusId = null,
     Object? notes = null,
     Object? rowVersion = null,
@@ -317,9 +380,17 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.temporaryFormNumber
             : temporaryFormNumber // ignore: cast_nullable_to_non_nullable
                   as String,
+        damageYear: null == damageYear
+            ? _value.damageYear
+            : damageYear // ignore: cast_nullable_to_non_nullable
+                  as int,
         farmId: null == farmId
             ? _value.farmId
             : farmId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        farmerId: null == farmerId
+            ? _value.farmerId
+            : farmerId // ignore: cast_nullable_to_non_nullable
                   as String,
         damageDate: null == damageDate
             ? _value.damageDate
@@ -349,6 +420,26 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.companyName
             : companyName // ignore: cast_nullable_to_non_nullable
                   as String?,
+        governorateId: null == governorateId
+            ? _value.governorateId
+            : governorateId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        directorateId: null == directorateId
+            ? _value.directorateId
+            : directorateId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        localityId: null == localityId
+            ? _value.localityId
+            : localityId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        latitude: freezed == latitude
+            ? _value.latitude
+            : latitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        longitude: freezed == longitude
+            ? _value.longitude
+            : longitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
         statusId: null == statusId
             ? _value.statusId
             : statusId // ignore: cast_nullable_to_non_nullable
@@ -399,7 +490,9 @@ class _$DamageReportImpl implements _DamageReport {
     this.reportNumber = '',
     this.permanentFormNumber = '',
     this.temporaryFormNumber = '',
+    this.damageYear = 0,
     required this.farmId,
+    this.farmerId = '',
     required this.damageDate,
     required this.documentationDate,
     this.agriculturalSectorId = 0,
@@ -407,6 +500,11 @@ class _$DamageReportImpl implements _DamageReport {
     this.damageCauseId = 0,
     this.settlementName,
     this.companyName,
+    this.governorateId = '',
+    this.directorateId = '',
+    this.localityId = '',
+    this.latitude,
+    this.longitude,
     this.statusId = DamageReportStatus.pendingTechnicalVerification,
     required this.notes,
     this.rowVersion = '',
@@ -438,7 +536,13 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final String temporaryFormNumber;
   @override
+  @JsonKey()
+  final int damageYear;
+  @override
   final String farmId;
+  @override
+  @JsonKey()
+  final String farmerId;
   @override
   final DateTime damageDate;
   @override
@@ -456,6 +560,19 @@ class _$DamageReportImpl implements _DamageReport {
   final String? settlementName;
   @override
   final String? companyName;
+  @override
+  @JsonKey()
+  final String governorateId;
+  @override
+  @JsonKey()
+  final String directorateId;
+  @override
+  @JsonKey()
+  final String localityId;
+  @override
+  final double? latitude;
+  @override
+  final double? longitude;
   @override
   @JsonKey()
   final String statusId;
@@ -487,7 +604,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, farmId: $farmId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -504,7 +621,11 @@ class _$DamageReportImpl implements _DamageReport {
                 other.permanentFormNumber == permanentFormNumber) &&
             (identical(other.temporaryFormNumber, temporaryFormNumber) ||
                 other.temporaryFormNumber == temporaryFormNumber) &&
+            (identical(other.damageYear, damageYear) ||
+                other.damageYear == damageYear) &&
             (identical(other.farmId, farmId) || other.farmId == farmId) &&
+            (identical(other.farmerId, farmerId) ||
+                other.farmerId == farmerId) &&
             (identical(other.damageDate, damageDate) ||
                 other.damageDate == damageDate) &&
             (identical(other.documentationDate, documentationDate) ||
@@ -519,6 +640,16 @@ class _$DamageReportImpl implements _DamageReport {
                 other.settlementName == settlementName) &&
             (identical(other.companyName, companyName) ||
                 other.companyName == companyName) &&
+            (identical(other.governorateId, governorateId) ||
+                other.governorateId == governorateId) &&
+            (identical(other.directorateId, directorateId) ||
+                other.directorateId == directorateId) &&
+            (identical(other.localityId, localityId) ||
+                other.localityId == localityId) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
             (identical(other.statusId, statusId) ||
                 other.statusId == statusId) &&
             (identical(other.notes, notes) || other.notes == notes) &&
@@ -546,7 +677,9 @@ class _$DamageReportImpl implements _DamageReport {
     reportNumber,
     permanentFormNumber,
     temporaryFormNumber,
+    damageYear,
     farmId,
+    farmerId,
     damageDate,
     documentationDate,
     agriculturalSectorId,
@@ -554,6 +687,11 @@ class _$DamageReportImpl implements _DamageReport {
     damageCauseId,
     settlementName,
     companyName,
+    governorateId,
+    directorateId,
+    localityId,
+    latitude,
+    longitude,
     statusId,
     notes,
     rowVersion,
@@ -586,7 +724,9 @@ abstract class _DamageReport implements DamageReport {
     final String reportNumber,
     final String permanentFormNumber,
     final String temporaryFormNumber,
+    final int damageYear,
     required final String farmId,
+    final String farmerId,
     required final DateTime damageDate,
     required final DateTime documentationDate,
     final int agriculturalSectorId,
@@ -594,6 +734,11 @@ abstract class _DamageReport implements DamageReport {
     final int damageCauseId,
     final String? settlementName,
     final String? companyName,
+    final String governorateId,
+    final String directorateId,
+    final String localityId,
+    final double? latitude,
+    final double? longitude,
     final String statusId,
     required final String notes,
     final String rowVersion,
@@ -621,7 +766,11 @@ abstract class _DamageReport implements DamageReport {
   @override
   String get temporaryFormNumber;
   @override
+  int get damageYear;
+  @override
   String get farmId;
+  @override
+  String get farmerId;
   @override
   DateTime get damageDate;
   @override
@@ -636,6 +785,16 @@ abstract class _DamageReport implements DamageReport {
   String? get settlementName;
   @override
   String? get companyName;
+  @override
+  String get governorateId;
+  @override
+  String get directorateId;
+  @override
+  String get localityId;
+  @override
+  double? get latitude;
+  @override
+  double? get longitude;
   @override
   String get statusId;
   @override

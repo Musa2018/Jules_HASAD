@@ -97,6 +97,7 @@ void main() {
             measurementUnits: [],
             relationshipToOwners: [],
             damageNatures: [],
+            damageActions: [],
             damageCategories: [],
             damageSubCategories: [],
             damageClassifications: [],

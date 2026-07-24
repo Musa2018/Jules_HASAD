@@ -31,7 +31,7 @@ void main() {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: [Locale('en')],
-        home: Scaffold(body: ClassificationSelector()),
+        home: Scaffold(body: ClassificationSelector(sectorId: 1)),
       ),
     );
   }
@@ -49,9 +49,11 @@ void main() {
 
   testWidgets('ClassificationSelector navigates to Categories in Step 2', (tester) async {
     final natures = [const DamageNature(id: 1, nameAr: 'PlantsAr', nameEn: 'PlantsEn')];
+    final actions = [const DamageAction(id: 5, nameAr: 'ActionAr', nameEn: 'ActionEn')];
     final categories = [const DamageCategory(id: 10, parentId: 1, nameAr: 'TreesAr', nameEn: 'TreesEn')];
     
     when(() => mockRepo.getNatures()).thenAnswer((_) async => natures);
+    when(() => mockRepo.getActions()).thenAnswer((_) async => actions);
     when(() => mockRepo.getCategories(1)).thenAnswer((_) async => categories);
 
     await tester.pumpWidget(buildTestApp());
@@ -59,6 +61,12 @@ void main() {
 
     // Click Plants
     await tester.tap(find.text('PlantsAr'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Select Damage Action'), findsOneWidget);
+
+    // Click Action
+    await tester.tap(find.text('ActionAr'));
     await tester.pumpAndSettle();
 
     expect(find.text('Select Category'), findsOneWidget);

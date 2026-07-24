@@ -83,7 +83,7 @@ void main() {
     final refData = ReferenceData(
       ownershipTypes: [], agriculturalSectors: [], politicalClassifications: [],
       areaUnits: [], measurementUnits: [], relationshipToOwners: [],
-      damageNatures: [], damageCategories: [], damageSubCategories: [], damageClassifications: [],
+      damageNatures: [], damageActions: [], damageCategories: [], damageSubCategories: [], damageClassifications: [],
       damageCauseCategories: [], damageCauses: []
     );
     when(() => mockRefRepo.getReferenceData()).thenAnswer((_) async => refData);
@@ -96,7 +96,7 @@ void main() {
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('Please select a damage nature.'), findsOneWidget);
+    expect(find.text('Please select an agricultural sector.'), findsOneWidget);
     verifyNever(() => mockDamageRepo.createDamageReport(any()));
   });
 
@@ -110,9 +110,10 @@ void main() {
     when(() => mockRefRepo.getDamageCauses(1)).thenAnswer((_) async => causes);
 
     final refData = ReferenceData(
-      ownershipTypes: [], agriculturalSectors: [], politicalClassifications: [],
+      ownershipTypes: [], agriculturalSectors: natures.map((e) => AgriculturalSector(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn)).toList(), 
+      politicalClassifications: [],
       areaUnits: [], measurementUnits: [], relationshipToOwners: [],
-      damageNatures: natures, damageCategories: [], damageSubCategories: [], damageClassifications: [],
+      damageNatures: natures, damageActions: [], damageCategories: [], damageSubCategories: [], damageClassifications: [],
       damageCauseCategories: categories, damageCauses: causes
     );
     when(() => mockRefRepo.getReferenceData()).thenAnswer((_) async => refData);
@@ -126,7 +127,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Select Nature
-    await tester.tap(find.text('Damage Nature'));
+    await tester.tap(find.text('Agricultural Sector'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('NatureAr').last);
     await tester.pumpAndSettle();

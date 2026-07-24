@@ -61,7 +61,13 @@ Damage Assessment & Valuation Engine:
     - **Migration Hardening**: Audited and cleaned `TerminologyAudit` migration to remove duplicate `InsertData` operations, ensuring safe upgrades for existing databases.
     - **Verification**: Successfully validated architecture against existing database upgrade, fresh installation, and concurrent execution scenarios.
     - **Test Coverage**: Added comprehensive idempotency and partial-seeding tests to `DbInitializerTests`.
-- **Phase 4 (Pending)**: Evidence Lifecycle Foundation.
+- **Phase 4 (Completed)**: DamageReport Sprint 14.x Synchronization.
+    - **Contract Alignment**: Synchronized `DamageReport` domain model and DTOs with backend Sprint 14.x architecture.
+    - **Denormalization**: Restored `FarmerId`, `GovernorateId`, `DirectorateId`, `LocalityId`, `DamageYear`, `Latitude`, and `Longitude` to the `DamageReport` entity for improved offline visibility and summary reporting, matching the backend DTO contract.
+    - **Terminology**: Aligned UI and tests with "Agricultural Sector" terminology.
+    - **Drift Schema v21**: Upgraded database schema to v21 with automated backfill logic from the `Farms` table to preserve geographic integrity for existing reports.
+    - **Reference Data**: Implemented `getActions()` in `ReferenceDataRepository` to support hierarchical assessment steps (Nature -> Action -> Category).
+    - **Validation**: Passed all 157 mobile tests and static analysis.
 
 ## Sprint 13.1 — COMPLETED
 

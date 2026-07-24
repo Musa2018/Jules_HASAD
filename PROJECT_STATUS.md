@@ -42,7 +42,8 @@ Damage Assessment & Valuation Engine:
     - **Header Workflow**: Refactored creation into two phases: Header Save (Step 1) -> Assessment (Step 2).
     - **Official Numbering**: Implemented Palestinian numbering convention `{Gov}-{Dir}-{Year}-{Seq}` per ADR-0014.
     - **Duplicate Prevention**: Hardened creation logic to detect and open existing reports for same Farm/Date.
-    - **Domain Correction**: Moved Damage Nature from Item level to Report level for categorization consistency.
+    - **Domain Correction**: Moved Damage Nature from Report level to Item level to allow multi-nature incidents within a single report.
+    - **Damage Action**: Introduced Damage Action lookup (Burning, Breaking, Theft, etc.) per assessment item.
 - **Sprint 14.2.1 — COMPLETED**
     - **Database Migration**: Applied missing EF Core migrations for `Directorate.Code`, `DamageReport.ReportNumber`, and `DamageReportSequence`.
     - **Business Codes**: Corrected `Governorate.Code` and `Directorate.Code` to use approved human-readable abbreviations (e.g., NBL, NAB, JEN) for official numbering.

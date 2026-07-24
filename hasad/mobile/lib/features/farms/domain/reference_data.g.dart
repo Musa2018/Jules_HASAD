@@ -30,6 +30,9 @@ _$ReferenceDataImpl _$$ReferenceDataImplFromJson(
   damageNatures: (json['damageNatures'] as List<dynamic>)
       .map((e) => DamageNature.fromJson(e as Map<String, dynamic>))
       .toList(),
+  damageActions: (json['damageActions'] as List<dynamic>)
+      .map((e) => DamageAction.fromJson(e as Map<String, dynamic>))
+      .toList(),
   damageCategories: (json['damageCategories'] as List<dynamic>)
       .map((e) => DamageCategory.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -76,6 +79,7 @@ Map<String, dynamic> _$$ReferenceDataImplToJson(_$ReferenceDataImpl instance) =>
       'measurementUnits': instance.measurementUnits,
       'relationshipToOwners': instance.relationshipToOwners,
       'damageNatures': instance.damageNatures,
+      'damageActions': instance.damageActions,
       'damageCategories': instance.damageCategories,
       'damageSubCategories': instance.damageSubCategories,
       'damageClassifications': instance.damageClassifications,

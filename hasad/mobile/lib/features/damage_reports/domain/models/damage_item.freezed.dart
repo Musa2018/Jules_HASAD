@@ -26,6 +26,8 @@ mixin _$DamageItem {
   @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
   String get damageReportId => throw _privateConstructorUsedError;
+  int get damageNatureId => throw _privateConstructorUsedError;
+  int get damageActionId => throw _privateConstructorUsedError;
   int get classificationId => throw _privateConstructorUsedError;
   @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
   String get costingSheetId => throw _privateConstructorUsedError;
@@ -64,6 +66,8 @@ abstract class $DamageItemCopyWith<$Res> {
     @JsonKey(name: 'clientId') String id,
     @JsonKey(name: 'id') String? serverId,
     String damageReportId,
+    int damageNatureId,
+    int damageActionId,
     int classificationId,
     @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     String costingSheetId,
@@ -101,6 +105,8 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
     Object? id = null,
     Object? serverId = freezed,
     Object? damageReportId = null,
+    Object? damageNatureId = null,
+    Object? damageActionId = null,
     Object? classificationId = null,
     Object? costingSheetId = null,
     Object? costingSheetItemId = freezed,
@@ -131,6 +137,14 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
                 ? _value.damageReportId
                 : damageReportId // ignore: cast_nullable_to_non_nullable
                       as String,
+            damageNatureId: null == damageNatureId
+                ? _value.damageNatureId
+                : damageNatureId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            damageActionId: null == damageActionId
+                ? _value.damageActionId
+                : damageActionId // ignore: cast_nullable_to_non_nullable
+                      as int,
             classificationId: null == classificationId
                 ? _value.classificationId
                 : classificationId // ignore: cast_nullable_to_non_nullable
@@ -210,6 +224,8 @@ abstract class _$$DamageItemImplCopyWith<$Res>
     @JsonKey(name: 'clientId') String id,
     @JsonKey(name: 'id') String? serverId,
     String damageReportId,
+    int damageNatureId,
+    int damageActionId,
     int classificationId,
     @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     String costingSheetId,
@@ -246,6 +262,8 @@ class __$$DamageItemImplCopyWithImpl<$Res>
     Object? id = null,
     Object? serverId = freezed,
     Object? damageReportId = null,
+    Object? damageNatureId = null,
+    Object? damageActionId = null,
     Object? classificationId = null,
     Object? costingSheetId = null,
     Object? costingSheetItemId = freezed,
@@ -276,6 +294,14 @@ class __$$DamageItemImplCopyWithImpl<$Res>
             ? _value.damageReportId
             : damageReportId // ignore: cast_nullable_to_non_nullable
                   as String,
+        damageNatureId: null == damageNatureId
+            ? _value.damageNatureId
+            : damageNatureId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        damageActionId: null == damageActionId
+            ? _value.damageActionId
+            : damageActionId // ignore: cast_nullable_to_non_nullable
+                  as int,
         classificationId: null == classificationId
             ? _value.classificationId
             : classificationId // ignore: cast_nullable_to_non_nullable
@@ -348,6 +374,8 @@ class _$DamageItemImpl implements _DamageItem {
     @JsonKey(name: 'clientId') required this.id,
     @JsonKey(name: 'id') this.serverId,
     required this.damageReportId,
+    this.damageNatureId = 0,
+    this.damageActionId = 0,
     this.classificationId = 0,
     @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     this.costingSheetId = '',
@@ -378,6 +406,12 @@ class _$DamageItemImpl implements _DamageItem {
   final String? serverId;
   @override
   final String damageReportId;
+  @override
+  @JsonKey()
+  final int damageNatureId;
+  @override
+  @JsonKey()
+  final int damageActionId;
   @override
   @JsonKey()
   final int classificationId;
@@ -418,7 +452,7 @@ class _$DamageItemImpl implements _DamageItem {
 
   @override
   String toString() {
-    return 'DamageItem(id: $id, serverId: $serverId, damageReportId: $damageReportId, classificationId: $classificationId, costingSheetId: $costingSheetId, costingSheetItemId: $costingSheetItemId, calculatedUnitPrice: $calculatedUnitPrice, measurementUnitSnapshot: $measurementUnitSnapshot, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageItem(id: $id, serverId: $serverId, damageReportId: $damageReportId, damageNatureId: $damageNatureId, damageActionId: $damageActionId, classificationId: $classificationId, costingSheetId: $costingSheetId, costingSheetItemId: $costingSheetItemId, calculatedUnitPrice: $calculatedUnitPrice, measurementUnitSnapshot: $measurementUnitSnapshot, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -431,6 +465,10 @@ class _$DamageItemImpl implements _DamageItem {
                 other.serverId == serverId) &&
             (identical(other.damageReportId, damageReportId) ||
                 other.damageReportId == damageReportId) &&
+            (identical(other.damageNatureId, damageNatureId) ||
+                other.damageNatureId == damageNatureId) &&
+            (identical(other.damageActionId, damageActionId) ||
+                other.damageActionId == damageActionId) &&
             (identical(other.classificationId, classificationId) ||
                 other.classificationId == classificationId) &&
             (identical(other.costingSheetId, costingSheetId) ||
@@ -468,11 +506,13 @@ class _$DamageItemImpl implements _DamageItem {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     serverId,
     damageReportId,
+    damageNatureId,
+    damageActionId,
     classificationId,
     costingSheetId,
     costingSheetItemId,
@@ -488,7 +528,7 @@ class _$DamageItemImpl implements _DamageItem {
     isDeleted,
     deletedAt,
     deletedBy,
-  );
+  ]);
 
   /// Create a copy of DamageItem
   /// with the given fields replaced by the non-null parameter values.
@@ -509,6 +549,8 @@ abstract class _DamageItem implements DamageItem {
     @JsonKey(name: 'clientId') required final String id,
     @JsonKey(name: 'id') final String? serverId,
     required final String damageReportId,
+    final int damageNatureId,
+    final int damageActionId,
     final int classificationId,
     @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
     final String costingSheetId,
@@ -538,6 +580,10 @@ abstract class _DamageItem implements DamageItem {
   String? get serverId;
   @override
   String get damageReportId;
+  @override
+  int get damageNatureId;
+  @override
+  int get damageActionId;
   @override
   int get classificationId;
   @override

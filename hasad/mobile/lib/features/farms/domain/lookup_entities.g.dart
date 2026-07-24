@@ -116,6 +116,20 @@ Map<String, dynamic> _$$DamageNatureImplToJson(_$DamageNatureImpl instance) =>
       'nameEn': instance.nameEn,
     };
 
+_$DamageActionImpl _$$DamageActionImplFromJson(Map<String, dynamic> json) =>
+    _$DamageActionImpl(
+      id: (json['id'] as num).toInt(),
+      nameAr: json['nameAr'] as String? ?? '',
+      nameEn: json['nameEn'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$$DamageActionImplToJson(_$DamageActionImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'nameAr': instance.nameAr,
+      'nameEn': instance.nameEn,
+    };
+
 _$DamageCategoryImpl _$$DamageCategoryImplFromJson(Map<String, dynamic> json) =>
     _$DamageCategoryImpl(
       id: (json['id'] as num).toInt(),

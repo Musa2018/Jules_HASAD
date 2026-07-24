@@ -31,7 +31,7 @@ mixin _$DamageReport {
   String get farmId => throw _privateConstructorUsedError;
   DateTime get damageDate => throw _privateConstructorUsedError;
   DateTime get documentationDate => throw _privateConstructorUsedError;
-  int get damageNatureId => throw _privateConstructorUsedError;
+  int get agriculturalSectorId => throw _privateConstructorUsedError;
   int get damageCauseCategoryId => throw _privateConstructorUsedError;
   int get damageCauseId => throw _privateConstructorUsedError;
   String? get settlementName => throw _privateConstructorUsedError;
@@ -72,7 +72,7 @@ abstract class $DamageReportCopyWith<$Res> {
     String farmId,
     DateTime damageDate,
     DateTime documentationDate,
-    int damageNatureId,
+    int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
     String? settlementName,
@@ -112,7 +112,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? farmId = null,
     Object? damageDate = null,
     Object? documentationDate = null,
-    Object? damageNatureId = null,
+    Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
     Object? settlementName = freezed,
@@ -161,9 +161,9 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.documentationDate
                 : documentationDate // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            damageNatureId: null == damageNatureId
-                ? _value.damageNatureId
-                : damageNatureId // ignore: cast_nullable_to_non_nullable
+            agriculturalSectorId: null == agriculturalSectorId
+                ? _value.agriculturalSectorId
+                : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
                       as int,
             damageCauseCategoryId: null == damageCauseCategoryId
                 ? _value.damageCauseCategoryId
@@ -241,7 +241,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String farmId,
     DateTime damageDate,
     DateTime documentationDate,
-    int damageNatureId,
+    int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
     String? settlementName,
@@ -280,7 +280,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? farmId = null,
     Object? damageDate = null,
     Object? documentationDate = null,
-    Object? damageNatureId = null,
+    Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
     Object? settlementName = freezed,
@@ -329,9 +329,9 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.documentationDate
             : documentationDate // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        damageNatureId: null == damageNatureId
-            ? _value.damageNatureId
-            : damageNatureId // ignore: cast_nullable_to_non_nullable
+        agriculturalSectorId: null == agriculturalSectorId
+            ? _value.agriculturalSectorId
+            : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
                   as int,
         damageCauseCategoryId: null == damageCauseCategoryId
             ? _value.damageCauseCategoryId
@@ -402,7 +402,7 @@ class _$DamageReportImpl implements _DamageReport {
     required this.farmId,
     required this.damageDate,
     required this.documentationDate,
-    this.damageNatureId = 0,
+    this.agriculturalSectorId = 0,
     this.damageCauseCategoryId = 0,
     this.damageCauseId = 0,
     this.settlementName,
@@ -445,7 +445,7 @@ class _$DamageReportImpl implements _DamageReport {
   final DateTime documentationDate;
   @override
   @JsonKey()
-  final int damageNatureId;
+  final int agriculturalSectorId;
   @override
   @JsonKey()
   final int damageCauseCategoryId;
@@ -487,7 +487,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, farmId: $farmId, damageDate: $damageDate, documentationDate: $documentationDate, damageNatureId: $damageNatureId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, farmId: $farmId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -509,8 +509,8 @@ class _$DamageReportImpl implements _DamageReport {
                 other.damageDate == damageDate) &&
             (identical(other.documentationDate, documentationDate) ||
                 other.documentationDate == documentationDate) &&
-            (identical(other.damageNatureId, damageNatureId) ||
-                other.damageNatureId == damageNatureId) &&
+            (identical(other.agriculturalSectorId, agriculturalSectorId) ||
+                other.agriculturalSectorId == agriculturalSectorId) &&
             (identical(other.damageCauseCategoryId, damageCauseCategoryId) ||
                 other.damageCauseCategoryId == damageCauseCategoryId) &&
             (identical(other.damageCauseId, damageCauseId) ||
@@ -549,7 +549,7 @@ class _$DamageReportImpl implements _DamageReport {
     farmId,
     damageDate,
     documentationDate,
-    damageNatureId,
+    agriculturalSectorId,
     damageCauseCategoryId,
     damageCauseId,
     settlementName,
@@ -589,7 +589,7 @@ abstract class _DamageReport implements DamageReport {
     required final String farmId,
     required final DateTime damageDate,
     required final DateTime documentationDate,
-    final int damageNatureId,
+    final int agriculturalSectorId,
     final int damageCauseCategoryId,
     final int damageCauseId,
     final String? settlementName,
@@ -627,7 +627,7 @@ abstract class _DamageReport implements DamageReport {
   @override
   DateTime get documentationDate;
   @override
-  int get damageNatureId;
+  int get agriculturalSectorId;
   @override
   int get damageCauseCategoryId;
   @override

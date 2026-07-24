@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
-import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_cause_wizard_provider.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/damage_cause_selector.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/damage_item_form_sheet.dart';
@@ -327,7 +326,7 @@ class _DamageReportFormScreenState
     final refDataAsync = ref.watch(referenceDataProvider);
     return refDataAsync.when(
       data: (data) => DropdownButtonFormField<AgriculturalSector>(
-        value: _selectedSector,
+        initialValue: _selectedSector,
         decoration: const InputDecoration(
             labelText: 'Agricultural Sector', border: OutlineInputBorder()),
         items: data.agriculturalSectors

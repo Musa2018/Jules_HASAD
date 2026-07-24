@@ -59,9 +59,8 @@ class ClassificationWizardState {
 
 class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardState> {
   final Ref _ref;
-  final int _sectorId;
 
-  ClassificationWizardNotifier(this._ref, this._sectorId)
+  ClassificationWizardNotifier(this._ref)
       : super(const ClassificationWizardState());
 
   void setNature(DamageNature nature) {
@@ -144,7 +143,7 @@ class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardSta
 final classificationWizardProvider = StateNotifierProvider.family
     .autoDispose<ClassificationWizardNotifier, ClassificationWizardState, int>(
         (ref, sectorId) {
-  return ClassificationWizardNotifier(ref, sectorId);
+  return ClassificationWizardNotifier(ref);
 });
 
 // Cascading Filter Providers

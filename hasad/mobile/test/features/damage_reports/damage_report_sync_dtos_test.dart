@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/damage_reports/data/dto/damage_report_sync_dto.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';

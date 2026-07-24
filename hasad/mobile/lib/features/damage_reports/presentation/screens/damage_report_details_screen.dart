@@ -81,8 +81,7 @@ class _HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final statusLabel = _getStatusLabel(context, report.statusId);
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,10 +190,7 @@ class _HistorySection extends ConsumerWidget {
                   itemCount: history.length,
                   itemBuilder: (context, index) {
                     final item = history[index];
-                    final header = _HeaderSection(report: DamageReport(
-                      id: '', farmId: '', farmerId: '', damageDate: DateTime.now(), documentationDate: DateTime.now(),
-                      governorateId: '', directorateId: '', localityId: '', statusId: '', notes: ''
-                    ));
+
                     
                     // Actually, I'll use a local function or move the label logic
                     return ListTile(

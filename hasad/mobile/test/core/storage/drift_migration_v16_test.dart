@@ -1,7 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/storage/database.dart';
-import 'package:drift/drift.dart';
 
 void main() {
   late AppDatabase db;
@@ -17,7 +16,7 @@ void main() {
   test('Migration v15 to v16: Data and GUID preservation', () async {
     // To test the onUpgrade logic, we manually call it and verify the SQL results.
     // We use a fresh database connection.
-    final migrator = db.createMigrator();
+    db.createMigrator();
     
     // 1. Ensure old tables exist and have data
     // (They are already created by Drift's onCreate in this setup, so we just insert)

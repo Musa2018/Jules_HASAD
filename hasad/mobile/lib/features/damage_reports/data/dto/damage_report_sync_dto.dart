@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 

@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
@@ -95,7 +96,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     final unitName = unitAsync.when(
       data: (u) => u != null ? (isAr ? u.nameAr : u.nameEn) : 'Unit',
       loading: () => '...',
-      error: (_, __) => 'Unit',
+      error: (_, _) => 'Unit',
     );
 
     final estimatedLoss = ValuationEngine.calculateEstimatedLoss(

@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';

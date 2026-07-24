@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_annotation_target
+// ignore_for_file: invalid_annotation_target, deprecated_member_use_from_same_package
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'damage_item.freezed.dart';

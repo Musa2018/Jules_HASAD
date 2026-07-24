@@ -1,4 +1,5 @@
 import 'dart:async';
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';

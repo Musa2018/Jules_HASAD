@@ -2,11 +2,11 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.12.0-alpha (Architecture Design)
-- **Current Sprint**: Sprint 12.3 — Form & Sync Hardening (Regression Fix: Geographic Authorization)
+- **Current Version**: v0.14.0-alpha (Contract Synchronization)
+- **Current Sprint**: Phase 4 — DamageReport Sprint 14.x Synchronization
 - **Current Branch**: `DamageReport`
 - **Last Updated**: 2026-07-24
-- **Latest Commit**: `2910df3`
+- **Latest Commit**: `15e42d7`
 
 ## Sprint 13.2 — IN PROGRESS
 Damage Assessment & Valuation Engine:

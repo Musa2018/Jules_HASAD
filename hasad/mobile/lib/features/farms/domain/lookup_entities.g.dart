@@ -9,8 +9,8 @@ part of 'lookup_entities.dart';
 _$OwnershipTypeImpl _$$OwnershipTypeImplFromJson(Map<String, dynamic> json) =>
     _$OwnershipTypeImpl(
       id: (json['id'] as num).toInt(),
-      nameAr: json['nameAr'] as String,
-      nameEn: json['nameEn'] as String,
+      nameAr: json['nameAr'] as String? ?? '',
+      nameEn: json['nameEn'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$OwnershipTypeImplToJson(_$OwnershipTypeImpl instance) =>
@@ -24,8 +24,8 @@ _$AgriculturalSectorImpl _$$AgriculturalSectorImplFromJson(
   Map<String, dynamic> json,
 ) => _$AgriculturalSectorImpl(
   id: (json['id'] as num).toInt(),
-  nameAr: json['nameAr'] as String,
-  nameEn: json['nameEn'] as String,
+  nameAr: json['nameAr'] as String? ?? '',
+  nameEn: json['nameEn'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$AgriculturalSectorImplToJson(
@@ -40,8 +40,8 @@ _$PoliticalClassificationImpl _$$PoliticalClassificationImplFromJson(
   Map<String, dynamic> json,
 ) => _$PoliticalClassificationImpl(
   id: (json['id'] as num).toInt(),
-  nameAr: json['nameAr'] as String,
-  nameEn: json['nameEn'] as String,
+  nameAr: json['nameAr'] as String? ?? '',
+  nameEn: json['nameEn'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$PoliticalClassificationImplToJson(
@@ -55,8 +55,8 @@ Map<String, dynamic> _$$PoliticalClassificationImplToJson(
 _$AreaUnitImpl _$$AreaUnitImplFromJson(Map<String, dynamic> json) =>
     _$AreaUnitImpl(
       id: (json['id'] as num).toInt(),
-      nameAr: json['nameAr'] as String,
-      nameEn: json['nameEn'] as String,
+      nameAr: json['nameAr'] as String? ?? '',
+      nameEn: json['nameEn'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$AreaUnitImplToJson(_$AreaUnitImpl instance) =>
@@ -70,10 +70,10 @@ _$MeasurementUnitImpl _$$MeasurementUnitImplFromJson(
   Map<String, dynamic> json,
 ) => _$MeasurementUnitImpl(
   id: (json['id'] as num).toInt(),
-  nameAr: json['nameAr'] as String,
-  nameEn: json['nameEn'] as String,
+  nameAr: json['nameAr'] as String? ?? '',
+  nameEn: json['nameEn'] as String? ?? '',
   code: json['code'] as String?,
-  category: json['category'] as String,
+  category: json['category'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$MeasurementUnitImplToJson(
@@ -90,8 +90,8 @@ _$RelationshipToOwnerImpl _$$RelationshipToOwnerImplFromJson(
   Map<String, dynamic> json,
 ) => _$RelationshipToOwnerImpl(
   id: (json['id'] as num).toInt(),
-  nameAr: json['nameAr'] as String,
-  nameEn: json['nameEn'] as String,
+  nameAr: json['nameAr'] as String? ?? '',
+  nameEn: json['nameEn'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$RelationshipToOwnerImplToJson(
@@ -105,8 +105,8 @@ Map<String, dynamic> _$$RelationshipToOwnerImplToJson(
 _$DamageNatureImpl _$$DamageNatureImplFromJson(Map<String, dynamic> json) =>
     _$DamageNatureImpl(
       id: (json['id'] as num).toInt(),
-      nameAr: json['nameAr'] as String,
-      nameEn: json['nameEn'] as String,
+      nameAr: json['nameAr'] as String? ?? '',
+      nameEn: json['nameEn'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$DamageNatureImplToJson(_$DamageNatureImpl instance) =>
@@ -120,8 +120,8 @@ _$DamageCategoryImpl _$$DamageCategoryImplFromJson(Map<String, dynamic> json) =>
     _$DamageCategoryImpl(
       id: (json['id'] as num).toInt(),
       parentId: (json['parentId'] as num).toInt(),
-      nameAr: json['nameAr'] as String,
-      nameEn: json['nameEn'] as String,
+      nameAr: json['nameAr'] as String? ?? '',
+      nameEn: json['nameEn'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$DamageCategoryImplToJson(
@@ -138,8 +138,8 @@ _$DamageSubCategoryImpl _$$DamageSubCategoryImplFromJson(
 ) => _$DamageSubCategoryImpl(
   id: (json['id'] as num).toInt(),
   parentId: (json['parentId'] as num).toInt(),
-  nameAr: json['nameAr'] as String,
-  nameEn: json['nameEn'] as String,
+  nameAr: json['nameAr'] as String? ?? '',
+  nameEn: json['nameEn'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$DamageSubCategoryImplToJson(
@@ -156,8 +156,8 @@ _$DamageClassificationImpl _$$DamageClassificationImplFromJson(
 ) => _$DamageClassificationImpl(
   id: (json['id'] as num).toInt(),
   parentId: (json['parentId'] as num).toInt(),
-  nameAr: json['nameAr'] as String,
-  nameEn: json['nameEn'] as String,
+  nameAr: json['nameAr'] as String? ?? '',
+  nameEn: json['nameEn'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$DamageClassificationImplToJson(
@@ -173,8 +173,8 @@ _$DamageCauseCategoryImpl _$$DamageCauseCategoryImplFromJson(
   Map<String, dynamic> json,
 ) => _$DamageCauseCategoryImpl(
   id: (json['id'] as num).toInt(),
-  nameAr: json['nameAr'] as String,
-  nameEn: json['nameEn'] as String,
+  nameAr: json['nameAr'] as String? ?? '',
+  nameEn: json['nameEn'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$DamageCauseCategoryImplToJson(
@@ -189,8 +189,8 @@ _$DamageCauseImpl _$$DamageCauseImplFromJson(Map<String, dynamic> json) =>
     _$DamageCauseImpl(
       id: (json['id'] as num).toInt(),
       parentId: (json['parentId'] as num).toInt(),
-      nameAr: json['nameAr'] as String,
-      nameEn: json['nameEn'] as String,
+      nameAr: json['nameAr'] as String? ?? '',
+      nameEn: json['nameEn'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$DamageCauseImplToJson(_$DamageCauseImpl instance) =>
@@ -205,10 +205,10 @@ _$CostingSheetCatalogImpl _$$CostingSheetCatalogImplFromJson(
   Map<String, dynamic> json,
 ) => _$CostingSheetCatalogImpl(
   id: json['id'] as String,
-  name: json['name'] as String,
+  name: json['name'] as String? ?? '',
   description: json['description'] as String?,
   createdAt: DateTime.parse(json['createdAt'] as String),
-  createdBy: json['createdBy'] as String,
+  createdBy: json['createdBy'] as String? ?? '',
 );
 
 Map<String, dynamic> _$$CostingSheetCatalogImplToJson(
@@ -233,7 +233,7 @@ _$CostingSheetVersionImpl _$$CostingSheetVersionImplFromJson(
       ? null
       : DateTime.parse(json['effectiveTo'] as String),
   createdAt: DateTime.parse(json['createdAt'] as String),
-  createdBy: json['createdBy'] as String,
+  createdBy: json['createdBy'] as String? ?? '',
   approvedAt: json['approvedAt'] == null
       ? null
       : DateTime.parse(json['approvedAt'] as String),

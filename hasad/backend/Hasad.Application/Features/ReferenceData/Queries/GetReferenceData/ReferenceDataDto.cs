@@ -65,10 +65,12 @@ public class CostingSheetItemDto
 public class CostingSheetDto
 {
     public Guid Id { get; set; }
+    public Guid VersionId { get; set; }
     public int ClassificationId { get; set; }
     public decimal UnitPrice { get; set; }
     public DateTime EffectiveFrom { get; set; }
     public DateTime? EffectiveTo { get; set; }
     public bool IsActive { get; set; }
     public int VersionNumber { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

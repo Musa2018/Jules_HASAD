@@ -7,8 +7,8 @@ part 'lookup_entities.g.dart';
 class OwnershipType with _$OwnershipType {
   const factory OwnershipType({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _OwnershipType;
 
   factory OwnershipType.fromJson(Map<String, dynamic> json) =>
@@ -19,8 +19,8 @@ class OwnershipType with _$OwnershipType {
 class AgriculturalSector with _$AgriculturalSector {
   const factory AgriculturalSector({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _AgriculturalSector;
 
   factory AgriculturalSector.fromJson(Map<String, dynamic> json) =>
@@ -31,8 +31,8 @@ class AgriculturalSector with _$AgriculturalSector {
 class PoliticalClassification with _$PoliticalClassification {
   const factory PoliticalClassification({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _PoliticalClassification;
 
   factory PoliticalClassification.fromJson(Map<String, dynamic> json) =>
@@ -43,8 +43,8 @@ class PoliticalClassification with _$PoliticalClassification {
 class AreaUnit with _$AreaUnit {
   const factory AreaUnit({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _AreaUnit;
 
   factory AreaUnit.fromJson(Map<String, dynamic> json) =>
@@ -55,10 +55,10 @@ class AreaUnit with _$AreaUnit {
 class MeasurementUnit with _$MeasurementUnit {
   const factory MeasurementUnit({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
     String? code,
-    required String category,
+    @Default('') String category,
   }) = _MeasurementUnit;
 
   factory MeasurementUnit.fromJson(Map<String, dynamic> json) =>
@@ -69,8 +69,8 @@ class MeasurementUnit with _$MeasurementUnit {
 class RelationshipToOwner with _$RelationshipToOwner {
   const factory RelationshipToOwner({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _RelationshipToOwner;
 
   factory RelationshipToOwner.fromJson(Map<String, dynamic> json) =>
@@ -81,8 +81,8 @@ class RelationshipToOwner with _$RelationshipToOwner {
 class DamageNature with _$DamageNature {
   const factory DamageNature({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _DamageNature;
 
   factory DamageNature.fromJson(Map<String, dynamic> json) =>
@@ -94,8 +94,8 @@ class DamageCategory with _$DamageCategory {
   const factory DamageCategory({
     required int id,
     required int parentId,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _DamageCategory;
 
   factory DamageCategory.fromJson(Map<String, dynamic> json) =>
@@ -107,8 +107,8 @@ class DamageSubCategory with _$DamageSubCategory {
   const factory DamageSubCategory({
     required int id,
     required int parentId,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _DamageSubCategory;
 
   factory DamageSubCategory.fromJson(Map<String, dynamic> json) =>
@@ -120,8 +120,8 @@ class DamageClassification with _$DamageClassification {
   const factory DamageClassification({
     required int id,
     required int parentId,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _DamageClassification;
 
   factory DamageClassification.fromJson(Map<String, dynamic> json) =>
@@ -132,8 +132,8 @@ class DamageClassification with _$DamageClassification {
 class DamageCauseCategory with _$DamageCauseCategory {
   const factory DamageCauseCategory({
     required int id,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _DamageCauseCategory;
 
   factory DamageCauseCategory.fromJson(Map<String, dynamic> json) =>
@@ -145,8 +145,8 @@ class DamageCause with _$DamageCause {
   const factory DamageCause({
     required int id,
     required int parentId,
-    required String nameAr,
-    required String nameEn,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
   }) = _DamageCause;
 
   factory DamageCause.fromJson(Map<String, dynamic> json) =>
@@ -157,10 +157,10 @@ class DamageCause with _$DamageCause {
 class CostingSheetCatalog with _$CostingSheetCatalog {
   const factory CostingSheetCatalog({
     required String id,
-    required String name,
+    @Default('') String name,
     String? description,
     required DateTime createdAt,
-    required String createdBy,
+    @Default('') String createdBy,
   }) = _CostingSheetCatalog;
 
   factory CostingSheetCatalog.fromJson(Map<String, dynamic> json) =>
@@ -177,7 +177,7 @@ class CostingSheetVersion with _$CostingSheetVersion {
     required DateTime effectiveFrom,
     DateTime? effectiveTo,
     required DateTime createdAt,
-    required String createdBy,
+    @Default('') String createdBy,
     DateTime? approvedAt,
     String? approvedBy,
   }) = _CostingSheetVersion;

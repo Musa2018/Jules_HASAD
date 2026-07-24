@@ -130,8 +130,8 @@ class __$$OwnershipTypeImplCopyWithImpl<$Res>
 class _$OwnershipTypeImpl implements _OwnershipType {
   const _$OwnershipTypeImpl({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$OwnershipTypeImpl.fromJson(Map<String, dynamic> json) =>
@@ -140,8 +140,10 @@ class _$OwnershipTypeImpl implements _OwnershipType {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -180,8 +182,8 @@ class _$OwnershipTypeImpl implements _OwnershipType {
 abstract class _OwnershipType implements OwnershipType {
   const factory _OwnershipType({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$OwnershipTypeImpl;
 
   factory _OwnershipType.fromJson(Map<String, dynamic> json) =
@@ -317,8 +319,8 @@ class __$$AgriculturalSectorImplCopyWithImpl<$Res>
 class _$AgriculturalSectorImpl implements _AgriculturalSector {
   const _$AgriculturalSectorImpl({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$AgriculturalSectorImpl.fromJson(Map<String, dynamic> json) =>
@@ -327,8 +329,10 @@ class _$AgriculturalSectorImpl implements _AgriculturalSector {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -370,8 +374,8 @@ class _$AgriculturalSectorImpl implements _AgriculturalSector {
 abstract class _AgriculturalSector implements AgriculturalSector {
   const factory _AgriculturalSector({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$AgriculturalSectorImpl;
 
   factory _AgriculturalSector.fromJson(Map<String, dynamic> json) =
@@ -516,8 +520,8 @@ class __$$PoliticalClassificationImplCopyWithImpl<$Res>
 class _$PoliticalClassificationImpl implements _PoliticalClassification {
   const _$PoliticalClassificationImpl({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$PoliticalClassificationImpl.fromJson(Map<String, dynamic> json) =>
@@ -526,8 +530,10 @@ class _$PoliticalClassificationImpl implements _PoliticalClassification {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -569,8 +575,8 @@ class _$PoliticalClassificationImpl implements _PoliticalClassification {
 abstract class _PoliticalClassification implements PoliticalClassification {
   const factory _PoliticalClassification({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$PoliticalClassificationImpl;
 
   factory _PoliticalClassification.fromJson(Map<String, dynamic> json) =
@@ -702,11 +708,7 @@ class __$$AreaUnitImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$AreaUnitImpl implements _AreaUnit {
-  const _$AreaUnitImpl({
-    required this.id,
-    required this.nameAr,
-    required this.nameEn,
-  });
+  const _$AreaUnitImpl({required this.id, this.nameAr = '', this.nameEn = ''});
 
   factory _$AreaUnitImpl.fromJson(Map<String, dynamic> json) =>
       _$$AreaUnitImplFromJson(json);
@@ -714,8 +716,10 @@ class _$AreaUnitImpl implements _AreaUnit {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -754,8 +758,8 @@ class _$AreaUnitImpl implements _AreaUnit {
 abstract class _AreaUnit implements AreaUnit {
   const factory _AreaUnit({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$AreaUnitImpl;
 
   factory _AreaUnit.fromJson(Map<String, dynamic> json) =
@@ -933,10 +937,10 @@ class __$$MeasurementUnitImplCopyWithImpl<$Res>
 class _$MeasurementUnitImpl implements _MeasurementUnit {
   const _$MeasurementUnitImpl({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
     this.code,
-    required this.category,
+    this.category = '',
   });
 
   factory _$MeasurementUnitImpl.fromJson(Map<String, dynamic> json) =>
@@ -945,12 +949,15 @@ class _$MeasurementUnitImpl implements _MeasurementUnit {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
   @override
   final String? code;
   @override
+  @JsonKey()
   final String category;
 
   @override
@@ -996,10 +1003,10 @@ class _$MeasurementUnitImpl implements _MeasurementUnit {
 abstract class _MeasurementUnit implements MeasurementUnit {
   const factory _MeasurementUnit({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
     final String? code,
-    required final String category,
+    final String category,
   }) = _$MeasurementUnitImpl;
 
   factory _MeasurementUnit.fromJson(Map<String, dynamic> json) =
@@ -1139,8 +1146,8 @@ class __$$RelationshipToOwnerImplCopyWithImpl<$Res>
 class _$RelationshipToOwnerImpl implements _RelationshipToOwner {
   const _$RelationshipToOwnerImpl({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$RelationshipToOwnerImpl.fromJson(Map<String, dynamic> json) =>
@@ -1149,8 +1156,10 @@ class _$RelationshipToOwnerImpl implements _RelationshipToOwner {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -1192,8 +1201,8 @@ class _$RelationshipToOwnerImpl implements _RelationshipToOwner {
 abstract class _RelationshipToOwner implements RelationshipToOwner {
   const factory _RelationshipToOwner({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$RelationshipToOwnerImpl;
 
   factory _RelationshipToOwner.fromJson(Map<String, dynamic> json) =
@@ -1329,8 +1338,8 @@ class __$$DamageNatureImplCopyWithImpl<$Res>
 class _$DamageNatureImpl implements _DamageNature {
   const _$DamageNatureImpl({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$DamageNatureImpl.fromJson(Map<String, dynamic> json) =>
@@ -1339,8 +1348,10 @@ class _$DamageNatureImpl implements _DamageNature {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -1379,8 +1390,8 @@ class _$DamageNatureImpl implements _DamageNature {
 abstract class _DamageNature implements DamageNature {
   const factory _DamageNature({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$DamageNatureImpl;
 
   factory _DamageNature.fromJson(Map<String, dynamic> json) =
@@ -1536,8 +1547,8 @@ class _$DamageCategoryImpl implements _DamageCategory {
   const _$DamageCategoryImpl({
     required this.id,
     required this.parentId,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$DamageCategoryImpl.fromJson(Map<String, dynamic> json) =>
@@ -1548,8 +1559,10 @@ class _$DamageCategoryImpl implements _DamageCategory {
   @override
   final int parentId;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -1594,8 +1607,8 @@ abstract class _DamageCategory implements DamageCategory {
   const factory _DamageCategory({
     required final int id,
     required final int parentId,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$DamageCategoryImpl;
 
   factory _DamageCategory.fromJson(Map<String, dynamic> json) =
@@ -1753,8 +1766,8 @@ class _$DamageSubCategoryImpl implements _DamageSubCategory {
   const _$DamageSubCategoryImpl({
     required this.id,
     required this.parentId,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$DamageSubCategoryImpl.fromJson(Map<String, dynamic> json) =>
@@ -1765,8 +1778,10 @@ class _$DamageSubCategoryImpl implements _DamageSubCategory {
   @override
   final int parentId;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -1811,8 +1826,8 @@ abstract class _DamageSubCategory implements DamageSubCategory {
   const factory _DamageSubCategory({
     required final int id,
     required final int parentId,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$DamageSubCategoryImpl;
 
   factory _DamageSubCategory.fromJson(Map<String, dynamic> json) =
@@ -1973,8 +1988,8 @@ class _$DamageClassificationImpl implements _DamageClassification {
   const _$DamageClassificationImpl({
     required this.id,
     required this.parentId,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$DamageClassificationImpl.fromJson(Map<String, dynamic> json) =>
@@ -1985,8 +2000,10 @@ class _$DamageClassificationImpl implements _DamageClassification {
   @override
   final int parentId;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -2032,8 +2049,8 @@ abstract class _DamageClassification implements DamageClassification {
   const factory _DamageClassification({
     required final int id,
     required final int parentId,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$DamageClassificationImpl;
 
   factory _DamageClassification.fromJson(Map<String, dynamic> json) =
@@ -2171,8 +2188,8 @@ class __$$DamageCauseCategoryImplCopyWithImpl<$Res>
 class _$DamageCauseCategoryImpl implements _DamageCauseCategory {
   const _$DamageCauseCategoryImpl({
     required this.id,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$DamageCauseCategoryImpl.fromJson(Map<String, dynamic> json) =>
@@ -2181,8 +2198,10 @@ class _$DamageCauseCategoryImpl implements _DamageCauseCategory {
   @override
   final int id;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -2224,8 +2243,8 @@ class _$DamageCauseCategoryImpl implements _DamageCauseCategory {
 abstract class _DamageCauseCategory implements DamageCauseCategory {
   const factory _DamageCauseCategory({
     required final int id,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$DamageCauseCategoryImpl;
 
   factory _DamageCauseCategory.fromJson(Map<String, dynamic> json) =
@@ -2381,8 +2400,8 @@ class _$DamageCauseImpl implements _DamageCause {
   const _$DamageCauseImpl({
     required this.id,
     required this.parentId,
-    required this.nameAr,
-    required this.nameEn,
+    this.nameAr = '',
+    this.nameEn = '',
   });
 
   factory _$DamageCauseImpl.fromJson(Map<String, dynamic> json) =>
@@ -2393,8 +2412,10 @@ class _$DamageCauseImpl implements _DamageCause {
   @override
   final int parentId;
   @override
+  @JsonKey()
   final String nameAr;
   @override
+  @JsonKey()
   final String nameEn;
 
   @override
@@ -2436,8 +2457,8 @@ abstract class _DamageCause implements DamageCause {
   const factory _DamageCause({
     required final int id,
     required final int parentId,
-    required final String nameAr,
-    required final String nameEn,
+    final String nameAr,
+    final String nameEn,
   }) = _$DamageCauseImpl;
 
   factory _DamageCause.fromJson(Map<String, dynamic> json) =
@@ -2617,10 +2638,10 @@ class __$$CostingSheetCatalogImplCopyWithImpl<$Res>
 class _$CostingSheetCatalogImpl implements _CostingSheetCatalog {
   const _$CostingSheetCatalogImpl({
     required this.id,
-    required this.name,
+    this.name = '',
     this.description,
     required this.createdAt,
-    required this.createdBy,
+    this.createdBy = '',
   });
 
   factory _$CostingSheetCatalogImpl.fromJson(Map<String, dynamic> json) =>
@@ -2629,12 +2650,14 @@ class _$CostingSheetCatalogImpl implements _CostingSheetCatalog {
   @override
   final String id;
   @override
+  @JsonKey()
   final String name;
   @override
   final String? description;
   @override
   final DateTime createdAt;
   @override
+  @JsonKey()
   final String createdBy;
 
   @override
@@ -2682,10 +2705,10 @@ class _$CostingSheetCatalogImpl implements _CostingSheetCatalog {
 abstract class _CostingSheetCatalog implements CostingSheetCatalog {
   const factory _CostingSheetCatalog({
     required final String id,
-    required final String name,
+    final String name,
     final String? description,
     required final DateTime createdAt,
-    required final String createdBy,
+    final String createdBy,
   }) = _$CostingSheetCatalogImpl;
 
   factory _CostingSheetCatalog.fromJson(Map<String, dynamic> json) =
@@ -2939,7 +2962,7 @@ class _$CostingSheetVersionImpl implements _CostingSheetVersion {
     required this.effectiveFrom,
     this.effectiveTo,
     required this.createdAt,
-    required this.createdBy,
+    this.createdBy = '',
     this.approvedAt,
     this.approvedBy,
   });
@@ -2963,6 +2986,7 @@ class _$CostingSheetVersionImpl implements _CostingSheetVersion {
   @override
   final DateTime createdAt;
   @override
+  @JsonKey()
   final String createdBy;
   @override
   final DateTime? approvedAt;
@@ -3041,7 +3065,7 @@ abstract class _CostingSheetVersion implements CostingSheetVersion {
     required final DateTime effectiveFrom,
     final DateTime? effectiveTo,
     required final DateTime createdAt,
-    required final String createdBy,
+    final String createdBy,
     final DateTime? approvedAt,
     final String? approvedBy,
   }) = _$CostingSheetVersionImpl;

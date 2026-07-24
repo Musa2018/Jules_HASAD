@@ -26,8 +26,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -36,8 +36,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -46,8 +46,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -57,8 +57,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn,
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty,
                 Category = "Area"
             })
             .ToListAsync(cancellationToken);
@@ -68,10 +68,10 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn,
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty,
                 Code = x.Code,
-                Category = x.Category
+                Category = x.Category ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -80,8 +80,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -90,8 +90,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -101,8 +101,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             {
                 Id = x.Id,
                 ParentId = x.NatureId,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -112,8 +112,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             {
                 Id = x.Id,
                 ParentId = x.CategoryId,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -123,8 +123,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             {
                 Id = x.Id,
                 ParentId = x.SubCategoryId,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -133,8 +133,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new LookupDto
             {
                 Id = x.Id,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -144,8 +144,8 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             {
                 Id = x.Id,
                 ParentId = x.CategoryId,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -155,10 +155,10 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new CostingSheetCatalogDto
             {
                 Id = x.Id,
-                Name = x.Name,
+                Name = x.Name ?? string.Empty,
                 Description = x.Description,
                 CreatedAt = x.CreatedAt,
-                CreatedBy = x.CreatedBy
+                CreatedBy = x.CreatedBy ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -173,7 +173,7 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
                 EffectiveFrom = x.EffectiveFrom,
                 EffectiveTo = x.EffectiveTo,
                 CreatedAt = x.CreatedAt,
-                CreatedBy = x.CreatedBy,
+                CreatedBy = x.CreatedBy ?? string.Empty,
                 ApprovedAt = x.ApprovedAt,
                 ApprovedBy = x.ApprovedBy
             })
@@ -199,12 +199,14 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new CostingSheetDto
             {
                 Id = x.Id,
+                VersionId = x.VersionId,
                 ClassificationId = x.ClassificationId,
                 UnitPrice = x.UnitPrice,
                 EffectiveFrom = x.Version!.EffectiveFrom,
                 EffectiveTo = x.Version.EffectiveTo,
                 IsActive = true,
-                VersionNumber = x.Version.VersionNumber
+                VersionNumber = x.Version.VersionNumber,
+                CreatedAt = x.CreatedAt
             })
             .ToListAsync(cancellationToken);
 

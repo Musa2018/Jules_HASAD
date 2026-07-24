@@ -45,6 +45,7 @@ Damage Assessment & Valuation Engine:
     - **Domain Correction**: Moved Damage Nature from Item level to Report level for categorization consistency.
 - **Sprint 14.2.1 — COMPLETED**
     - **Database Migration**: Applied missing EF Core migrations for `Directorate.Code`, `DamageReport.ReportNumber`, and `DamageReportSequence`.
+    - **Business Codes**: Corrected `Governorate.Code` and `Directorate.Code` to use approved human-readable abbreviations (e.g., NBL, NAB, JEN) for official numbering.
     - **Flutter Drift**: Verified schema v17 migration with backfill logic and automated tests.
     - **Data Integrity**: Hardened duplicate prevention with unique constraints on `FarmId` + `DamageDate`.
 - **Phase 4 (Pending)**: Evidence Lifecycle Foundation.

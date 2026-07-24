@@ -165,9 +165,9 @@ class FarmCard extends ConsumerWidget {
                   children: [
                     if (!farm.isPendingDelete) ...[
                       TextButton.icon(
-                        onPressed: () => context.push(AppRoutes.farmDetails, extra: farm),
-                        icon: const Icon(Icons.visibility_outlined, size: 18),
-                        label: Text(l10n.search), // Using search as "view"
+                        onPressed: () => context.push(AppRoutes.addDamageReport, extra: farm),
+                        icon: const Icon(Icons.report_problem_outlined, size: 18),
+                        label: Text(l10n.damageReports),
                       ),
                       TextButton.icon(
                         onPressed: () => context.push(AppRoutes.editFarm, extra: farm),

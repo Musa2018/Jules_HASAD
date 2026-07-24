@@ -3,6 +3,7 @@ import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
@@ -12,12 +13,14 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 class MockSyncService extends Mock implements BackgroundSyncService {}
 class MockRemoteRepository extends Mock implements FarmerRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
+class MockAuthorizationService extends Mock implements AuthorizationService {}
 
 void main() {
   late AppDatabase db;
   late MockSyncService mockSyncService;
   late MockRemoteRepository mockRemoteRepository;
   late MockConnectivity mockConnectivity;
+  late MockAuthorizationService mockAuthService;
   late OfflineFirstFarmerRepository repository;
 
   final testFarmer = Farmer(
@@ -46,11 +49,17 @@ void main() {
     mockSyncService = MockSyncService();
     mockRemoteRepository = MockRemoteRepository();
     mockConnectivity = MockConnectivity();
+    mockAuthService = MockAuthorizationService();
+    
+    when(() => mockAuthService.canManageFarmers()).thenReturn(true);
+
     repository = OfflineFirstFarmerRepository(
       db,
       mockSyncService,
       mockRemoteRepository,
       mockConnectivity,
+      mockAuthService,
+      null,
     );
   });
 

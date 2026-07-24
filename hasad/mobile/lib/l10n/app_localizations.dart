@@ -1057,6 +1057,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed'**
   String get status_Completed;
+
+  /// No description provided for @operationalView.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational View'**
+  String get operationalView;
 }
 
 class _AppLocalizationsDelegate

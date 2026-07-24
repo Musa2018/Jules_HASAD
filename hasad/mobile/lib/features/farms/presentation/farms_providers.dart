@@ -36,11 +36,13 @@ class FarmFormState {
   final bool isLoading;
   final List<String> errors;
   final bool success;
+  final Farm? farm;
 
   const FarmFormState({
     this.isLoading = false,
     this.errors = const [],
     this.success = false,
+    this.farm,
   });
 }
 
@@ -54,8 +56,8 @@ class FarmFormNotifier extends StateNotifier<FarmFormState> {
     state = const FarmFormState(isLoading: true);
     try {
       final session = _ref.read(authProvider).session;
-      await _repository.createFarm(farm, session: session);
-      state = const FarmFormState(success: true);
+      final result = await _repository.createFarm(farm, session: session);
+      state = FarmFormState(success: true, farm: result);
     } on FarmException catch (e) {
       state = FarmFormState(errors: e.errors);
     } catch (_) {
@@ -67,8 +69,8 @@ class FarmFormNotifier extends StateNotifier<FarmFormState> {
     state = const FarmFormState(isLoading: true);
     try {
       final session = _ref.read(authProvider).session;
-      await _repository.updateFarm(farm, session: session);
-      state = const FarmFormState(success: true);
+      final result = await _repository.updateFarm(farm, session: session);
+      state = FarmFormState(success: true, farm: result);
     } on FarmException catch (e) {
       state = FarmFormState(errors: e.errors);
     } catch (_) {

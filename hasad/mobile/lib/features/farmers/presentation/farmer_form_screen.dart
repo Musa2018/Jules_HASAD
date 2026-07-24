@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/core/utils/validators.dart';
@@ -14,8 +15,14 @@ import 'package:mobile/l10n/app_localizations.dart';
 class FarmerFormScreen extends ConsumerStatefulWidget {
   final Farmer? farmer;
   final String? initialIdNumber;
+  final bool isSubWorkflow;
 
-  const FarmerFormScreen({super.key, this.farmer, this.initialIdNumber});
+  const FarmerFormScreen({
+    super.key,
+    this.farmer,
+    this.initialIdNumber,
+    this.isSubWorkflow = false,
+  });
 
   @override
   ConsumerState<FarmerFormScreen> createState() => _FarmerFormScreenState();
@@ -44,6 +51,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   int _idTypeId = 1;
   String? _selectedGovernorateId;
   String? _selectedLocalityId;
+
+  bool _hasValidationError = false;
 
   @override
   void initState() {
@@ -102,8 +111,13 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    setState(() => _hasValidationError = false);
+    if (!_formKey.currentState!.validate()) {
+      setState(() => _hasValidationError = true);
+      return;
+    }
     if (_birthDate == null) {
+      setState(() => _hasValidationError = true);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.selectDate)),
       );
@@ -150,8 +164,13 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
         ref.invalidate(farmerProvider(widget.farmer!.id));
       }
 
-      final result = ref.read(farmerFormProvider).farmer;
-      Navigator.of(context).pop(result);
+      // If we are creating, go back to list to refresh and clear search stack
+      if (widget.farmer == null && !widget.isSubWorkflow) {
+        context.go('/farmers'); 
+      } else {
+        Navigator.of(context).pop(ref.read(farmerFormProvider).farmer);
+      }
+      
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
@@ -402,18 +421,33 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                   ),
                 ],
               ),
-
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: state.isLoading ? null : _save,
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16)),
-                child: state.isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(l10n.save, style: const TextStyle(fontSize: 18)),
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 100), // Space for persistent button
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              offset: const Offset(0, -4),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: state.isLoading ? null : _save,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.all(16),
+            backgroundColor: _hasValidationError ? Colors.red : null,
+            foregroundColor: _hasValidationError ? Colors.white : null,
+          ),
+          child: state.isLoading
+              ? const CircularProgressIndicator()
+              : Text(l10n.save, style: const TextStyle(fontSize: 18)),
         ),
       ),
     );

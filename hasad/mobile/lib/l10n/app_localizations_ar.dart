@@ -493,4 +493,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get status_Completed => 'مكتمل';
+
+  @override
+  String get operationalView => 'العرض التشغيلي';
 }

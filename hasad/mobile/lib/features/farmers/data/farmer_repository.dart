@@ -1,8 +1,10 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
 import 'package:mobile/features/farmers/domain/farmer_validator.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -36,18 +38,39 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   final BackgroundSyncService _syncService;
   final FarmerRepository _remoteRepository;
   final Connectivity _connectivity;
+  final AuthorizationService _authService;
+  final AuthSession? _session;
 
   OfflineFirstFarmerRepository(
     this._db,
     this._syncService,
     this._remoteRepository,
     this._connectivity,
+    this._authService,
+    this._session,
   );
 
   void _validate(domain.Farmer farmer) {
+    if (!_authService.canManageFarmers()) {
+      throw FarmerException(['Access Denied: You do not have permission to manage farmers.']);
+    }
     final errors = FarmerValidator.validate(farmer);
     if (errors.isNotEmpty) {
       throw FarmerException(errors);
+    }
+  }
+
+  Future<void> _checkUniqueness(domain.Farmer farmer) async {
+    final query = _db.select(_db.farmers)
+      ..where((t) =>
+          t.idTypeId.equals(farmer.idTypeId) &
+          t.idNumber.equals(farmer.idNumber) &
+          t.isPendingDelete.equals(false) &
+          t.id.isNotValue(farmer.id));
+    
+    final count = await query.get().then((v) => v.length);
+    if (count > 0) {
+      throw FarmerException(['A farmer with this ID Number and ID Type already exists and is active.']);
     }
   }
 
@@ -154,8 +177,48 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   }
 
   @override
-  Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()}) {
-    final query = _db.select(_db.farmers);
+  Stream<List<domain.Farmer>> watchFarmers({
+    FarmerFilter filter = const FarmerFilter(),
+  }) {
+    SimpleSelectStatement<$FarmersTable, FarmerLocal> query;
+    
+    if (filter.isOperational) {
+      // Joining with farms and damage reports to find farmers with damaged farms
+      final farmers = _db.farmers;
+      final farms = _db.farms;
+      final reports = _db.damageReports;
+
+      final joinedQuery = _db.select(farmers).join([
+        innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+        innerJoin(reports, reports.farmId.equalsExp(farms.id)),
+      ]);
+
+      // Apply standard filters to joined query
+      if (filter.searchText.isNotEmpty) {
+        final search = '%${filter.searchText}%';
+        joinedQuery.where(
+            farmers.firstNameAr.like(search) |
+            farmers.familyNameAr.like(search) |
+            farmers.idNumber.like(search)
+        );
+      }
+      
+      // Apply Directorate scoping for operational view
+      if (_session != null) {
+        if (_session!.roles.contains('AgriculturalEngineer') || _session!.roles.contains('FieldSurveyor')) {
+          if (_session!.directorateId != null) {
+            joinedQuery.where(farms.directorateId.equals(_session!.directorateId!));
+          }
+        }
+      }
+      
+      joinedQuery.groupBy([farmers.id]);
+      joinedQuery.orderBy([OrderingTerm.desc(farmers.createdAt)]);
+
+      return joinedQuery.watch().map((rows) => rows.map((row) => _mapToDomain(row.readTable(farmers))).toList());
+    }
+
+    query = _db.select(_db.farmers);
 
     if (filter.searchText.isNotEmpty) {
       final search = '%${filter.searchText}%';
@@ -253,6 +316,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   @override
   Future<domain.Farmer> createFarmer(domain.Farmer farmer) async {
     _validate(farmer);
+    await _checkUniqueness(farmer);
     final localId = farmer.id.isEmpty ? const Uuid().v4() : farmer.id;
     final companion = _mapToCompanion(farmer).copyWith(
       id: Value(localId),
@@ -276,6 +340,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   @override
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
     _validate(farmer);
+    await _checkUniqueness(farmer);
     final companion = _mapToCompanion(farmer).copyWith(
       updatedAt: Value(DateTime.now()),
       syncStatus: const Value('pending'),

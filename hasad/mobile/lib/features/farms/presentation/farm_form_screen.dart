@@ -1,7 +1,8 @@
-// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
@@ -187,8 +188,15 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     }
 
     if (mounted && ref.read(farmFormProvider).success) {
+      final result = ref.read(farmFormProvider).farm;
       ref.invalidate(farmsListByFarmerProvider(_resolvedFarmer!.id));
-      Navigator.of(context).pop();
+      
+      if (widget.farm == null && result != null) {
+        context.replace(AppRoutes.farmDetails, extra: result);
+      } else {
+        Navigator.of(context).pop();
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -469,7 +477,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       actionLabel: l10n.addNewFarmerAction,
       onAction: () async {
         final result = await Navigator.of(context).push<Farmer>(
-          MaterialPageRoute(builder: (context) => const FarmerFormScreen()),
+          MaterialPageRoute(builder: (context) => const FarmerFormScreen(isSubWorkflow: true)),
         );
         if (result != null) {
           setState(() {

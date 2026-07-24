@@ -158,5 +158,6 @@
   "status_ProcReview": "مراجعة إجرائية",
   "status_MinArchive": "أرشفة الوزارة",
   "status_GenManager": "المدير العام",
-  "status_Completed": "مكتمل"
+  "status_Completed": "مكتمل",
+  "operationalView": "العرض التشغيلي"
 }

@@ -493,4 +493,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get status_Completed => 'Completed';
+
+  @override
+  String get operationalView => 'Operational View';
 }

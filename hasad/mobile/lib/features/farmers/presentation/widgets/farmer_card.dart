@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -21,6 +22,7 @@ class FarmerCard extends ConsumerWidget {
     final locale = Localizations.localeOf(context).toString();
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final dateFormat = DateFormat.yMd(locale);
+    final authService = ref.watch(authorizationServiceProvider);
 
     // Location lookups
     final govAsync = ref.watch(governoratesProvider);
@@ -132,17 +134,19 @@ class FarmerCard extends ConsumerWidget {
                         icon: const Icon(Icons.agriculture, size: 18),
                         label: Text(l10n.farm),
                       ),
-                      TextButton.icon(
-                        onPressed: () => context.push(AppRoutes.editFarmer, extra: farmer),
-                        icon: const Icon(Icons.edit_outlined, size: 18),
-                        label: Text(l10n.editFarmer),
-                      ),
-                      TextButton.icon(
-                        onPressed: () => _confirmDelete(context, ref),
-                        icon: const Icon(Icons.delete_outline, size: 18),
-                        label: Text(l10n.delete),
-                        style: TextButton.styleFrom(foregroundColor: Colors.red),
-                      ),
+                      if (authService.canManageFarmers()) ...[
+                        TextButton.icon(
+                          onPressed: () => context.push(AppRoutes.editFarmer, extra: farmer),
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: Text(l10n.editFarmer),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => _confirmDelete(context, ref),
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          label: Text(l10n.delete),
+                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                        ),
+                      ],
                     ] else ...[
                       TextButton.icon(
                         onPressed: () => ref.read(farmerRepositoryProvider).cancelDeleteFarmer(farmer.id),

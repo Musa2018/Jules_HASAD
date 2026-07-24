@@ -34,8 +34,13 @@ class FarmerFiltersSection extends ConsumerWidget {
             children: [
               _FilterChip(
                 label: l10n.all,
-                isSelected: filter.gender == null && filter.syncStatus == null,
+                isSelected: filter.gender == null && filter.syncStatus == null && !filter.isOperational,
                 onSelected: (v) => ref.read(farmerFiltersProvider.notifier).state = const FarmerFilter(),
+              ),
+              _FilterChip(
+                label: l10n.operationalView,
+                isSelected: filter.isOperational,
+                onSelected: (v) => ref.read(farmerFiltersProvider.notifier).update((state) => state.copyWith(isOperational: v)),
               ),
               const VerticalDivider(),
               // Gender Filter

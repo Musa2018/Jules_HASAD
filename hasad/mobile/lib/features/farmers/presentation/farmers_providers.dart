@@ -1,12 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 final farmerFiltersProvider = StateProvider<FarmerFilter>((ref) {
-  return const FarmerFilter();
+  final authService = ref.watch(authorizationServiceProvider);
+  final session = ref.watch(authProvider).session;
+  
+  bool isOperationalDefault = false;
+  if (session != null) {
+    const operationalRoles = ['AgriculturalEngineer', 'FieldSurveyor'];
+    isOperationalDefault = operationalRoles.any((r) => session.roles.contains(r));
+  }
+  
+  return FarmerFilter(isOperational: isOperationalDefault);
 });
 
 final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
@@ -15,6 +26,8 @@ final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
     ref.watch(syncServiceProvider),
     ref.watch(remoteFarmerRepositoryProvider),
     ref.watch(connectivityProvider),
+    ref.watch(authorizationServiceProvider),
+    ref.watch(authProvider).session,
   );
 });
 

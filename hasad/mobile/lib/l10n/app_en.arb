@@ -190,5 +190,6 @@
   "status_ProcReview": "Procedural Review",
   "status_MinArchive": "Ministry Archive",
   "status_GenManager": "General Manager",
-  "status_Completed": "Completed"
+  "status_Completed": "Completed",
+  "operationalView": "Operational View"
 }

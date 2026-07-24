@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +40,12 @@ Widget buildLoginApp(
 }
 
 void main() {
+  setUpAll(() {
+    if (!EnvironmentConfig.isInitialized) {
+      EnvironmentConfig.setEnvironment(AppEnvironment.dev);
+    }
+  });
+
   group('LoginScreen', () {
     late FakeAuthRepository repository;
     late FakeSecureStorage storage;

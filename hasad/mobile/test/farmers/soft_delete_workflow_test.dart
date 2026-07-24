@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
@@ -11,6 +12,7 @@ import 'package:mocktail/mocktail.dart';
 class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
+class MockAuthorizationService extends Mock implements AuthorizationService {}
 
 void main() {
   late AppDatabase db;
@@ -18,18 +20,24 @@ void main() {
   late MockBackgroundSyncService mockSyncService;
   late MockFarmerRepository mockRemoteRepository;
   late MockConnectivity mockConnectivity;
+  late MockAuthorizationService mockAuthService;
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockSyncService = MockBackgroundSyncService();
     mockRemoteRepository = MockFarmerRepository();
     mockConnectivity = MockConnectivity();
+    mockAuthService = MockAuthorizationService();
+
+    when(() => mockAuthService.canManageFarmers()).thenReturn(true);
 
     repository = OfflineFirstFarmerRepository(
       db,
       mockSyncService,
       mockRemoteRepository,
       mockConnectivity,
+      mockAuthService,
+      null,
     );
 
     when(() => mockSyncService.addToQueue(

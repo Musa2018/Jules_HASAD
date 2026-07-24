@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_card.dart';
@@ -14,6 +15,7 @@ class FarmersListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final farmersAsync = ref.watch(farmersListProvider);
+    final authService = ref.watch(authorizationServiceProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -78,11 +80,13 @@ class FarmersListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.farmerSearch),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.addFarmer),
-      ),
+      floatingActionButton: authService.canManageFarmers() 
+        ? FloatingActionButton.extended(
+            onPressed: () => context.push(AppRoutes.farmerSearch),
+            icon: const Icon(Icons.add),
+            label: Text(l10n.addFarmer),
+          )
+        : null,
     );
   }
 }

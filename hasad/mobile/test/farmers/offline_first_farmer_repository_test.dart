@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
@@ -15,11 +16,14 @@ class MockRemoteRepository extends Mock implements FarmerRepository {}
 
 class MockConnectivity extends Mock implements Connectivity {}
 
+class MockAuthorizationService extends Mock implements AuthorizationService {}
+
 void main() {
   late AppDatabase db;
   late MockSyncService mockSyncService;
   late MockRemoteRepository mockRemoteRepository;
   late MockConnectivity mockConnectivity;
+  late MockAuthorizationService mockAuthService;
   late OfflineFirstFarmerRepository repository;
 
   setUpAll(() {
@@ -53,11 +57,17 @@ void main() {
     mockSyncService = MockSyncService();
     mockRemoteRepository = MockRemoteRepository();
     mockConnectivity = MockConnectivity();
+    mockAuthService = MockAuthorizationService();
+    
+    when(() => mockAuthService.canManageFarmers()).thenReturn(true);
+    
     repository = OfflineFirstFarmerRepository(
       db,
       mockSyncService,
       mockRemoteRepository,
       mockConnectivity,
+      mockAuthService,
+      null, // No session
     );
   });
 
@@ -207,6 +217,7 @@ void main() {
     final expectation = expectLater(
       stream,
       emitsInOrder([
+        null, // Initial emit if not found yet
         predicate<Farmer?>((f) => f?.firstNameAr == 'N1'),
         predicate<Farmer?>((f) => f?.firstNameAr == 'Updated'),
       ]),

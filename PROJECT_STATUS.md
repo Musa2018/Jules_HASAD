@@ -68,6 +68,14 @@ Damage Assessment & Valuation Engine:
     - **Drift Schema v21**: Upgraded database schema to v21 with automated backfill logic from the `Farms` table to preserve geographic integrity for existing reports.
     - **Reference Data**: Implemented `getActions()` in `ReferenceDataRepository` to support hierarchical assessment steps (Nature -> Action -> Category).
     - **Validation**: Passed all 157 mobile tests and static analysis.
+- **Hardening Phase (Completed)**: Farmer & Farm Module Hardening.
+    - **Authorization**: Introduced `AuthorizationService` for permission-oriented guards, hiding creation/modification actions for `FieldSurveyor` and `TechnicalReviewer` roles.
+    - **Identity Uniqueness**: Implemented local repository-level validation for `IdentityTypeId + IdentityNumber` uniqueness (excluding soft-deleted records) to minimize sync failures.
+    - **Navigation**: Optimized workflows to return to root lists after creation and navigate directly to details after farm creation.
+    - **UX Improvement**: Implemented persistent Save button in Farmer form with visual validation feedback (Red on error).
+    - **Operational View**: Added default Directorate-based filtering for operational roles in the Farmers list.
+    - **Audit**: Completed a comprehensive `DamageReport` entity audit to identify obsolete fields and terminology misalignments.
+    - **Validation**: Passed all 161 mobile tests and static analysis.
 
 ## Sprint 13.1 — COMPLETED
 

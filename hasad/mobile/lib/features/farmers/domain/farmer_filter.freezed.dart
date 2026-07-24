@@ -22,6 +22,7 @@ mixin _$FarmerFilter {
   String? get syncStatus => throw _privateConstructorUsedError;
   String? get governorateId => throw _privateConstructorUsedError;
   String? get localityId => throw _privateConstructorUsedError;
+  bool get isOperational => throw _privateConstructorUsedError;
 
   /// Create a copy of FarmerFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -43,6 +44,7 @@ abstract class $FarmerFilterCopyWith<$Res> {
     String? syncStatus,
     String? governorateId,
     String? localityId,
+    bool isOperational,
   });
 }
 
@@ -66,6 +68,7 @@ class _$FarmerFilterCopyWithImpl<$Res, $Val extends FarmerFilter>
     Object? syncStatus = freezed,
     Object? governorateId = freezed,
     Object? localityId = freezed,
+    Object? isOperational = null,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +92,10 @@ class _$FarmerFilterCopyWithImpl<$Res, $Val extends FarmerFilter>
                 ? _value.localityId
                 : localityId // ignore: cast_nullable_to_non_nullable
                       as String?,
+            isOperational: null == isOperational
+                ? _value.isOperational
+                : isOperational // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -110,6 +117,7 @@ abstract class _$$FarmerFilterImplCopyWith<$Res>
     String? syncStatus,
     String? governorateId,
     String? localityId,
+    bool isOperational,
   });
 }
 
@@ -132,6 +140,7 @@ class __$$FarmerFilterImplCopyWithImpl<$Res>
     Object? syncStatus = freezed,
     Object? governorateId = freezed,
     Object? localityId = freezed,
+    Object? isOperational = null,
   }) {
     return _then(
       _$FarmerFilterImpl(
@@ -155,6 +164,10 @@ class __$$FarmerFilterImplCopyWithImpl<$Res>
             ? _value.localityId
             : localityId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        isOperational: null == isOperational
+            ? _value.isOperational
+            : isOperational // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -169,6 +182,7 @@ class _$FarmerFilterImpl implements _FarmerFilter {
     this.syncStatus,
     this.governorateId,
     this.localityId,
+    this.isOperational = false,
   });
 
   @override
@@ -182,10 +196,13 @@ class _$FarmerFilterImpl implements _FarmerFilter {
   final String? governorateId;
   @override
   final String? localityId;
+  @override
+  @JsonKey()
+  final bool isOperational;
 
   @override
   String toString() {
-    return 'FarmerFilter(searchText: $searchText, gender: $gender, syncStatus: $syncStatus, governorateId: $governorateId, localityId: $localityId)';
+    return 'FarmerFilter(searchText: $searchText, gender: $gender, syncStatus: $syncStatus, governorateId: $governorateId, localityId: $localityId, isOperational: $isOperational)';
   }
 
   @override
@@ -201,7 +218,9 @@ class _$FarmerFilterImpl implements _FarmerFilter {
             (identical(other.governorateId, governorateId) ||
                 other.governorateId == governorateId) &&
             (identical(other.localityId, localityId) ||
-                other.localityId == localityId));
+                other.localityId == localityId) &&
+            (identical(other.isOperational, isOperational) ||
+                other.isOperational == isOperational));
   }
 
   @override
@@ -212,6 +231,7 @@ class _$FarmerFilterImpl implements _FarmerFilter {
     syncStatus,
     governorateId,
     localityId,
+    isOperational,
   );
 
   /// Create a copy of FarmerFilter
@@ -230,6 +250,7 @@ abstract class _FarmerFilter implements FarmerFilter {
     final String? syncStatus,
     final String? governorateId,
     final String? localityId,
+    final bool isOperational,
   }) = _$FarmerFilterImpl;
 
   @override
@@ -242,6 +263,8 @@ abstract class _FarmerFilter implements FarmerFilter {
   String? get governorateId;
   @override
   String? get localityId;
+  @override
+  bool get isOperational;
 
   /// Create a copy of FarmerFilter
   /// with the given fields replaced by the non-null parameter values.

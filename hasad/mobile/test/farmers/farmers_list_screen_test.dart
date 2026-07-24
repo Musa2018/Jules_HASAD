@@ -7,9 +7,16 @@ import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
 void main() {
+  setUpAll(() {
+    if (!EnvironmentConfig.isInitialized) {
+      EnvironmentConfig.setEnvironment(AppEnvironment.dev);
+    }
+  });
+
   testWidgets('FarmersListScreen shows farmers list', (tester) async {
     final farmers = [
       Farmer(

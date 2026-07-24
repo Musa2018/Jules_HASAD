@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,6 +22,9 @@ void main() {
   late MockFarmerRepository mockRepo;
 
   setUpAll(() {
+    if (!EnvironmentConfig.isInitialized) {
+      EnvironmentConfig.setEnvironment(AppEnvironment.dev);
+    }
     registerFallbackValue(
       Farmer(
         id: '', idTypeId: 1, idNumber: '', firstNameAr: '', fatherNameAr: '',
@@ -66,6 +71,27 @@ void main() {
 
     Farmer? returnedFarmer;
 
+    final router = GoRouter(
+      initialLocation: '/test',
+      routes: [
+        GoRoute(
+          path: '/test',
+          builder: (context, state) => ElevatedButton(
+            onPressed: () async {
+              returnedFarmer = await Navigator.of(context).push<Farmer>(
+                MaterialPageRoute(builder: (context) => const FarmerFormScreen(isSubWorkflow: true)),
+              );
+            },
+            child: const Text('Open Form'),
+          ),
+        ),
+        GoRoute(
+          path: '/farmers',
+          builder: (context, state) => const Scaffold(body: Text('Farmers List')),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -77,7 +103,7 @@ void main() {
             const Locality(id: 'loc-1', nameAr: 'جنين', nameEn: 'Jenin', governorateId: 'gov-1', directorateId: 'dir-1'),
           ]),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -85,16 +111,7 @@ void main() {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [Locale('en')],
-          home: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () async {
-                returnedFarmer = await Navigator.of(context).push<Farmer>(
-                  MaterialPageRoute(builder: (context) => const FarmerFormScreen()),
-                );
-              },
-              child: const Text('Open Form'),
-            ),
-          ),
+          routerConfig: router,
         ),
       ),
     );

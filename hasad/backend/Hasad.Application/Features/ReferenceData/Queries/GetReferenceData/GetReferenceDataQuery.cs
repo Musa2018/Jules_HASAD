@@ -63,6 +63,18 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             })
             .ToListAsync(cancellationToken);
 
+        dto.MeasurementUnits = await _context.MeasurementUnits
+            .AsNoTracking()
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn,
+                Code = x.Code,
+                Category = x.Category
+            })
+            .ToListAsync(cancellationToken);
+
         dto.RelationshipToOwners = await _context.RelationshipToOwners
             .AsNoTracking()
             .Select(x => new LookupDto
@@ -134,6 +146,49 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
                 ParentId = x.CategoryId,
                 NameAr = x.NameAr,
                 NameEn = x.NameEn
+            })
+            .ToListAsync(cancellationToken);
+
+        // Hierarchical Costing Data
+        dto.CostingSheetCatalogs = await _context.CostingSheetCatalogs
+            .AsNoTracking()
+            .Select(x => new CostingSheetCatalogDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                CreatedAt = x.CreatedAt,
+                CreatedBy = x.CreatedBy
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.CostingSheetVersions = await _context.CostingSheetVersions
+            .AsNoTracking()
+            .Select(x => new CostingSheetVersionDto
+            {
+                Id = x.Id,
+                CatalogId = x.CatalogId,
+                VersionNumber = x.VersionNumber,
+                Status = (int)x.Status,
+                EffectiveFrom = x.EffectiveFrom,
+                EffectiveTo = x.EffectiveTo,
+                CreatedAt = x.CreatedAt,
+                CreatedBy = x.CreatedBy,
+                ApprovedAt = x.ApprovedAt,
+                ApprovedBy = x.ApprovedBy
+            })
+            .ToListAsync(cancellationToken);
+
+        dto.CostingSheetItems = await _context.CostingSheetItems
+            .AsNoTracking()
+            .Select(x => new CostingSheetItemDto
+            {
+                Id = x.Id,
+                VersionId = x.VersionId,
+                ClassificationId = x.ClassificationId,
+                MeasurementUnitId = x.MeasurementUnitId,
+                UnitPrice = x.UnitPrice,
+                CreatedAt = x.CreatedAt
             })
             .ToListAsync(cancellationToken);
 

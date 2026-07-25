@@ -94,8 +94,10 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Integrity**: Defined duplicate prevention rules based on `FarmId + DamageDate`.
 
 ### Sprint 11.17 - Deletion Integrity Rules
-- **Referential Integrity**: Implemented business validation in `DeleteFarmerCommandHandler` and `DeleteFarmCommandHandler` to block deletion if dependencies exist (e.g., a Farmer linked to a Farm, or a Farm linked to a Damage Report).
-- **Localized Error Feedback**: The backend now returns meaningful, localized error messages for restricted deletions, which are captured and displayed by the Flutter sync engine.
+- **Referential Integrity**: Enforced rule: "Farmer cannot be deleted if linked to any Farm; Farm cannot be deleted if linked to any Damage Report."
+  - **Local Validation**: Mobile repositories perform local checks against Drift tables before queuing deletion to provide immediate offline feedback.
+  - **Machine-Readable Errors**: Backend returns HTTP 409 Conflict with structured codes (e.g., `FARMER_HAS_DEPENDENCIES`).
+  - **Conflict Handling**: Sync engine restores entity visibility when server-side dependency conflicts occur.
 - **Audit Consistency**: Verified that all soft-deletable entities implement the `ISoftDelete` interface and follow the system-wide automated auditing mechanism.
 
 ### Sprint 11.16 - Hardened Offline Delete Workflow

@@ -17,6 +17,15 @@ class FarmersListScreen extends ConsumerWidget {
     final farmersAsync = ref.watch(farmersListProvider);
     final authService = ref.watch(authorizationServiceProvider);
 
+    ref.listen<FarmerFormState>(farmerFormProvider, (previous, next) {
+      if (next.errors.isNotEmpty) {
+        final message = next.isDependencyError ? l10n.deleteRestrictedError : next.errors.join('\n');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message), backgroundColor: Colors.red),
+        );
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.farmers),

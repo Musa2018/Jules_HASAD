@@ -5,6 +5,7 @@ import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 final farmerFiltersProvider = StateProvider<FarmerFilter>((ref) {
@@ -53,12 +54,14 @@ class FarmerFormState {
   final List<String> errors;
   final bool success;
   final Farmer? farmer;
+  final bool isDependencyError;
 
   const FarmerFormState({
     this.isLoading = false,
     this.errors = const [],
     this.success = false,
     this.farmer,
+    this.isDependencyError = false,
   });
 }
 
@@ -96,6 +99,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
     try {
       await _repository.deleteFarmer(id);
       state = const FarmerFormState(success: true);
+    } on FarmerHasDependenciesException catch (e) {
+      state = FarmerFormState(errors: e.errors, isDependencyError: true);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
     } catch (_) {

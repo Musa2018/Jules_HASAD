@@ -87,7 +87,9 @@ Damage Assessment & Valuation Engine:
     - **Quality Standards**: Adopted "General UX Principles" as a mandatory standard for all project forms.
     - **Stability**: Resolved "Farmer delete synchronization" issue (deadlock on 404).
     - **Visibility**: Enforced `isPendingDelete` filtering across all reactive streams (`watchFarmers`, `watchFarms`, `watchFarmer`, `watchFarm`).
+    - **Business Rules**: Enforced "No deletion if linked farms exist" across all layers (Mobile Repository, Sync Engine, Backend).
     - **Sync Idempotency**: Hardened `BackgroundSyncService` to handle 404 Not Found as success for DELETE operations when a valid `serverId` is present, while preserving 404 as an error for non-delete operations.
+    - **Conflict Handling**: Implemented structured error codes (e.g., `FARMER_HAS_DEPENDENCIES`) for 409 Conflict responses, ensuring sync engine restores visibility of records that cannot be deleted.
     - **Logging**: Added detailed diagnostic logging for delete synchronization attempts.
     - **Validation**: Passed all 185 mobile tests and static analysis.
 

@@ -1,14 +1,14 @@
 # Task - UAT Document Evolution & Gating
 
-- [ ] Update `docs/UAT/UAT_Farmers_Farms_Hardening.md` with new sections
-    - [ ] Add General UX Principles
-    - [ ] Add Open Issues From Manual UAT
-    - [ ] Add UAT Observation History
-    - [ ] Add Architectural Decisions From UAT
-    - [ ] Add Regression Impact Assessment
-    - [ ] Add Status Lifecycle definition
-- [ ] Update `PROJECT_STATUS.md` to reflect UAT gating and workflow
-- [ ] Verify changes
-    - [ ] `flutter analyze`
-    - [ ] `flutter test`
-- [ ] Commit changes
+- [x] Update `docs/UAT/UAT_Farmers_Farms_Hardening.md` with new sections
+    - [x] Add General UX Principles
+    - [x] Add Open Issues From Manual UAT
+    - [x] Add UAT Observation History
+    - [x] Add Architectural Decisions From UAT
+    - [x] Add Regression Impact Assessment
+    - [x] Add Status Lifecycle definition
+- [x] Update `PROJECT_STATUS.md` to reflect UAT gating and workflow
+- [x] Verify changes
+    - [x] `flutter analyze`
+    - [x] `flutter test`
+- [x] Commit changes

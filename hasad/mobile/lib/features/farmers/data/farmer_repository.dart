@@ -362,6 +362,9 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Future<void> deleteFarmer(String id) async {
+    if (!_authService.canManageFarmers()) {
+      throw FarmerException(['Access Denied: You do not have permission to manage farmers.']);
+    }
     final local = await (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     if (local == null) return;

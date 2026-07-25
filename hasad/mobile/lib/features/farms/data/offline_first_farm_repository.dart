@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 import 'package:drift/drift.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
@@ -13,10 +14,14 @@ import 'package:uuid/uuid.dart';
 class OfflineFirstFarmRepository implements FarmRepository {
   final AppDatabase _db;
   final BackgroundSyncService _syncService;
+  final AuthorizationService _authService;
 
-  OfflineFirstFarmRepository(this._db, this._syncService);
+  OfflineFirstFarmRepository(this._db, this._syncService, this._authService);
 
   void _validate(domain.Farm farm, AuthSession? session) {
+    if (!_authService.canManageFarms()) {
+      throw FarmException(['Access Denied: You do not have permission to manage farms.']);
+    }
     final errors = FarmValidator.validate(farm, session: session);
     if (errors.isNotEmpty) {
       throw FarmException(errors);
@@ -220,6 +225,9 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Future<void> deleteFarm(String id, {AuthSession? session}) async {
+    if (!_authService.canManageFarms()) {
+      throw FarmException(['Access Denied: You do not have permission to manage farms.']);
+    }
     final local = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     if (local == null) return;

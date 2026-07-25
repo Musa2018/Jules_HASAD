@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farms/domain/farm_filter.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
@@ -13,9 +14,11 @@ import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MockFarmRepository extends Mock implements FarmRepository {}
+class MockAuthorizationService extends Mock implements AuthorizationService {}
 
 void main() {
   late MockFarmRepository mockRepo;
+  late MockAuthorizationService mockAuthService;
 
   setUpAll(() {
     registerFallbackValue(const FarmFilter());
@@ -23,11 +26,14 @@ void main() {
 
   setUp(() {
     mockRepo = MockFarmRepository();
+    mockAuthService = MockAuthorizationService();
+    when(() => mockAuthService.canManageFarms()).thenReturn(true);
   });
 
   Widget createWidget({Stream<List<Farm>>? stream}) {
     return ProviderScope(
       overrides: [
+        authorizationServiceProvider.overrideWithValue(mockAuthService),
         farmRepositoryProvider.overrideWithValue(mockRepo),
         if (stream != null)
           farmsListStreamProvider.overrideWith((ref) => stream),

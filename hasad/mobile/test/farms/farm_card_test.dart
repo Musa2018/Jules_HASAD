@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
@@ -11,7 +13,16 @@ import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+class MockAuthorizationService extends Mock implements AuthorizationService {}
+
 void main() {
+  late MockAuthorizationService mockAuthService;
+
+  setUp(() {
+    mockAuthService = MockAuthorizationService();
+    when(() => mockAuthService.canManageFarms()).thenReturn(true);
+  });
+
   final tFarmer = Farmer(
     id: 'f1',
     idTypeId: 1,
@@ -54,6 +65,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          authorizationServiceProvider.overrideWithValue(mockAuthService),
           farmerProvider('f1').overrideWith((ref) => Future.value(tFarmer)),
           governoratesProvider.overrideWith((ref) => []),
           directoratesProvider('g1').overrideWith((ref) => []),

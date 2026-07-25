@@ -1,29 +1,44 @@
-# Implementation Plan - UAT Document Evolution and Project Gating
+# Implementation Plan - UAT-001: Farm Creation Authorization Guard
 
-This plan outlines the restructuring of the `UAT_Farmers_Farms_Hardening.md` document to serve as a living record for manual UAT and a formal gate for the Damage Report module implementation.
+This plan addresses the unauthorized access to farm creation from the `FarmerCard` for roles like `TechnicalReviewer` and `FieldSurveyor`.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> This change officially gates the Damage Report implementation. No new features for Damage Reports will be implemented while "Critical" or "High" issues remain open in the UAT document.
+> This change strictly enforces the Authorization Matrix defined in the UAT baseline. Roles designated as "Read Only" for Farms (FieldSurveyor, TechnicalReviewer) will lose access to creation and editing UI components and routes.
 
 ## Proposed Changes
 
-### Documentation
+### Core Authorization
+#### [MODIFY] [authorization_service.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/auth/authorization_service.dart)
+- Update `canManageFarms()` to include `FieldSurveyor` and `TechnicalReviewer` in the `restrictedRoles` list. This aligns the service with the UAT Authorization Matrix.
 
-#### [MODIFY] [UAT_Farmers_Farms_Hardening.md](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/docs/UAT/UAT_Farmers_Farms_Hardening.md)
-- **Insert "General UX Principles"**: Establishing core UI/UX rules (Sticky Save, Red validation state, Role-based visibility, etc.) applicable to all forms.
-- **Insert "Open Issues From Manual UAT"**: A structured section for tracking individual bugs or findings found during manual testing.
-- **Insert "UAT Observation History"**: To ensure traceability of findings without overwriting previous data.
-- **Insert "Architectural Decisions from UAT"**: To capture design changes or decisions triggered by testing.
-- **Define Status Lifecycle**: Clearly documenting the allowed states for issues (NOT STARTED -> ... -> CLOSED).
+### Domain & Repository
+#### [MODIFY] [farm_validator.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farms/domain/farm_validator.dart)
+- Add a permission check in `validate()` to ensure the user's role is authorized to perform mutations. If the role is restricted, add an "Access Denied" error message.
 
-#### [MODIFY] [PROJECT_STATUS.md](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/PROJECT_STATUS.md)
-- Update the "Hardening Phase" or "Current Sprint" section to explicitly state that progress is gated by the manual UAT results recorded in the new document.
-- Reference the "General UX Principles" as a project standard.
+### UI Components
+#### [MODIFY] [farmer_card.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/presentation/widgets/farmer_card.dart)
+- Wrap the "Add Farm" button (`AppRoutes.addFarm`) with `if (authService.canManageFarms())`.
+
+### Navigation
+#### [MODIFY] [app_router.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/core/router/app_router.dart)
+- Implement route-level guards for `addFarm` and `editFarm` routes.
+- Use `ref.read(authorizationServiceProvider)` within the router's `redirect` logic or the route's `builder` to block unauthorized access and redirect to a safe location (e.g., home or details screen with a message).
 
 ## Verification Plan
 
+### Automated Tests
+- Create `farm_authorization_test.dart` to verify:
+    - `AuthorizationService` correctly identifies restricted roles.
+    - `FarmValidator` blocks creation for unauthorized roles.
+    - `FarmerCard` hides the "Add Farm" button for unauthorized roles.
+    - Router blocks direct navigation to `/farms/add` for unauthorized roles.
+
 ### Manual Verification
-- Verify the structure of `UAT_Farmers_Farms_Hardening.md` matches the user's requirements exactly.
-- Verify `PROJECT_STATUS.md` correctly reflects the new workflow dependency.
+- Log in as a `TechnicalReviewer`.
+- Navigate to the Farmers list.
+- Verify that the "Add Farm" button is NOT visible on any `FarmerCard`.
+- Attempt to manually navigate to `/farms/add` (if possible via deep link or console) and verify redirection/blocking.
+- Repeat for `FieldSurveyor` role.
+- Log in as `AgriculturalEngineer` and verify the button IS visible and functional.

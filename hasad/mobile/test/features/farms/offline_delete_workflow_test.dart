@@ -4,6 +4,7 @@ import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
@@ -18,6 +19,7 @@ class MockFarmRepository extends Mock implements FarmRepository {}
 class MockDamageReportRepository extends Mock implements DamageReportRepository {}
 class MockAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
+class MockAuthorizationService extends Mock implements AuthorizationService {}
 
 void main() {
   late AppDatabase db;
@@ -26,6 +28,7 @@ void main() {
   late MockDamageReportRepository mockDamageRepo;
   late MockAttachmentRepository mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
+  late MockAuthorizationService mockAuthService;
   late BackgroundSyncService syncService;
 
   setUp(() {
@@ -35,8 +38,10 @@ void main() {
     mockDamageRepo = MockDamageReportRepository();
     mockAttachmentRepo = MockAttachmentRepository();
     mockConnectivity = MockConnectivity();
+    mockAuthService = MockAuthorizationService();
 
     when(() => mockConnectivity.onConnectivityChanged).thenAnswer((_) => const Stream.empty());
+    when(() => mockAuthService.canManageFarms()).thenReturn(true);
     
     syncService = BackgroundSyncService(
       db,
@@ -206,7 +211,7 @@ void main() {
       );
 
       // 2. Undo via repository logic (we'll implement it in repository, test verifies logic)
-      final repo = OfflineFirstFarmRepository(db, syncService);
+      final repo = OfflineFirstFarmRepository(db, syncService, mockAuthService);
       await repo.cancelDeleteFarm(localId);
 
       // 3. Verify

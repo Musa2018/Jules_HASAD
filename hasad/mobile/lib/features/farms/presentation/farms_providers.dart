@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
@@ -12,6 +13,7 @@ final farmRepositoryProvider = Provider<FarmRepository>((ref) {
   return OfflineFirstFarmRepository(
     ref.watch(databaseProvider),
     ref.watch(syncServiceProvider),
+    ref.watch(authorizationServiceProvider),
   );
 });
 

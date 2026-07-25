@@ -21,7 +21,8 @@ class AuthorizationService {
   /// --- Farm Permissions ---
 
   bool canManageFarms() {
-    const restrictedRoles = ['ReadOnly', 'Farmer'];
+    // Restricted roles: FieldSurveyor, TechnicalReviewer, ReadOnly, Farmer
+    const restrictedRoles = ['FieldSurveyor', 'TechnicalReviewer', 'ReadOnly', 'Farmer'];
     return _roles.isNotEmpty && !restrictedRoles.any((r) => _roles.contains(r));
   }
 

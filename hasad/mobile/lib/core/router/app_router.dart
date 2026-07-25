@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/presentation/forgot_password_screen.dart';
 import 'package:mobile/features/auth/presentation/reset_password_screen.dart';
@@ -198,11 +199,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.addFarmer,
         builder: (context, state) =>
             FarmerFormScreen(initialIdNumber: state.extra as String?),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarmers() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.editFarmer,
         builder: (context, state) =>
             FarmerFormScreen(farmer: state.extra as Farmer?),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarmers() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.farms,
@@ -218,11 +227,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.addFarm,
         builder: (context, state) =>
             FarmFormScreen(farmer: state.extra as Farmer),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarms() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.editFarm,
         builder: (context, state) =>
             FarmFormScreen(farm: state.extra as Farm),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarms() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.damageReports,

@@ -129,11 +129,12 @@ class FarmerCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     if (!farmer.isPendingDelete) ...[
-                      TextButton.icon(
-                        onPressed: () => context.push(AppRoutes.addFarm, extra: farmer),
-                        icon: const Icon(Icons.agriculture, size: 18),
-                        label: Text(l10n.farm),
-                      ),
+                      if (authService.canManageFarms())
+                        TextButton.icon(
+                          onPressed: () => context.push(AppRoutes.addFarm, extra: farmer),
+                          icon: const Icon(Icons.agriculture, size: 18),
+                          label: Text(l10n.farm),
+                        ),
                       if (authService.canManageFarmers()) ...[
                         TextButton.icon(
                           onPressed: () => context.push(AppRoutes.editFarmer, extra: farmer),

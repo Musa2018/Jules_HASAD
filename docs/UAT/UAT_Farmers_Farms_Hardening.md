@@ -26,11 +26,9 @@ These principles apply to every current and future form unless explicitly docume
 
 ---
 
-# 3. Open Issues From Manual UAT
-
 | UAT ID | Module | Screen | Business Requirement | Current Behavior | Expected Behavior | Severity | Root Cause | Status | Related Commit | Verification Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| | | | | | | | | | | |
+| UAT-001 | Farmers / Farms Authorization | Farmer Card | Non-authorized roles must have Read Only access. Users without farm creation permission must not see actions that open create workflows. | TechnicalReviewer can see and click "Farm" button to open Add Farm form. | "Add Farm" action must not be visible for roles without farm creation permission. | High | Missing authorization guard in FarmerCard actions and route. | CLOSED | [f3254cd](https://github.com/musa/Jules_HASAD/commit/f3254cd) | VERIFIED |
 
 ## Status Lifecycle Definitions
 - **NOT STARTED**: Issue identified but work has not begun.
@@ -47,7 +45,7 @@ These principles apply to every current and future form unless explicitly docume
 
 | Date | Module | Observation | Severity | Status | Proposed Resolution |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| | | | | | |
+| 2026-07-25 | Authorization | TechnicalReviewer can see and access "Add Farm" from Farmer Card. | High | RESOLVED | Implement visibility guards and navigation protection. |
 
 ---
 
@@ -57,7 +55,7 @@ These principles apply to every current and future form unless explicitly docume
 
 | UAT ID | Affected Modules | Possible Regression Areas | Tests Executed | Manual Verification Result |
 | :--- | :--- | :--- | :--- | :--- |
-| | | | | |
+| UAT-001 | Farmers, Farms, Auth, Router | Authorized users (Engineer/Admin) might lose access if service logic is wrong. | authorization_service_test, farmer_card_authorization_uat_test, farm_repository_authorization_test | PASS |
 
 ---
 

@@ -75,6 +75,8 @@ Damage Assessment & Valuation Engine:
     - **UX Improvement**: Implemented persistent Save button in Farmer form with visual validation feedback (Red on error).
     - **Operational View**: Added default Directorate-based filtering for operational roles in the Farmers list.
     - **Audit**: Completed a comprehensive `DamageReport` entity audit to identify obsolete fields and terminology misalignments.
+    - **UAT Baseline**: Established official [UAT Baseline](docs/UAT/UAT_Farmers_Farms_Hardening.md) for Farmer and Farm hardening.
+    - **Gating**: Damage Report assessment implementation is officially gated by UAT approval.
     - **Validation**: Passed all 161 mobile tests and static analysis.
 
 ## Sprint 13.1 — COMPLETED

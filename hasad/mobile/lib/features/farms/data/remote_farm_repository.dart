@@ -123,6 +123,14 @@ class RemoteFarmRepository implements FarmRepository {
     if (e.response?.statusCode == 404) {
       throw SyncNotFoundException(['NOT FOUND: The record does not exist on the server.']);
     }
+    if (e.response?.statusCode == 409 && body is Map<String, dynamic>) {
+      final code = body['code'] as String?;
+      final errors = _errorsFromEnvelope(body);
+      throw SyncConflictException(
+        errors.isNotEmpty ? errors : ['CONFLICT: The record has been modified by another user.'],
+        code: code,
+      );
+    }
     if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {
       throw SyncValidationException(_errorsFromEnvelope(body));
     }

@@ -312,11 +312,24 @@ class BackgroundSyncService {
         error: e.toString(),
       );
     } on SyncConflictException catch (e) {
+      final isDependencyConflict = e.code == 'FARMER_HAS_DEPENDENCIES' || e.code == 'FARM_HAS_DEPENDENCIES';
+
       await _db.update(_db.syncQueue).replace(
         item.copyWith(status: 'conflict', lastError: Value(e.toString())),
       );
-      await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-      await _resolveConflict(item);
+
+      if (item.operation == 'delete' && isDependencyConflict) {
+        await _updateEntitySyncStatus(
+          item.entityType,
+          item.localId,
+          'conflict',
+          error: e.toString(),
+          clearPendingDelete: true,
+        );
+      } else {
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
+        await _resolveConflict(item);
+      }
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
         await _db.update(_db.syncQueue).replace(
@@ -412,12 +425,16 @@ class BackgroundSyncService {
     String localId,
     String status, {
     String? error,
+    bool clearPendingDelete = false,
   }) async {
+    final pendingDelete = clearPendingDelete ? const Value(false) : const Value<bool>.absent();
+
     if (entityType == 'farmer') {
       await (_db.update(_db.farmers)..where((t) => t.id.equals(localId))).write(
         FarmersCompanion(
           syncStatus: Value(status),
           lastSyncError: Value(error),
+          isPendingDelete: pendingDelete,
         ),
       );
     } else if (entityType == 'farm') {
@@ -425,6 +442,7 @@ class BackgroundSyncService {
         FarmsCompanion(
           syncStatus: Value(status),
           lastSyncError: Value(error),
+          isPendingDelete: pendingDelete,
         ),
       );
     } else if (entityType == 'damage_report') {
@@ -434,6 +452,7 @@ class BackgroundSyncService {
         DamageReportsCompanion(
           syncStatus: Value(status),
           lastSyncError: Value(error),
+          isPendingDelete: pendingDelete,
         ),
       );
     } else if (entityType == 'damage_item') {
@@ -443,6 +462,7 @@ class BackgroundSyncService {
         DamageItemsCompanion(
           syncStatus: Value(status),
           lastSyncError: Value(error),
+          isPendingDelete: pendingDelete,
         ),
       );
     } else if (entityType == 'attachment') {
@@ -452,6 +472,7 @@ class BackgroundSyncService {
         DamageReportAttachmentsCompanion(
           syncStatus: Value(status),
           lastSyncError: Value(error),
+          isPendingDelete: pendingDelete,
         ),
       );
     }

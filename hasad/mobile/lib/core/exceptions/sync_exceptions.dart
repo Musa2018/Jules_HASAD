@@ -12,7 +12,8 @@ class SyncValidationException extends SyncException {
 }
 
 class SyncConflictException extends SyncException {
-  SyncConflictException(super.errors);
+  final String? code;
+  SyncConflictException(super.errors, {this.code});
 }
 
 class SyncNotFoundException extends SyncException {

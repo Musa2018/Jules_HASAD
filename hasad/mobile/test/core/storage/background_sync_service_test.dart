@@ -920,6 +920,65 @@ void main() {
       expect(queueItem.status, 'failed');
     });
 
+    test('processQueue marks conflict and restores visibility on 409 FARMER_HAS_DEPENDENCIES during DELETE', () async {
+      const localId = 'delete-conflict';
+      const serverId = 'remote-conflict';
+
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              serverId: const Value(serverId),
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('Has Server Farms'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+              isPendingDelete: const Value(true),
+            ),
+          );
+
+      await db.into(db.syncQueue).insert(
+            SyncQueueCompanion.insert(
+              id: 'q-delete-conflict',
+              localId: localId,
+              entityType: 'farmer',
+              operation: 'delete',
+              data: jsonEncode({'id': serverId}),
+            ),
+          );
+
+      when(() => mockConnectivity.checkConnectivity()).thenAnswer(
+        (_) async => [ConnectivityResult.wifi],
+      );
+      
+      when(() => mockFarmerRepo.deleteFarmer(serverId)).thenThrow(
+        SyncConflictException(['Cannot delete due to farms'], code: 'FARMER_HAS_DEPENDENCIES'),
+      );
+
+      await syncService.processQueue();
+
+      final localFarmer = await db.select(db.farmers).getSingle();
+      expect(localFarmer.isPendingDelete, false);
+      expect(localFarmer.syncStatus, 'conflict');
+      expect(localFarmer.lastSyncError, contains('Cannot delete due to farms'));
+
+      final queueItem = await db.select(db.syncQueue).getSingle();
+      expect(queueItem.status, 'conflict');
+    });
+
     test('addToQueue removes record immediately when deleting unsynced CREATE', () async {
       const localId = 'cancel-create-1';
 

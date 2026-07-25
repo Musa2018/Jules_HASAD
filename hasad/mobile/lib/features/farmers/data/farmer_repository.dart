@@ -83,47 +83,72 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     String? name,
     String? searchText,
   }) async {
-    final query = _db.select(_db.farmers)
-      ..where((t) => t.isPendingDelete.equals(false))
-      ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
-      ..limit(pageSize, offset: (pageNumber - 1) * pageSize);
+    final farmers = _db.farmers;
+    final farms = _db.farms;
+
+    // Check if we need to apply Directorate scoping based on role
+    final session = _session;
+    final bool needsScoping = session != null &&
+        (session.roles.contains('AgriculturalEngineer') ||
+            session.roles.contains('FieldSurveyor')) &&
+        session.directorateId != null;
+
+    final query = needsScoping
+        ? _db.select(farmers).join([
+            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+          ])
+        : _db.select(farmers).join([]);
+
+    final List<Expression<bool>> predicates = [];
+    predicates.add(farmers.isPendingDelete.equals(false));
+
+    if (needsScoping) {
+      predicates.add(farms.directorateId.equals(session.directorateId!));
+    }
 
     if (idNumber != null && idNumber.isNotEmpty) {
-      query.where((t) => t.idNumber.contains(idNumber));
+      predicates.add(farmers.idNumber.contains(idNumber));
     }
 
     if (name != null && name.isNotEmpty) {
       final search = '%$name%';
-      query.where((t) => Expression.or([
-          t.firstNameAr.like(search),
-          t.fatherNameAr.like(search),
-          t.grandfatherNameAr.like(search),
-          t.familyNameAr.like(search),
-          t.firstNameEn.like(search),
-          t.fatherNameEn.like(search),
-          t.grandfatherNameEn.like(search),
-          t.familyNameEn.like(search)
+      predicates.add(Expression.or([
+        farmers.firstNameAr.like(search),
+        farmers.fatherNameAr.like(search),
+        farmers.grandfatherNameAr.like(search),
+        farmers.familyNameAr.like(search),
+        farmers.firstNameEn.like(search),
+        farmers.fatherNameEn.like(search),
+        farmers.grandfatherNameEn.like(search),
+        farmers.familyNameEn.like(search)
       ]));
     }
 
     if (searchText != null && searchText.isNotEmpty) {
       final search = '%$searchText%';
-      query.where((t) =>
-          t.firstNameAr.like(search) |
-          t.fatherNameAr.like(search) |
-          t.grandfatherNameAr.like(search) |
-          t.familyNameAr.like(search) |
-          t.firstNameEn.like(search) |
-          t.fatherNameEn.like(search) |
-          t.grandfatherNameEn.like(search) |
-          t.familyNameEn.like(search) |
-          t.idNumber.like(search) |
-          t.phoneNumber.like(search));
+      predicates.add(farmers.firstNameAr.like(search) |
+          farmers.fatherNameAr.like(search) |
+          farmers.grandfatherNameAr.like(search) |
+          farmers.familyNameAr.like(search) |
+          farmers.firstNameEn.like(search) |
+          farmers.fatherNameEn.like(search) |
+          farmers.grandfatherNameEn.like(search) |
+          farmers.familyNameEn.like(search) |
+          farmers.idNumber.like(search) |
+          farmers.phoneNumber.like(search));
     }
 
-    final items = await query.get();
+    query.where(Expression.and(predicates));
+    
+    if (needsScoping) {
+      query.groupBy([farmers.id]);
+    }
 
-    return items.map(_mapToDomain).toList();
+    query.orderBy([OrderingTerm.desc(farmers.createdAt)]);
+    query.limit(pageSize, offset: (pageNumber - 1) * pageSize);
+
+    final rows = await query.get();
+    return rows.map((row) => _mapToDomain(row.readTable(farmers))).toList();
   }
 
   @override
@@ -188,95 +213,70 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   Stream<List<domain.Farmer>> watchFarmers({
     FarmerFilter filter = const FarmerFilter(),
   }) {
-    
-    if (filter.isOperational) {
-      // Joining with farms and damage reports to find farmers with damaged farms
-      final farmers = _db.farmers;
-      final farms = _db.farms;
-      final reports = _db.damageReports;
+    final farmers = _db.farmers;
+    final farms = _db.farms;
 
-      final joinedQuery = _db.select(farmers).join([
-        innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
-        innerJoin(reports, reports.farmId.equalsExp(farms.id)),
-      ]);
+    // Check if we need to apply Directorate scoping based on role
+    final session = _session;
+    final bool needsScoping = session != null &&
+        (session.roles.contains('AgriculturalEngineer') ||
+            session.roles.contains('FieldSurveyor')) &&
+        session.directorateId != null;
 
-      final List<Expression<bool>> predicates = [];
-      predicates.add(farmers.isPendingDelete.equals(false));
+    final query = needsScoping
+        ? _db.select(farmers).join([
+            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+          ])
+        : _db.select(farmers).join([]);
 
-      // Apply standard filters to joined query
-      if (filter.searchText.isNotEmpty) {
-        final search = '%${filter.searchText}%';
-        predicates.add(
-            Expression.or([
-              farmers.firstNameAr.like(search),
-              farmers.familyNameAr.like(search),
-              farmers.idNumber.like(search)
-            ])
-        );
-      }
-      
-      // Apply Directorate scoping for operational view
-      if (_session != null) {
-        if (_session!.roles.contains('AgriculturalEngineer') || _session!.roles.contains('FieldSurveyor')) {
-          if (_session!.directorateId != null) {
-            predicates.add(farms.directorateId.equals(_session!.directorateId!));
-          }
-        }
-      }
-      
-      joinedQuery.where(Expression.and(predicates));
-      joinedQuery.groupBy([farmers.id]);
-      joinedQuery.orderBy([OrderingTerm.desc(farmers.createdAt)]);
+    final List<Expression<bool>> predicates = [];
+    predicates.add(farmers.isPendingDelete.equals(false));
 
-      return joinedQuery.watch().map((rows) => rows.map((row) => _mapToDomain(row.readTable(farmers))).toList());
+    if (needsScoping) {
+      predicates.add(farms.directorateId.equals(session.directorateId!));
     }
 
-    final query = _db.select(_db.farmers);
-    
-    query.where((t) {
-      final List<Expression<bool>> predicates = [];
-      predicates.add(t.isPendingDelete.equals(false));
+    if (filter.searchText.isNotEmpty) {
+      final search = '%${filter.searchText}%';
+      predicates.add(Expression.or([
+        farmers.firstNameAr.like(search),
+        farmers.fatherNameAr.like(search),
+        farmers.grandfatherNameAr.like(search),
+        farmers.familyNameAr.like(search),
+        farmers.firstNameEn.like(search),
+        farmers.fatherNameEn.like(search),
+        farmers.grandfatherNameEn.like(search),
+        farmers.familyNameEn.like(search),
+        farmers.idNumber.like(search),
+        farmers.phoneNumber.like(search)
+      ]));
+    }
 
-      if (filter.searchText.isNotEmpty) {
-        final search = '%${filter.searchText}%';
-        predicates.add(
-            Expression.or([
-              t.firstNameAr.like(search),
-              t.fatherNameAr.like(search),
-              t.grandfatherNameAr.like(search),
-              t.familyNameAr.like(search),
-              t.firstNameEn.like(search),
-              t.fatherNameEn.like(search),
-              t.grandfatherNameEn.like(search),
-              t.familyNameEn.like(search),
-              t.idNumber.like(search),
-              t.phoneNumber.like(search)
-            ])
-        );
-      }
+    if (filter.gender != null) {
+      predicates.add(farmers.gender.equals(filter.gender!.index));
+    }
 
-      if (filter.gender != null) {
-        predicates.add(t.gender.equals(filter.gender!.index));
-      }
+    if (filter.syncStatus != null) {
+      predicates.add(farmers.syncStatus.equals(filter.syncStatus!));
+    }
 
-      if (filter.syncStatus != null) {
-        predicates.add(t.syncStatus.equals(filter.syncStatus!));
-      }
+    if (filter.governorateId != null) {
+      predicates.add(farmers.governorateId.equals(filter.governorateId!));
+    }
 
-      if (filter.governorateId != null) {
-        predicates.add(t.governorateId.equals(filter.governorateId!));
-      }
+    if (filter.localityId != null) {
+      predicates.add(farmers.localityId.equals(filter.localityId!));
+    }
 
-      if (filter.localityId != null) {
-        predicates.add(t.localityId.equals(filter.localityId!));
-      }
+    query.where(Expression.and(predicates));
 
-      return Expression.and(predicates);
-    });
+    if (needsScoping) {
+      query.groupBy([farmers.id]);
+    }
 
-    query.orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
+    query.orderBy([OrderingTerm.desc(farmers.createdAt)]);
 
-    return query.watch().map((items) => items.map(_mapToDomain).toList());
+    return query.watch().map((rows) => rows.map((row) => _mapToDomain(row.readTable(farmers))).toList());
   }
 
   domain.Farmer _mapToDomain(FarmerLocal e) {

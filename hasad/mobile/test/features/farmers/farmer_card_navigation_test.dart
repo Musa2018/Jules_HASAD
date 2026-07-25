@@ -68,8 +68,8 @@ void main() {
       ),
     );
 
-    // Verify "مزرعة" button exists (Arabic)
-    expect(find.text('مزرعة'), findsOneWidget);
+    // Verify "المزارع" button exists (Arabic - plural)
+    expect(find.text('المزارع'), findsOneWidget);
     expect(find.byIcon(Icons.agriculture), findsOneWidget);
 
     // Verify "بحث" button does NOT exist

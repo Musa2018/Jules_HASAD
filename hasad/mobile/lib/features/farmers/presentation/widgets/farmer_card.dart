@@ -131,9 +131,9 @@ class FarmerCard extends ConsumerWidget {
                     if (!farmer.isPendingDelete) ...[
                       if (authService.canManageFarms())
                         TextButton.icon(
-                          onPressed: () => context.push(AppRoutes.addFarm, extra: farmer),
+                          onPressed: () => context.push(AppRoutes.farms, extra: farmer),
                           icon: const Icon(Icons.agriculture, size: 18),
-                          label: Text(l10n.farm),
+                          label: Text(l10n.farms),
                         ),
                       if (authService.canManageFarmers()) ...[
                         TextButton.icon(

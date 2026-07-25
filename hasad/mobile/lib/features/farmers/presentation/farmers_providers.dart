@@ -9,7 +9,6 @@ import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 final farmerFiltersProvider = StateProvider<FarmerFilter>((ref) {
-  final authService = ref.watch(authorizationServiceProvider);
   final session = ref.watch(authProvider).session;
   
   bool isOperationalDefault = false;
@@ -77,7 +76,7 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
       state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
-    } catch (e, st) {
+    } catch (e) {
       state = FarmerFormState(errors: [e.toString()]);
     }
   }
@@ -89,7 +88,7 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
       state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
-    } catch (e, st) {
+    } catch (e) {
       state = FarmerFormState(errors: [e.toString()]);
     }
   }

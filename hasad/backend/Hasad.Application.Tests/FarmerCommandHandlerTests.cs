@@ -214,6 +214,7 @@ public class FarmerCommandHandlerTests
 
         Assert.False(result.Succeeded);
         Assert.Contains("لا يمكن حذف المزارع", result.Errors[0]);
+        Assert.Equal("FARMER_HAS_DEPENDENCIES", result.Code);
     }
 
     [Fact]

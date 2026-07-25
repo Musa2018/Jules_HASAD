@@ -72,6 +72,22 @@ public class FarmsController : ControllerBase
     public async Task<IActionResult> DeleteFarm(Guid id)
     {
         var result = await _mediator.Send(new DeleteFarmCommand(id));
-        return result.Succeeded ? Ok(result) : BadRequest(result);
+
+        if (!result.Succeeded)
+        {
+            if (result.Code == "FARM_HAS_DEPENDENCIES")
+            {
+                return Conflict(result);
+            }
+
+            if (result.Errors.Any(e => e.Contains("not found")))
+            {
+                return NotFound(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        return NoContent();
     }
 }

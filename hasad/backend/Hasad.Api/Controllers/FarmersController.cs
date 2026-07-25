@@ -75,6 +75,11 @@ public class FarmersController : ControllerBase
 
         if (!result.Succeeded)
         {
+            if (result.Code == "FARMER_HAS_DEPENDENCIES")
+            {
+                return Conflict(result);
+            }
+
             // نتحقق إذا كان سبب الفشل هو عدم وجود المزارع لنرجع 404
             if (result.Errors.Any(e => e.Contains("not found")))
             {

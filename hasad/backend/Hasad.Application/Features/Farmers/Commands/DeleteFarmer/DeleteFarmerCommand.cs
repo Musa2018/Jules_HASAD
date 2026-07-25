@@ -38,7 +38,7 @@ public class DeleteFarmerCommandHandler : IRequestHandler<DeleteFarmerCommand, R
 
         if (hasFarms)
         {
-            return Result<Unit>.Failure(new[] { "لا يمكن حذف المزارع لوجود أراضٍ مرتبطة به." });
+            return Result<Unit>.Failure(new[] { "لا يمكن حذف المزارع لوجود أراضٍ مرتبطة به." }, "FARMER_HAS_DEPENDENCIES");
         }
 
         // تنفيذ الحذف المنطقي (Soft Delete)

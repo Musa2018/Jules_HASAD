@@ -31,6 +31,10 @@ These principles apply to every current and future form unless explicitly docume
 | UAT-001 | Farmers / Farms Authorization | Farmer Card | Non-authorized roles must have Read Only access. Users without farm creation permission must not see actions that open create workflows. | TechnicalReviewer can see and click "Farm" button to open Add Farm form. | "Add Farm" action must not be visible for roles without farm creation permission. | High | Missing authorization guard in FarmerCard actions and route. | CLOSED | [495bc23](https://github.com/musa/Jules_HASAD/commit/495bc23) | VERIFIED |
 | UAT-002 | Farms Authorization | Farms List | Mutation entry points must be hidden for read-only users. | TechnicalReviewer can see and click FAB (+) on Farms list when coming from Farmer Details. | FAB must be hidden for users without farm creation permission. | High | Missing authorization guard on FAB in FarmsListScreen. | CLOSED | [495bc23](https://github.com/musa/Jules_HASAD/commit/495bc23) | VERIFIED |
 | UAT-003 | Authentication | Login / Refresh | Disabled users must not obtain a valid authenticated session. | Disabled users (IsActive=false) can login and refresh tokens successfully. | Login and Refresh must fail for disabled users. | Critical | Missing IsActive check in backend command handlers. | CLOSED | [495bc23](https://github.com/musa/Jules_HASAD/commit/495bc23) | VERIFIED |
+| UAT-004 | Farms | Farm Form | Meaningful error feedback during save. | "An unexpected error occurred" on save failure. | UI must display real backend/database error messages. | High | Generic catch blocks in StateNotifiers swallowing exceptions. | CLOSED | [f8e4d2a](https://github.com/musa/Jules_HASAD/commit/f8e4d2a) | VERIFIED |
+| UAT-005 | Farmer / Farm UX | Form Actions | Sticky Save button standard. | Farm save button scrolls away; inconsistent with Farmer form. | Every form must have a persistent sticky bottom action area. | Medium | Introduced reusable FormSaveFooter component. | CLOSED | [f8e4d2a](https://github.com/musa/Jules_HASAD/commit/f8e4d2a) | VERIFIED |
+| UAT-006 | Farmer / Farm UX | Form Validation | Visual validation feedback on Save button. | Save button state doesn't reflect validation errors live. | Save button turns RED immediately when validation fails. | Medium | FormSaveFooter implemented with live validation state binding. | CLOSED | [f8e4d2a](https://github.com/musa/Jules_HASAD/commit/f8e4d2a) | VERIFIED |
+| UAT-007 | Farmer Module | Identity Search / Uniqueness | Global IdentityNumber uniqueness (Active records). | Multiple farmers allowed with same number + different type; causes search ambiguity. | IdentityNumber must be globally unique for all active farmers. | Critical | Enforced global IdentityNumber uniqueness across all layers. | CLOSED | [f8e4d2a](https://github.com/musa/Jules_HASAD/commit/f8e4d2a) | VERIFIED |
 
 ## Status Lifecycle Definitions
 - **NOT STARTED**: Issue identified but work has not begun.
@@ -50,6 +54,9 @@ These principles apply to every current and future form unless explicitly docume
 | 2026-07-25 | Authorization | TechnicalReviewer can see and access "Add Farm" from Farmer Card. | High | RESOLVED | Implement visibility guards and navigation protection. |
 | 2026-07-25 | Authorization | TechnicalReviewer can see and access FAB (+) from Farms List when navigating from details. | High | RESOLVED | Guard FAB with AuthorizationService. |
 | 2026-07-25 | Authentication | Disabled users can login and refresh tokens. | Critical | RESOLVED | Implement IsActive check in backend handlers. |
+| 2026-07-25 | Farms | Farm creation results in generic "An unexpected error occurred". | High | RESOLVED | Audit error propagation; remove generic catch blocks. |
+| 2026-07-25 | Farmer/Farm | Save button behavior and validation feedback inconsistent. | Medium | RESOLVED | Implement reusable FormSaveFooter with live validation binding. |
+| 2026-07-25 | Farmers | Ambiguous identity search results due to duplicate numbers. | Critical | RESOLVED | Enforce global IdentityNumber uniqueness (Active records). |
 
 ---
 

@@ -33,7 +33,7 @@ public class DamageWorkflowTests
         var context = CreateContext();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
-        var result = service.IsTransitionValid(DamageReportStatus.Draft, DamageReportStatus.TechReview, AppRoles.AgriculturalEngineer);
+        var result = service.IsTransitionValid(DamageReportStatus.Draft, DamageReportStatus.PendingTechnicalVerification, AppRoles.AgriculturalEngineer);
 
         Assert.True(result);
     }
@@ -60,14 +60,16 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
+        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            Farm = new Farm { DirectorateId = directorateId }
+            Farm = new Farm { DirectorateId = directorateId, FarmerId = farmer.Id }
         };
+        context.Farmers.Add(farmer);
 
-        // Attempting to return TechReview -> Draft without comment
-        var result = service.CanTransition(report, DamageReportStatus.Draft, null);
+        // Attempting to return TechReview -> PendingTechnicalVerification without comment
+        var result = service.CanTransition(report, DamageReportStatus.PendingTechnicalVerification, null);
 
         Assert.False(result);
     }
@@ -83,13 +85,15 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
+        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            Farm = new Farm { DirectorateId = directorateId }
+            Farm = new Farm { DirectorateId = directorateId, FarmerId = farmer.Id }
         };
+        context.Farmers.Add(farmer);
 
-        var result = service.CanTransition(report, DamageReportStatus.Draft, "Correction needed");
+        var result = service.CanTransition(report, DamageReportStatus.PendingTechnicalVerification, "Correction needed");
 
         Assert.True(result);
     }
@@ -106,11 +110,13 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
+        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            Farm = new Farm { DirectorateId = otherDirectorateId }
+            Farm = new Farm { DirectorateId = otherDirectorateId, FarmerId = farmer.Id }
         };
+        context.Farmers.Add(farmer);
 
         var result = service.CanTransition(report, DamageReportStatus.ArchiveDir, null);
 
@@ -129,6 +135,7 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
+        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             Id = Guid.NewGuid(),
@@ -137,18 +144,20 @@ public class DamageWorkflowTests
             {
                 DirectorateId = directorateId,
                 GovernorateId = Guid.NewGuid(),
-                LocalityId = Guid.NewGuid()
+                LocalityId = Guid.NewGuid(),
+                FarmerId = farmer.Id
             }
         };
+        context.Farmers.Add(farmer);
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
-        var command = new TransitionDamageReportCommand(report.Id, DamageReportStatus.TechReview);
+        var command = new TransitionDamageReportCommand(report.Id, DamageReportStatus.PendingTechnicalVerification);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.Succeeded);
         var updatedReport = await context.DamageReports.FindAsync(report.Id);
-        Assert.Equal(DamageReportStatus.TechReview, updatedReport!.StatusId);
+        Assert.Equal(DamageReportStatus.PendingTechnicalVerification, updatedReport!.StatusId);
     }
 }

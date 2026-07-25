@@ -83,7 +83,7 @@ void main() {
       expect(
         () => repository.createFarmer(farmer2),
         throwsA(isA<FarmerException>().having(
-            (e) => e.errors, 'errors', contains('A farmer with this ID Number and ID Type already exists and is active.'))),
+            (e) => e.errors, 'errors', contains('A farmer with this ID Number already exists and is active.'))),
       );
     });
 

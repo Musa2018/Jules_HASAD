@@ -62,10 +62,11 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   Future<void> _checkUniqueness(domain.Farmer farmer) async {
     final query = _db.select(_db.farmers)
-      ..where((t) =>
-          t.idNumber.equals(farmer.idNumber) &
-          t.isPendingDelete.equals(false) &
-          t.id.isNotValue(farmer.id));
+      ..where((t) => Expression.and([
+          t.idNumber.equals(farmer.idNumber),
+          t.isPendingDelete.equals(false),
+          t.id.isNotValue(farmer.id)
+      ]));
     
     final count = await query.get().then((v) => v.length);
     if (count > 0) {
@@ -92,15 +93,16 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
     if (name != null && name.isNotEmpty) {
       final search = '%$name%';
-      query.where((t) =>
-          t.firstNameAr.like(search) |
-          t.fatherNameAr.like(search) |
-          t.grandfatherNameAr.like(search) |
-          t.familyNameAr.like(search) |
-          t.firstNameEn.like(search) |
-          t.fatherNameEn.like(search) |
-          t.grandfatherNameEn.like(search) |
-          t.familyNameEn.like(search));
+      query.where((t) => Expression.or([
+          t.firstNameAr.like(search),
+          t.fatherNameAr.like(search),
+          t.grandfatherNameAr.like(search),
+          t.familyNameAr.like(search),
+          t.firstNameEn.like(search),
+          t.fatherNameEn.like(search),
+          t.grandfatherNameEn.like(search),
+          t.familyNameEn.like(search)
+      ]));
     }
 
     if (searchText != null && searchText.isNotEmpty) {
@@ -127,7 +129,10 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   Future<domain.Farmer?> findByIdNumber(String idNumber) async {
     // 1. Search local Drift database first (exclude records pending deletion)
     final local = await (_db.select(_db.farmers)
-          ..where((t) => t.idNumber.equals(idNumber) & t.isPendingDelete.equals(false)))
+          ..where((t) => Expression.and([
+              t.idNumber.equals(idNumber),
+              t.isPendingDelete.equals(false)
+          ])))
         .getSingleOrNull();
 
     if (local != null) {
@@ -170,7 +175,10 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Stream<domain.Farmer?> watchFarmer(String id) {
-    return (_db.select(_db.farmers)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
+    return (_db.select(_db.farmers)..where((t) => Expression.and([
+        t.id.equals(id),
+        t.isPendingDelete.equals(false)
+    ])))
         .watchSingleOrNull()
         .map((e) => e != null ? _mapToDomain(e) : null);
   }
@@ -198,9 +206,11 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       if (filter.searchText.isNotEmpty) {
         final search = '%${filter.searchText}%';
         predicates.add(
-            farmers.firstNameAr.like(search) |
-            farmers.familyNameAr.like(search) |
-            farmers.idNumber.like(search)
+            Expression.or([
+              farmers.firstNameAr.like(search),
+              farmers.familyNameAr.like(search),
+              farmers.idNumber.like(search)
+            ])
         );
       }
       
@@ -213,7 +223,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
         }
       }
       
-      joinedQuery.where(predicates.reduce((a, b) => a & b));
+      joinedQuery.where(Expression.and(predicates));
       joinedQuery.groupBy([farmers.id]);
       joinedQuery.orderBy([OrderingTerm.desc(farmers.createdAt)]);
 
@@ -229,16 +239,18 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       if (filter.searchText.isNotEmpty) {
         final search = '%${filter.searchText}%';
         predicates.add(
-            t.firstNameAr.like(search) |
-            t.fatherNameAr.like(search) |
-            t.grandfatherNameAr.like(search) |
-            t.familyNameAr.like(search) |
-            t.firstNameEn.like(search) |
-            t.fatherNameEn.like(search) |
-            t.grandfatherNameEn.like(search) |
-            t.familyNameEn.like(search) |
-            t.idNumber.like(search) |
-            t.phoneNumber.like(search)
+            Expression.or([
+              t.firstNameAr.like(search),
+              t.fatherNameAr.like(search),
+              t.grandfatherNameAr.like(search),
+              t.familyNameAr.like(search),
+              t.firstNameEn.like(search),
+              t.fatherNameEn.like(search),
+              t.grandfatherNameEn.like(search),
+              t.familyNameEn.like(search),
+              t.idNumber.like(search),
+              t.phoneNumber.like(search)
+            ])
         );
       }
 
@@ -258,7 +270,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
         predicates.add(t.localityId.equals(filter.localityId!));
       }
 
-      return predicates.reduce((a, b) => a & b);
+      return Expression.and(predicates);
     });
 
     query.orderBy([(t) => OrderingTerm.desc(t.createdAt)]);

@@ -62,8 +62,8 @@ class FarmFormNotifier extends StateNotifier<FarmFormState> {
       state = FarmFormState(success: true, farm: result);
     } on FarmException catch (e) {
       state = FarmFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmFormState(errors: ['An unexpected error occurred.']);
+    } catch (e, st) {
+      state = FarmFormState(errors: [e.toString()]);
     }
   }
 
@@ -75,8 +75,8 @@ class FarmFormNotifier extends StateNotifier<FarmFormState> {
       state = FarmFormState(success: true, farm: result);
     } on FarmException catch (e) {
       state = FarmFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmFormState(errors: ['An unexpected error occurred.']);
+    } catch (e, st) {
+      state = FarmFormState(errors: [e.toString()]);
     }
   }
 
@@ -88,8 +88,8 @@ class FarmFormNotifier extends StateNotifier<FarmFormState> {
       state = const FarmFormState(success: true);
     } on FarmException catch (e) {
       state = FarmFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmFormState(errors: ['An unexpected error occurred.']);
+    } catch (e, st) {
+      state = FarmFormState(errors: [e.toString()]);
     }
   }
 }

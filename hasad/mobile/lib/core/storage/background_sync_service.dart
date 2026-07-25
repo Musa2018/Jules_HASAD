@@ -69,10 +69,11 @@ class BackgroundSyncService {
                 t.localId.equals(localId) & t.entityType.equals(entityType),
           )
           ..where(
-            (t) =>
-                t.status.equals('pending') |
-                t.status.equals('failed') |
+            (t) => Expression.or([
+                t.status.equals('pending'),
+                t.status.equals('failed'),
                 t.status.equals('invalid'),
+            ]),
           ))
         .getSingleOrNull();
 
@@ -182,17 +183,21 @@ class BackgroundSyncService {
         final pendingItems = await (_db.select(_db.syncQueue)
               ..where(
                 (t) {
-                  final isPendingOrFailed =
-                      t.status.equals('pending') | t.status.equals('failed');
+                  final isPendingOrFailed = Expression.or([
+                      t.status.equals('pending'),
+                      t.status.equals('failed'),
+                  ]);
                   // On startup, we include all 'syncing' items for recovery.
                   // During session, we only include 'syncing' items that are "stuck" (> 5 mins).
-                  final isStuckSyncing = t.status.equals('syncing') &
-                      (isStartup
+                  final isStuckSyncing = Expression.and([
+                      t.status.equals('syncing'),
+                      isStartup
                           ? const Constant(true)
                           : t.lastAttemptAt.isSmallerThanValue(
                             now.subtract(const Duration(minutes: 5)),
-                          ));
-                  return isPendingOrFailed | isStuckSyncing;
+                          )
+                  ]);
+                  return Expression.or([isPendingOrFailed, isStuckSyncing]);
                 },
               )
               ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))

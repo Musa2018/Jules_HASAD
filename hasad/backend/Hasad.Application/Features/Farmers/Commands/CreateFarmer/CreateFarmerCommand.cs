@@ -54,10 +54,10 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
             return Result<FarmerDto>.Success(MapToDto(existingByClientId));
         }
 
-        // Business rule: The combination of Id Type and Id Number must be unique.
-        if (await _context.Farmers.AnyAsync(f => f.IdNumber == request.IdNumber && f.IdTypeId == request.IdTypeId, cancellationToken))
+        // Business rule: The ID Number must be unique among active farmers.
+        if (await _context.Farmers.AnyAsync(f => f.IdNumber == request.IdNumber, cancellationToken))
         {
-            return Result<FarmerDto>.Failure(new[] { "A farmer with this ID Number and ID Type already exists." });
+            return Result<FarmerDto>.Failure(new[] { "A farmer with this ID Number already exists and is active." });
         }
 
         var farmer = new Farmer

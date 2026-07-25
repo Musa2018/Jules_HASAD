@@ -16,18 +16,25 @@ We will enforce **Global IdentityNumber Uniqueness** across all active farmer re
 3. **Identity Type**: The `IdentityType` remains a required classification field but is no longer part of the uniqueness constraint.
 4. **Data Integrity**: Search by `IdentityNumber` must return at most one active record.
 
-## Migration Strategy
+## Migration & Deployment Strategy
 To ensure a safe and repeatable deployment:
 
-1. **Pre-migration Audit**: A mandatory SQL audit script must be run by administrators to identify and resolve existing duplicates before applying the schema change.
-2. **Schema Change**: The existing composite unique index `IX_Farmers_IdTypeId_IdNumber` will be replaced with a single-column unique index `IX_Farmers_IdNumber` with a filter `[IsDeleted] = 0`.
+1. **Pre-migration Audit**: A mandatory SQL audit script (`IdentityUniquenessAudit.sql`) must be run by administrators to identify existing duplicates.
+2. **Data Cleanup**: Administrators must resolve duplicates (merge or delete) before applying schema changes.
+3. **Schema-Only Migration**: The EF Core migration will strictly perform schema changes (dropping the composite index and creating the single-column filtered index). It will NOT modify business data.
+4. **Deployment Sequence**:
+    - Step 1: Run Audit Script.
+    - Step 2: Resolve Duplicates.
+    - Step 3: Apply Database Migration.
+    - Step 4: Deploy Application Code.
 
 ## Consequences
 - **Positive**: Eliminates search ambiguity and improves data integrity.
 - **Positive**: Simplifies identity-based lookup logic.
 - **Negative**: Requires manual data cleanup in existing databases where duplicates might already exist.
-- **Negative**: Prevents edge cases where a person might legitimately have two different identity documents registered separately (business rule assumes one physical person = one unique identity record in the system).
+- **Negative**: Prevents edge cases where a person might legitimately have two different identity documents registered separately.
 
 ## References
 - UAT finding: UAT-007
 - Project: HASAD Farmers & Farms Hardening
+- Audit Script: `hasad/backend/Hasad.Infrastructure/Persistence/deployment/database/IdentityUniquenessAudit.sql`

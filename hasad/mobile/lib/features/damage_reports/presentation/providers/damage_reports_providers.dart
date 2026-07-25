@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
@@ -36,7 +37,7 @@ final damageReportsListByFarmProvider = FutureProvider.autoDispose
 
 final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
   final db = ref.watch(databaseProvider);
-  return (db.select(db.damageReports)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
+  return (db.select(db.damageReports)..where((t) => Expression.and([t.id.equals(id), t.isPendingDelete.equals(false)])))
       .watchSingleOrNull()
       .asyncMap((row) async {
     if (row == null) return null;

@@ -59,10 +59,10 @@ public class DamageReportSecurityTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = directorateId };
         var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
-        context.Farms.Add(farm);
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = directorateId, FarmerId = farmer.Id };
         context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _createLoggerMock.Object);
@@ -83,10 +83,10 @@ public class DamageReportSecurityTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
         var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
-        context.Farms.Add(farm);
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
         context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _createLoggerMock.Object);
@@ -108,7 +108,8 @@ public class DamageReportSecurityTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
         var report = new DamageReport
         {
             Id = Guid.NewGuid(),
@@ -118,6 +119,8 @@ public class DamageReportSecurityTests
             RowVersion = new byte[] { 1, 2, 3 }
         };
 
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
@@ -140,8 +143,11 @@ public class DamageReportSecurityTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
         var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
@@ -162,9 +168,12 @@ public class DamageReportSecurityTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
         var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
         var item = new DamageItem { Id = Guid.NewGuid(), DamageReportId = report.Id, DamageReport = report, RowVersion = new byte[] { 1 } };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         context.DamageReports.Add(report);
         context.DamageItems.Add(item);
         await context.SaveChangesAsync();
@@ -188,8 +197,11 @@ public class DamageReportSecurityTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId };
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
         var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 

@@ -31,8 +31,10 @@ class OfflineFirstFarmRepository implements FarmRepository {
   @override
   Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
     final items = await (_db.select(_db.farms)
-          ..where((t) =>
-              t.farmerId.equals(farmerId) & t.isPendingDelete.equals(false))
+          ..where((t) => Expression.and([
+              t.farmerId.equals(farmerId),
+              t.isPendingDelete.equals(false)
+          ]))
           ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
         .get();
 
@@ -79,13 +81,15 @@ class OfflineFirstFarmRepository implements FarmRepository {
     if (filter.searchText.isNotEmpty) {
       final search = '%${filter.searchText}%';
       predicates.add(
-          _db.farms.localFarmName.like(search) |
-          _db.farms.basin.like(search) |
-          _db.farms.parcel.like(search) |
-          operatorFarmer.firstNameAr.like(search) |
-          operatorFarmer.familyNameAr.like(search) |
-          ownerFarmer.firstNameAr.like(search) |
-          ownerFarmer.familyNameAr.like(search)
+          Expression.or([
+            _db.farms.localFarmName.like(search),
+            _db.farms.basin.like(search),
+            _db.farms.parcel.like(search),
+            operatorFarmer.firstNameAr.like(search),
+            operatorFarmer.familyNameAr.like(search),
+            ownerFarmer.firstNameAr.like(search),
+            ownerFarmer.familyNameAr.like(search)
+          ])
       );
     }
 
@@ -109,7 +113,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
       predicates.add(_db.farms.agriculturalSectorId.equals(filter.agriculturalSectorId!));
     }
 
-    query.where(predicates.reduce((a, b) => a & b));
+    query.where(Expression.and(predicates));
     query.orderBy([OrderingTerm.desc(_db.farms.createdAt)]);
 
     return query.watch().map((rows) {

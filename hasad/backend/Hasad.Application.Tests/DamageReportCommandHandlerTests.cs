@@ -101,6 +101,10 @@ public class DamageReportCommandHandlerTests
         var causeId = 1;
         var reportId = Guid.NewGuid();
 
+        var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
+        var farm = new Farm { Id = farmId, FarmerId = farmer.Id, LocalFarmName = "F", DirectorateId = Guid.NewGuid() };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         context.DamageReports.Add(new DamageReport
         {
             Id = reportId,
@@ -111,11 +115,6 @@ public class DamageReportCommandHandlerTests
             StatusId = "Draft",
             RowVersion = new byte[] { 1 }
         });
-
-        var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
-        var farm = new Farm { Id = farmId, FarmerId = farmer.Id, LocalFarmName = "F", DirectorateId = Guid.NewGuid() };
-        context.Farmers.Add(farmer);
-        context.Farms.Add(farm);
         await context.SaveChangesAsync();
 
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _loggerMock.Object);
@@ -159,6 +158,20 @@ public class DamageReportCommandHandlerTests
     {
         var context = CreateContext();
         var farmId = Guid.NewGuid();
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            FirstNameAr = "مزارع",
+            FatherNameAr = "اختبار",
+            GrandfatherNameAr = "في",
+            FamilyNameAr = "النظام",
+            IdTypeId = 1,
+            IdNumber = "1"
+        };
+        var farm = new Farm { Id = farmId, FarmerId = farmer.Id };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+
         context.DamageReports.Add(new DamageReport
         {
             Id = Guid.NewGuid(),

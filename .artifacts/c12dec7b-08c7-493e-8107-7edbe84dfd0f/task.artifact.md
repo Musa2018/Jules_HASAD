@@ -4,24 +4,24 @@ Address UAT-004 through UAT-007 to stabilize the foundation for Damage Report im
 
 ## Checklist
 
-- [ ] **Infrastructure & Deployment**
-    - [ ] Create `IdentityUniquenessAudit.sql` deployment script
-    - [ ] Create EF Core migration for Global Identity Uniqueness
-- [ ] **Backend Implementation**
-    - [ ] Update `CreateFarmerCommandHandler` uniqueness check
-    - [ ] Update `UpdateFarmerCommandHandler` uniqueness check
-- [ ] **UI Framework**
-    - [ ] Create reusable `FormSaveFooter` widget
-- [ ] **Mobile Implementation**
-    - [ ] Refactor `FarmerFormNotifier` and `FarmFormNotifier` for error propagation
-    - [ ] Update `OfflineFirstFarmerRepository` uniqueness check
-    - [ ] Adopt `FormSaveFooter` in `FarmerFormScreen`
-    - [ ] Adopt `FormSaveFooter` in `FarmFormScreen`
-- [ ] **Documentation**
-    - [ ] Update `ADR-0017`
-    - [ ] Update `PROJECT_STATUS.md`
-    - [ ] Update `UAT_Farmers_Farms_Hardening.md`
-- [ ] **Verification**
-    - [ ] Run backend tests
-    - [ ] Run mobile tests
-    - [ ] Manual UAT verification
+- [x] **Infrastructure & Deployment**
+    - [x] Create `IdentityUniquenessAudit.sql` deployment script
+    - [x] Create EF Core migration for Global Identity Uniqueness
+- [x] **Backend Implementation**
+    - [x] Update `CreateFarmerCommandHandler` uniqueness check
+    - [x] Update `UpdateFarmerCommandHandler` uniqueness check
+- [x] **UI Framework**
+    - [x] Create reusable `FormSaveFooter` widget
+- [x] **Mobile Implementation**
+    - [x] Refactor `FarmerFormNotifier` and `FarmFormNotifier` for error propagation
+    - [x] Update `OfflineFirstFarmerRepository` uniqueness check
+    - [x] Adopt `FormSaveFooter` in `FarmerFormScreen`
+    - [x] Adopt `FormSaveFooter` in `FarmFormScreen`
+- [x] **Documentation**
+    - [x] Update `ADR-0017`
+    - [x] Update `PROJECT_STATUS.md`
+    - [x] Update `UAT_Farmers_Farms_Hardening.md`
+- [x] **Verification**
+    - [x] Run backend tests
+    - [x] Run mobile tests
+    - [x] Manual UAT verification

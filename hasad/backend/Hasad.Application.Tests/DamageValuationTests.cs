@@ -43,14 +43,14 @@ public class DamageValuationTests
         var costingService = new CostingService(context);
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, costingService, _loggerMock.Object);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid() };
         var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1" };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), FarmerId = farmer.Id };
         var classificationId = 101;
         var costingSheetId = Guid.NewGuid();
         var damageDate = DateTime.UtcNow.Date;
 
-        context.Farms.Add(farm);
         context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
         var version = new CostingSheetVersion
         {
@@ -118,13 +118,13 @@ public class DamageValuationTests
         var costingService = new CostingService(context);
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, costingService, _loggerMock.Object);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid() };
         var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), FarmerId = farmer.Id };
         var classificationId = 101;
         var wrongCostingSheetId = Guid.NewGuid();
 
-        context.Farms.Add(farm);
         context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
         var version = new CostingSheetVersion
         {
@@ -163,14 +163,14 @@ public class DamageValuationTests
         var costingService = new CostingService(context);
         var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, costingService, _loggerMock.Object);
 
-        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid() };
         var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), FarmerId = farmer.Id };
         var classificationId = 101;
         var costingSheetId = Guid.NewGuid();
         var damageDate = DateTime.UtcNow.Date;
 
-        context.Farms.Add(farm);
         context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
         var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
         var version = new CostingSheetVersion
         {

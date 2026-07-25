@@ -215,7 +215,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
                     // الهوية - Partial index to allow reusing ID Number from deleted records
                     entity.Property(f => f.IdNumber).IsRequired().HasMaxLength(20);
-                    entity.HasIndex(f => new { f.IdTypeId, f.IdNumber })
+                    entity.HasIndex(f => f.IdNumber)
                         .IsUnique()
                         .HasFilter("[IsDeleted] = 0");
 

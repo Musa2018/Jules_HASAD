@@ -374,7 +374,7 @@ void main() {
   });
 
   group('Soft Delete', () {
-    test('getFarmers filters out farmers marked as pending delete', () async {
+    test('getFarmers and watchFarmers filter out farmers marked as pending delete', () async {
       when(
         () => mockSyncService.addToQueue(
           localId: any(named: 'localId'),
@@ -409,14 +409,30 @@ void main() {
       await repository.createFarmer(farmer1);
       await repository.createFarmer(farmer2);
 
+      // Verify getFarmers
       var list = await repository.getFarmers();
       expect(list.length, 2);
 
+      // Verify watchFarmers initial
+      final stream = repository.watchFarmers();
+      
+      await expectLater(
+        stream,
+        emits(predicate<List<Farmer>>((l) => l.length == 2)),
+      );
+
       await repository.deleteFarmer('f1');
 
+      // Verify getFarmers after delete
       list = await repository.getFarmers();
       expect(list.length, 1);
       expect(list.first.id, 'f2');
+
+      // Verify watchFarmers after delete
+      await expectLater(
+        stream,
+        emits(predicate<List<Farmer>>((l) => l.length == 1 && l.first.id == 'f2')),
+      );
     });
   });
 }

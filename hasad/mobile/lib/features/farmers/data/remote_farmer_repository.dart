@@ -161,6 +161,9 @@ class RemoteFarmerRepository implements FarmerRepository {
 
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
+    if (e.response?.statusCode == 404) {
+      throw SyncNotFoundException(['NOT FOUND: The record does not exist on the server.']);
+    }
     if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {
       throw SyncValidationException(_errorsFromEnvelope(body));
     }

@@ -268,6 +268,18 @@ class BackgroundSyncService {
           .update(_db.syncQueue)
           .replace(item.copyWith(status: 'completed'));
       await _updateEntitySyncStatus(item.entityType, item.localId, 'completed');
+    } on SyncNotFoundException catch (e) {
+      // For NON-DELETE operations, 404 is an error.
+      // For DELETE, it is handled within the sync method itself to allow cleanup.
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(status: 'failed', lastError: Value(e.toString())),
+      );
+      await _updateEntitySyncStatus(
+        item.entityType,
+        item.localId,
+        'failed',
+        error: e.toString(),
+      );
     } on SyncDependencyException catch (e) {
       // Defer sync: Increase retry count and set back to pending for next loop
       await _db.update(_db.syncQueue).replace(
@@ -445,8 +457,18 @@ class BackgroundSyncService {
 
     if (item.operation == 'delete') {
       final serverId = data['serverId'] ?? data['id'];
+      final clientId = data['clientId'] ?? item.localId;
+
+      _logDeleteAttempt(item, serverId, clientId);
+
       if (serverId != null) {
-        await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        try {
+          await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        } on SyncNotFoundException {
+          DebugLogger.log('DELETE 404 handled: Attachment $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
       return;
@@ -489,9 +511,23 @@ class BackgroundSyncService {
 
     if (item.operation == 'delete') {
       final serverId = data['serverId'] ?? data['id'];
+      final clientId = data['clientId'] ?? item.localId;
+      
+      _logDeleteAttempt(item, serverId, clientId);
+
       if (serverId != null) {
-        await _remoteFarmerRepository.deleteFarmer(serverId.toString());
+        try {
+          await _remoteFarmerRepository.deleteFarmer(serverId.toString());
+        } on SyncNotFoundException {
+          // If we have a serverId and it 404s, it means it's already deleted.
+          DebugLogger.log('DELETE 404 handled: Farmer $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
+      } else {
+        DebugLogger.log('DELETE skipped remote: Farmer $clientId has no serverId.');
       }
+      
       await _hardDeleteLocalEntity(item.entityType, item.localId);
       return;
     }
@@ -529,8 +565,18 @@ class BackgroundSyncService {
 
     if (item.operation == 'delete') {
       final serverId = data['serverId'] ?? data['id'];
+      final clientId = data['clientId'] ?? item.localId;
+
+      _logDeleteAttempt(item, serverId, clientId);
+
       if (serverId != null) {
-        await _remoteFarmRepository.deleteFarm(serverId.toString());
+        try {
+          await _remoteFarmRepository.deleteFarm(serverId.toString());
+        } on SyncNotFoundException {
+          DebugLogger.log('DELETE 404 handled: Farm $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
       return;
@@ -589,8 +635,18 @@ class BackgroundSyncService {
 
     if (item.operation == 'delete') {
       final serverId = data['serverId'] ?? data['id'];
+      final clientId = data['clientId'] ?? item.localId;
+
+      _logDeleteAttempt(item, serverId, clientId);
+
       if (serverId != null) {
-        await _remoteDamageReportRepository.deleteDamageReport(serverId.toString());
+        try {
+          await _remoteDamageReportRepository.deleteDamageReport(serverId.toString());
+        } on SyncNotFoundException {
+          DebugLogger.log('DELETE 404 handled: Damage Report $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
       return;
@@ -727,8 +783,18 @@ class BackgroundSyncService {
 
     if (item.operation == 'delete') {
       final serverId = data['serverId'] ?? data['id'];
+      final clientId = data['clientId'] ?? item.localId;
+
+      _logDeleteAttempt(item, serverId, clientId);
+
       if (serverId != null) {
-        await _remoteDamageReportRepository.deleteDamageItem(serverId.toString());
+        try {
+          await _remoteDamageReportRepository.deleteDamageItem(serverId.toString());
+        } on SyncNotFoundException {
+          DebugLogger.log('DELETE 404 handled: Damage Item $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
       }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
       return;
@@ -1024,5 +1090,15 @@ class BackgroundSyncService {
     final report = await (_db.select(_db.damageReports)..where((t) => t.id.equals(localId))).getSingleOrNull();
     if (report == null) return localId;
     return report.serverId;
+  }
+
+  void _logDeleteAttempt(SyncQueueData item, dynamic serverId, dynamic clientId) {
+    DebugLogger.logHeader('DELETE SYNC ATTEMPT');
+    DebugLogger.log('Operation ID: ${item.id}');
+    DebugLogger.log('Entity Type: ${item.entityType}');
+    DebugLogger.log('Local ID: ${item.localId}');
+    DebugLogger.log('Mapped Server ID: $serverId');
+    DebugLogger.log('Mapped Client ID: $clientId');
+    DebugLogger.logFooter();
   }
 }

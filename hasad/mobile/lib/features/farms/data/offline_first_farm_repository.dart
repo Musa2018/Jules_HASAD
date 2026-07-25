@@ -59,23 +59,26 @@ class OfflineFirstFarmRepository implements FarmRepository {
       leftOuterJoin(ownerFarmer, ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId)),
     ]);
 
+    final List<Expression<bool>> predicates = [];
+    predicates.add(_db.farms.isPendingDelete.equals(false));
+
     // Enforcement of user scope
     if (session != null) {
       final roles = session.roles;
       if (roles.contains('AgriculturalEngineer') || roles.contains('FieldSurveyor')) {
         if (session.directorateId != null) {
-          query.where(_db.farms.directorateId.equals(session.directorateId!));
+          predicates.add(_db.farms.directorateId.equals(session.directorateId!));
         }
       } else if (roles.contains('Director')) {
         if (session.governorateId != null) {
-          query.where(_db.farms.governorateId.equals(session.governorateId!));
+          predicates.add(_db.farms.governorateId.equals(session.governorateId!));
         }
       }
     }
 
     if (filter.searchText.isNotEmpty) {
       final search = '%${filter.searchText}%';
-      query.where(
+      predicates.add(
           _db.farms.localFarmName.like(search) |
           _db.farms.basin.like(search) |
           _db.farms.parcel.like(search) |
@@ -87,25 +90,26 @@ class OfflineFirstFarmRepository implements FarmRepository {
     }
 
     if (filter.syncStatus != null) {
-      query.where(_db.farms.syncStatus.equals(filter.syncStatus!));
+      predicates.add(_db.farms.syncStatus.equals(filter.syncStatus!));
     }
 
     if (filter.governorateId != null) {
-      query.where(_db.farms.governorateId.equals(filter.governorateId!));
+      predicates.add(_db.farms.governorateId.equals(filter.governorateId!));
     }
     if (filter.directorateId != null) {
-      query.where(_db.farms.directorateId.equals(filter.directorateId!));
+      predicates.add(_db.farms.directorateId.equals(filter.directorateId!));
     }
     if (filter.localityId != null) {
-      query.where(_db.farms.localityId.equals(filter.localityId!));
+      predicates.add(_db.farms.localityId.equals(filter.localityId!));
     }
     if (filter.ownershipTypeId != null) {
-      query.where(_db.farms.ownershipTypeId.equals(filter.ownershipTypeId!));
+      predicates.add(_db.farms.ownershipTypeId.equals(filter.ownershipTypeId!));
     }
     if (filter.agriculturalSectorId != null) {
-      query.where(_db.farms.agriculturalSectorId.equals(filter.agriculturalSectorId!));
+      predicates.add(_db.farms.agriculturalSectorId.equals(filter.agriculturalSectorId!));
     }
 
+    query.where(predicates.reduce((a, b) => a & b));
     query.orderBy([OrderingTerm.desc(_db.farms.createdAt)]);
 
     return query.watch().map((rows) {
@@ -115,7 +119,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Stream<domain.Farm?> watchFarm(String id) {
-    return (_db.select(_db.farms)..where((t) => t.id.equals(id)))
+    return (_db.select(_db.farms)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? mapToDomain(e) : null);
   }

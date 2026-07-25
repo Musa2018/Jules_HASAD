@@ -63,14 +63,13 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   Future<void> _checkUniqueness(domain.Farmer farmer) async {
     final query = _db.select(_db.farmers)
       ..where((t) =>
-          t.idTypeId.equals(farmer.idTypeId) &
           t.idNumber.equals(farmer.idNumber) &
           t.isPendingDelete.equals(false) &
           t.id.isNotValue(farmer.id));
     
     final count = await query.get().then((v) => v.length);
     if (count > 0) {
-      throw FarmerException(['A farmer with this ID Number and ID Type already exists and is active.']);
+      throw FarmerException(['A farmer with this ID Number already exists and is active.']);
     }
   }
 
@@ -171,7 +170,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Stream<domain.Farmer?> watchFarmer(String id) {
-    return (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
+    return (_db.select(_db.farmers)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? _mapToDomain(e) : null);
   }
@@ -180,7 +179,6 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   Stream<List<domain.Farmer>> watchFarmers({
     FarmerFilter filter = const FarmerFilter(),
   }) {
-    SimpleSelectStatement<$FarmersTable, FarmerLocal> query;
     
     if (filter.isOperational) {
       // Joining with farms and damage reports to find farmers with damaged farms
@@ -193,10 +191,13 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
         innerJoin(reports, reports.farmId.equalsExp(farms.id)),
       ]);
 
+      final List<Expression<bool>> predicates = [];
+      predicates.add(farmers.isPendingDelete.equals(false));
+
       // Apply standard filters to joined query
       if (filter.searchText.isNotEmpty) {
         final search = '%${filter.searchText}%';
-        joinedQuery.where(
+        predicates.add(
             farmers.firstNameAr.like(search) |
             farmers.familyNameAr.like(search) |
             farmers.idNumber.like(search)
@@ -207,49 +208,58 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       if (_session != null) {
         if (_session!.roles.contains('AgriculturalEngineer') || _session!.roles.contains('FieldSurveyor')) {
           if (_session!.directorateId != null) {
-            joinedQuery.where(farms.directorateId.equals(_session!.directorateId!));
+            predicates.add(farms.directorateId.equals(_session!.directorateId!));
           }
         }
       }
       
+      joinedQuery.where(predicates.reduce((a, b) => a & b));
       joinedQuery.groupBy([farmers.id]);
       joinedQuery.orderBy([OrderingTerm.desc(farmers.createdAt)]);
 
       return joinedQuery.watch().map((rows) => rows.map((row) => _mapToDomain(row.readTable(farmers))).toList());
     }
 
-    query = _db.select(_db.farmers);
+    final query = _db.select(_db.farmers);
+    
+    query.where((t) {
+      final List<Expression<bool>> predicates = [];
+      predicates.add(t.isPendingDelete.equals(false));
 
-    if (filter.searchText.isNotEmpty) {
-      final search = '%${filter.searchText}%';
-      query.where((t) =>
-          t.firstNameAr.like(search) |
-          t.fatherNameAr.like(search) |
-          t.grandfatherNameAr.like(search) |
-          t.familyNameAr.like(search) |
-          t.firstNameEn.like(search) |
-          t.fatherNameEn.like(search) |
-          t.grandfatherNameEn.like(search) |
-          t.familyNameEn.like(search) |
-          t.idNumber.like(search) |
-          t.phoneNumber.like(search));
-    }
+      if (filter.searchText.isNotEmpty) {
+        final search = '%${filter.searchText}%';
+        predicates.add(
+            t.firstNameAr.like(search) |
+            t.fatherNameAr.like(search) |
+            t.grandfatherNameAr.like(search) |
+            t.familyNameAr.like(search) |
+            t.firstNameEn.like(search) |
+            t.fatherNameEn.like(search) |
+            t.grandfatherNameEn.like(search) |
+            t.familyNameEn.like(search) |
+            t.idNumber.like(search) |
+            t.phoneNumber.like(search)
+        );
+      }
 
-    if (filter.gender != null) {
-      query.where((t) => t.gender.equals(filter.gender!.index));
-    }
+      if (filter.gender != null) {
+        predicates.add(t.gender.equals(filter.gender!.index));
+      }
 
-    if (filter.syncStatus != null) {
-      query.where((t) => t.syncStatus.equals(filter.syncStatus!));
-    }
+      if (filter.syncStatus != null) {
+        predicates.add(t.syncStatus.equals(filter.syncStatus!));
+      }
 
-    if (filter.governorateId != null) {
-      query.where((t) => t.governorateId.equals(filter.governorateId!));
-    }
+      if (filter.governorateId != null) {
+        predicates.add(t.governorateId.equals(filter.governorateId!));
+      }
 
-    if (filter.localityId != null) {
-      query.where((t) => t.localityId.equals(filter.localityId!));
-    }
+      if (filter.localityId != null) {
+        predicates.add(t.localityId.equals(filter.localityId!));
+      }
+
+      return predicates.reduce((a, b) => a & b);
+    });
 
     query.orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
 

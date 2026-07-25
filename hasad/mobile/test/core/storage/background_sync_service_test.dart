@@ -805,6 +805,121 @@ void main() {
       expect(queueItems.first.status, 'completed');
     });
 
+    test('processQueue treats DELETE 404 as success and performs local hard delete', () async {
+      const localId = 'delete-404';
+      const serverId = 'remote-404';
+
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              serverId: const Value(serverId),
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('Already Deleted'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+              isPendingDelete: const Value(true),
+            ),
+          );
+
+      await db.into(db.syncQueue).insert(
+            SyncQueueCompanion.insert(
+              id: 'q-delete-404',
+              localId: localId,
+              entityType: 'farmer',
+              operation: 'delete',
+              data: jsonEncode({'id': serverId}),
+            ),
+          );
+
+      when(() => mockConnectivity.checkConnectivity()).thenAnswer(
+        (_) async => [ConnectivityResult.wifi],
+      );
+      // Simulate 404 Not Found
+      when(() => mockFarmerRepo.deleteFarmer(serverId)).thenThrow(
+        SyncNotFoundException(['NOT FOUND']),
+      );
+
+      await syncService.processQueue();
+
+      // Verified hard deleted locally despite 404 (idempotent success)
+      final farmers = await db.select(db.farmers).get();
+      expect(farmers, isEmpty);
+
+      final queueItems = await db.select(db.syncQueue).get();
+      expect(queueItems.first.status, 'completed');
+    });
+
+    test('processQueue does NOT treat 404 as success for non-DELETE operations', () async {
+      const localId = 'update-404';
+      const serverId = 'remote-missing';
+
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              serverId: const Value(serverId),
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('Update Me'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+              rowVersion: const Value('v1'),
+            ),
+          );
+
+      await db.into(db.syncQueue).insert(
+            SyncQueueCompanion.insert(
+              id: 'q-update-404',
+              localId: localId,
+              entityType: 'farmer',
+              operation: 'update',
+              data: jsonEncode({'id': localId, 'serverId': serverId, 'rowVersion': 'v1'}),
+            ),
+          );
+
+      when(() => mockConnectivity.checkConnectivity()).thenAnswer(
+        (_) async => [ConnectivityResult.wifi],
+      );
+      when(() => mockFarmerRepo.updateFarmer(any())).thenThrow(
+        SyncNotFoundException(['NOT FOUND']),
+      );
+
+      await syncService.processQueue();
+
+      // Entity remains in DB as failed
+      final localFarmer = await db.select(db.farmers).getSingle();
+      expect(localFarmer.syncStatus, 'failed');
+
+      final queueItem = await db.select(db.syncQueue).getSingle();
+      expect(queueItem.status, 'failed');
+    });
+
     test('addToQueue removes record immediately when deleting unsynced CREATE', () async {
       const localId = 'cancel-create-1';
 

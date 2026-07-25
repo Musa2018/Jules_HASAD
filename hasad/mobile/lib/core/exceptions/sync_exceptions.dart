@@ -15,6 +15,10 @@ class SyncConflictException extends SyncException {
   SyncConflictException(super.errors);
 }
 
+class SyncNotFoundException extends SyncException {
+  SyncNotFoundException(super.errors);
+}
+
 class SyncDependencyException extends SyncException {
   SyncDependencyException(super.errors);
 }

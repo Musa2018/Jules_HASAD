@@ -36,7 +36,7 @@ final damageReportsListByFarmProvider = FutureProvider.autoDispose
 
 final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
   final db = ref.watch(databaseProvider);
-  return (db.select(db.damageReports)..where((t) => t.id.equals(id)))
+  return (db.select(db.damageReports)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
       .watchSingleOrNull()
       .asyncMap((row) async {
     if (row == null) return null;

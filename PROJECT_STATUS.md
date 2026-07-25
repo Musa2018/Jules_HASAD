@@ -79,8 +79,17 @@ Damage Assessment & Valuation Engine:
     - **Defense-in-Depth**: Implemented multi-layer authorization (UI, Router, Repository) to resolve UAT-001/002 (Unauthorized Farm creation).
     - **Identity Hardening**: Secured the authentication pipeline (Login/Refresh) with mandatory `IsActive` checks to block disabled users (UAT-003).
     - **Gating**: Damage Report assessment implementation is officially gated by UAT approval. Development is blocked by any open **Critical** or **High** UAT issues.
+    - **UAT-Driven Stabilization**: Resolved UAT-004 through UAT-007.
+    - **Identity Hardening**: Enforced Global IdentityNumber uniqueness (excluding soft-deleted records) per ADR-0017.
+    - **Error Propagation**: Refactored providers to preserve and propagate original exception context, resolving "Unexpected Error" issues (UAT-004).
+    - **UX Standardization**: Introduced `FormSaveFooter` as a project-wide standard for sticky actions and live validation feedback (UAT-005/006).
+    - **Deployment Readiness**: Provided `IdentityUniquenessAudit.sql` for pre-migration data verification.
     - **Quality Standards**: Adopted "General UX Principles" as a mandatory standard for all project forms.
-    - **Validation**: Passed all 173 mobile tests and static analysis.
+    - **Stability**: Resolved "Farmer delete synchronization" issue (deadlock on 404).
+    - **Visibility**: Enforced `isPendingDelete` filtering across all reactive streams (`watchFarmers`, `watchFarms`, `watchFarmer`, `watchFarm`).
+    - **Sync Idempotency**: Hardened `BackgroundSyncService` to handle 404 Not Found as success for DELETE operations when a valid `serverId` is present, while preserving 404 as an error for non-delete operations.
+    - **Logging**: Added detailed diagnostic logging for delete synchronization attempts.
+    - **Validation**: Passed all 185 mobile tests and static analysis.
 
 ## Sprint 13.1 — COMPLETED
 

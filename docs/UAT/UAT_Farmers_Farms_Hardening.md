@@ -4,9 +4,74 @@
 
 This User Acceptance Testing (UAT) document serves as the official baseline for validating the **Farmers and Farms Hardening phase**. Successful completion of these scenarios is a mandatory precondition before proceeding to the **Damage Report** workflow implementation. This ensures that the foundation—geographic scoping, authorization, and core entity management—is stable and reliable.
 
+> [!IMPORTANT]
+> **Damage Report implementation is gated.** Development of the assessment items and workflow stages may only begin AFTER this UAT baseline is approved and all **Critical** and **High** issues are resolved.
+
 ---
 
-# 2. Farmer Module Test Scenarios
+# 2. General UX Principles
+
+These principles apply to every current and future form unless explicitly documented otherwise.
+
+- **Sticky Actions:** Save action must always remain visible (sticky) while scrolling.
+- **Consistency:** Save button location must be consistent across all forms.
+- **Visual Feedback:** Validation errors must immediately change the Save button to **RED**.
+- **Workflow Navigation:** Successful save must navigate users to the correct destination defined by the workflow.
+- **Role-Based Visibility:** Unauthorized users must never see actions they cannot execute.
+- **Read-Only Enforcement:** Read-only roles must never see Create/Edit/Delete actions.
+- **Navigation Integrity:** Navigation must never leave users on obsolete intermediate screens.
+- **Parity:** Offline and online behavior must remain identical.
+- **Pre-emptive Validation:** Forms must prevent invalid data before synchronization.
+- **Constraint Alignment:** UI validation must match backend validation rules.
+
+---
+
+# 3. Open Issues From Manual UAT
+
+| UAT ID | Module | Screen | Business Requirement | Current Behavior | Expected Behavior | Severity | Root Cause | Status | Related Commit | Verification Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| | | | | | | | | | | |
+
+## Status Lifecycle Definitions
+- **NOT STARTED**: Issue identified but work has not begun.
+- **IN PROGRESS**: Resolution is currently being implemented.
+- **READY FOR VERIFICATION**: Implementation complete, awaiting manual UAT verification.
+- **VERIFIED**: Manual verification successful.
+- **CLOSED**: Code completed, automated tests passed, manual verification completed, and documentation updated.
+
+---
+
+# 4. UAT Observation History
+
+*Record all manual observations here. Do not delete or overwrite previous entries.*
+
+| Date | Module | Observation | Severity | Status | Proposed Resolution |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| | | | | | |
+
+---
+
+# 5. Regression Impact Assessment
+
+*For every resolved issue, document the potential side effects.*
+
+| UAT ID | Affected Modules | Possible Regression Areas | Tests Executed | Manual Verification Result |
+| :--- | :--- | :--- | :--- | :--- |
+| | | | | |
+
+---
+
+# 6. Architectural Decisions From UAT
+
+*Record all architectural decisions that arise during UAT.*
+
+| ID | Decision | Rationale | Date |
+| :--- | :--- | :--- | :--- |
+| | | | |
+
+---
+
+# 7. Farmer Module Test Scenarios
 
 ## Farmer Creation Navigation
 **Verify:**
@@ -72,7 +137,7 @@ This User Acceptance Testing (UAT) document serves as the official baseline for 
 
 ---
 
-# 3. Farm Module Test Scenarios
+# 8. Farm Module Test Scenarios
 
 ## Create Farm From Farmer Card
 **Verify:**
@@ -104,7 +169,7 @@ This User Acceptance Testing (UAT) document serves as the official baseline for 
 
 ---
 
-# 4. Authorization Matrix
+# 9. Authorization Matrix
 
 | Role | Farmers (CUD) | Farms (CUD) | Read Access |
 | :--- | :---: | :---: | :---: |
@@ -116,7 +181,7 @@ This User Acceptance Testing (UAT) document serves as the official baseline for 
 
 ---
 
-# 5. Damage Report Preparation Preconditions
+# 10. Damage Report Preparation Preconditions
 
 Before implementing the full Damage Report workflow, verify these architectural foundations:
 
@@ -138,7 +203,7 @@ Before implementing the full Damage Report workflow, verify these architectural 
 
 ---
 
-# 6. DamageReport Database Audit Requirement
+# 11. DamageReport Database Audit Requirement
 
 The `DamageReports` table requires a final review before the workflow implementation proceeds.
 
@@ -155,7 +220,7 @@ The `DamageReports` table requires a final review before the workflow implementa
 
 ---
 
-# 7. Offline Sync Verification
+# 12. Offline Sync Verification
 
 **Include verification of:**
 - **Offline Creation:** Records can be created without a network connection.
@@ -166,7 +231,7 @@ The `DamageReports` table requires a final review before the workflow implementa
 
 ---
 
-# 8. Acceptance Criteria
+# 13. Acceptance Criteria
 
 The hardening phase is accepted only when:
 1. All **Critical** UAT scenarios listed above **PASS**.
@@ -176,4 +241,4 @@ The hardening phase is accepted only when:
 5. Offline-to-Online sync lifecycle is verified for core entities.
 
 > [!IMPORTANT]
-> **Damage Report implementation is gated.** Development of the assessment items and workflow stages may only begin AFTER this UAT baseline is approved by the project lead.
+> **Implementation Stop:** Damage Report assessment items and workflow stages MUST NOT be implemented while any **Critical** or **High** UAT issues are unresolved.

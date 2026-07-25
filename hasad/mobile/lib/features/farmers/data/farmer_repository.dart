@@ -6,6 +6,7 @@ import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/farmer_validator.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:uuid/uuid.dart';
@@ -390,6 +391,22 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     final local = await (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     if (local == null) return;
+
+    // Integrity check: Farmer cannot be deleted if linked to any local Farm
+    final hasFarms = await (_db.select(_db.farms)
+          ..where((t) => Expression.and([
+            Expression.or([
+              t.farmerId.equals(id),
+              t.ownerFarmerId.equals(id),
+            ]),
+            t.isPendingDelete.equals(false),
+          ]))
+          ..limit(1))
+        .getSingleOrNull() != null;
+
+    if (hasFarms) {
+      throw FarmerHasDependenciesException(['Cannot delete farmer because they have linked farms.']);
+    }
 
     await (_db.update(_db.farmers)..where((t) => t.id.equals(id))).write(
       const FarmersCompanion(

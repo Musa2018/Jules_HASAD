@@ -1,14 +1,17 @@
-# Task - UAT Document Evolution & Gating
+# Task - Authorization & Authentication Hardening (UAT-002 & UAT-003)
 
-- [x] Update `docs/UAT/UAT_Farmers_Farms_Hardening.md` with new sections
-    - [x] Add General UX Principles
-    - [x] Add Open Issues From Manual UAT
-    - [x] Add UAT Observation History
-    - [x] Add Architectural Decisions From UAT
-    - [x] Add Regression Impact Assessment
-    - [x] Add Status Lifecycle definition
-- [x] Update `PROJECT_STATUS.md` to reflect UAT gating and workflow
-- [x] Verify changes
-    - [x] `flutter analyze`
-    - [x] `flutter test`
-- [x] Commit changes
+- [ ] Implement UI Guards for Farm Creation Leak (UAT-002)
+    - [ ] Update `FarmsListScreen` to hide FAB for unauthorized users
+- [ ] Implement Backend Security for Disabled Users (UAT-003)
+    - [ ] Update `LoginCommandHandler.cs` with `IsActive` check
+    - [ ] Update `RefreshTokenCommandHandler.cs` with `IsActive` check
+- [ ] Automated Regression Testing
+    - [ ] Add `farms_list_authorization_test.dart`
+    - [ ] Update/Add backend tests for `IsActive` scenarios
+- [ ] Documentation & UAT Updates
+    - [ ] Update `UAT_Farmers_Farms_Hardening.md`
+    - [ ] Update `PROJECT_STATUS.md`
+- [ ] Final Verification
+    - [ ] `flutter analyze` & `flutter test`
+    - [ ] `dotnet test`
+- [ ] Commit changes

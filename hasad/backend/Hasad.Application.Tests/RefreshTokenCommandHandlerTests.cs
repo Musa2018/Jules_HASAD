@@ -60,6 +60,25 @@ public class RefreshTokenCommandHandlerTests
     }
 
     [Fact]
+    public async Task DisabledUser_ReturnsFailure()
+    {
+        var disabledUser = new ApplicationUser
+        {
+            Id = "disabled-1",
+            Email = "disabled@hasad.ps",
+            IsActive = false
+        };
+        _refreshTokenStore.ValidateAndRotateAsync("good", Arg.Any<CancellationToken>())
+            .Returns(new RefreshTokenRotationResult(true, disabledUser.Id, "new-refresh"));
+        _userManager.FindByIdAsync(disabledUser.Id).Returns(disabledUser);
+
+        var result = await _handler.Handle(new RefreshTokenCommand("good"), CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("disabled", result.Errors[0], StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task LockedOutUser_ReturnsFailure()
     {
         _refreshTokenStore.ValidateAndRotateAsync("good", Arg.Any<CancellationToken>())

@@ -76,9 +76,11 @@ Damage Assessment & Valuation Engine:
     - **Operational View**: Added default Directorate-based filtering for operational roles in the Farmers list.
     - **Audit**: Completed a comprehensive `DamageReport` entity audit to identify obsolete fields and terminology misalignments.
     - **UAT Baseline**: Established official [UAT Baseline](docs/UAT/UAT_Farmers_Farms_Hardening.md) for Farmer and Farm hardening.
+    - **Defense-in-Depth**: Implemented multi-layer authorization (UI, Router, Repository) to resolve UAT-001/002 (Unauthorized Farm creation).
+    - **Identity Hardening**: Secured the authentication pipeline (Login/Refresh) with mandatory `IsActive` checks to block disabled users (UAT-003).
     - **Gating**: Damage Report assessment implementation is officially gated by UAT approval. Development is blocked by any open **Critical** or **High** UAT issues.
     - **Quality Standards**: Adopted "General UX Principles" as a mandatory standard for all project forms.
-    - **Validation**: Passed all 161 mobile tests and static analysis.
+    - **Validation**: Passed all 173 mobile tests and static analysis.
 
 ## Sprint 13.1 — COMPLETED
 

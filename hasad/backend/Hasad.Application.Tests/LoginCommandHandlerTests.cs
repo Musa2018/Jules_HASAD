@@ -72,6 +72,25 @@ public class LoginCommandHandlerTests
     }
 
     [Fact]
+    public async Task DisabledUser_ReturnsFailure()
+    {
+        var disabledUser = new ApplicationUser
+        {
+            Id = "disabled-1",
+            Email = "disabled@hasad.ps",
+            IsActive = false
+        };
+        _userManager.FindByEmailAsync(disabledUser.Email!).Returns(disabledUser);
+        _userManager.IsLockedOutAsync(disabledUser).Returns(false);
+        _userManager.CheckPasswordAsync(disabledUser, "correct").Returns(true);
+
+        var result = await _handler.Handle(new LoginCommand(disabledUser.Email!, "correct"), CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("disabled", result.Errors[0], StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task ValidCredentials_ReturnsAccessAndRefreshTokens()
     {
         _userManager.FindByEmailAsync(User.Email!).Returns(User);

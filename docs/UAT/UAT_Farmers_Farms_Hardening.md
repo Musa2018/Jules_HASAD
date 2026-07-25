@@ -28,7 +28,9 @@ These principles apply to every current and future form unless explicitly docume
 
 | UAT ID | Module | Screen | Business Requirement | Current Behavior | Expected Behavior | Severity | Root Cause | Status | Related Commit | Verification Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| UAT-001 | Farmers / Farms Authorization | Farmer Card | Non-authorized roles must have Read Only access. Users without farm creation permission must not see actions that open create workflows. | TechnicalReviewer can see and click "Farm" button to open Add Farm form. | "Add Farm" action must not be visible for roles without farm creation permission. | High | Missing authorization guard in FarmerCard actions and route. | CLOSED | [f3254cd](https://github.com/musa/Jules_HASAD/commit/f3254cd) | VERIFIED |
+| UAT-001 | Farmers / Farms Authorization | Farmer Card | Non-authorized roles must have Read Only access. Users without farm creation permission must not see actions that open create workflows. | TechnicalReviewer can see and click "Farm" button to open Add Farm form. | "Add Farm" action must not be visible for roles without farm creation permission. | High | Missing authorization guard in FarmerCard actions and route. | CLOSED | [7dedea3](https://github.com/musa/Jules_HASAD/commit/7dedea3) | VERIFIED |
+| UAT-002 | Farms Authorization | Farms List | Mutation entry points must be hidden for read-only users. | TechnicalReviewer can see and click FAB (+) on Farms list when coming from Farmer Details. | FAB must be hidden for users without farm creation permission. | High | Missing authorization guard on FAB in FarmsListScreen. | CLOSED | [7dedea3](https://github.com/musa/Jules_HASAD/commit/7dedea3) | VERIFIED |
+| UAT-003 | Authentication | Login / Refresh | Disabled users must not obtain a valid authenticated session. | Disabled users (IsActive=false) can login and refresh tokens successfully. | Login and Refresh must fail for disabled users. | Critical | Missing IsActive check in backend command handlers. | CLOSED | [7dedea3](https://github.com/musa/Jules_HASAD/commit/7dedea3) | VERIFIED |
 
 ## Status Lifecycle Definitions
 - **NOT STARTED**: Issue identified but work has not begun.
@@ -46,6 +48,8 @@ These principles apply to every current and future form unless explicitly docume
 | Date | Module | Observation | Severity | Status | Proposed Resolution |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 2026-07-25 | Authorization | TechnicalReviewer can see and access "Add Farm" from Farmer Card. | High | RESOLVED | Implement visibility guards and navigation protection. |
+| 2026-07-25 | Authorization | TechnicalReviewer can see and access FAB (+) from Farms List when navigating from details. | High | RESOLVED | Guard FAB with AuthorizationService. |
+| 2026-07-25 | Authentication | Disabled users can login and refresh tokens. | Critical | RESOLVED | Implement IsActive check in backend handlers. |
 
 ---
 
@@ -56,6 +60,8 @@ These principles apply to every current and future form unless explicitly docume
 | UAT ID | Affected Modules | Possible Regression Areas | Tests Executed | Manual Verification Result |
 | :--- | :--- | :--- | :--- | :--- |
 | UAT-001 | Farmers, Farms, Auth, Router | Authorized users (Engineer/Admin) might lose access if service logic is wrong. | authorization_service_test, farmer_card_authorization_uat_test, farm_repository_authorization_test | PASS |
+| UAT-002 | Farms | FAB hidden for everyone if permission check is inverted. | farms_list_authorization_test | PASS |
+| UAT-003 | Authentication | Legitimate active users might be blocked if IsActive is not set/defaulted correctly. | LoginCommandHandlerTests, RefreshTokenCommandHandlerTests | PASS |
 
 ---
 

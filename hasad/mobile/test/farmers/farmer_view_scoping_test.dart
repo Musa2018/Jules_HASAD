@@ -7,9 +7,7 @@ import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
-import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class MockSyncService extends Mock implements BackgroundSyncService {}

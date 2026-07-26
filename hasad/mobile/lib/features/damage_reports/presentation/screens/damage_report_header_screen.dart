@@ -43,6 +43,10 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
     _damageDate = DateTime.now();
     _documentationDate = DateTime.now();
     _notesController = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeLookup();
+    });
   }
 
   @override
@@ -128,7 +132,6 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
 
   @override
   Widget build(BuildContext context) {
-    _initializeLookup();
     final state = ref.watch(damageReportFormProvider);
     final causeState = ref.watch(damageCauseWizardProvider);
     final l10n = AppLocalizations.of(context)!;
@@ -269,7 +272,7 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
     final refDataAsync = ref.watch(referenceDataProvider);
     return refDataAsync.when(
       data: (data) => DropdownButtonFormField<AgriculturalSector>(
-        value: _selectedSector,
+        initialValue: _selectedSector,
         decoration: InputDecoration(
             labelText: l10n.agriculturalSector, border: const OutlineInputBorder()),
         items: data.agriculturalSectors

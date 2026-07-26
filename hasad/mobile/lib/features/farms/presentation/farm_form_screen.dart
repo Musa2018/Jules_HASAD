@@ -1,4 +1,5 @@
 // ignore_for_file: deprecated_member_use_from_same_package
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -330,9 +331,17 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
                     enabled: _selectedDirectorateId != null,
                     onChanged: (v) => setState(() => _selectedLocalityId = v?.id),
                     validator: (v) => v == null ? l10n.requiredField : null,
+                    errorText: (items.isEmpty && _selectedDirectorateId != null) ? l10n.noData : null,
                   ),
                   loading: () => const LinearProgressIndicator(),
-                  error: (e, _) => Text(e.toString()),
+                  error: (e, _) => SearchableLookupField<Locality>(
+                    label: l10n.locality,
+                    items: const [],
+                    itemLabel: (_) => '',
+                    onChanged: (_) {},
+                    enabled: false,
+                    errorText: l10n.noData,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 _buildGisSection(l10n),
@@ -597,15 +606,34 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
         return;
       }
 
+      // 1. Try last known position first (fast and safe)
+      final lastKnown = await Geolocator.getLastKnownPosition();
+      if (lastKnown != null && mounted) {
+        setState(() {
+          _latController.text = lastKnown.latitude.toStringAsFixed(6);
+          _lonController.text = lastKnown.longitude.toStringAsFixed(6);
+        });
+      }
+
+      // 2. Request fresh position with strict timeout to avoid ANR
+      // Use LocationAccuracy.medium for better compatibility on emulators
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
+        desiredAccuracy: LocationAccuracy.medium, 
+        timeLimit: const Duration(seconds: 25),
       );
       
-      setState(() {
-        _latController.text = position.latitude.toStringAsFixed(6);
-        _lonController.text = position.longitude.toStringAsFixed(6);
-      });
+      if (mounted) {
+        setState(() {
+          _latController.text = position.latitude.toStringAsFixed(6);
+          _lonController.text = position.longitude.toStringAsFixed(6);
+        });
+      }
+    } on TimeoutException catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location request timed out. Using last known position if available.')),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -11,6 +11,7 @@ final locationRepositoryProvider = Provider<LocationRepository>((ref) {
   return OfflineFirstLocationRepository(
     ref.watch(databaseProvider),
     LocationRepositoryImpl(ref.watch(apiDioProvider)),
+    ref.watch(connectivityProvider),
   );
 });
 

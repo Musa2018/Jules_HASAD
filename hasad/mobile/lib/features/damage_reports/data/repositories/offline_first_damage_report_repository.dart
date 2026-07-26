@@ -26,10 +26,10 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
     // Regional scoping based on session
     if (_session != null) {
-      if (_session!.directorateId != null && _session!.directorateId!.isNotEmpty) {
-        query.where((t) => t.directorateId.equals(_session!.directorateId!));
-      } else if (_session!.governorateId != null && _session!.governorateId!.isNotEmpty) {
-        query.where((t) => t.governorateId.equals(_session!.governorateId!));
+      if (_session.directorateId != null && _session.directorateId!.isNotEmpty) {
+        query.where((t) => t.directorateId.equals(_session.directorateId!));
+      } else if (_session.governorateId != null && _session.governorateId!.isNotEmpty) {
+        query.where((t) => t.governorateId.equals(_session.governorateId!));
       }
     }
 

@@ -36,9 +36,9 @@ public class LocationController : ControllerBase
     }
 
     [HttpGet("localities")]
-    public async Task<IActionResult> GetLocalities([FromQuery] Guid? governorateId)
+    public async Task<IActionResult> GetLocalities([FromQuery] Guid? governorateId, [FromQuery] Guid? directorateId)
     {
-        var result = await _mediator.Send(new GetLocalitiesQuery(governorateId));
+        var result = await _mediator.Send(new GetLocalitiesQuery(governorateId, directorateId));
         return Ok(result);
     }
 }

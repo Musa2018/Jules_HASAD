@@ -126,7 +126,6 @@ class _DamageReportFormScreenState
   Widget _buildReportNumberHeader(DamageReport report, AppLocalizations l10n) {
     final number = report.reportNumber.isNotEmpty ? report.reportNumber : 
                    (report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber);
-    final isSynced = report.syncStatus == 'completed';
     
     Color statusColor = Colors.grey;
     String statusLabel = report.syncStatus;
@@ -153,9 +152,9 @@ class _DamageReportFormScreenState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: statusColor.withOpacity(0.05),
+        color: statusColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: statusColor.withOpacity(0.3)),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [

@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
@@ -106,15 +107,15 @@ void main() {
     await db.close();
   });
 
-  test('Scenario 1: All View returns all farmers in user governorate', () async {
+  test('Scenario 1: All View returns latest farmers regardless of governorate', () async {
     final farmers = await repository.watchFarmers(
       filter: const FarmerFilter(isOperational: false),
     ).first;
 
-    expect(farmers.length, 2);
+    expect(farmers.length, 3);
     expect(farmers.any((f) => f.id == 'farmer-1'), true);
     expect(farmers.any((f) => f.id == 'farmer-2'), true);
-    expect(farmers.any((f) => f.id == 'farmer-3'), false); // Different gov
+    expect(farmers.any((f) => f.id == 'farmer-3'), true); // Now visible in All View
   });
 
   test('Scenario 2: Operational View returns only farmers with farms in user directorate', () async {
@@ -140,6 +141,6 @@ void main() {
     final allFarmers = await repository.watchFarmers(
       filter: const FarmerFilter(isOperational: false),
     ).first;
-    expect(allFarmers.length, 2);
+    expect(allFarmers.length, 3);
   });
 }

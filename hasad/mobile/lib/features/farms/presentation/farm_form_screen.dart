@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile/core/presentation/widgets/form_save_footer.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
@@ -53,16 +56,17 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
   bool _isDirReadOnly = false;
 
   Farmer? _resolvedFarmer;
+  bool _isFormValid = true;
 
   @override
   void initState() {
     super.initState();
     final f = widget.farm;
-    _nameController = TextEditingController(text: f?.localFarmName);
-    _basinController = TextEditingController(text: f?.basin);
-    _parcelController = TextEditingController(text: f?.parcel);
-    _areaController = TextEditingController(text: f?.area.toString() ?? '');
-    _notesController = TextEditingController(text: f?.notes);
+    _nameController = TextEditingController(text: f?.localFarmName)..addListener(_updateValidationState);
+    _basinController = TextEditingController(text: f?.basin)..addListener(_updateValidationState);
+    _parcelController = TextEditingController(text: f?.parcel)..addListener(_updateValidationState);
+    _areaController = TextEditingController(text: f?.area.toString() ?? '')..addListener(_updateValidationState);
+    _notesController = TextEditingController(text: f?.notes)..addListener(_updateValidationState);
 
     _selectedGovernorateId = f?.governorateId;
     _selectedDirectorateId = f?.directorateId;
@@ -137,6 +141,14 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     } catch (_) {}
   }
 
+  void _updateValidationState() {
+    if (_formKey.currentState == null) return;
+    final isValid = _formKey.currentState!.validate();
+    if (isValid != _isFormValid) {
+      setState(() => _isFormValid = isValid);
+    }
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -148,7 +160,10 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      setState(() => _isFormValid = false);
+      return;
+    }
     if (_resolvedFarmer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Operator farmer not loaded.')),
@@ -171,6 +186,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       parcel: _parcelController.text.trim(),
       area: double.tryParse(_areaController.text) ?? 0,
       areaUnitId: _selectedAreaUnitId ?? 1,
+      measurementUnitId: _selectedAreaUnitId,
       agriculturalSectorId: _selectedAgriculturalSectorId ?? 1,
       politicalClassificationId: _selectedPoliticalClassificationId ?? 1,
       notes: _notesController.text.trim(),
@@ -185,8 +201,15 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     }
 
     if (mounted && ref.read(farmFormProvider).success) {
+      final result = ref.read(farmFormProvider).farm;
       ref.invalidate(farmsListByFarmerProvider(_resolvedFarmer!.id));
-      Navigator.of(context).pop();
+      
+      if (widget.farm == null && result != null) {
+        context.replace(AppRoutes.farmDetails, extra: result);
+      } else {
+        Navigator.of(context).pop();
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -352,7 +375,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
                       flex: 3,
                       child: areaUnitsAsync.when(
                         data: (items) => SearchableLookupField<AreaUnit>(
-                          label: l10n.unit,
+                          label: l10n.measurementUnit,
                           items: items,
                           itemLabel: (i) => isAr ? i.nameAr : i.nameEn,
                           value: items.where((i) => i.id == _selectedAreaUnitId).firstOrNull,
@@ -440,17 +463,14 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
               ]),
 
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: state.isLoading ? null : _save,
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16)),
-                child: state.isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(l10n.save, style: const TextStyle(fontSize: 18)),
-              ),
-              const SizedBox(height: 32),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: FormSaveFooter(
+        isLoading: state.isLoading,
+        isValid: _isFormValid,
+        onSave: _save,
       ),
     );
   }
@@ -467,7 +487,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       actionLabel: l10n.addNewFarmerAction,
       onAction: () async {
         final result = await Navigator.of(context).push<Farmer>(
-          MaterialPageRoute(builder: (context) => const FarmerFormScreen()),
+          MaterialPageRoute(builder: (context) => const FarmerFormScreen(isSubWorkflow: true)),
         );
         if (result != null) {
           setState(() {

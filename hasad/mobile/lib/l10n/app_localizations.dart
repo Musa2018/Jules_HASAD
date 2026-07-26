@@ -314,6 +314,12 @@ abstract class AppLocalizations {
   /// **'Pending Delete'**
   String get pendingDelete;
 
+  /// No description provided for @deleteRestrictedError.
+  ///
+  /// In en, this message translates to:
+  /// **'This record cannot be deleted because it is linked to other data.'**
+  String get deleteRestrictedError;
+
   /// No description provided for @noFarmers.
   ///
   /// In en, this message translates to:
@@ -644,6 +650,78 @@ abstract class AppLocalizations {
   /// **'Land Area'**
   String get landArea;
 
+  /// No description provided for @measurementUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement Unit'**
+  String get measurementUnit;
+
+  /// No description provided for @unitCategory_Area.
+  ///
+  /// In en, this message translates to:
+  /// **'Area'**
+  String get unitCategory_Area;
+
+  /// No description provided for @unitCategory_Weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get unitCategory_Weight;
+
+  /// No description provided for @unitCategory_Count.
+  ///
+  /// In en, this message translates to:
+  /// **'Count'**
+  String get unitCategory_Count;
+
+  /// No description provided for @unitCategory_Volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get unitCategory_Volume;
+
+  /// No description provided for @assessmentItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment Item'**
+  String get assessmentItem;
+
+  /// No description provided for @quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get quantity;
+
+  /// No description provided for @damagePercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Percentage (%)'**
+  String get damagePercentage;
+
+  /// No description provided for @affectedAreaOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Affected Area (Optional)'**
+  String get affectedAreaOptional;
+
+  /// No description provided for @unitPriceSnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Price (Snapshot)'**
+  String get unitPriceSnapshot;
+
+  /// No description provided for @pricingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing not found. Please contact support or sync reference data.'**
+  String get pricingNotFound;
+
+  /// No description provided for @technicalValuation.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Valuation:'**
+  String get technicalValuation;
+
   /// No description provided for @unit.
   ///
   /// In en, this message translates to:
@@ -764,11 +842,11 @@ abstract class AppLocalizations {
   /// **'Enter your email address and we\'ll send you a link to reset your password.'**
   String get enterEmailToReset;
 
-  /// No description provided for @compensation.
+  /// No description provided for @agriculturalAssistance.
   ///
   /// In en, this message translates to:
-  /// **'Compensation'**
-  String get compensation;
+  /// **'Agricultural Assistance'**
+  String get agriculturalAssistance;
 
   /// No description provided for @calculatedAmount.
   ///
@@ -794,11 +872,11 @@ abstract class AppLocalizations {
   /// **'Status'**
   String get status;
 
-  /// No description provided for @calculateCompensation.
+  /// No description provided for @calculateAssistance.
   ///
   /// In en, this message translates to:
-  /// **'Calculate Compensation'**
-  String get calculateCompensation;
+  /// **'Calculate Assistance'**
+  String get calculateAssistance;
 
   /// No description provided for @approve.
   ///
@@ -812,11 +890,11 @@ abstract class AppLocalizations {
   /// **'Paid'**
   String get paid;
 
-  /// No description provided for @noCompensation.
+  /// No description provided for @noAssistance.
   ///
   /// In en, this message translates to:
-  /// **'No compensation calculated yet.'**
-  String get noCompensation;
+  /// **'No agricultural assistance calculated yet.'**
+  String get noAssistance;
 
   /// No description provided for @userManagement.
   ///
@@ -919,6 +997,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Directorate'**
   String get directorate;
+
+  /// No description provided for @status_Draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get status_Draft;
+
+  /// No description provided for @status_TechReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Review'**
+  String get status_TechReview;
+
+  /// No description provided for @status_ArchiveDir.
+  ///
+  /// In en, this message translates to:
+  /// **'Directorate Archive'**
+  String get status_ArchiveDir;
+
+  /// No description provided for @status_DirManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Directorate Manager'**
+  String get status_DirManager;
+
+  /// No description provided for @status_MinTechReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Ministry Technical Review'**
+  String get status_MinTechReview;
+
+  /// No description provided for @status_LegalReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Review'**
+  String get status_LegalReview;
+
+  /// No description provided for @status_ProcReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Procedural Review'**
+  String get status_ProcReview;
+
+  /// No description provided for @status_MinArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Ministry Archive'**
+  String get status_MinArchive;
+
+  /// No description provided for @status_GenManager.
+  ///
+  /// In en, this message translates to:
+  /// **'General Manager'**
+  String get status_GenManager;
+
+  /// No description provided for @status_Completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get status_Completed;
+
+  /// No description provided for @operationalView.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational View'**
+  String get operationalView;
 }
 
 class _AppLocalizationsDelegate

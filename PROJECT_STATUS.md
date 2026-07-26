@@ -2,10 +2,117 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.10.2-alpha (Domain Hardened)
-- **Current Sprint**: Sprint 11.17 — Domain Integrity Hardening
-- **Current Branch**: `Farms`
-- **Last Updated**: 2026-07-23
+- **Current Version**: v0.14.0-alpha (Contract Synchronization)
+- **Current Sprint**: Phase 4 — DamageReport Sprint 14.x Synchronization
+- **Current Branch**: `DamageReport`
+- **Last Updated**: 2026-07-24
+- **Latest Commit**: `15e42d7`
+
+## Sprint 13.2 — IN PROGRESS
+Damage Assessment & Valuation Engine:
+- **Phase 1 (Completed)**: Backend Valuation Guards.
+    - Implemented `ICostingService` for authoritative price resolution.
+    - Hardened `CreateDamageReport` and `UpdateDamageItem` handlers to recalculate technical loss.
+    - Added valuation mismatch auditing via server logs.
+- **Phase 2A (Completed)**: Pricing Catalog Backend Implementation.
+    - Implemented `CostingSheetCatalog`, `CostingSheetVersion`, and `CostingSheetItem` hierarchy.
+    - Consolidated `AreaUnit` into a universal `MeasurementUnit` entity.
+    - Implemented Data Preservation migration for existing pricing and snapshots.
+    - Refactored all backend commands and tests to align with the new architecture.
+    - Maintained backward compatibility for existing offline mobile payloads.
+- **Phase 2B (Completed)**: Flutter Domain & Repository Migration.
+    - Upgraded Drift schema to v16 with hierarchical pricing support.
+    - Refactored domain models (`DamageItem`, `Farm`, `ReferenceData`) to align with the new architecture.
+    - Updated `OfflineFirstReferenceDataRepository` to resolve the `Active` pricing version via database joins.
+    - Implemented legacy pricing compatibility wrapper for unsynced offline data.
+    - **Hardening**: Implemented safe multi-step migration for `directorate_id` in `DamageReport` to prevent schema migration failures on existing data while maintaining authorization integrity.
+    - **Validation**: Completed Production Readiness Gate with 115 backend and 25 critical sync tests passing (including v15 backfill verification).
+- **Phase 2C (Completed)**: Flutter Client Terminology Update.
+    - Aligned UI terminology with universal `MeasurementUnit` domain model.
+    - Updated localization (Ar/En) for "Measurement Unit" and unit categories (Area, Weight, Count, Volume).
+    - Hardened `DamageItemFormSheet` to dynamically resolve measurement units from costing snapshots.
+    - Verified full backward compatibility for legacy `areaUnitId` and `costingSheetId` fields.
+    - Passed all 152 mobile tests and static analysis.
+- **Roadmap Review (Completed)**: Post Sprint 13.2 Architecture Gate.
+    - Performed comprehensive DamageReport Roadmap Review.
+    - Defined "Evidence Lifecycle" (Captured -> Uploaded -> Validated -> Locked -> Archived).
+    - Analyzed "Assistance Integration" requirements.
+    - Verified sync impact for locking and metadata.
+- **Phase 3 (Completed)**: DamageReport Form Completion & Lifecycle Correction.
+    - **Header Workflow**: Refactored creation into two phases: Header Save (Step 1) -> Assessment (Step 2).
+    - **Official Numbering**: Implemented Palestinian numbering convention `{Gov}-{Dir}-{Year}-{Seq}` per ADR-0014.
+    - **Duplicate Prevention**: Hardened creation logic to detect and open existing reports for same Farm/Date.
+    - **Domain Correction**: Moved Damage Nature from Report level to Item level to allow multi-nature incidents within a single report.
+    - **Damage Action**: Introduced Damage Action lookup (Burning, Breaking, Theft, etc.) per assessment item.
+- **Sprint 14.2.1 — COMPLETED**
+    - **Database Migration**: Applied missing EF Core migrations for `Directorate.Code`, `DamageReport.ReportNumber`, and `DamageReportSequence`.
+    - **Business Codes**: Corrected `Governorate.Code` and `Directorate.Code` to use approved human-readable abbreviations (e.g., NBL, NAB, JEN) for official numbering.
+    - **Flutter Drift**: Verified schema v17 migration with backfill logic and automated tests.
+    - **Data Integrity**: Hardened duplicate prevention with unique constraints on `FarmId` + `DamageDate`.
+- **Sprint 14.2.2 — COMPLETED**
+    - **Header-First Lifecycle**: Refined the creation workflow to officially register reports and generate official numbering upon Header save.
+    - **Entity Refinement**: Eliminated redundant fields (`FarmerId`, `GovernorateId`, etc.) from the `DamageReport` entity, establishing `Farm` as the single source of truth for geography and ownership.
+    - **Workflow Foundation**: Set the initial status of new reports to `PendingTechnicalVerification`.
+    - **Safe Migrations**: Implemented EF Core and Drift (v18) migrations to align schemas with the refined entity principle.
+- **Sprint 14.2.3 — COMPLETED**
+    - **Safe Seeding**: Made `DbInitializer.SeedDamageReferenceDataAsync` concurrency-safe using SQL Server application locks (`sp_getapplock`).
+    - **Idempotency**: Refactored seeding logic to be fully idempotent, checking for individual records before insertion and preserving existing IDs.
+    - **Ownership Consolidation**: Established `DbInitializer` as the single owner of Damage Reference Data (ADR-0016), removing duplicate `HasData` definitions from `ApplicationDbContext`.
+    - **Migration Hardening**: Audited and cleaned `TerminologyAudit` migration to remove duplicate `InsertData` operations, ensuring safe upgrades for existing databases.
+    - **Verification**: Successfully validated architecture against existing database upgrade, fresh installation, and concurrent execution scenarios.
+    - **Test Coverage**: Added comprehensive idempotency and partial-seeding tests to `DbInitializerTests`.
+- **Phase 4 (Completed)**: DamageReport Sprint 14.x Synchronization.
+    - **Contract Alignment**: Synchronized `DamageReport` domain model and DTOs with backend Sprint 14.x architecture.
+    - **Denormalization**: Restored `FarmerId`, `GovernorateId`, `DirectorateId`, `LocalityId`, `DamageYear`, `Latitude`, and `Longitude` to the `DamageReport` entity for improved offline visibility and summary reporting, matching the backend DTO contract.
+    - **Terminology**: Aligned UI and tests with "Agricultural Sector" terminology.
+    - **Drift Schema v21**: Upgraded database schema to v21 with automated backfill logic from the `Farms` table to preserve geographic integrity for existing reports.
+    - **Reference Data**: Implemented `getActions()` in `ReferenceDataRepository` to support hierarchical assessment steps (Nature -> Action -> Category).
+    - **Validation**: Passed all 157 mobile tests and static analysis.
+- **Hardening Phase (Completed)**: Farmer & Farm Module Hardening.
+    - **Authorization**: Introduced `AuthorizationService` for permission-oriented guards, hiding creation/modification actions for `FieldSurveyor` and `TechnicalReviewer` roles.
+    - **Identity Uniqueness**: Implemented local repository-level validation for `IdentityTypeId + IdentityNumber` uniqueness (excluding soft-deleted records) to minimize sync failures.
+    - **Navigation**: Optimized workflows to return to root lists after creation and navigate directly to details after farm creation.
+    - **UX Improvement**: Implemented persistent Save button in Farmer form with visual validation feedback (Red on error).
+    - **Operational View**: Added default Directorate-based filtering for operational roles in the Farmers list.
+    - **Audit**: Completed a comprehensive `DamageReport` entity audit to identify obsolete fields and terminology misalignments.
+    - **UAT Baseline**: Established official [UAT Baseline](docs/UAT/UAT_Farmers_Farms_Hardening.md) for Farmer and Farm hardening.
+    - **Defense-in-Depth**: Implemented multi-layer authorization (UI, Router, Repository) to resolve UAT-001/002 (Unauthorized Farm creation).
+    - **Identity Hardening**: Secured the authentication pipeline (Login/Refresh) with mandatory `IsActive` checks to block disabled users (UAT-003).
+    - **Gating**: Damage Report assessment implementation is officially gated by UAT approval. Development is blocked by any open **Critical** or **High** UAT issues.
+    - **UAT-Driven Stabilization**: Resolved UAT-004 through UAT-007.
+    - **Identity Hardening**: Enforced Global IdentityNumber uniqueness (excluding soft-deleted records) per ADR-0017.
+    - **Error Propagation**: Refactored providers to preserve and propagate original exception context, resolving "Unexpected Error" issues (UAT-004).
+    - **UX Standardization**: Introduced `FormSaveFooter` as a project-wide standard for sticky actions and live validation feedback (UAT-005/006).
+    - **Deployment Readiness**: Provided `IdentityUniquenessAudit.sql` for pre-migration data verification.
+    - **Quality Standards**: Adopted "General UX Principles" as a mandatory standard for all project forms.
+    - **Stability**: Resolved "Farmer delete synchronization" issue (deadlock on 404).
+    - **Visibility**: Enforced `isPendingDelete` filtering across all reactive streams (`watchFarmers`, `watchFarms`, `watchFarmer`, `watchFarm`).
+    - **Business Rules**: Enforced "No deletion if linked farms exist" across all layers (Mobile Repository, Sync Engine, Backend).
+    - **Sync Idempotency**: Hardened `BackgroundSyncService` to handle 404 Not Found as success for DELETE operations when a valid `serverId` is present, while preserving 404 as an error for non-delete operations.
+    - **Conflict Handling**: Implemented structured error codes (e.g., `FARMER_HAS_DEPENDENCIES`) for 409 Conflict responses, ensuring sync engine restores visibility of records that cannot be deleted.
+    - **Logging**: Added detailed diagnostic logging for delete synchronization attempts.
+    - **Validation**: Passed all 185 mobile tests and static analysis.
+
+## Sprint 13.1 — COMPLETED
+
+## Sprint 12.3 — COMPLETED
+Hierarchical Classification UI:
+- **Cascading Selector**: Implemented a 4-step wizard for selecting Damage Nature, Category, SubCategory, and Classification.
+- **Price Snapshot Engine**: Automated resolution of active Costing Sheets with immutable snapshotting for Damage Items.
+- **Valuation Logic**: Integrated `ValuationEngine` for real-time technical loss calculation on the mobile device.
+- **Cascading Resets**: Hardened state management to ensure child selections are cleared when a parent level is changed.
+- **Search Integration**: Enabled Arabic/English partial search for all hierarchy levels completely offline.
+- **Status**: ✅ **Production Ready**.
+
+## Sprint 12.1 — COMPLETED
+
+## Sprint 12.0 — COMPLETED
+Damage Report Engineering Audit & Design:
+- **Audit**: Completed analysis of existing placeholder damage implementation.
+- **Gap Analysis**: Identified critical missing features: Sequential numbering, 10-stage workflow, costing sheets, and hierarchical causes.
+- **Design Deliverables**: Prepared Engineering Audit Report, Proposed Domain Model, Workflow State Machine, and Sync Strategy.
+- **Documentation**: Updated `AI_CONTEXT.md` and `PROJECT_STATUS.md` with the new module roadmap.
+- **Status**: ✅ **Approved**.
 
 ## Sprint 11.17 — COMPLETED
 Domain Integrity Hardening:

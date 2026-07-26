@@ -1,4 +1,6 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:drift/drift.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
@@ -12,10 +14,14 @@ import 'package:uuid/uuid.dart';
 class OfflineFirstFarmRepository implements FarmRepository {
   final AppDatabase _db;
   final BackgroundSyncService _syncService;
+  final AuthorizationService _authService;
 
-  OfflineFirstFarmRepository(this._db, this._syncService);
+  OfflineFirstFarmRepository(this._db, this._syncService, this._authService);
 
   void _validate(domain.Farm farm, AuthSession? session) {
+    if (!_authService.canManageFarms()) {
+      throw FarmException(['Access Denied: You do not have permission to manage farms.']);
+    }
     final errors = FarmValidator.validate(farm, session: session);
     if (errors.isNotEmpty) {
       throw FarmException(errors);
@@ -25,8 +31,10 @@ class OfflineFirstFarmRepository implements FarmRepository {
   @override
   Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
     final items = await (_db.select(_db.farms)
-          ..where((t) =>
-              t.farmerId.equals(farmerId) & t.isPendingDelete.equals(false))
+          ..where((t) => Expression.and([
+              t.farmerId.equals(farmerId),
+              t.isPendingDelete.equals(false)
+          ]))
           ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
         .get();
 
@@ -53,53 +61,59 @@ class OfflineFirstFarmRepository implements FarmRepository {
       leftOuterJoin(ownerFarmer, ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId)),
     ]);
 
+    final List<Expression<bool>> predicates = [];
+    predicates.add(_db.farms.isPendingDelete.equals(false));
+
     // Enforcement of user scope
     if (session != null) {
       final roles = session.roles;
       if (roles.contains('AgriculturalEngineer') || roles.contains('FieldSurveyor')) {
         if (session.directorateId != null) {
-          query.where(_db.farms.directorateId.equals(session.directorateId!));
+          predicates.add(_db.farms.directorateId.equals(session.directorateId!));
         }
       } else if (roles.contains('Director')) {
         if (session.governorateId != null) {
-          query.where(_db.farms.governorateId.equals(session.governorateId!));
+          predicates.add(_db.farms.governorateId.equals(session.governorateId!));
         }
       }
     }
 
     if (filter.searchText.isNotEmpty) {
       final search = '%${filter.searchText}%';
-      query.where(
-          _db.farms.localFarmName.like(search) |
-          _db.farms.basin.like(search) |
-          _db.farms.parcel.like(search) |
-          operatorFarmer.firstNameAr.like(search) |
-          operatorFarmer.familyNameAr.like(search) |
-          ownerFarmer.firstNameAr.like(search) |
-          ownerFarmer.familyNameAr.like(search)
+      predicates.add(
+          Expression.or([
+            _db.farms.localFarmName.like(search),
+            _db.farms.basin.like(search),
+            _db.farms.parcel.like(search),
+            operatorFarmer.firstNameAr.like(search),
+            operatorFarmer.familyNameAr.like(search),
+            ownerFarmer.firstNameAr.like(search),
+            ownerFarmer.familyNameAr.like(search)
+          ])
       );
     }
 
     if (filter.syncStatus != null) {
-      query.where(_db.farms.syncStatus.equals(filter.syncStatus!));
+      predicates.add(_db.farms.syncStatus.equals(filter.syncStatus!));
     }
 
     if (filter.governorateId != null) {
-      query.where(_db.farms.governorateId.equals(filter.governorateId!));
+      predicates.add(_db.farms.governorateId.equals(filter.governorateId!));
     }
     if (filter.directorateId != null) {
-      query.where(_db.farms.directorateId.equals(filter.directorateId!));
+      predicates.add(_db.farms.directorateId.equals(filter.directorateId!));
     }
     if (filter.localityId != null) {
-      query.where(_db.farms.localityId.equals(filter.localityId!));
+      predicates.add(_db.farms.localityId.equals(filter.localityId!));
     }
     if (filter.ownershipTypeId != null) {
-      query.where(_db.farms.ownershipTypeId.equals(filter.ownershipTypeId!));
+      predicates.add(_db.farms.ownershipTypeId.equals(filter.ownershipTypeId!));
     }
     if (filter.agriculturalSectorId != null) {
-      query.where(_db.farms.agriculturalSectorId.equals(filter.agriculturalSectorId!));
+      predicates.add(_db.farms.agriculturalSectorId.equals(filter.agriculturalSectorId!));
     }
 
+    query.where(Expression.and(predicates));
     query.orderBy([OrderingTerm.desc(_db.farms.createdAt)]);
 
     return query.watch().map((rows) {
@@ -109,7 +123,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Stream<domain.Farm?> watchFarm(String id) {
-    return (_db.select(_db.farms)..where((t) => t.id.equals(id)))
+    return (_db.select(_db.farms)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? mapToDomain(e) : null);
   }
@@ -130,6 +144,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
       parcel: e.parcel,
       area: e.area,
       areaUnitId: e.areaUnitId,
+      measurementUnitId: e.measurementUnitId,
       agriculturalSectorId: e.agriculturalSectorId,
       politicalClassificationId: e.politicalClassificationId,
       latitude: e.latitude,
@@ -160,6 +175,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
       parcel: farm.parcel,
       area: farm.area,
       areaUnitId: Value(farm.areaUnitId),
+      measurementUnitId: Value(farm.measurementUnitId),
       agriculturalSectorId: Value(farm.agriculturalSectorId),
       politicalClassificationId: Value(farm.politicalClassificationId),
       latitude: Value(farm.latitude),
@@ -217,6 +233,9 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Future<void> deleteFarm(String id, {AuthSession? session}) async {
+    if (!_authService.canManageFarms()) {
+      throw FarmException(['Access Denied: You do not have permission to manage farms.']);
+    }
     final local = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     if (local == null) return;

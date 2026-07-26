@@ -21,6 +21,7 @@ public record RefreshTokenCommand(string RefreshToken) : IRequest<Result<AuthRes
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, Result<AuthResponse>>
 {
     private static readonly string[] InvalidTokenError = { "Invalid or expired refresh token." };
+    private static readonly string[] AccountDisabledError = { "Account is disabled." };
 
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenService _tokenService;
@@ -50,6 +51,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         if (user is null || await _userManager.IsLockedOutAsync(user))
         {
             return Result<AuthResponse>.Failure(InvalidTokenError);
+        }
+
+        if (!user.IsActive)
+        {
+            return Result<AuthResponse>.Failure(AccountDisabledError);
         }
 
         var roles = await _userManager.GetRolesAsync(user);

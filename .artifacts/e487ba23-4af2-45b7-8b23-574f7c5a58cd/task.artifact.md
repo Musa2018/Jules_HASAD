@@ -1,0 +1,25 @@
+# Task: Sprint 12.1 — Damage Classification Foundation
+
+- `[/]` **Research & Planning**
+    - `[x]` Analyze ReferenceData service pattern
+    - `[x]` Design Entity Relationship Diagram (ERD)
+    - `[x]` Create Migration Impact Analysis
+    - `[x]` Define Seed Data Strategy
+- `[x]` **Backend Implementation**
+    - `[x]` Create Domain Entities (`DamageNature`, `DamageCategory`, `DamageSubCategory`, `DamageClassification`, `CostingSheet`)
+    - `[x]` Create Domain Entities for Causes (`DamageCauseCategory`, `DamageCause`)
+    - `[x]` Configure EF Core mappings in `ApplicationDbContext`
+    - `[x]` Implement EF Core Migration
+    - `[x]` Update `GetReferenceDataQuery` and DTOs
+    - `[x]` Add Seed Data in `DbInitializer`
+- `[x]` **Flutter Implementation**
+    - `[x]` Update Drift Database schema (Tables for all new lookups + updated `DamageReports`/`DamageItems`)
+    - `[x]` Run `build_runner` to generate code
+    - `[x]` Update `ReferenceDataRepository` and `OfflineFirstReferenceDataRepository`
+    - `[x]` Map Backend DTOs to local models
+- `[x]` **Verification & Testing**
+    - `[x]` Backend: Unit tests for hierarchy and price logic
+    - `[x]` Flutter: Offline lookup availability tests
+- `[x]` **Documentation & Completion**
+    - `[x]` Update `AI_CONTEXT.md`, `PROJECT_STATUS.md`, `ARCHITECTURE.md`, `CHANGELOG.md`
+    - `[x]` Final commit and push confirmation

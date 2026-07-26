@@ -1,6 +1,8 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_sync_status_badge.dart';
@@ -18,6 +20,7 @@ class FarmDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final authService = ref.watch(authorizationServiceProvider);
     
     // Watch reactive data to avoid stale RowVersion
     final farmAsync = ref.watch(farmStreamProvider(farm.id));
@@ -29,10 +32,11 @@ class FarmDetailsScreen extends ConsumerWidget {
           appBar: AppBar(
             title: Text(currentFarm.localFarmName),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () => _navigateToEdit(context, ref, currentFarm),
-              ),
+              if (authService.canManageFarms())
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined),
+                  onPressed: () => _navigateToEdit(context, ref, currentFarm),
+                ),
             ],
           ),
           body: SingleChildScrollView(
@@ -51,7 +55,7 @@ class FarmDetailsScreen extends ConsumerWidget {
                 ]),
                 _buildSection(context, l10n.areaAndSectorSection, [
                   _buildSectorRow(ref, l10n.agriculturalSector, currentFarm.agriculturalSectorId),
-                  _buildAreaRow(ref, l10n.landArea, currentFarm.area, currentFarm.areaUnitId),
+                  _buildAreaRow(ref, l10n.landArea, currentFarm.area, currentFarm.measurementUnitId ?? currentFarm.areaUnitId),
                   _buildPoliticalRow(ref, l10n.politicalClassification, currentFarm.politicalClassificationId),
                 ]),
                 _buildSection(context, l10n.locationSection, [

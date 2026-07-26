@@ -120,6 +120,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pendingDelete => 'معلق للحذف';
 
   @override
+  String get deleteRestrictedError =>
+      'لا يمكن حذف هذا السجل لأنه مرتبط ببيانات أخرى.';
+
+  @override
   String get noFarmers => 'لا يوجد مزارعون.';
 
   @override
@@ -282,7 +286,44 @@ class AppLocalizationsAr extends AppLocalizations {
   String get locality => 'التجمع السكاني';
 
   @override
-  String get landArea => 'مساحة الأرض';
+  String get landArea => 'المساحة';
+
+  @override
+  String get measurementUnit => 'وحدة القياس';
+
+  @override
+  String get unitCategory_Area => 'مساحة';
+
+  @override
+  String get unitCategory_Weight => 'وزن';
+
+  @override
+  String get unitCategory_Count => 'عدد';
+
+  @override
+  String get unitCategory_Volume => 'حجم';
+
+  @override
+  String get assessmentItem => 'بند التقييم';
+
+  @override
+  String get quantity => 'الكمية';
+
+  @override
+  String get damagePercentage => 'نسبة الضرر (%)';
+
+  @override
+  String get affectedAreaOptional => 'المساحة المتضررة (اختياري)';
+
+  @override
+  String get unitPriceSnapshot => 'سعر الوحدة (لحظي)';
+
+  @override
+  String get pricingNotFound =>
+      'التسعير غير موجود. يرجى الاتصال بالدعم أو مزامنة البيانات المرجعية.';
+
+  @override
+  String get technicalValuation => 'التقييم الفني:';
 
   @override
   String get unit => 'الوحدة';
@@ -346,7 +387,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.';
 
   @override
-  String get compensation => 'التعويض';
+  String get agriculturalAssistance => 'المساعدة الزراعية';
 
   @override
   String get calculatedAmount => 'المبلغ المحتسب';
@@ -361,7 +402,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get status => 'الحالة';
 
   @override
-  String get calculateCompensation => 'احتساب التعويض';
+  String get calculateAssistance => 'احتساب المساعدة';
 
   @override
   String get approve => 'اعتماد';
@@ -370,7 +411,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paid => 'تم الصرف';
 
   @override
-  String get noCompensation => 'لم يتم احتساب التعويض بعد.';
+  String get noAssistance => 'لم يتم احتساب المساعدة الزراعية بعد.';
 
   @override
   String get userManagement => 'إدارة المستخدمين';
@@ -422,4 +463,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get directorate => 'مديرية';
+
+  @override
+  String get status_Draft => 'مسودة';
+
+  @override
+  String get status_TechReview => 'مراجعة فنية';
+
+  @override
+  String get status_ArchiveDir => 'أرشفة المديرية';
+
+  @override
+  String get status_DirManager => 'مدير المديرية';
+
+  @override
+  String get status_MinTechReview => 'مراجعة فنية (وزارة)';
+
+  @override
+  String get status_LegalReview => 'مراجعة قانونية';
+
+  @override
+  String get status_ProcReview => 'مراجعة إجرائية';
+
+  @override
+  String get status_MinArchive => 'أرشفة الوزارة';
+
+  @override
+  String get status_GenManager => 'المدير العام';
+
+  @override
+  String get status_Completed => 'مكتمل';
+
+  @override
+  String get operationalView => 'العرض التشغيلي';
 }

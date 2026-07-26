@@ -58,7 +58,7 @@ public class FarmCommandHandlerTests
             "Basin 1",
             "Parcel 2",
             100.5m,
-            1, // AreaUnitId
+            1, // MeasurementUnitId
             1, // AgriculturalSectorId
             1, // PoliticalClassificationId
             31.5,
@@ -175,6 +175,71 @@ public class FarmCommandHandlerTests
     }
 
     [Fact]
+    public async Task CreateFarm_Succeeds_WhenFarmerIsFromDifferentGovernorate()
+    {
+        var context = CreateContext();
+        var userDirectorateId = Guid.NewGuid();
+        var userGovernorateId = Guid.NewGuid();
+
+        // Farmer from Bethlehem
+        var farmer = new Farmer
+        {
+            Id = Guid.NewGuid(),
+            GovernorateId = Guid.NewGuid().ToString(), // Different Gov
+            FirstNameAr = "Bethlehem Farmer",
+            IdTypeId = 1,
+            IdNumber = "123"
+        };
+        context.Farmers.Add(farmer);
+        await context.SaveChangesAsync();
+
+        _currentUserMock.Setup(x => x.IsInRole("AgriculturalEngineer")).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(userDirectorateId);
+        _currentUserMock.Setup(x => x.GovernorateId).Returns(userGovernorateId);
+
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new CreateFarmCommand(
+            Guid.NewGuid(),
+            farmer.Id,
+            "Jericho Farm",
+            1, null, null,
+            userGovernorateId,
+            userDirectorateId, // Match Engineer scope
+            Guid.NewGuid(),
+            "B", "P", 10, 1, 1, 1, null, null, null);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.True(result.Succeeded);
+        Assert.NotNull(result.Data);
+        Assert.Equal("Jericho Farm", result.Data.LocalFarmName);
+    }
+
+    [Fact]
+    public async Task CreateFarm_Fails_WhenFarmIsOutsideDirectorateScope()
+    {
+        var context = CreateContext();
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        context.Farmers.Add(farmer);
+        await context.SaveChangesAsync();
+
+        var userDirectorateId = Guid.NewGuid();
+        _currentUserMock.Setup(x => x.IsInRole("AgriculturalEngineer")).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(userDirectorateId);
+
+        var handler = new CreateFarmCommandHandler(context, _currentUserMock.Object);
+        var command = new CreateFarmCommand(
+            Guid.NewGuid(), farmer.Id, "Bethlehem Farm", 1, null, null,
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), // Outside scope
+            "B", "P", 1, 1, 1, 1, null, null, null);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
+
+    [Fact]
     public async Task DeleteFarm_PopulatesAuditFields_Automatically()
     {
         var context = CreateContext();
@@ -212,8 +277,8 @@ public class FarmCommandHandlerTests
     public async Task DeleteFarm_Fails_WhenLinkedToDamageReport()
     {
         var context = CreateContext();
-        var farm = new Farm { Id = Guid.NewGuid() };
-        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, GovernorateId = "G", LocalityId = "L", StatusId = "Draft" };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid() };
+        var report = new DamageReport { Id = Guid.NewGuid(), ClientId = Guid.NewGuid(), FarmId = farm.Id, StatusId = "Draft" };
 
         context.Farms.Add(farm);
         context.DamageReports.Add(report);

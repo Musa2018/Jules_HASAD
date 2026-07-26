@@ -32,6 +32,38 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **User Scoping**:
   - Three levels: Global, Governorate, Directorate.
   - Regional isolation enforced via geographic IDs in session and commands.
+  - **Permanent Rule**: Geographic attributes of referenced entities (e.g., Farmer residence) must never be used as authorization scope. Authorization follows operational ownership of the managed record (e.g., Farm location).
+  - **Inheritance Rule**: Authorization for child entities (Damage Items, Attachments, Workflow History) must be validated against the parent managed record's operational scope.
+- **Managed Record Authorization Inheritance**: `DamageReport` authorization is strictly inherited from its parent `Farm`.
+- **Authorization Source of Truth**: `Farm.DirectorateId` is the authoritative source for regional security boundaries.
+- **Derived Authorization Optimization**: `DamageReport` stores a denormalized `DirectorateId` (snapshot from parent Farm) to support high-performance scoped queries and O(1) security checks.
+- **Regional Isolation**: Agricultural Engineers and Field Surveyors are restricted to data within their assigned Directorate. Supervisors and Directors are restricted to their Governorate.
+### Pricing Catalog & Costing (Sprint 13.2)
+- **Hierarchy**: `Catalog -> Version -> Item`.
+- **Entities**:
+  - `CostingSheetCatalog`: High-level grouping (e.g., "Year 2024 Base Prices").
+  - `CostingSheetVersion`: Lifecycle management (`Draft`, `PendingApproval`, `Active`, `Archived`).
+  - `CostingSheetItem`: Individual price per `Classification` + `MeasurementUnit`.
+- **Measurement Units**: Consolidated into a universal `MeasurementUnit` entity (Category: Area, Weight, Count, etc.).
+- **Immutability**: `Active` and `Archived` versions are immutable. Changes require a new `Draft` version.
+- **Backward Compatibility**: `GetReferenceDataQuery` and `CostingService` maintain compatibility with older mobile clients.
+- **Sync Compatibility Hardening (Sprint 13.2)**: 
+  - Backend commands (`CreateFarmCommand`, `UpdateFarmCommand`) and DTOs (`FarmDto`, `FarmSyncDto`) use `JsonPropertyName` aliases to support both legacy (`areaUnitId`) and modern (`measurementUnitId`) field names during the transition period.
+  - This ensures that offline drafts created before the migration can still synchronize successfully.
+- **Terminology Alignment (Phase 2C)**: 
+  - The Flutter client UI has been updated to use "Measurement Unit" (وحدة القياس) instead of "Area Unit" (وحدة المساحة).
+  - Domain models (`Farm`, `DamageItem`) prioritize modern identifiers (`measurementUnitId`, `costingSheetItemId`) while maintaining legacy fields for backward compatibility.
+- **Flutter Implementation**:
+  - Drift schema v16 supports hierarchical pricing tables.
+  - `OfflineFirstReferenceDataRepository` resolves the `Active` price by joining `Items` with their parent `Version`.
+  - Legacy pricing records are automatically mapped to a local legacy version during sync and migration.
+
+### Damage Valuation Authority (Sprint 13.2)
+- **Authoritative Backend**: Client-side damage calculations are informational only. The backend is the absolute authority for technical loss valuation.
+- **Recalculation Rule**: Command handlers (`CreateDamageReport`, `UpdateDamageItem`) automatically resolve the active `CostingSheetItem` (via its version) and recalculate `EstimatedLoss`.
+- **Costing Verification**: Backend validates that the provided `CostingSheetItemId` matches the `ClassificationId` and its parent version was active on the `DamageDate`.
+- **Decoupling Rule**: Farmer residency is NEVER used as an authorization boundary for managed records (Farms/Reports).
+  - **Lifecycle Consistency**: Maintenance operations (Update/Delete) and Query Projections must enforce the same regional boundaries as Creation commands.
 
 ## 3. Architectural Decisions
 ### Measurement Unit Consolidation (Pending)
@@ -41,15 +73,31 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 4. Current Project Status
 - **Current Branch**: `Farms`
-- **Latest Completed Sprint**: Sprint 11.4 — Farm Management UI
-- **Latest Commit Hash**: `7a4146f` (Branch: Farms)
+- **Latest Completed Sprint**: Sprint 12.2 — Hierarchical Classification UI
+- **Latest Commit Hash**: `e073d75` (Branch: DamageReport)
 - **main**: Stable production-ready code.
-- **Farms**: Active development branch for the Farm (Land) Management module.
+- **Farms**: Completed and hardened.
+- **DamageReport**: Active development branch for Sprint 12.
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 12.2 - Hierarchical Classification UI
+- **Classification Wizard**: Implemented a mandatory 4-step wizard (`Nature -> Category -> SubCategory -> Classification`) using `ClassificationWizardProvider`.
+- **Automatic Pricing Resolution**: System automatically fetches and snapshots the active `CostingSheetVersion` and `UnitPrice` upon classification selection.
+- **Cascading State Management**: Selection of a parent level automatically resets all dependent child levels to ensure data consistency.
+- **Valuation Engine**: Implemented `ValuationEngine` for real-time technical loss calculation (`Quantity * Price * %`).
+- **Offline Search**: Integrated local search functionality for all hierarchy levels using Drift SQL queries.
+
+### Sprint 12.0 - Damage Report Engineering Audit
+- **Audit**: Completed comprehensive audit of existing placeholder Damage Report implementation.
+- **Architecture**: Designed 10-stage workflow engine, hierarchical classification system, and versioned costing sheets.
+- **Identity**: Designed offline-compatible sequential numbering system.
+- **Integrity**: Defined duplicate prevention rules based on `FarmId + DamageDate`.
+
 ### Sprint 11.17 - Deletion Integrity Rules
-- **Referential Integrity**: Implemented business validation in `DeleteFarmerCommandHandler` and `DeleteFarmCommandHandler` to block deletion if dependencies exist (e.g., a Farmer linked to a Farm, or a Farm linked to a Damage Report).
-- **Localized Error Feedback**: The backend now returns meaningful, localized error messages for restricted deletions, which are captured and displayed by the Flutter sync engine.
+- **Referential Integrity**: Enforced rule: "Farmer cannot be deleted if linked to any Farm; Farm cannot be deleted if linked to any Damage Report."
+  - **Local Validation**: Mobile repositories perform local checks against Drift tables before queuing deletion to provide immediate offline feedback.
+  - **Machine-Readable Errors**: Backend returns HTTP 409 Conflict with structured codes (e.g., `FARMER_HAS_DEPENDENCIES`).
+  - **Conflict Handling**: Sync engine restores entity visibility when server-side dependency conflicts occur.
 - **Audit Consistency**: Verified that all soft-deletable entities implement the `ISoftDelete` interface and follow the system-wide automated auditing mechanism.
 
 ### Sprint 11.16 - Hardened Offline Delete Workflow
@@ -181,9 +229,10 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Location Data**: **Offline-First**. Retrieved from Drift with automatic remote synchronization/caching.
 - **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
 
-## 8. Pending Work
-- **UI/UX**:
-  - Conflict resolution comparison screen (handling 409 server responses).
-  - Mobile geographic caching for offline reference data support.
-- **Features**:
-  - Farm/Damage Report module alignment with new locality foundation.
+### Sprint 12.4 - DamageReport Security Alignment
+- **Security Baseline**: Implemented strict authorization inheritance from `Farm` to `DamageReport` and all child entities (`DamageItem`, `Attachment`, `WorkflowHistory`).
+- **Data Hardening**: Migrated geographic identifiers from `string` to `Guid` for system-wide consistency.
+- **Directorate Denormalization**: Added denormalized `DirectorateId` to `DamageReport` for high-performance scoped queries, with automated synchronization from the parent `Farm`.
+- **Join-Based Auth Guards**: Hardened all backend command handlers (`Update`, `Delete`, `Upload`, `Submit`) with mandatory join-based user scope validation.
+- **Scoped Query Filtering**: Enforced regional isolation at the query level, ensuring users only see reports they are authorized to manage.
+- **Offline Reliability**: Updated Drift database (Version 15) to maintain security snapshots offline while ensuring backward compatibility for pending sync tasks.

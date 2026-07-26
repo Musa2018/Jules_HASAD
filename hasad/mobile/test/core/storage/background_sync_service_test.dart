@@ -7,12 +7,12 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
-import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
-import 'package:mobile/features/farmers/data/damage_report_repository.dart';
+import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
+import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farmers/domain/damage_report_attachment.dart';
-import 'package:mobile/features/farmers/domain/damage_report.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -111,6 +111,7 @@ void main() {
         damageDate: DateTime.now(),
         documentationDate: DateTime.now(),
         governorateId: '',
+        directorateId: '',
         localityId: '',
         statusId: '',
         notes: '',
@@ -804,6 +805,180 @@ void main() {
       expect(queueItems.first.status, 'completed');
     });
 
+    test('processQueue treats DELETE 404 as success and performs local hard delete', () async {
+      const localId = 'delete-404';
+      const serverId = 'remote-404';
+
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              serverId: const Value(serverId),
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('Already Deleted'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+              isPendingDelete: const Value(true),
+            ),
+          );
+
+      await db.into(db.syncQueue).insert(
+            SyncQueueCompanion.insert(
+              id: 'q-delete-404',
+              localId: localId,
+              entityType: 'farmer',
+              operation: 'delete',
+              data: jsonEncode({'id': serverId}),
+            ),
+          );
+
+      when(() => mockConnectivity.checkConnectivity()).thenAnswer(
+        (_) async => [ConnectivityResult.wifi],
+      );
+      // Simulate 404 Not Found
+      when(() => mockFarmerRepo.deleteFarmer(serverId)).thenThrow(
+        SyncNotFoundException(['NOT FOUND']),
+      );
+
+      await syncService.processQueue();
+
+      // Verified hard deleted locally despite 404 (idempotent success)
+      final farmers = await db.select(db.farmers).get();
+      expect(farmers, isEmpty);
+
+      final queueItems = await db.select(db.syncQueue).get();
+      expect(queueItems.first.status, 'completed');
+    });
+
+    test('processQueue does NOT treat 404 as success for non-DELETE operations', () async {
+      const localId = 'update-404';
+      const serverId = 'remote-missing';
+
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              serverId: const Value(serverId),
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('Update Me'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+              rowVersion: const Value('v1'),
+            ),
+          );
+
+      await db.into(db.syncQueue).insert(
+            SyncQueueCompanion.insert(
+              id: 'q-update-404',
+              localId: localId,
+              entityType: 'farmer',
+              operation: 'update',
+              data: jsonEncode({'id': localId, 'serverId': serverId, 'rowVersion': 'v1'}),
+            ),
+          );
+
+      when(() => mockConnectivity.checkConnectivity()).thenAnswer(
+        (_) async => [ConnectivityResult.wifi],
+      );
+      when(() => mockFarmerRepo.updateFarmer(any())).thenThrow(
+        SyncNotFoundException(['NOT FOUND']),
+      );
+
+      await syncService.processQueue();
+
+      // Entity remains in DB as failed
+      final localFarmer = await db.select(db.farmers).getSingle();
+      expect(localFarmer.syncStatus, 'failed');
+
+      final queueItem = await db.select(db.syncQueue).getSingle();
+      expect(queueItem.status, 'failed');
+    });
+
+    test('processQueue marks conflict and restores visibility on 409 FARMER_HAS_DEPENDENCIES during DELETE', () async {
+      const localId = 'delete-conflict';
+      const serverId = 'remote-conflict';
+
+      await db.into(db.farmers).insert(
+            FarmersCompanion.insert(
+              id: localId,
+              serverId: const Value(serverId),
+              idTypeId: const Value(1),
+              idNumber: const Value('1'),
+              firstNameAr: const Value('Has Server Farms'),
+              fatherNameAr: const Value(''),
+              grandfatherNameAr: const Value(''),
+              familyNameAr: const Value(''),
+              firstNameEn: const Value(''),
+              fatherNameEn: const Value(''),
+              grandfatherNameEn: const Value(''),
+              familyNameEn: const Value(''),
+              birthDate: Value(DateTime(1990)),
+              gender: const Value(1),
+              phoneNumber: const Value(''),
+              familySize: const Value(1),
+              governorateId: const Value('G1'),
+              localityId: const Value('L1'),
+              address: const Value(''),
+              syncStatus: const Value('pending'),
+              isPendingDelete: const Value(true),
+            ),
+          );
+
+      await db.into(db.syncQueue).insert(
+            SyncQueueCompanion.insert(
+              id: 'q-delete-conflict',
+              localId: localId,
+              entityType: 'farmer',
+              operation: 'delete',
+              data: jsonEncode({'id': serverId}),
+            ),
+          );
+
+      when(() => mockConnectivity.checkConnectivity()).thenAnswer(
+        (_) async => [ConnectivityResult.wifi],
+      );
+      
+      when(() => mockFarmerRepo.deleteFarmer(serverId)).thenThrow(
+        SyncConflictException(['Cannot delete due to farms'], code: 'FARMER_HAS_DEPENDENCIES'),
+      );
+
+      await syncService.processQueue();
+
+      final localFarmer = await db.select(db.farmers).getSingle();
+      expect(localFarmer.isPendingDelete, false);
+      expect(localFarmer.syncStatus, 'conflict');
+      expect(localFarmer.lastSyncError, contains('Cannot delete due to farms'));
+
+      final queueItem = await db.select(db.syncQueue).getSingle();
+      expect(queueItem.status, 'conflict');
+    });
+
     test('addToQueue removes record immediately when deleting unsynced CREATE', () async {
       const localId = 'cancel-create-1';
 
@@ -911,11 +1086,12 @@ void main() {
         DamageReportsCompanion.insert(
           id: reportId,
           farmId: 'f1',
-          farmerId: 'fr1',
+          farmerId: const Value('fr1'),
           damageDate: DateTime.now(),
           documentationDate: DateTime.now(),
-          governorateId: 'g1',
-          localityId: 'l1',
+          governorateId: const Value('g1'),
+          directorateId: const Value('d1'),
+          localityId: const Value('l1'),
           statusId: 's1',
           notes: '',
         ),
@@ -925,10 +1101,10 @@ void main() {
         DamageItemsCompanion.insert(
           id: 'item-1',
           damageReportId: reportId,
-          agriculturalSectorId: 'a1',
-          subSectorId: 's1',
-          cropId: 'c1',
-          damageTypeId: 'd1',
+          classificationId: const Value(1),
+          costingSheetId: const Value('cs1'),
+          calculatedUnitPrice: const Value(100.0),
+          measurementUnitSnapshot: const Value('Tree'),
           affectedArea: 1,
           damagePercentage: 10,
           quantity: 1,

@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:mobile/features/farms/domain/farm.dart';
 
 class FarmSyncDto {
@@ -16,6 +17,7 @@ class FarmSyncDto {
       'parcel': farm.parcel,
       'area': farm.area,
       'areaUnitId': farm.areaUnitId,
+      if (farm.measurementUnitId != null) 'measurementUnitId': farm.measurementUnitId,
       'agriculturalSectorId': farm.agriculturalSectorId,
       'politicalClassificationId': farm.politicalClassificationId,
       'latitude': farm.latitude,
@@ -43,6 +45,7 @@ class FarmSyncDto {
       'parcel': farm.parcel,
       'area': farm.area,
       'areaUnitId': farm.areaUnitId,
+      if (farm.measurementUnitId != null) 'measurementUnitId': farm.measurementUnitId,
       'agriculturalSectorId': farm.agriculturalSectorId,
       'politicalClassificationId': farm.politicalClassificationId,
       'latitude': farm.latitude,

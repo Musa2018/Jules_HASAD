@@ -1,6 +1,8 @@
+// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_sync_status_badge.dart';
@@ -19,6 +21,7 @@ class FarmCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final authService = ref.watch(authorizationServiceProvider);
 
     // Location lookups
     final govAsync = ref.watch(governoratesProvider);
@@ -57,9 +60,9 @@ class FarmCard extends ConsumerWidget {
       if (item != null) sectorText = isAr ? item.nameAr : item.nameEn;
     });
 
-    String areaUnitText = farm.areaUnitId.toString();
+    String areaUnitText = (farm.measurementUnitId ?? farm.areaUnitId).toString();
     areaUnitsAsync.whenData((items) {
-      final item = items.where((i) => i.id == farm.areaUnitId).firstOrNull;
+      final item = items.where((i) => i.id == (farm.measurementUnitId ?? farm.areaUnitId)).firstOrNull;
       if (item != null) areaUnitText = isAr ? item.nameAr : item.nameEn;
     });
 
@@ -164,21 +167,23 @@ class FarmCard extends ConsumerWidget {
                   children: [
                     if (!farm.isPendingDelete) ...[
                       TextButton.icon(
-                        onPressed: () => context.push(AppRoutes.farmDetails, extra: farm),
-                        icon: const Icon(Icons.visibility_outlined, size: 18),
-                        label: Text(l10n.search), // Using search as "view"
+                        onPressed: () => context.push(AppRoutes.addDamageReport, extra: farm),
+                        icon: const Icon(Icons.report_problem_outlined, size: 18),
+                        label: Text(l10n.damageReports),
                       ),
-                      TextButton.icon(
-                        onPressed: () => context.push(AppRoutes.editFarm, extra: farm),
-                        icon: const Icon(Icons.edit_outlined, size: 18),
-                        label: Text(l10n.editFarm),
-                      ),
-                      TextButton.icon(
-                        onPressed: () => _confirmDelete(context, ref),
-                        icon: const Icon(Icons.delete_outline, size: 18),
-                        label: Text(l10n.delete),
-                        style: TextButton.styleFrom(foregroundColor: Colors.red),
-                      ),
+                      if (authService.canManageFarms()) ...[
+                        TextButton.icon(
+                          onPressed: () => context.push(AppRoutes.editFarm, extra: farm),
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: Text(l10n.editFarm),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => _confirmDelete(context, ref),
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          label: Text(l10n.delete),
+                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                        ),
+                      ],
                     ] else ...[
                       TextButton.icon(
                         onPressed: () => ref.read(farmRepositoryProvider).cancelDeleteFarm(farm.id),

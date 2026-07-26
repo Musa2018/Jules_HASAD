@@ -2,6 +2,7 @@ using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.DamageReports.Models;
+using Hasad.Domain.Constants;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,25 +11,30 @@ namespace Hasad.Application.Features.DamageReports.Commands.UpdateDamageReport;
 public record UpdateDamageReportCommand(
     Guid Id,
     DateTime DamageDate,
-    string GovernorateId,
-    string LocalityId,
-    double? Latitude,
-    double? Longitude,
+    int AgriculturalSectorId,
+    int DamageCauseCategoryId,
+    int DamageCauseId,
+    string? SettlementName,
+    string? CompanyName,
     string Notes,
     string RowVersion) : IRequest<Result<DamageReportDto>>;
 
 public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageReportCommand, Result<DamageReportDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public UpdateDamageReportCommandHandler(IApplicationDbContext context)
+    public UpdateDamageReportCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<DamageReportDto>> Handle(UpdateDamageReportCommand request, CancellationToken cancellationToken)
     {
         var report = await _context.DamageReports
+            .Include(r => r.Farm)
+            .ThenInclude(f => f!.Farmer)
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
@@ -37,6 +43,28 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             return Result<DamageReportDto>.Failure(new[] { "Damage report not found." });
         }
 
+        // Authorization check
+        if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
+        {
+            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole(AppRoles.Director))
+        {
+            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
+            }
+        }
+
+        // Immutability Rule: DirectorateId cannot be changed independently of the Farm link.
+        // We don't expose DirectorateId in the command anyway, but we should ensure the report's geographic integrity.
+        // Rule: On update, DirectorateId MUST never be changed independently (Rule 2).
+        // Since it's not in the command, we just don't touch it.
+        // If the user wants to move the report to a different farm, that's a different operation (not supported yet).
+
         // Optimistic concurrency
         byte[] expectedVersion = Convert.FromBase64String(request.RowVersion);
         if (!report.RowVersion.SequenceEqual(expectedVersion))
@@ -44,11 +72,28 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             return Result<DamageReportDto>.Failure(new[] { "CONFLICT: The record has been modified by another user." });
         }
 
+        // Duplicate Prevention (Farm + Date) - Check if date changed
+        if (report.DamageDate.Date != request.DamageDate.Date)
+        {
+            var existingDuplicate = await _context.DamageReports
+                .AsNoTracking()
+                .AnyAsync(r => r.Id != request.Id &&
+                               r.FarmId == report.FarmId &&
+                               r.DamageDate.Date == request.DamageDate.Date,
+                          cancellationToken);
+
+            if (existingDuplicate)
+            {
+                return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm and date." });
+            }
+        }
+
         report.DamageDate = request.DamageDate;
-        report.GovernorateId = request.GovernorateId;
-        report.LocalityId = request.LocalityId;
-        report.Latitude = request.Latitude;
-        report.Longitude = request.Longitude;
+        report.AgriculturalSectorId = request.AgriculturalSectorId;
+        report.DamageCauseCategoryId = request.DamageCauseCategoryId;
+        report.DamageCauseId = request.DamageCauseId;
+        report.SettlementName = request.SettlementName;
+        report.CompanyName = request.CompanyName;
         report.Notes = request.Notes;
         report.UpdatedAt = DateTime.UtcNow;
 
@@ -65,14 +110,24 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         {
             Id = report.Id,
             ClientId = report.ClientId,
+            ReportNumber = report.ReportNumber,
+            PermanentFormNumber = report.PermanentFormNumber,
+            TemporaryFormNumber = report.TemporaryFormNumber,
+            DamageYear = report.DamageDate.Year,
             FarmId = report.FarmId,
-            FarmerId = report.FarmerId,
+            FarmerId = report.Farm?.FarmerId ?? Guid.Empty,
             DamageDate = report.DamageDate,
             DocumentationDate = report.DocumentationDate,
-            GovernorateId = report.GovernorateId,
-            LocalityId = report.LocalityId,
-            Latitude = report.Latitude,
-            Longitude = report.Longitude,
+            AgriculturalSectorId = report.AgriculturalSectorId,
+            DamageCauseCategoryId = report.DamageCauseCategoryId,
+            DamageCauseId = report.DamageCauseId,
+            SettlementName = report.SettlementName,
+            CompanyName = report.CompanyName,
+            GovernorateId = report.Farm?.GovernorateId ?? Guid.Empty,
+            DirectorateId = report.Farm?.DirectorateId ?? Guid.Empty,
+            LocalityId = report.Farm?.LocalityId ?? Guid.Empty,
+            Latitude = report.Farm?.Latitude,
+            Longitude = report.Farm?.Longitude,
             StatusId = report.StatusId,
             Notes = report.Notes,
             RowVersion = Convert.ToBase64String(report.RowVersion),
@@ -80,10 +135,11 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             {
                 Id = i.Id,
                 ClientId = i.ClientId,
-                AgriculturalSectorId = i.AgriculturalSectorId,
-                SubSectorId = i.SubSectorId,
-                CropId = i.CropId,
-                DamageTypeId = i.DamageTypeId,
+                DamageNatureId = i.DamageNatureId,
+                ClassificationId = i.ClassificationId,
+                CostingSheetId = i.CostingSheetItemId,
+                CalculatedUnitPrice = i.CalculatedUnitPrice,
+                MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
                 AffectedArea = i.AffectedArea,
                 DamagePercentage = i.DamagePercentage,
                 Quantity = i.Quantity,
@@ -100,8 +156,8 @@ public class UpdateDamageReportCommandValidator : AbstractValidator<UpdateDamage
     {
         RuleFor(v => v.Id).NotEmpty();
         RuleFor(v => v.DamageDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
-        RuleFor(v => v.GovernorateId).NotEmpty().MaximumLength(50);
-        RuleFor(v => v.LocalityId).NotEmpty().MaximumLength(50);
+        RuleFor(v => v.DamageCauseCategoryId).NotEmpty();
+        RuleFor(v => v.DamageCauseId).NotEmpty();
         RuleFor(v => v.RowVersion).NotEmpty();
     }
 }

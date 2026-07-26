@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_annotation_target
+// ignore_for_file: invalid_annotation_target, deprecated_member_use_from_same_package
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'farm.freezed.dart';
@@ -24,7 +24,9 @@ class Farm with _$Farm {
     
     // Area
     required double area,
+    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
     required int areaUnitId,
+    int? measurementUnitId,
     
     // Agriculture
     required int agriculturalSectorId,

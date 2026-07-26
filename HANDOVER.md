@@ -13,7 +13,7 @@
   - Backend: 45 unit/logic tests passing.
   - Mobile: 44 widget/logic tests passing.
 - **CI Status**: Green on GitHub Actions (pinned to .NET 8.0.422 and Flutter 3.41.2).
-- **Open Issues**: #21 (Junk Cleanup), #27 (Documentation Sync), #28 (Class1 cleanup), Compensation Module implementation.
+- **Open Issues**: #21 (Junk Cleanup), #27 (Documentation Sync), #28 (Class1 cleanup), Assistance Module implementation.
 - **Closed Issues**: #11-#15 (Auth), #17-#20 (Infra), #24-#26 (Mobile Auth), #22-#23 (CI/CD Hardening).
 
 ---
@@ -134,7 +134,7 @@
 ---
 
 ## 8. Pending Work
-1. **Compensation Module**: Logic for calculating aid based on damage item inputs.
+1. **Assistance Module**: Logic for calculating aid based on damage item inputs.
 2. **Dashboard Stats**: Aggregate counts of pending syncs and surveyor progress.
 3. **Map Pins**: Geographical display of farmers/farms using `flutter_map`.
 
@@ -147,10 +147,10 @@
 
 ---
 
-## 10. Next Recommended Sprint: Compensation & Maps
-- **Objective**: Implement the core business value of assessing compensation.
-- **Scope**: Compensation calculation engine, Ministry approval workflow, Map integration.
-- **Acceptance Criteria**: Surveyor can see a suggested compensation amount based on damaged area.
+## 10. Next Recommended Sprint: Assistance & Maps
+- **Objective**: Implement the core business value of assessing assistance.
+- **Scope**: Assistance calculation engine, Ministry approval workflow, Map integration.
+- **Acceptance Criteria**: Surveyor can see a suggested assistance amount based on damaged area.
 - **Effort**: 2 weeks.
 
 ---

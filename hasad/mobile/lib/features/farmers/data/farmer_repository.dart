@@ -1,9 +1,12 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/farmer_validator.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:uuid/uuid.dart';
@@ -36,18 +39,39 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   final BackgroundSyncService _syncService;
   final FarmerRepository _remoteRepository;
   final Connectivity _connectivity;
+  final AuthorizationService _authService;
+  final AuthSession? _session;
 
   OfflineFirstFarmerRepository(
     this._db,
     this._syncService,
     this._remoteRepository,
     this._connectivity,
+    this._authService,
+    this._session,
   );
 
   void _validate(domain.Farmer farmer) {
+    if (!_authService.canManageFarmers()) {
+      throw FarmerException(['Access Denied: You do not have permission to manage farmers.']);
+    }
     final errors = FarmerValidator.validate(farmer);
     if (errors.isNotEmpty) {
       throw FarmerException(errors);
+    }
+  }
+
+  Future<void> _checkUniqueness(domain.Farmer farmer) async {
+    final query = _db.select(_db.farmers)
+      ..where((t) => Expression.and([
+          t.idNumber.equals(farmer.idNumber),
+          t.isPendingDelete.equals(false),
+          t.id.isNotValue(farmer.id)
+      ]));
+    
+    final count = await query.get().then((v) => v.length);
+    if (count > 0) {
+      throw FarmerException(['A farmer with this ID Number already exists and is active.']);
     }
   }
 
@@ -59,53 +83,82 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     String? name,
     String? searchText,
   }) async {
-    final query = _db.select(_db.farmers)
-      ..where((t) => t.isPendingDelete.equals(false))
-      ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
-      ..limit(pageSize, offset: (pageNumber - 1) * pageSize);
+    final farmers = _db.farmers;
+    final farms = _db.farms;
+
+    // Check if we need to apply Directorate scoping based on role
+    final session = _session;
+    final bool needsScoping = session != null &&
+        (session.roles.contains('AgriculturalEngineer') ||
+            session.roles.contains('FieldSurveyor')) &&
+        session.directorateId != null;
+
+    final query = needsScoping
+        ? _db.select(farmers).join([
+            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+          ])
+        : _db.select(farmers).join([]);
+
+    final List<Expression<bool>> predicates = [];
+    predicates.add(farmers.isPendingDelete.equals(false));
+
+    if (needsScoping) {
+      predicates.add(farms.directorateId.equals(session.directorateId!));
+    }
 
     if (idNumber != null && idNumber.isNotEmpty) {
-      query.where((t) => t.idNumber.contains(idNumber));
+      predicates.add(farmers.idNumber.contains(idNumber));
     }
 
     if (name != null && name.isNotEmpty) {
       final search = '%$name%';
-      query.where((t) =>
-          t.firstNameAr.like(search) |
-          t.fatherNameAr.like(search) |
-          t.grandfatherNameAr.like(search) |
-          t.familyNameAr.like(search) |
-          t.firstNameEn.like(search) |
-          t.fatherNameEn.like(search) |
-          t.grandfatherNameEn.like(search) |
-          t.familyNameEn.like(search));
+      predicates.add(Expression.or([
+        farmers.firstNameAr.like(search),
+        farmers.fatherNameAr.like(search),
+        farmers.grandfatherNameAr.like(search),
+        farmers.familyNameAr.like(search),
+        farmers.firstNameEn.like(search),
+        farmers.fatherNameEn.like(search),
+        farmers.grandfatherNameEn.like(search),
+        farmers.familyNameEn.like(search)
+      ]));
     }
 
     if (searchText != null && searchText.isNotEmpty) {
       final search = '%$searchText%';
-      query.where((t) =>
-          t.firstNameAr.like(search) |
-          t.fatherNameAr.like(search) |
-          t.grandfatherNameAr.like(search) |
-          t.familyNameAr.like(search) |
-          t.firstNameEn.like(search) |
-          t.fatherNameEn.like(search) |
-          t.grandfatherNameEn.like(search) |
-          t.familyNameEn.like(search) |
-          t.idNumber.like(search) |
-          t.phoneNumber.like(search));
+      predicates.add(farmers.firstNameAr.like(search) |
+          farmers.fatherNameAr.like(search) |
+          farmers.grandfatherNameAr.like(search) |
+          farmers.familyNameAr.like(search) |
+          farmers.firstNameEn.like(search) |
+          farmers.fatherNameEn.like(search) |
+          farmers.grandfatherNameEn.like(search) |
+          farmers.familyNameEn.like(search) |
+          farmers.idNumber.like(search) |
+          farmers.phoneNumber.like(search));
     }
 
-    final items = await query.get();
+    query.where(Expression.and(predicates));
+    
+    if (needsScoping) {
+      query.groupBy([farmers.id]);
+    }
 
-    return items.map(_mapToDomain).toList();
+    query.orderBy([OrderingTerm.desc(farmers.createdAt)]);
+    query.limit(pageSize, offset: (pageNumber - 1) * pageSize);
+
+    final rows = await query.get();
+    return rows.map((row) => _mapToDomain(row.readTable(farmers))).toList();
   }
 
   @override
   Future<domain.Farmer?> findByIdNumber(String idNumber) async {
     // 1. Search local Drift database first (exclude records pending deletion)
     final local = await (_db.select(_db.farmers)
-          ..where((t) => t.idNumber.equals(idNumber) & t.isPendingDelete.equals(false)))
+          ..where((t) => Expression.and([
+              t.idNumber.equals(idNumber),
+              t.isPendingDelete.equals(false)
+          ])))
         .getSingleOrNull();
 
     if (local != null) {
@@ -148,49 +201,82 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Stream<domain.Farmer?> watchFarmer(String id) {
-    return (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
+    return (_db.select(_db.farmers)..where((t) => Expression.and([
+        t.id.equals(id),
+        t.isPendingDelete.equals(false)
+    ])))
         .watchSingleOrNull()
         .map((e) => e != null ? _mapToDomain(e) : null);
   }
 
   @override
-  Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()}) {
-    final query = _db.select(_db.farmers);
+  Stream<List<domain.Farmer>> watchFarmers({
+    FarmerFilter filter = const FarmerFilter(),
+  }) {
+    final farmers = _db.farmers;
+    final farms = _db.farms;
+
+    // Check if we need to apply Directorate scoping based on role
+    final session = _session;
+    final bool needsScoping = session != null &&
+        (session.roles.contains('AgriculturalEngineer') ||
+            session.roles.contains('FieldSurveyor')) &&
+        session.directorateId != null;
+
+    final query = needsScoping
+        ? _db.select(farmers).join([
+            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+          ])
+        : _db.select(farmers).join([]);
+
+    final List<Expression<bool>> predicates = [];
+    predicates.add(farmers.isPendingDelete.equals(false));
+
+    if (needsScoping) {
+      predicates.add(farms.directorateId.equals(session.directorateId!));
+    }
 
     if (filter.searchText.isNotEmpty) {
       final search = '%${filter.searchText}%';
-      query.where((t) =>
-          t.firstNameAr.like(search) |
-          t.fatherNameAr.like(search) |
-          t.grandfatherNameAr.like(search) |
-          t.familyNameAr.like(search) |
-          t.firstNameEn.like(search) |
-          t.fatherNameEn.like(search) |
-          t.grandfatherNameEn.like(search) |
-          t.familyNameEn.like(search) |
-          t.idNumber.like(search) |
-          t.phoneNumber.like(search));
+      predicates.add(Expression.or([
+        farmers.firstNameAr.like(search),
+        farmers.fatherNameAr.like(search),
+        farmers.grandfatherNameAr.like(search),
+        farmers.familyNameAr.like(search),
+        farmers.firstNameEn.like(search),
+        farmers.fatherNameEn.like(search),
+        farmers.grandfatherNameEn.like(search),
+        farmers.familyNameEn.like(search),
+        farmers.idNumber.like(search),
+        farmers.phoneNumber.like(search)
+      ]));
     }
 
     if (filter.gender != null) {
-      query.where((t) => t.gender.equals(filter.gender!.index));
+      predicates.add(farmers.gender.equals(filter.gender!.index));
     }
 
     if (filter.syncStatus != null) {
-      query.where((t) => t.syncStatus.equals(filter.syncStatus!));
+      predicates.add(farmers.syncStatus.equals(filter.syncStatus!));
     }
 
     if (filter.governorateId != null) {
-      query.where((t) => t.governorateId.equals(filter.governorateId!));
+      predicates.add(farmers.governorateId.equals(filter.governorateId!));
     }
 
     if (filter.localityId != null) {
-      query.where((t) => t.localityId.equals(filter.localityId!));
+      predicates.add(farmers.localityId.equals(filter.localityId!));
     }
 
-    query.orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
+    query.where(Expression.and(predicates));
 
-    return query.watch().map((items) => items.map(_mapToDomain).toList());
+    if (needsScoping) {
+      query.groupBy([farmers.id]);
+    }
+
+    query.orderBy([OrderingTerm.desc(farmers.createdAt)]);
+
+    return query.watch().map((rows) => rows.map((row) => _mapToDomain(row.readTable(farmers))).toList());
   }
 
   domain.Farmer _mapToDomain(FarmerLocal e) {
@@ -253,6 +339,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   @override
   Future<domain.Farmer> createFarmer(domain.Farmer farmer) async {
     _validate(farmer);
+    await _checkUniqueness(farmer);
     final localId = farmer.id.isEmpty ? const Uuid().v4() : farmer.id;
     final companion = _mapToCompanion(farmer).copyWith(
       id: Value(localId),
@@ -276,6 +363,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   @override
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
     _validate(farmer);
+    await _checkUniqueness(farmer);
     final companion = _mapToCompanion(farmer).copyWith(
       updatedAt: Value(DateTime.now()),
       syncStatus: const Value('pending'),
@@ -297,9 +385,28 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Future<void> deleteFarmer(String id) async {
+    if (!_authService.canManageFarmers()) {
+      throw FarmerException(['Access Denied: You do not have permission to manage farmers.']);
+    }
     final local = await (_db.select(_db.farmers)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     if (local == null) return;
+
+    // Integrity check: Farmer cannot be deleted if linked to any local Farm
+    final hasFarms = await (_db.select(_db.farms)
+          ..where((t) => Expression.and([
+            Expression.or([
+              t.farmerId.equals(id),
+              t.ownerFarmerId.equals(id),
+            ]),
+            t.isPendingDelete.equals(false),
+          ]))
+          ..limit(1))
+        .getSingleOrNull() != null;
+
+    if (hasFarms) {
+      throw FarmerHasDependenciesException(['Cannot delete farmer because they have linked farms.']);
+    }
 
     await (_db.update(_db.farmers)..where((t) => t.id.equals(id))).write(
       const FarmersCompanion(

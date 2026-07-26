@@ -1,0 +1,203 @@
+using Hasad.Application.Common.Interfaces;
+using Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
+using Hasad.Domain.Entities;
+using Hasad.Domain.Enums;
+using Hasad.Infrastructure.Persistence;
+using Hasad.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+
+namespace Hasad.Application.Tests;
+
+public class DamageValuationTests
+{
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+    private readonly Mock<IDamageReportNumberService> _numberServiceMock;
+    private readonly Mock<ILogger<CreateDamageReportCommandHandler>> _loggerMock;
+
+    public DamageValuationTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+        _numberServiceMock = new Mock<IDamageReportNumberService>();
+        _loggerMock = new Mock<ILogger<CreateDamageReportCommandHandler>>();
+
+        _numberServiceMock.Setup(x => x.GeneratePermanentNumberAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("000001-TEST-2026");
+    }
+
+    private ApplicationDbContext CreateContext()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        return new ApplicationDbContext(options, _currentUserMock.Object);
+    }
+
+    [Fact]
+    public async Task CreateReport_RecalculatesEstimatedLoss_AndLogsMismatch()
+    {
+        // Arrange
+        var context = CreateContext();
+        var costingService = new CostingService(context);
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, costingService, _loggerMock.Object);
+
+        var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1" };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), FarmerId = farmer.Id };
+        var classificationId = 101;
+        var costingSheetId = Guid.NewGuid();
+        var damageDate = DateTime.UtcNow.Date;
+
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
+        var version = new CostingSheetVersion
+        {
+            Id = Guid.NewGuid(),
+            CatalogId = catalog.Id,
+            Status = CostingSheetStatus.Active,
+            EffectiveFrom = damageDate.AddDays(-10)
+        };
+        context.CostingSheetCatalogs.Add(catalog);
+        context.CostingSheetVersions.Add(version);
+        context.CostingSheetItems.Add(new CostingSheetItem
+        {
+            Id = costingSheetId,
+            VersionId = version.Id,
+            ClassificationId = classificationId,
+            UnitPrice = 50m
+        });
+        await context.SaveChangesAsync();
+
+        var itemInput = new CreateDamageItemInput(
+            Guid.NewGuid(),
+            1, // DamageNatureId
+            1, // DamageActionId
+            classificationId,
+            costingSheetId,
+            10m, // Wrong unit price from client
+            "Unit",
+            10m,
+            50m, // 50% damage
+            100m, // Quantity 100
+            0m // Wrong estimated loss from client
+        );
+
+        var command = new CreateDamageReportCommand(
+            Guid.NewGuid(), "TEMP", farm.Id, damageDate, 1, 1, 1, null, null, "",
+            new List<CreateDamageItemInput> { itemInput });
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.Succeeded);
+        var createdItem = result.Data!.Items.First();
+
+        // Backend math: 100 quantity * 50 unit price * 0.5 percentage = 2500
+        Assert.Equal(2500m, createdItem.EstimatedLoss);
+        Assert.Equal(50m, createdItem.CalculatedUnitPrice);
+
+        // Verify Warning Log for Mismatch
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Valuation Mismatch")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception?, string>>((v, t) => true)),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateReport_Fails_WhenCostingSheetDoesNotBelongToClassification()
+    {
+        // Arrange
+        var context = CreateContext();
+        var costingService = new CostingService(context);
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, costingService, _loggerMock.Object);
+
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), FarmerId = farmer.Id };
+        var classificationId = 101;
+        var wrongCostingSheetId = Guid.NewGuid();
+
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
+        var version = new CostingSheetVersion
+        {
+            Id = Guid.NewGuid(),
+            CatalogId = catalog.Id,
+            Status = CostingSheetStatus.Active,
+            EffectiveFrom = DateTime.UtcNow.AddDays(-10)
+        };
+        context.CostingSheetCatalogs.Add(catalog);
+        context.CostingSheetVersions.Add(version);
+        context.CostingSheetItems.Add(new CostingSheetItem
+        {
+            Id = wrongCostingSheetId,
+            VersionId = version.Id,
+            ClassificationId = 999, // Different!
+            UnitPrice = 50m
+        });
+        await context.SaveChangesAsync();
+
+        var itemInput = new CreateDamageItemInput(Guid.NewGuid(), 1, 1, classificationId, wrongCostingSheetId, 50m, "U", 1, 50, 10, 250);
+        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", farm.Id, DateTime.UtcNow, 1, 1, 1, null, null, "", new List<CreateDamageItemInput> { itemInput });
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Succeeded);
+        Assert.Contains("does not belong to classification", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task CreateReport_Fails_WhenCostingSheetNotActiveOnDamageDate()
+    {
+        // Arrange
+        var context = CreateContext();
+        var costingService = new CostingService(context);
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, costingService, _loggerMock.Object);
+
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = Guid.NewGuid(), FarmerId = farmer.Id };
+        var classificationId = 101;
+        var costingSheetId = Guid.NewGuid();
+        var damageDate = DateTime.UtcNow.Date;
+
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        var catalog = new CostingSheetCatalog { Id = Guid.NewGuid(), Name = "Test Catalog" };
+        var version = new CostingSheetVersion
+        {
+            Id = Guid.NewGuid(),
+            CatalogId = catalog.Id,
+            Status = CostingSheetStatus.Active,
+            EffectiveFrom = damageDate.AddDays(1) // Starts tomorrow!
+        };
+        context.CostingSheetCatalogs.Add(catalog);
+        context.CostingSheetVersions.Add(version);
+        context.CostingSheetItems.Add(new CostingSheetItem
+        {
+            Id = costingSheetId,
+            VersionId = version.Id,
+            ClassificationId = classificationId,
+            UnitPrice = 50m
+        });
+        await context.SaveChangesAsync();
+
+        var itemInput = new CreateDamageItemInput(Guid.NewGuid(), 1, 1, classificationId, costingSheetId, 50m, "U", 1, 50, 10, 250);
+        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", farm.Id, damageDate, 1, 1, 1, null, null, "", new List<CreateDamageItemInput> { itemInput });
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Succeeded);
+        Assert.Contains("was not active on the damage date", result.Errors[0]);
+    }
+}

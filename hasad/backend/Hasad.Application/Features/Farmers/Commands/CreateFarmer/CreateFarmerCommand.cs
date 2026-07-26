@@ -42,22 +42,7 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
 
     public async Task<Result<FarmerDto>> Handle(CreateFarmerCommand request, CancellationToken cancellationToken)
     {
-        // Authorization check
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
-        {
-            // Farmers don't have DirectorateId in this command, so we check GovernorateId
-            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
-            {
-                return Result<FarmerDto>.Failure(new[] { "Access Denied: You can only manage farmers within your assigned governorate." });
-            }
-        }
-        else if (_currentUser.IsInRole("Director"))
-        {
-            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
-            {
-                return Result<FarmerDto>.Failure(new[] { "Access Denied: You can only manage farmers within your assigned governorate." });
-            }
-        }
+
 
         // Idempotency check: if a farmer with this ClientId already exists, return it.
         var existingByClientId = await _context.Farmers
@@ -69,10 +54,10 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
             return Result<FarmerDto>.Success(MapToDto(existingByClientId));
         }
 
-        // Business rule: The combination of Id Type and Id Number must be unique.
-        if (await _context.Farmers.AnyAsync(f => f.IdNumber == request.IdNumber && f.IdTypeId == request.IdTypeId, cancellationToken))
+        // Business rule: The ID Number must be unique among active farmers.
+        if (await _context.Farmers.AnyAsync(f => f.IdNumber == request.IdNumber, cancellationToken))
         {
-            return Result<FarmerDto>.Failure(new[] { "A farmer with this ID Number and ID Type already exists." });
+            return Result<FarmerDto>.Failure(new[] { "A farmer with this ID Number already exists and is active." });
         }
 
         var farmer = new Farmer

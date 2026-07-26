@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
@@ -45,6 +46,7 @@ class _FarmsListScreenState extends ConsumerState<FarmsListScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final farmsAsync = ref.watch(farmsListStreamProvider);
+    final authService = ref.watch(authorizationServiceProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -78,7 +80,7 @@ class _FarmsListScreenState extends ConsumerState<FarmsListScreen> {
           ),
         ],
       ),
-      floatingActionButton: widget.farmer != null ? FloatingActionButton(
+      floatingActionButton: (widget.farmer != null && authService.canManageFarms()) ? FloatingActionButton(
         onPressed: () => context.push(AppRoutes.addFarm, extra: widget.farmer),
         tooltip: l10n.addFarm,
         child: const Icon(Icons.add),

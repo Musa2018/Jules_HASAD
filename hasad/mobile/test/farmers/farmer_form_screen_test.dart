@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -22,6 +23,9 @@ void main() {
   late MockLocationRepository mockLocationRepo;
 
   setUpAll(() {
+    if (!EnvironmentConfig.isInitialized) {
+      EnvironmentConfig.setEnvironment(AppEnvironment.dev);
+    }
     registerFallbackValue(
       Farmer(
         id: '',

@@ -1,7 +1,5 @@
 import 'package:intl/intl.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
-import 'package:mobile/features/farmers/domain/damage_item.dart';
-import 'package:mobile/features/farmers/domain/damage_report.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
@@ -62,85 +60,6 @@ class FarmerSyncDto {
       'localityId': farmer.localityId,
       'address': farmer.address,
       'rowVersion': farmer.rowVersion,
-    };
-  }
-}
-
-class DamageReportSyncDto {
-  static Map<String, dynamic> toCreateJson(DamageReport report) {
-    return {
-      'clientId': report.id,
-      'farmId': report.farmId,
-      'farmerId': report.farmerId,
-      'damageDate': report.damageDate.toIso8601String(),
-      'governorateId': report.governorateId,
-      'localityId': report.localityId,
-      'latitude': report.latitude,
-      'longitude': report.longitude,
-      'notes': report.notes,
-      'items': report.items.map((i) => _itemToCreateJson(i)).toList(),
-    };
-  }
-
-  static Map<String, dynamic> toUpdateJson(DamageReport report) {
-    if (report.serverId == null) {
-      throw ArgumentError('ServerId is required for update synchronization.');
-    }
-    return {
-      'id': report.serverId,
-      'damageDate': report.damageDate.toIso8601String(),
-      'governorateId': report.governorateId,
-      'localityId': report.localityId,
-      'latitude': report.latitude,
-      'longitude': report.longitude,
-      'notes': report.notes,
-      'rowVersion': report.rowVersion,
-    };
-  }
-
-  static Map<String, dynamic> _itemToCreateJson(DamageItem item) {
-    return {
-      'clientId': item.id,
-      'agriculturalSectorId': item.agriculturalSectorId,
-      'subSectorId': item.subSectorId,
-      'cropId': item.cropId,
-      'damageTypeId': item.damageTypeId,
-      'affectedArea': item.affectedArea,
-      'damagePercentage': item.damagePercentage,
-      'quantity': item.quantity,
-      'estimatedLoss': item.estimatedLoss,
-    };
-  }
-
-  static Map<String, dynamic> itemToCreateJson(DamageItem item) {
-    return {
-      'clientId': item.id,
-      'agriculturalSectorId': item.agriculturalSectorId,
-      'subSectorId': item.subSectorId,
-      'cropId': item.cropId,
-      'damageTypeId': item.damageTypeId,
-      'affectedArea': item.affectedArea,
-      'damagePercentage': item.damagePercentage,
-      'quantity': item.quantity,
-      'estimatedLoss': item.estimatedLoss,
-    };
-  }
-
-  static Map<String, dynamic> itemToUpdateJson(DamageItem item) {
-    if (item.serverId == null) {
-      throw ArgumentError('ServerId is required for update synchronization.');
-    }
-    return {
-      'id': item.serverId,
-      'agriculturalSectorId': item.agriculturalSectorId,
-      'subSectorId': item.subSectorId,
-      'cropId': item.cropId,
-      'damageTypeId': item.damageTypeId,
-      'affectedArea': item.affectedArea,
-      'damagePercentage': item.damagePercentage,
-      'quantity': item.quantity,
-      'estimatedLoss': item.estimatedLoss,
-      'rowVersion': item.rowVersion,
     };
   }
 }

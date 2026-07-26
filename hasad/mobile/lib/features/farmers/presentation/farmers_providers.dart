@@ -1,18 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
-import 'package:mobile/features/farmers/data/damage_report_attachment_repository.dart';
-import 'package:mobile/features/farmers/data/damage_report_repository.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farmers/data/offline_first_damage_report_attachment_repository.dart';
-import 'package:mobile/features/farmers/data/offline_first_damage_report_repository.dart';
-import 'package:mobile/features/farmers/domain/damage_report.dart';
-import 'package:mobile/features/farmers/domain/damage_report_attachment.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 final farmerFiltersProvider = StateProvider<FarmerFilter>((ref) {
-  return const FarmerFilter();
+  final session = ref.watch(authProvider).session;
+  
+  bool isOperationalDefault = false;
+  if (session != null) {
+    const operationalRoles = ['AgriculturalEngineer', 'FieldSurveyor'];
+    isOperationalDefault = operationalRoles.any((r) => session.roles.contains(r));
+  }
+  
+  return FarmerFilter(isOperational: isOperationalDefault);
 });
 
 final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
@@ -21,6 +26,8 @@ final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
     ref.watch(syncServiceProvider),
     ref.watch(remoteFarmerRepositoryProvider),
     ref.watch(connectivityProvider),
+    ref.watch(authorizationServiceProvider),
+    ref.watch(authProvider).session,
   );
 });
 
@@ -28,22 +35,6 @@ final farmersListProvider = StreamProvider.autoDispose<List<Farmer>>((ref) {
   final filter = ref.watch(farmerFiltersProvider);
   return ref.watch(farmerRepositoryProvider).watchFarmers(filter: filter);
 });
-
-final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
-  return OfflineFirstDamageReportRepository(
-    ref.watch(databaseProvider),
-    ref.watch(syncServiceProvider),
-  );
-});
-
-final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
-  (ref) {
-    return OfflineFirstDamageReportAttachmentRepository(
-      ref.watch(databaseProvider),
-      ref.watch(syncServiceProvider),
-    );
-  },
-);
 
 final farmerProvider = FutureProvider.autoDispose.family<Farmer, String>((
   ref,
@@ -57,102 +48,19 @@ final farmerStreamProvider =
       return ref.watch(farmerRepositoryProvider).watchFarmer(id);
     });
 
-final damageReportsListByFarmProvider = FutureProvider.autoDispose
-    .family<List<DamageReport>, String>((ref, farmId) async {
-      return ref
-          .watch(damageReportRepositoryProvider)
-          .getDamageReportsByFarm(farmId);
-    });
-
-final attachmentsByReportProvider = FutureProvider.autoDispose
-    .family<List<DamageReportAttachment>, String>((ref, reportId) async {
-      return ref
-          .watch(attachmentRepositoryProvider)
-          .getAttachmentsByReport(reportId);
-    });
-
-class DamageReportFormState {
-  final bool isLoading;
-  final List<String> errors;
-  final bool success;
-
-  const DamageReportFormState({
-    this.isLoading = false,
-    this.errors = const [],
-    this.success = false,
-  });
-}
-
-class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
-  final DamageReportRepository _repository;
-
-  DamageReportFormNotifier(this._repository)
-    : super(const DamageReportFormState());
-
-  Future<void> createDamageReport(DamageReport report) async {
-    state = const DamageReportFormState(isLoading: true);
-    try {
-      await _repository.createDamageReport(report);
-      state = const DamageReportFormState(success: true);
-    } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
-    } catch (_) {
-      state = const DamageReportFormState(
-        errors: ['An unexpected error occurred.'],
-      );
-    }
-  }
-
-  Future<void> updateDamageReport(DamageReport report) async {
-    state = const DamageReportFormState(isLoading: true);
-    try {
-      await _repository.updateDamageReport(report);
-      state = const DamageReportFormState(success: true);
-    } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
-    } catch (_) {
-      state = const DamageReportFormState(
-        errors: ['An unexpected error occurred.'],
-      );
-    }
-  }
-
-  Future<void> deleteDamageReport(String id) async {
-    state = const DamageReportFormState(isLoading: true);
-    try {
-      await _repository.deleteDamageReport(id);
-      state = const DamageReportFormState(success: true);
-    } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
-    } catch (_) {
-      state = const DamageReportFormState(
-        errors: ['An unexpected error occurred.'],
-      );
-    }
-  }
-}
-
-final damageReportFormProvider =
-    StateNotifierProvider.autoDispose<
-      DamageReportFormNotifier,
-      DamageReportFormState
-    >((ref) {
-      return DamageReportFormNotifier(
-        ref.watch(damageReportRepositoryProvider),
-      );
-    });
-
 class FarmerFormState {
   final bool isLoading;
   final List<String> errors;
   final bool success;
   final Farmer? farmer;
+  final bool isDependencyError;
 
   const FarmerFormState({
     this.isLoading = false,
     this.errors = const [],
     this.success = false,
     this.farmer,
+    this.isDependencyError = false,
   });
 }
 
@@ -168,8 +76,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
       state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmerFormState(errors: ['An unexpected error occurred.']);
+    } catch (e) {
+      state = FarmerFormState(errors: [e.toString()]);
     }
   }
 
@@ -180,8 +88,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
       state = FarmerFormState(success: true, farmer: result);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
-    } catch (_) {
-      state = const FarmerFormState(errors: ['An unexpected error occurred.']);
+    } catch (e) {
+      state = FarmerFormState(errors: [e.toString()]);
     }
   }
 
@@ -190,6 +98,8 @@ class FarmerFormNotifier extends StateNotifier<FarmerFormState> {
     try {
       await _repository.deleteFarmer(id);
       state = const FarmerFormState(success: true);
+    } on FarmerHasDependenciesException catch (e) {
+      state = FarmerFormState(errors: e.errors, isDependencyError: true);
     } on FarmerException catch (e) {
       state = FarmerFormState(errors: e.errors);
     } catch (_) {

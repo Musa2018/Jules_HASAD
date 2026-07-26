@@ -29,7 +29,7 @@ public class ReferenceDataTests
         _context.OwnershipTypes.Add(new OwnershipType { Id = 1, NameAr = "ملك", NameEn = "Owned" });
         _context.AgriculturalSectors.Add(new AgriculturalSector { Id = 1, NameAr = "نباتي", NameEn = "Plant" });
         _context.PoliticalClassifications.Add(new PoliticalClassification { Id = 1, NameAr = "A", NameEn = "A" });
-        _context.AreaUnits.Add(new AreaUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum" });
+        _context.MeasurementUnits.Add(new MeasurementUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum", Category = "Area" });
         _context.RelationshipToOwners.Add(new RelationshipToOwner { Id = 1, NameAr = "المالك نفسه", NameEn = "Owner Himself" });
         await _context.SaveChangesAsync();
 

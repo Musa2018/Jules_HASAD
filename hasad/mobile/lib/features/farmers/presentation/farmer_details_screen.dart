@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -17,6 +18,7 @@ class FarmerDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final authService = ref.watch(authorizationServiceProvider);
     // We watch the farmerStreamProvider to ensure we have the latest data from the local DB reactively
     final farmerAsync = ref.watch(farmerStreamProvider(farmer.id));
     final currentFarmer = farmerAsync.asData?.value ?? farmer;
@@ -25,11 +27,12 @@ class FarmerDetailsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.farmerDetails),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () =>
-                context.push(AppRoutes.editFarmer, extra: currentFarmer),
-          ),
+          if (authService.canManageFarmers())
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () =>
+                  context.push(AppRoutes.editFarmer, extra: currentFarmer),
+            ),
         ],
       ),
       body: farmerAsync.when(

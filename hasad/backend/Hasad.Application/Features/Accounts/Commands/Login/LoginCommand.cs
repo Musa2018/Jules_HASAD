@@ -21,6 +21,7 @@ public record LoginCommand(string Email, string Password) : IRequest<Result<Auth
 public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthResponse>>
 {
     private static readonly string[] InvalidCredentialsError = { "Invalid email or password." };
+    private static readonly string[] AccountDisabledError = { "Your account is disabled. Please contact your administrator." };
 
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenService _tokenService;
@@ -55,6 +56,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthResp
         {
             await _userManager.AccessFailedAsync(user);
             return Result<AuthResponse>.Failure(InvalidCredentialsError);
+        }
+
+        if (!user.IsActive)
+        {
+            return Result<AuthResponse>.Failure(AccountDisabledError);
         }
 
         await _userManager.ResetAccessFailedCountAsync(user);

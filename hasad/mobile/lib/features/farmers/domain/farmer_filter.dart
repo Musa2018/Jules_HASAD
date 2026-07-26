@@ -11,5 +11,6 @@ class FarmerFilter with _$FarmerFilter {
     String? syncStatus,
     String? governorateId,
     String? localityId,
+    @Default(false) bool isOperational,
   }) = _FarmerFilter;
 }

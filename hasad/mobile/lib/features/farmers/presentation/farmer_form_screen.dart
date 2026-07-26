@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/core/presentation/widgets/form_save_footer.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/core/utils/validators.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
@@ -14,8 +15,14 @@ import 'package:mobile/l10n/app_localizations.dart';
 class FarmerFormScreen extends ConsumerStatefulWidget {
   final Farmer? farmer;
   final String? initialIdNumber;
+  final bool isSubWorkflow;
 
-  const FarmerFormScreen({super.key, this.farmer, this.initialIdNumber});
+  const FarmerFormScreen({
+    super.key,
+    this.farmer,
+    this.initialIdNumber,
+    this.isSubWorkflow = false,
+  });
 
   @override
   ConsumerState<FarmerFormScreen> createState() => _FarmerFormScreenState();
@@ -45,31 +52,41 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   String? _selectedGovernorateId;
   String? _selectedLocalityId;
 
+  bool _isFormValid = true;
+
   @override
   void initState() {
     super.initState();
     final f = widget.farmer;
     
-    _firstNameArController = TextEditingController(text: f?.firstNameAr);
-    _fatherNameArController = TextEditingController(text: f?.fatherNameAr);
-    _grandfatherNameArController = TextEditingController(text: f?.grandfatherNameAr);
-    _familyNameArController = TextEditingController(text: f?.familyNameAr);
+    _firstNameArController = TextEditingController(text: f?.firstNameAr)..addListener(_updateValidationState);
+    _fatherNameArController = TextEditingController(text: f?.fatherNameAr)..addListener(_updateValidationState);
+    _grandfatherNameArController = TextEditingController(text: f?.grandfatherNameAr)..addListener(_updateValidationState);
+    _familyNameArController = TextEditingController(text: f?.familyNameAr)..addListener(_updateValidationState);
     
-    _firstNameEnController = TextEditingController(text: f?.firstNameEn);
-    _fatherNameEnController = TextEditingController(text: f?.fatherNameEn);
-    _grandfatherNameEnController = TextEditingController(text: f?.grandfatherNameEn);
-    _familyNameEnController = TextEditingController(text: f?.familyNameEn);
+    _firstNameEnController = TextEditingController(text: f?.firstNameEn)..addListener(_updateValidationState);
+    _fatherNameEnController = TextEditingController(text: f?.fatherNameEn)..addListener(_updateValidationState);
+    _grandfatherNameEnController = TextEditingController(text: f?.grandfatherNameEn)..addListener(_updateValidationState);
+    _familyNameEnController = TextEditingController(text: f?.familyNameEn)..addListener(_updateValidationState);
     
-    _idNumberController = TextEditingController(text: f?.idNumber ?? widget.initialIdNumber);
-    _phoneController = TextEditingController(text: f?.phoneNumber);
-    _familySizeController = TextEditingController(text: f?.familySize.toString() ?? '1');
-    _addressController = TextEditingController(text: f?.address);
+    _idNumberController = TextEditingController(text: f?.idNumber ?? widget.initialIdNumber)..addListener(_updateValidationState);
+    _phoneController = TextEditingController(text: f?.phoneNumber)..addListener(_updateValidationState);
+    _familySizeController = TextEditingController(text: f?.familySize.toString() ?? '1')..addListener(_updateValidationState);
+    _addressController = TextEditingController(text: f?.address)..addListener(_updateValidationState);
     
     _birthDate = f?.birthDate;
     _gender = f?.gender ?? Gender.unspecified;
     _idTypeId = f?.idTypeId ?? 1;
     _selectedGovernorateId = f?.governorateId;
     _selectedLocalityId = f?.localityId;
+  }
+
+  void _updateValidationState() {
+    if (_formKey.currentState == null) return;
+    final isValid = _formKey.currentState!.validate();
+    if (isValid != _isFormValid) {
+      setState(() => _isFormValid = isValid);
+    }
   }
 
   @override
@@ -102,8 +119,12 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      setState(() => _isFormValid = false);
+      return;
+    }
     if (_birthDate == null) {
+      setState(() => _isFormValid = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.selectDate)),
       );
@@ -150,8 +171,9 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
         ref.invalidate(farmerProvider(widget.farmer!.id));
       }
 
-      final result = ref.read(farmerFormProvider).farmer;
-      Navigator.of(context).pop(result);
+      // If we are creating, go back to the caller (Search or List)
+      Navigator.of(context).pop(ref.read(farmerFormProvider).farmer);
+      
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
@@ -402,19 +424,15 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                   ),
                 ],
               ),
-
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: state.isLoading ? null : _save,
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(16)),
-                child: state.isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(l10n.save, style: const TextStyle(fontSize: 18)),
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 100), // Space for persistent button
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: FormSaveFooter(
+        isLoading: state.isLoading,
+        isValid: _isFormValid,
+        onSave: _save,
       ),
     );
   }

@@ -50,7 +50,7 @@ public class DeleteFarmCommandHandler : IRequestHandler<DeleteFarmCommand, Resul
 
         if (hasReports)
         {
-            return Result<Unit>.Failure(new[] { "لا يمكن حذف المزرعة لوجود استمارات ضرر مرتبطة بها." });
+            return Result<Unit>.Failure(new[] { "لا يمكن حذف المزرعة لوجود استمارات ضرر مرتبطة بها." }, "FARM_HAS_DEPENDENCIES");
         }
 
         farm.IsDeleted = true;

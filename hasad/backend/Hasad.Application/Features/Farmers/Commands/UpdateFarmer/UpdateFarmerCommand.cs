@@ -43,21 +43,7 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
 
     public async Task<Result<FarmerDto>> Handle(UpdateFarmerCommand request, CancellationToken cancellationToken)
     {
-        // Authorization check
-        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
-        {
-            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
-            {
-                return Result<FarmerDto>.Failure(new[] { "Access Denied: You can only manage farmers within your assigned governorate." });
-            }
-        }
-        else if (_currentUser.IsInRole("Director"))
-        {
-            if (Guid.TryParse(request.GovernorateId, out var reqGovId) && reqGovId != _currentUser.GovernorateId)
-            {
-                return Result<FarmerDto>.Failure(new[] { "Access Denied: You can only manage farmers within your assigned governorate." });
-            }
-        }
+
 
         var farmer = await _context.Farmers
             .FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken);
@@ -67,10 +53,10 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
             return Result<FarmerDto>.Failure(new[] { "Farmer not found." });
         }
 
-        // Business rule: The combination of Id Type and Id Number must be unique among other farmers.
-        if (await _context.Farmers.AnyAsync(f => f.IdNumber == request.IdNumber && f.IdTypeId == request.IdTypeId && f.Id != request.Id, cancellationToken))
+        // Business rule: The ID Number must be unique among other active farmers.
+        if (await _context.Farmers.AnyAsync(f => f.IdNumber == request.IdNumber && f.Id != request.Id, cancellationToken))
         {
-            return Result<FarmerDto>.Failure(new[] { "A farmer with this ID Number and ID Type already exists." });
+            return Result<FarmerDto>.Failure(new[] { "A farmer with this ID Number already exists and is active." });
         }
 
         // Optimistic concurrency check

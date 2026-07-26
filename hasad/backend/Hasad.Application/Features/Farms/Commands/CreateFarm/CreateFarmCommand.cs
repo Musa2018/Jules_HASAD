@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
@@ -21,12 +22,16 @@ public record CreateFarmCommand(
     string Basin,
     string Parcel,
     decimal Area,
-    int AreaUnitId,
+    int MeasurementUnitId,
     int AgriculturalSectorId,
     int PoliticalClassificationId,
     double? Latitude,
     double? Longitude,
-    string? Notes) : IRequest<Result<FarmDto>>;
+    string? Notes) : IRequest<Result<FarmDto>>
+{
+    [JsonPropertyName("areaUnitId")]
+    public int? AreaUnitId { init => MeasurementUnitId = value ?? MeasurementUnitId; }
+}
 
 public class CreateFarmCommandHandler : IRequestHandler<CreateFarmCommand, Result<FarmDto>>
 {
@@ -99,7 +104,7 @@ public class CreateFarmCommandHandler : IRequestHandler<CreateFarmCommand, Resul
             Basin = request.Basin,
             Parcel = request.Parcel,
             Area = request.Area,
-            AreaUnitId = request.AreaUnitId,
+            MeasurementUnitId = request.MeasurementUnitId,
             AgriculturalSectorId = request.AgriculturalSectorId,
             PoliticalClassificationId = request.PoliticalClassificationId,
             Latitude = request.Latitude,
@@ -129,7 +134,7 @@ public class CreateFarmCommandHandler : IRequestHandler<CreateFarmCommand, Resul
         Basin = farm.Basin,
         Parcel = farm.Parcel,
         Area = farm.Area,
-        AreaUnitId = farm.AreaUnitId,
+            MeasurementUnitId = farm.MeasurementUnitId,
         AgriculturalSectorId = farm.AgriculturalSectorId,
         PoliticalClassificationId = farm.PoliticalClassificationId,
         Latitude = farm.Latitude,
@@ -154,7 +159,7 @@ public class CreateFarmCommandValidator : AbstractValidator<CreateFarmCommand>
         RuleFor(v => v.Basin).NotEmpty().MaximumLength(100);
         RuleFor(v => v.Parcel).NotEmpty().MaximumLength(100);
         RuleFor(v => v.Area).GreaterThan(0);
-        RuleFor(v => v.AreaUnitId).NotEmpty();
+        RuleFor(v => v.MeasurementUnitId).NotEmpty();
         RuleFor(v => v.AgriculturalSectorId).NotEmpty();
         RuleFor(v => v.PoliticalClassificationId).NotEmpty();
 

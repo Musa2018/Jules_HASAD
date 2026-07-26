@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/presentation/forgot_password_screen.dart';
 import 'package:mobile/features/auth/presentation/reset_password_screen.dart';
 import 'package:mobile/features/auth/presentation/login_screen.dart';
-import 'package:mobile/features/farmers/domain/damage_report.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
-import 'package:mobile/features/farmers/presentation/damage_report/attachment_gallery_screen.dart';
-import 'package:mobile/features/farmers/presentation/damage_report/damage_report_form_screen.dart';
-import 'package:mobile/features/farmers/presentation/damage_report/damage_reports_list_screen.dart';
-import 'package:mobile/features/farmers/presentation/compensation/compensation_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/attachment_gallery_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_report_details_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_report_form_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_reports_list_screen.dart';
+import 'package:mobile/features/agricultural_assistance/presentation/agricultural_assistance_screen.dart';
 import 'package:mobile/features/farms/presentation/farm_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
@@ -80,6 +82,9 @@ abstract final class AppRoutes {
   /// Damage reports list.
   static const damageReports = '/damage-reports';
 
+  /// Damage report details.
+  static const damageReportDetails = '/damage-reports/details';
+
   /// Add damage report.
   static const addDamageReport = '/damage-reports/add';
 
@@ -89,8 +94,8 @@ abstract final class AppRoutes {
   /// Attachment gallery.
   static const attachments = '/damage-reports/attachments';
 
-  /// Compensation.
-  static const compensation = '/compensation';
+  /// Agricultural Assistance.
+  static const agriculturalAssistance = '/agricultural-assistance';
 }
 
 /// Bridges a Riverpod provider into a [Listenable] so GoRouter re-evaluates
@@ -194,11 +199,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.addFarmer,
         builder: (context, state) =>
             FarmerFormScreen(initialIdNumber: state.extra as String?),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarmers() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.editFarmer,
         builder: (context, state) =>
             FarmerFormScreen(farmer: state.extra as Farmer?),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarmers() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.farms,
@@ -214,16 +227,34 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.addFarm,
         builder: (context, state) =>
             FarmFormScreen(farmer: state.extra as Farmer),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarms() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.editFarm,
         builder: (context, state) =>
             FarmFormScreen(farm: state.extra as Farm),
+        redirect: (context, state) {
+          final authService = ref.read(authorizationServiceProvider);
+          return authService.canManageFarms() ? null : AppRoutes.home;
+        },
       ),
       GoRoute(
         path: AppRoutes.damageReports,
         builder: (context, state) =>
             DamageReportsListScreen(farm: state.extra as Farm),
+      ),
+      GoRoute(
+        path: AppRoutes.damageReportDetails,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return DamageReportDetailsScreen(
+            report: extra['report'] as DamageReport,
+            farm: extra['farm'] as Farm,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.addDamageReport,
@@ -246,9 +277,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             AttachmentGalleryScreen(reportId: state.extra as String),
       ),
       GoRoute(
-        path: AppRoutes.compensation,
+        path: AppRoutes.agriculturalAssistance,
         builder: (context, state) =>
-            CompensationScreen(reportId: state.extra as String),
+            AgriculturalAssistanceScreen(reportId: state.extra as String),
       ),
     ],
   );

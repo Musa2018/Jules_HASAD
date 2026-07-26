@@ -2,6 +2,7 @@ using FluentValidation;
 using Hasad.Application.Common.Interfaces;
 using Hasad.Application.Common.Models;
 using Hasad.Application.Features.DamageReports.Models;
+using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -23,11 +24,16 @@ public class UploadAttachmentCommandHandler : IRequestHandler<UploadAttachmentCo
 {
     private readonly IApplicationDbContext _context;
     private readonly IFileStorageService _storageService;
+    private readonly ICurrentUserService _currentUser;
 
-    public UploadAttachmentCommandHandler(IApplicationDbContext context, IFileStorageService storageService)
+    public UploadAttachmentCommandHandler(
+        IApplicationDbContext context,
+        IFileStorageService storageService,
+        ICurrentUserService currentUser)
     {
         _context = context;
         _storageService = storageService;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<AttachmentDto>> Handle(UploadAttachmentCommand request, CancellationToken cancellationToken)
@@ -42,9 +48,30 @@ public class UploadAttachmentCommandHandler : IRequestHandler<UploadAttachmentCo
             return Result<AttachmentDto>.Success(MapToDto(existing));
         }
 
-        if (!await _context.DamageReports.AnyAsync(r => r.Id == request.DamageReportId, cancellationToken))
+        var report = await _context.DamageReports
+            .AsNoTracking()
+            .Include(r => r.Farm)
+            .FirstOrDefaultAsync(r => r.Id == request.DamageReportId, cancellationToken);
+
+        if (report == null)
         {
             return Result<AttachmentDto>.Failure(new[] { "Damage report not found." });
+        }
+
+        // Authorization Inheritance (Rule 4)
+        if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
+        {
+            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
+            {
+                return Result<AttachmentDto>.Failure(new[] { "Access Denied: You can only upload attachments within your assigned directorate." });
+            }
+        }
+        else if (_currentUser.IsInRole(AppRoles.Director))
+        {
+            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
+            {
+                return Result<AttachmentDto>.Failure(new[] { "Access Denied: You can only upload attachments within your assigned governorate." });
+            }
         }
 
         // Save physical file

@@ -28,7 +28,7 @@ public class GetFarmByIdQueryHandler : IRequestHandler<GetFarmByIdQuery, Result<
             .Include(f => f.Governorate)
             .Include(f => f.Directorate)
             .Include(f => f.Locality)
-            .Include(f => f.AreaUnit)
+            .Include(f => f.MeasurementUnit)
             .Include(f => f.AgriculturalSector)
             .Include(f => f.PoliticalClassification)
             .FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken);
@@ -60,8 +60,8 @@ public class GetFarmByIdQueryHandler : IRequestHandler<GetFarmByIdQuery, Result<
             Basin = farm.Basin,
             Parcel = farm.Parcel,
             Area = farm.Area,
-            AreaUnitId = farm.AreaUnitId,
-            AreaUnitName = farm.AreaUnit?.NameAr,
+            MeasurementUnitId = farm.MeasurementUnitId,
+            MeasurementUnitName = farm.MeasurementUnit?.NameAr,
             AgriculturalSectorId = farm.AgriculturalSectorId,
             AgriculturalSectorName = farm.AgriculturalSector?.NameAr,
             PoliticalClassificationId = farm.PoliticalClassificationId,

@@ -1,0 +1,22 @@
+# Task: Sprint 12.2 — Hierarchical Classification UI
+
+- `[x]` Data Layer Enhancement
+    - `[x]` Update `ReferenceDataRepository` interface with hierarchical methods
+    - `[x]` Implement methods in `OfflineFirstReferenceDataRepository` using Drift
+- `[x]` Domain Logic
+    - `[x]` Implement `ValuationEngine` for technical loss calculation
+- `[x]` State Management
+    - `[x]` Implement `ClassificationWizardProvider` (Nature -> Category -> SubCategory -> Classification -> Costing)
+    - `[x]` Implement cascading reset logic
+- `[x]` UI Components
+    - `[x]` Create `ClassificationSelector` (4-step cascading)
+    - `[x]` Create `DamageItemFormSheet` (Quantity entry & Pricing preview)
+    - `[x]` Integrate search functionality (local only)
+- `[x]` Testing
+    - `[x]` Unit tests for `ClassificationWizardProvider`
+    - `[x]` Integration tests for `ReferenceDataRepository` lookups
+    - `[x]` Widget tests for `ClassificationSelector`
+- `[x]` Documentation
+    - `[x]` Update `AI_CONTEXT.md`
+    - `[x]` Update `PROJECT_STATUS.md`
+    - `[x]` Update `CHANGELOG.md`

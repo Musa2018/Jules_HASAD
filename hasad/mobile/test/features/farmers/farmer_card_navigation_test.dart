@@ -2,15 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_card.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
+class MockAuthorizationService extends Mock implements AuthorizationService {}
+
 void main() {
+  late MockAuthorizationService mockAuthService;
+
   setUpAll(() {
     EnvironmentConfig.setEnvironment(AppEnvironment.dev);
+  });
+
+  setUp(() {
+    mockAuthService = MockAuthorizationService();
+    when(() => mockAuthService.canManageFarmers()).thenReturn(true);
+    when(() => mockAuthService.canManageFarms()).thenReturn(true);
   });
 
   final testFarmer = Farmer(
@@ -37,6 +49,9 @@ void main() {
   testWidgets('FarmerCard shows Farm button instead of Search', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          authorizationServiceProvider.overrideWithValue(mockAuthService),
+        ],
         child: MaterialApp(
           localizationsDelegates: const [
             AppLocalizations.delegate,
@@ -53,8 +68,8 @@ void main() {
       ),
     );
 
-    // Verify "مزرعة" button exists (Arabic)
-    expect(find.text('مزرعة'), findsOneWidget);
+    // Verify "المزارع" button exists (Arabic - plural)
+    expect(find.text('المزارع'), findsOneWidget);
     expect(find.byIcon(Icons.agriculture), findsOneWidget);
 
     // Verify "بحث" button does NOT exist

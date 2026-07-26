@@ -120,6 +120,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pendingDelete => 'Pending Delete';
 
   @override
+  String get deleteRestrictedError =>
+      'This record cannot be deleted because it is linked to other data.';
+
+  @override
   String get noFarmers => 'No farmers found.';
 
   @override
@@ -285,6 +289,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get landArea => 'Land Area';
 
   @override
+  String get measurementUnit => 'Measurement Unit';
+
+  @override
+  String get unitCategory_Area => 'Area';
+
+  @override
+  String get unitCategory_Weight => 'Weight';
+
+  @override
+  String get unitCategory_Count => 'Count';
+
+  @override
+  String get unitCategory_Volume => 'Volume';
+
+  @override
+  String get assessmentItem => 'Assessment Item';
+
+  @override
+  String get quantity => 'Quantity';
+
+  @override
+  String get damagePercentage => 'Damage Percentage (%)';
+
+  @override
+  String get affectedAreaOptional => 'Affected Area (Optional)';
+
+  @override
+  String get unitPriceSnapshot => 'Unit Price (Snapshot)';
+
+  @override
+  String get pricingNotFound =>
+      'Pricing not found. Please contact support or sync reference data.';
+
+  @override
+  String get technicalValuation => 'Technical Valuation:';
+
+  @override
   String get unit => 'Unit';
 
   @override
@@ -346,7 +387,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter your email address and we\'ll send you a link to reset your password.';
 
   @override
-  String get compensation => 'Compensation';
+  String get agriculturalAssistance => 'Agricultural Assistance';
 
   @override
   String get calculatedAmount => 'Calculated Amount';
@@ -361,7 +402,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get status => 'Status';
 
   @override
-  String get calculateCompensation => 'Calculate Compensation';
+  String get calculateAssistance => 'Calculate Assistance';
 
   @override
   String get approve => 'Approve';
@@ -370,7 +411,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paid => 'Paid';
 
   @override
-  String get noCompensation => 'No compensation calculated yet.';
+  String get noAssistance => 'No agricultural assistance calculated yet.';
 
   @override
   String get userManagement => 'User Management';
@@ -422,4 +463,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get directorate => 'Directorate';
+
+  @override
+  String get status_Draft => 'Draft';
+
+  @override
+  String get status_TechReview => 'Technical Review';
+
+  @override
+  String get status_ArchiveDir => 'Directorate Archive';
+
+  @override
+  String get status_DirManager => 'Directorate Manager';
+
+  @override
+  String get status_MinTechReview => 'Ministry Technical Review';
+
+  @override
+  String get status_LegalReview => 'Legal Review';
+
+  @override
+  String get status_ProcReview => 'Procedural Review';
+
+  @override
+  String get status_MinArchive => 'Ministry Archive';
+
+  @override
+  String get status_GenManager => 'General Manager';
+
+  @override
+  String get status_Completed => 'Completed';
+
+  @override
+  String get operationalView => 'Operational View';
 }

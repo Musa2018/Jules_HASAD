@@ -1,0 +1,222 @@
+using Hasad.Application.Common.Interfaces;
+using Hasad.Application.Features.DamageReports.Commands.CreateDamageReport;
+using Hasad.Application.Features.DamageReports.Commands.UpdateDamageReport;
+using Hasad.Application.Features.DamageReports.Commands.DeleteDamageReport;
+using Hasad.Application.Features.DamageReports.Commands.UpdateDamageItem;
+using Hasad.Application.Features.DamageReports.Commands.UploadAttachment;
+using Hasad.Application.Features.DamageReports.Queries.GetDamageReportById;
+using Hasad.Domain.Entities;
+using Hasad.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+using Hasad.Domain.Constants;
+
+namespace Hasad.Application.Tests;
+
+public class DamageReportSecurityTests
+{
+    private readonly Mock<ICurrentUserService> _currentUserMock;
+    private readonly Mock<IDamageReportNumberService> _numberServiceMock;
+    private readonly Mock<IFileStorageService> _storageServiceMock;
+    private readonly Mock<ICostingService> _costingServiceMock;
+    private readonly Mock<ILogger<CreateDamageReportCommandHandler>> _createLoggerMock;
+    private readonly Mock<ILogger<UpdateDamageItemCommandHandler>> _itemLoggerMock;
+    private readonly Mock<ILogger<UpdateDamageReportCommandHandler>> _updateLoggerMock;
+
+    public DamageReportSecurityTests()
+    {
+        _currentUserMock = new Mock<ICurrentUserService>();
+        _numberServiceMock = new Mock<IDamageReportNumberService>();
+        _storageServiceMock = new Mock<IFileStorageService>();
+        _costingServiceMock = new Mock<ICostingService>();
+        _createLoggerMock = new Mock<ILogger<CreateDamageReportCommandHandler>>();
+        _itemLoggerMock = new Mock<ILogger<UpdateDamageItemCommandHandler>>();
+        _updateLoggerMock = new Mock<ILogger<UpdateDamageReportCommandHandler>>();
+
+        _numberServiceMock.Setup(x => x.GeneratePermanentNumberAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("000001-TEST-2026");
+
+        _costingServiceMock.Setup(x => x.GetUnitPriceAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Hasad.Application.Common.Models.Result<decimal>.Success(100m));
+    }
+
+    private ApplicationDbContext CreateContext()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        return new ApplicationDbContext(options, _currentUserMock.Object);
+    }
+
+    [Fact]
+    public async Task CreateDamageReport_Succeeds_WhenEngineerInSameDirectorateAsFarm()
+    {
+        var context = CreateContext();
+        var directorateId = Guid.NewGuid();
+
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
+
+        var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = directorateId, FarmerId = farmer.Id };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        await context.SaveChangesAsync();
+
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _createLoggerMock.Object);
+        var command = CreateValidCreateCommand(farm.Id, farmer.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.True(result.Succeeded);
+    }
+
+    [Fact]
+    public async Task CreateDamageReport_Fails_WhenEngineerInDifferentDirectorate()
+    {
+        var context = CreateContext();
+        var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
+
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
+
+        var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        await context.SaveChangesAsync();
+
+        var handler = new CreateDamageReportCommandHandler(context, _currentUserMock.Object, _numberServiceMock.Object, _costingServiceMock.Object, _createLoggerMock.Object);
+        var command = CreateValidCreateCommand(farm.Id, farmer.Id);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task UpdateDamageReport_Fails_WhenEngineerOutsideDirectorate()
+    {
+        var context = CreateContext();
+        var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
+
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
+
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
+        var report = new DamageReport
+        {
+            Id = Guid.NewGuid(),
+            FarmId = farm.Id,
+            Farm = farm,
+            StatusId = DamageReportStatus.Draft,
+            RowVersion = new byte[] { 1, 2, 3 }
+        };
+
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        context.DamageReports.Add(report);
+        await context.SaveChangesAsync();
+
+        var handler = new UpdateDamageReportCommandHandler(context, _currentUserMock.Object);
+        var command = new UpdateDamageReportCommand(report.Id, DateTime.UtcNow, 1, 1, 1, null, null, "Notes", Convert.ToBase64String(report.RowVersion));
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task DeleteDamageReport_Fails_WhenEngineerOutsideDirectorate()
+    {
+        var context = CreateContext();
+        var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
+
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
+
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        context.DamageReports.Add(report);
+        await context.SaveChangesAsync();
+
+        var handler = new DeleteDamageReportCommandHandler(context, _currentUserMock.Object);
+        var result = await handler.Handle(new DeleteDamageReportCommand(report.Id), CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task UpdateDamageItem_Fails_WhenEngineerOutsideReportScope()
+    {
+        var context = CreateContext();
+        var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
+
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
+
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
+        var item = new DamageItem { Id = Guid.NewGuid(), DamageReportId = report.Id, DamageReport = report, RowVersion = new byte[] { 1 } };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        context.DamageReports.Add(report);
+        context.DamageItems.Add(item);
+        await context.SaveChangesAsync();
+
+        var handler = new UpdateDamageItemCommandHandler(context, _currentUserMock.Object, _costingServiceMock.Object, _itemLoggerMock.Object);
+        var command = new UpdateDamageItemCommand(item.Id, 1, 1, 1, Guid.NewGuid(), 10, "U", 1, 1, 1, 1, Convert.ToBase64String(item.RowVersion));
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
+
+    [Fact]
+    public async Task UploadAttachment_Fails_WhenEngineerOutsideReportScope()
+    {
+        var context = CreateContext();
+        var myDirectorateId = Guid.NewGuid();
+        var otherDirectorateId = Guid.NewGuid();
+
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
+
+        var farmer = new Farmer { Id = Guid.NewGuid() };
+        var farm = new Farm { Id = Guid.NewGuid(), DirectorateId = otherDirectorateId, FarmerId = farmer.Id };
+        var report = new DamageReport { Id = Guid.NewGuid(), FarmId = farm.Id, Farm = farm };
+        context.Farmers.Add(farmer);
+        context.Farms.Add(farm);
+        context.DamageReports.Add(report);
+        await context.SaveChangesAsync();
+
+        var handler = new UploadAttachmentCommandHandler(context, _storageServiceMock.Object, _currentUserMock.Object);
+        var command = new UploadAttachmentCommand(report.Id, Guid.NewGuid(), new MemoryStream(), "file.png", "image/png", 1024, null, null, null);
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Contains("Access Denied", result.Errors[0]);
+    }
+
+    private CreateDamageReportCommand CreateValidCreateCommand(Guid farmId, Guid farmerId)
+    {
+        return new CreateDamageReportCommand(
+            Guid.NewGuid(), "TEMP", farmId, DateTime.UtcNow, 1, 1, 1, null, null, "", new List<CreateDamageItemInput>());
+    }
+}

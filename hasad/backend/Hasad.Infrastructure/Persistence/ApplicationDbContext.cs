@@ -61,8 +61,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Types of ownership for farms.</summary>
     public DbSet<OwnershipType> OwnershipTypes => Set<OwnershipType>();
 
-    /// <summary>Units of area for land.</summary>
-    public DbSet<AreaUnit> AreaUnits => Set<AreaUnit>();
+    /// <summary>Units of measurement (Area, Weight, Count, etc.).</summary>
+    public DbSet<MeasurementUnit> MeasurementUnits => Set<MeasurementUnit>();
 
     /// <summary>Agricultural sectors (Plant, Animal, Mixed).</summary>
     public DbSet<AgriculturalSector> AgriculturalSectors => Set<AgriculturalSector>();
@@ -79,20 +79,37 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Damage reports.</summary>
     public DbSet<DamageReport> DamageReports => Set<DamageReport>();
 
-    /// <summary>Compensations linked to reports.</summary>
-    public DbSet<Compensation> Compensations => Set<Compensation>();
+    /// <summary>Assistances linked to reports.</summary>
+    public DbSet<Assistance> Assistances => Set<Assistance>();
 
-    /// <summary>Compensation rules for calculation.</summary>
-    public DbSet<CompensationRule> CompensationRules => Set<CompensationRule>();
+    /// <summary>Assistance rules for calculation.</summary>
+    public DbSet<AssistanceRule> AssistanceRules => Set<AssistanceRule>();
 
-    /// <summary>Audit logs for compensation status changes.</summary>
-    public DbSet<CompensationAuditLog> CompensationAuditLogs => Set<CompensationAuditLog>();
+    /// <summary>Audit logs for assistance status changes.</summary>
+    public DbSet<AssistanceAuditLog> AssistanceAuditLogs => Set<AssistanceAuditLog>();
 
     /// <summary>Damage items within reports.</summary>
     public DbSet<DamageItem> DamageItems => Set<DamageItem>();
 
     /// <summary>Attachments linked to reports.</summary>
     public DbSet<DamageReportAttachment> DamageReportAttachments => Set<DamageReportAttachment>();
+
+    /// <summary>Workflow history for damage reports.</summary>
+    public DbSet<DamageWorkflowHistory> DamageWorkflowHistories => Set<DamageWorkflowHistory>();
+
+    public DbSet<DamageReportSequence> DamageReportSequences => Set<DamageReportSequence>();
+
+    public DbSet<DamageNature> DamageNatures => Set<DamageNature>();
+    public DbSet<DamageAction> DamageActions => Set<DamageAction>();
+    public DbSet<DamageCategory> DamageCategories => Set<DamageCategory>();
+    public DbSet<DamageSubCategory> DamageSubCategories => Set<DamageSubCategory>();
+    public DbSet<DamageClassification> DamageClassifications => Set<DamageClassification>();
+    public DbSet<CostingSheetCatalog> CostingSheetCatalogs => Set<CostingSheetCatalog>();
+    public DbSet<CostingSheetVersion> CostingSheetVersions => Set<CostingSheetVersion>();
+    public DbSet<CostingSheetItem> CostingSheetItems => Set<CostingSheetItem>();
+
+    public DbSet<DamageCauseCategory> DamageCauseCategories => Set<DamageCauseCategory>();
+    public DbSet<DamageCause> DamageCauses => Set<DamageCause>();
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
@@ -139,6 +156,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasKey(e => e.Id);
             entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
             entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
+            entity.HasIndex(e => e.Code).IsUnique();
 
             entity.HasOne(e => e.Governorate)
                 .WithMany(g => g.Directorates)
@@ -196,7 +215,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
                     // الهوية - Partial index to allow reusing ID Number from deleted records
                     entity.Property(f => f.IdNumber).IsRequired().HasMaxLength(20);
-                    entity.HasIndex(f => new { f.IdTypeId, f.IdNumber })
+                    entity.HasIndex(f => f.IdNumber)
                         .IsUnique()
                         .HasFilter("[IsDeleted] = 0");
 
@@ -287,9 +306,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .HasForeignKey(f => f.LocalityId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(f => f.AreaUnit)
+            entity.HasOne(f => f.MeasurementUnit)
                 .WithMany()
-                .HasForeignKey(f => f.AreaUnitId)
+                .HasForeignKey(f => f.MeasurementUnitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(f => f.AgriculturalSector)
@@ -318,9 +337,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<AgriculturalSector>(entity =>
         {
             entity.HasData(
-                new AgriculturalSector { Id = 1, NameAr = "نباتي", NameEn = "Plant" },
-                new AgriculturalSector { Id = 2, NameAr = "حيواني", NameEn = "Animal" },
-                new AgriculturalSector { Id = 3, NameAr = "مختلط", NameEn = "Mixed" }
+                new AgriculturalSector { Id = 1, NameAr = "الإنتاج النباتي", NameEn = "Plant Production" },
+                new AgriculturalSector { Id = 2, NameAr = "الإنتاج الحيواني", NameEn = "Animal Production" },
+                new AgriculturalSector { Id = 3, NameAr = "الإنتاج المختلط", NameEn = "Mixed Production" }
             );
         });
 
@@ -333,13 +352,25 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             );
         });
 
-        builder.Entity<AreaUnit>(entity =>
+        builder.Entity<MeasurementUnit>(entity =>
         {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Category).IsRequired().HasMaxLength(50);
+
             entity.HasData(
-                new AreaUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum" },
-                new AreaUnit { Id = 2, NameAr = "متر مربع", NameEn = "Square Meter" },
-                new AreaUnit { Id = 3, NameAr = "هكتار", NameEn = "Hectare" },
-                new AreaUnit { Id = 4, NameAr = "أخرى", NameEn = "Other" }
+                new MeasurementUnit { Id = 1, NameAr = "دونم", NameEn = "Dunum", Category = "Area" },
+                new MeasurementUnit { Id = 2, NameAr = "متر مربع", NameEn = "Square Meter", Category = "Area" },
+                new MeasurementUnit { Id = 3, NameAr = "هكتار", NameEn = "Hectare", Category = "Area" },
+                new MeasurementUnit { Id = 4, NameAr = "شجرة", NameEn = "Tree", Category = "Count" },
+                new MeasurementUnit { Id = 5, NameAr = "كغم", NameEn = "Kg", Category = "Weight" },
+                new MeasurementUnit { Id = 6, NameAr = "طن", NameEn = "Ton", Category = "Weight" },
+                new MeasurementUnit { Id = 7, NameAr = "رأس", NameEn = "Head", Category = "Count" },
+                new MeasurementUnit { Id = 8, NameAr = "خلية", NameEn = "Hive", Category = "Count" },
+                new MeasurementUnit { Id = 9, NameAr = "صندوق", NameEn = "Box", Category = "Count" },
+                new MeasurementUnit { Id = 10, NameAr = "لتر", NameEn = "Liter", Category = "Volume" },
+                new MeasurementUnit { Id = 11, NameAr = "أخرى", NameEn = "Other", Category = "General" }
             );
         });
 
@@ -359,33 +390,43 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReport>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.GovernorateId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.LocalityId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ReportNumber).HasMaxLength(100);
+            entity.Property(e => e.PermanentFormNumber).HasMaxLength(50);
+            entity.Property(e => e.TemporaryFormNumber).HasMaxLength(50);
             entity.Property(e => e.StatusId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.RowVersion).IsRowVersion();
 
             entity.HasIndex(e => e.ClientId).IsUnique();
-            entity.HasIndex(e => e.FarmId);
-            entity.HasIndex(e => e.FarmerId);
+            entity.HasIndex(e => e.ReportNumber).IsUnique();
+            entity.HasIndex(e => e.PermanentFormNumber).IsUnique();
+            entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
 
             entity.HasOne(e => e.Farm)
                 .WithMany()
                 .HasForeignKey(e => e.FarmId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.Farmer)
+            entity.HasOne(e => e.AgriculturalSector)
                 .WithMany()
-                .HasForeignKey(e => e.FarmerId)
+                .HasForeignKey(e => e.AgriculturalSectorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DamageCauseCategory)
+                .WithMany()
+                .HasForeignKey(e => e.DamageCauseCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DamageCause)
+                .WithMany()
+                .HasForeignKey(e => e.DamageCauseId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageItem>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.AgriculturalSectorId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.SubSectorId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.CropId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.DamageTypeId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.CalculatedUnitPrice).HasPrecision(18, 2);
+            entity.Property(e => e.MeasurementUnitSnapshot).IsRequired().HasMaxLength(50);
             entity.Property(e => e.AffectedArea).HasPrecision(18, 2);
             entity.Property(e => e.DamagePercentage).HasPrecision(18, 2);
             entity.Property(e => e.Quantity).HasPrecision(18, 2);
@@ -399,6 +440,130 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(r => r.Items)
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.DamageNature)
+                .WithMany()
+                .HasForeignKey(e => e.DamageNatureId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.DamageAction)
+                .WithMany()
+                .HasForeignKey(e => e.DamageActionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Classification)
+                .WithMany()
+                .HasForeignKey(e => e.ClassificationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.CostingSheetItem)
+                .WithMany()
+                .HasForeignKey(e => e.CostingSheetItemId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageNature>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<DamageAction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<DamageCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.AgriculturalSector)
+                .WithMany()
+                .HasForeignKey(e => e.AgriculturalSectorId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageSubCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageClassification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.SubCategory)
+                .WithMany(s => s.Classifications)
+                .HasForeignKey(e => e.SubCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CostingSheetCatalog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        builder.Entity<CostingSheetVersion>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasOne(e => e.Catalog)
+                .WithMany(c => c.Versions)
+                .HasForeignKey(e => e.CatalogId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<CostingSheetItem>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasOne(e => e.Version)
+                .WithMany(v => v.Items)
+                .HasForeignKey(e => e.VersionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Classification)
+                .WithMany(c => c.CostingSheetItems)
+                .HasForeignKey(e => e.ClassificationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.MeasurementUnit)
+                .WithMany()
+                .HasForeignKey(e => e.MeasurementUnitId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DamageCauseCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<DamageCause>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+            entity.HasOne(e => e.Category)
+                .WithMany(c => c.Causes)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageReportAttachment>(entity =>
@@ -420,7 +585,32 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        builder.Entity<Compensation>(entity =>
+        builder.Entity<DamageWorkflowHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FromStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ToStatus).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.ChangedByUserId).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Comment).HasMaxLength(500);
+
+            entity.HasOne(e => e.DamageReport)
+                .WithMany()
+                .HasForeignKey(e => e.DamageReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DamageReportSequence>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.DirectorateId, e.DamageYear }).IsUnique();
+
+            entity.HasOne(e => e.Directorate)
+                .WithMany()
+                .HasForeignKey(e => e.DirectorateId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Assistance>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.CalculatedAmount).HasPrecision(18, 2);
@@ -433,7 +623,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
             entity.HasOne(e => e.DamageReport)
                 .WithOne()
-                .HasForeignKey<Compensation>(e => e.DamageReportId)
+                .HasForeignKey<Assistance>(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(e => e.Rule)
@@ -442,23 +632,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        builder.Entity<CompensationRule>(entity =>
+        builder.Entity<AssistanceRule>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Multiplier).HasPrecision(18, 4);
         });
 
-        builder.Entity<CompensationAuditLog>(entity =>
+        builder.Entity<AssistanceAuditLog>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.PreviousStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.NewStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ChangedBy).IsRequired().HasMaxLength(100);
 
-            entity.HasOne(e => e.Compensation)
+            entity.HasOne(e => e.Assistance)
                 .WithMany(c => c.AuditLogs)
-                .HasForeignKey(e => e.CompensationId)
+                .HasForeignKey(e => e.AssistanceId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

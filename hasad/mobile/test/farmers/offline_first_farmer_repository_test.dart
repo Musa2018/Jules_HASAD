@@ -2,11 +2,13 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
 class MockSyncService extends Mock implements BackgroundSyncService {}
@@ -15,11 +17,14 @@ class MockRemoteRepository extends Mock implements FarmerRepository {}
 
 class MockConnectivity extends Mock implements Connectivity {}
 
+class MockAuthorizationService extends Mock implements AuthorizationService {}
+
 void main() {
   late AppDatabase db;
   late MockSyncService mockSyncService;
   late MockRemoteRepository mockRemoteRepository;
   late MockConnectivity mockConnectivity;
+  late MockAuthorizationService mockAuthService;
   late OfflineFirstFarmerRepository repository;
 
   setUpAll(() {
@@ -53,11 +58,17 @@ void main() {
     mockSyncService = MockSyncService();
     mockRemoteRepository = MockRemoteRepository();
     mockConnectivity = MockConnectivity();
+    mockAuthService = MockAuthorizationService();
+    
+    when(() => mockAuthService.canManageFarmers()).thenReturn(true);
+    
     repository = OfflineFirstFarmerRepository(
       db,
       mockSyncService,
       mockRemoteRepository,
       mockConnectivity,
+      mockAuthService,
+      null, // No session
     );
   });
 
@@ -207,6 +218,7 @@ void main() {
     final expectation = expectLater(
       stream,
       emitsInOrder([
+        null, // Initial emit if not found yet
         predicate<Farmer?>((f) => f?.firstNameAr == 'N1'),
         predicate<Farmer?>((f) => f?.firstNameAr == 'Updated'),
       ]),
@@ -363,7 +375,7 @@ void main() {
   });
 
   group('Soft Delete', () {
-    test('getFarmers filters out farmers marked as pending delete', () async {
+    test('getFarmers and watchFarmers filter out farmers marked as pending delete', () async {
       when(
         () => mockSyncService.addToQueue(
           localId: any(named: 'localId'),
@@ -398,14 +410,132 @@ void main() {
       await repository.createFarmer(farmer1);
       await repository.createFarmer(farmer2);
 
+      // Verify getFarmers
       var list = await repository.getFarmers();
       expect(list.length, 2);
 
+      // Verify watchFarmers initial
+      final stream = repository.watchFarmers();
+      
+      await expectLater(
+        stream,
+        emits(predicate<List<Farmer>>((l) => l.length == 2)),
+      );
+
       await repository.deleteFarmer('f1');
 
+      // Verify getFarmers after delete
       list = await repository.getFarmers();
       expect(list.length, 1);
       expect(list.first.id, 'f2');
+
+      // Verify watchFarmers after delete
+      await expectLater(
+        stream,
+        emits(predicate<List<Farmer>>((l) => l.length == 1 && l.first.id == 'f2')),
+      );
+    });
+
+    test('deleteFarmer throws FarmerHasDependenciesException when farms exist', () async {
+      when(
+        () => mockSyncService.addToQueue(
+          localId: any(named: 'localId'),
+          entityType: any(named: 'entityType'),
+          operation: any(named: 'operation'),
+          data: any(named: 'data'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final farmer = Farmer(
+        id: 'f-deps',
+        idTypeId: 1,
+        idNumber: '1',
+        firstNameAr: 'Farmer',
+        fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+        firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
+        birthDate: DateTime(1990),
+        gender: Gender.male,
+        phoneNumber: '',
+        familySize: 1,
+        governorateId: 'G1',
+        localityId: 'L1',
+        address: '',
+      );
+
+      await repository.createFarmer(farmer);
+
+      // Add a farm linked to this farmer
+      await db.into(db.farms).insert(
+        FarmsCompanion.insert(
+          id: 'farm-1',
+          farmerId: 'f-deps',
+          localFarmName: 'Test Farm',
+          basin: 'B1',
+          parcel: 'P1',
+          area: 10.0,
+          governorateId: 'G1',
+          directorateId: 'D1',
+          localityId: 'L1',
+        ),
+      );
+
+      expect(
+        () => repository.deleteFarmer('f-deps'),
+        throwsA(isA<FarmerHasDependenciesException>()),
+      );
+
+      // Verify farmer is NOT marked for delete
+      final local = await (db.select(db.farmers)..where((t) => t.id.equals('f-deps'))).getSingle();
+      expect(local.isPendingDelete, false);
+
+      // Verify no delete sync item created
+      verifyNever(() => mockSyncService.addToQueue(
+        localId: 'f-deps',
+        entityType: 'farmer',
+        operation: 'delete',
+        data: any(named: 'data'),
+      ));
+    });
+
+    test('deleteFarmer succeeds when no farms exist', () async {
+      when(
+        () => mockSyncService.addToQueue(
+          localId: any(named: 'localId'),
+          entityType: any(named: 'entityType'),
+          operation: any(named: 'operation'),
+          data: any(named: 'data'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final farmer = Farmer(
+        id: 'f-no-deps',
+        idTypeId: 1,
+        idNumber: '2',
+        firstNameAr: 'Farmer No Deps',
+        fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+        firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
+        birthDate: DateTime(1990),
+        gender: Gender.male,
+        phoneNumber: '',
+        familySize: 1,
+        governorateId: 'G1',
+        localityId: 'L1',
+        address: '',
+      );
+
+      await repository.createFarmer(farmer);
+
+      await repository.deleteFarmer('f-no-deps');
+
+      final local = await (db.select(db.farmers)..where((t) => t.id.equals('f-no-deps'))).getSingle();
+      expect(local.isPendingDelete, true);
+
+      verify(() => mockSyncService.addToQueue(
+        localId: 'f-no-deps',
+        entityType: 'farmer',
+        operation: 'delete',
+        data: any(named: 'data'),
+      )).called(1);
     });
   });
 }

@@ -2,6 +2,71 @@
 
 ## [Unreleased]
 
+### Sprint 13.2 - Phase 2C (Mobile Terminology Update)
+- **Terminology Alignment**: Replaced "Area Unit" (وحدة المساحة) with "Measurement Unit" (وحدة القياس) across all UI components.
+- **Localization**: Added comprehensive support for unit categories (Weight, Count, Volume, Area) in Arabic and English.
+- **UI Hardening**: Updated `DamageItemFormSheet` and `FarmFormScreen` to use modern terminology and dynamic unit resolution.
+- **Compatibility Preservation**: Maintained internal support for `areaUnitId` and `costingSheetId` to ensure zero disruption for offline records.
+
+### Sprint 13.2 - Phase 2B (Mobile & Sync Hardening)
+- **Schema Upgrade**: Drift v16 with hierarchical tables for Catalogs, Versions, and Items.
+- **Domain Refactor**: Aligned `DamageItem` and `Farm` models with the new Pricing Catalog architecture.
+- **Sync Hardening**: Implemented backward-compatible JSON aliases (`areaUnitId`) in Backend Commands and DTOs to support legacy offline drafts.
+- **Repository Optimization**: Enhanced `OfflineFirstReferenceDataRepository` to resolve the `Active` pricing version using Drift joins.
+- **Legacy Compatibility**: Automated mapping of legacy flat pricing DTOs to a local legacy version wrapper.
+- **Unit Consolidation**: Full transition from `AreaUnit` to the universal `MeasurementUnit` domain model.
+
+### Sprint 13.2 - Phase 2A (Backend)
+- **New Feature**: Versioned Pricing Catalog (`Catalog -> Version -> Item`) with `Draft`, `PendingApproval`, `Active`, and `Archived` states.
+- **Refinement**: Consolidated `AreaUnit` into a universal `MeasurementUnit` entity supporting Area, Weight, Count, and Volume categories.
+- **Integrity**: Implemented an immutability rule for `Active` pricing versions to ensure audit-ready valuation history.
+- **Migration**: Automated EF migration with SQL data preservation for existing pricing records and `DamageItem` snapshots.
+- **Compatibility**: Maintained backend support for existing mobile sync payloads by mapping hierarchical data to legacy DTO structures.
+
+### Sprint 13.2 - Phase 1 (Backend)
+- **New Service**: `ICostingService` for authoritative price resolution.
+- **Hardening**: Automatic recalculation of `EstimatedLoss` in `CreateDamageReport` and `UpdateDamageItem`.
+- **Auditing**: Added valuation mismatch detection and logging.
+
+### Sprint 12.4 — DamageReport Security Alignment
+
+#### Added
+- **Authorization Inheritance Engine**: New backend mechanism ensuring all Damage Assessment entities inherit security boundaries from the parent Farm location.
+- **Directorate Snapshotting**: Added `DirectorateId` to `DamageReport` for O(1) performance in regional listing queries.
+- **Security Scoped Queries**: Automated regional filtering for all DamageReport listing and detail endpoints.
+- **Join-Based Auth Guards**: Hardened `Update`, `Delete`, `Submit`, and `UploadAttachment` commands with mandatory scope validation.
+- **Cross-Region Security Tests**: Dedicated test suite verifying Agricultural Engineer restrictions and authorization inheritance.
+- **ADR 0013**: Documented "DamageReport Operational Scope and Authorization Inheritance."
+
+#### Changed
+- **Geographic Data Hardening**: Migrated `GovernorateId` and `LocalityId` in `DamageReport` from `string` to `Guid`.
+- **Drift Schema Upgrade (v15)**: Integrated regional snapshots into the mobile offline data layer.
+
+#### Fixed
+- **Security Vulnerability**: Resolved missing authorization checks on DamageReport `Update` and `Delete` endpoints.
+- **Child Bypass Risk**: Fixed potential for child entities (`DamageItem`, `Attachment`) to be modified outside of the user's assigned regional scope.
+
+#### Fixed
+- **Geographic Authorization Regression**: Resolved issue where Agricultural Engineers were blocked from creating farms for farmers residing in different governorates.
+- **Decoupled Farmer Residency from Authorization**: Removed incorrect `GovernorateId` scoping from `CreateFarmer`, `UpdateFarmer`, and `DeleteFarmer` commands.
+
+#### Added
+- **Cross-Region Authorization Tests**: Verified success of Jericho Engineer + Bethlehem Farmer + Jericho Farm scenario.
+
+### Sprint 12.2 — Hierarchical Classification UI
+
+#### Added
+- **Classification Wizard**: A mandatory 4-step selection flow for precise damage assessment.
+- **Automatic Price Resolution**: Seamlessly fetches the active unit price from local `CostingSheets`.
+- **Valuation Engine**: Pure business logic for calculating technical losses based on quantity and damage percentage.
+- **Cascading State Resets**: Automated cleanup of dependent selections during hierarchy traversal.
+- **Offline Search**: Searchable lists for all hierarchy levels with full Arabic support.
+
+#### Changed
+- Expanded `ReferenceDataRepository` with granular hierarchical lookup methods.
+
+### Sprint 12.1 — Data Layer & Feature Extraction
+
 ### Sprint 11.17 — Domain Integrity Hardening
 
 #### Added

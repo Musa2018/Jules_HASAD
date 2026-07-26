@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
@@ -10,6 +11,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
 void main() {
+  setUpAll(() {
+    if (!EnvironmentConfig.isInitialized) {
+      EnvironmentConfig.setEnvironment(AppEnvironment.dev);
+    }
+  });
+
   final testFarmer = Farmer(
     id: '1',
     idTypeId: 1,

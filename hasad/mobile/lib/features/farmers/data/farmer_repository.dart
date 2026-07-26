@@ -21,6 +21,8 @@ abstract class FarmerRepository {
     String? idNumber,
     String? name,
     String? searchText,
+    DateTime? updatedSince,
+    bool isOperational = false,
   });
 
   Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()});
@@ -32,6 +34,7 @@ abstract class FarmerRepository {
   Future<domain.Farmer> updateFarmer(domain.Farmer farmer);
   Future<void> deleteFarmer(String id);
   Future<void> cancelDeleteFarmer(String id);
+  Future<void> synchronize({DateTime? updatedSince});
 }
 
 class OfflineFirstFarmerRepository implements FarmerRepository {
@@ -82,28 +85,34 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     String? idNumber,
     String? name,
     String? searchText,
+    DateTime? updatedSince,
+    bool isOperational = false,
   }) async {
     final farmers = _db.farmers;
-    final localities = _db.localities;
+    final farms = _db.farms;
 
-    // Check if we need to apply Directorate scoping based on role
+    // 1. Determine Authorization Scope
     final session = _session;
-    final bool needsScoping = session != null &&
+    final bool isEngineerOrSurveyor = session != null &&
         (session.roles.contains('AgriculturalEngineer') ||
-            session.roles.contains('FieldSurveyor')) &&
-        session.directorateId != null;
+            session.roles.contains('FieldSurveyor'));
 
-    final query = needsScoping
+    final bool applyOperationalScoping = isEngineerOrSurveyor && 
+                                        isOperational && 
+                                        session.directorateId != null;
+    
+    final query = applyOperationalScoping
         ? _db.select(farmers).join([
-            innerJoin(localities, localities.id.equalsExp(farmers.localityId)),
+            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
           ])
         : _db.select(farmers).join([]);
 
     final List<Expression<bool>> predicates = [];
     predicates.add(farmers.isPendingDelete.equals(false));
 
-    if (needsScoping) {
-      predicates.add(localities.directorateId.equals(session.directorateId!));
+    // Apply Operational Scoping (Filter by Farm's Directorate)
+    if (isOperational && isEngineerOrSurveyor && session.directorateId != null) {
+      predicates.add(farms.directorateId.equals(session.directorateId!));
     }
 
     if (idNumber != null && idNumber.isNotEmpty) {
@@ -139,8 +148,8 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     }
 
     query.where(Expression.and(predicates));
-    
-    if (needsScoping) {
+
+    if (applyOperationalScoping) {
       query.groupBy([farmers.id]);
     }
 
@@ -214,26 +223,30 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     FarmerFilter filter = const FarmerFilter(),
   }) {
     final farmers = _db.farmers;
-    final localities = _db.localities;
+    final farms = _db.farms;
 
-    // Check if we need to apply Directorate scoping based on role
     final session = _session;
-    final bool needsScoping = session != null &&
+    final bool isEngineerOrSurveyor = session != null &&
         (session.roles.contains('AgriculturalEngineer') ||
-            session.roles.contains('FieldSurveyor')) &&
-        session.directorateId != null;
+            session.roles.contains('FieldSurveyor'));
 
-    final query = needsScoping
+    // 1. Determine if we need to apply Directorate-level operational filtering via FARMS.
+    final bool applyOperationalScoping = isEngineerOrSurveyor && 
+                                        filter.isOperational && 
+                                        session.directorateId != null;
+
+    final query = applyOperationalScoping
         ? _db.select(farmers).join([
-            innerJoin(localities, localities.id.equalsExp(farmers.localityId)),
+            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
           ])
         : _db.select(farmers).join([]);
 
     final List<Expression<bool>> predicates = [];
     predicates.add(farmers.isPendingDelete.equals(false));
 
-    if (needsScoping) {
-      predicates.add(localities.directorateId.equals(session.directorateId!));
+    // 2. Apply Operational Scoping (Filter by Farm's Directorate)
+    if (filter.isOperational && isEngineerOrSurveyor && session.directorateId != null) {
+      predicates.add(farms.directorateId.equals(session.directorateId!));
     }
 
     if (filter.searchText.isNotEmpty) {
@@ -270,11 +283,15 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
     query.where(Expression.and(predicates));
 
-    if (needsScoping) {
+    if (applyOperationalScoping) {
       query.groupBy([farmers.id]);
     }
 
     query.orderBy([OrderingTerm.desc(farmers.createdAt)]);
+
+    if (!filter.isOperational) {
+      query.limit(10);
+    }
 
     return query.watch().map((rows) => rows.map((row) => _mapToDomain(row.readTable(farmers))).toList());
   }
@@ -440,5 +457,63 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     await (_db.delete(_db.syncQueue)
           ..where((t) => t.localId.equals(id) & t.entityType.equals('farmer') & t.operation.equals('delete')))
         .go();
+  }
+
+  @override
+  Future<void> synchronize({DateTime? updatedSince}) async {
+    final connectivity = await _connectivity.checkConnectivity();
+    if (connectivity.contains(ConnectivityResult.none)) return;
+
+    int page = 1;
+    bool hasMore = true;
+
+    while (hasMore) {
+      final remoteItems = await _remoteRepository.getFarmers(
+        pageNumber: page,
+        pageSize: 50,
+        // ignore: avoid_redundant_argument_values
+        name: null,
+        // ignore: avoid_redundant_argument_values
+        idNumber: null,
+        // ignore: avoid_redundant_argument_values
+        searchText: null,
+        updatedSince: updatedSince,
+      );
+
+      if (remoteItems.isEmpty) break;
+
+      await _db.transaction(() async {
+        for (final remote in remoteItems) {
+          // PROTECTION: Check if local record has unsynced changes
+          // Use ClientId (remote.id) as the local primary key
+          final local = await (_db.select(_db.farmers)
+                ..where((t) => t.id.equals(remote.id)))
+              .getSingleOrNull();
+
+          if (local != null) {
+            final isProtected = local.syncStatus == 'pending' ||
+                local.syncStatus == 'syncing' ||
+                local.syncStatus == 'conflict' ||
+                local.isPendingDelete;
+
+            if (isProtected) {
+              // Skip overwriting local changes
+              continue;
+            }
+          }
+
+          // Idempotent Update
+          final companion = _mapToCompanion(remote).copyWith(
+            syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
+          );
+
+          await _db.into(_db.farmers).insertOnConflictUpdate(companion);
+        }
+      });
+
+      page++;
+      hasMore = remoteItems.length == 50;
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/router/app_router.dart';
+import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -34,7 +35,11 @@ class _FarmerSearchScreenState extends ConsumerState<FarmerSearchScreen> {
     if (state.status == FarmerSearchStatus.found && state.farmer != null) {
       context.push(AppRoutes.farmerDetails, extra: state.farmer);
     } else if (state.status == FarmerSearchStatus.notFound) {
-      context.push(AppRoutes.addFarmer, extra: idNumber);
+      final result = await context.push<Farmer>(AppRoutes.addFarmer, extra: idNumber);
+      if (result != null && mounted) {
+        // If a farmer was created, we pop back to the list
+        context.pop();
+      }
     }
   }
 

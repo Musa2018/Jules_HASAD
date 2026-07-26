@@ -10,20 +10,40 @@ public record GetFarmersListQuery(
     int PageNumber = 1,
     int PageSize = 10,
     string? Name = null,
-    string? IdNumber = null) : IRequest<Result<PaginatedList<FarmerDto>>>;
+    string? IdNumber = null,
+    DateTime? UpdatedSince = null,
+    bool IsOperational = false) : IRequest<Result<PaginatedList<FarmerDto>>>;
 
 public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, Result<PaginatedList<FarmerDto>>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public GetFarmersListQueryHandler(IApplicationDbContext context)
+    public GetFarmersListQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<PaginatedList<FarmerDto>>> Handle(GetFarmersListQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Farmers.AsNoTracking();
+
+        // 1. Authorization Scoping (Only applied for Operational View)
+        if (request.IsOperational && (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor")))
+        {
+            if (_currentUser.DirectorateId.HasValue)
+            {
+                var dirId = _currentUser.DirectorateId.Value;
+                query = query.Where(f => _context.Farms.Any(farm => farm.FarmerId == f.Id && farm.DirectorateId == dirId));
+            }
+        }
+
+        // 2. Incremental Sync (Pull Watermark)
+        if (request.UpdatedSince.HasValue)
+        {
+            query = query.Where(f => f.UpdatedAt > request.UpdatedSince.Value || f.CreatedAt > request.UpdatedSince.Value);
+        }
 
         // Filtering
         if (!string.IsNullOrWhiteSpace(request.IdNumber))
@@ -47,9 +67,9 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
 
         var count = await query.CountAsync(cancellationToken);
 
-        // 1. جلب البيانات الأساسية من SQL Server
+        // 1. جلب البيانات الأساسية من SQL Server - Latest first as per requirement
         var dbItems = await query
-            .OrderBy(f => f.FirstNameAr)
+            .OrderByDescending(f => f.CreatedAt)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);

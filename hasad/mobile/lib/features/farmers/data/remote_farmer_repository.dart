@@ -18,6 +18,8 @@ class RemoteFarmerRepository implements FarmerRepository {
     String? idNumber,
     String? name,
     String? searchText,
+    DateTime? updatedSince,
+    bool isOperational = false,
   }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -28,6 +30,8 @@ class RemoteFarmerRepository implements FarmerRepository {
           'idNumber': idNumber,
           'name': name,
           'searchText': searchText,
+          'updatedSince': updatedSince?.toIso8601String(),
+          'isOperational': isOperational,
         },
       );
       final envelope = response.data;
@@ -157,6 +161,11 @@ class RemoteFarmerRepository implements FarmerRepository {
   @override
   Future<void> cancelDeleteFarmer(String id) {
     throw UnimplementedError('cancelDeleteFarmer is a local-only operation.');
+  }
+
+  @override
+  Future<void> synchronize({DateTime? updatedSince}) {
+    throw UnimplementedError('Remote repository does not support explicit synchronization.');
   }
 
   List<String> _errorsFromDio(DioException e) {

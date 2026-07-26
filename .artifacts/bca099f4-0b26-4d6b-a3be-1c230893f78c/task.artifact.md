@@ -1,0 +1,28 @@
+# Task - HASAD Hardening Checklist
+
+- [ ] Phase 3: Static Code Health
+    - [x] Run `flutter analyze`
+    - [ ] Classify and document findings
+- [ ] Phase 1: Complete UAT Verification (Automated)
+    - [x] Run Farmers module tests
+    - [x] Run Farms module tests
+    - [ ] Run Cross-module/UAT tests
+    - [ ] Investigate and fix failing tests
+- [ ] Implementation Phase: Hardening Fixes
+    - [ ] Fix `FieldSurveyor` permissions in `AuthorizationService`
+    - [ ] Fix `Operational View` filter in `FarmerRepository`
+    - [ ] Fix `FarmerCard` UAT test failure and false positive
+    - [ ] Address `AppDatabase` instantiation warning in tests
+- [ ] Phase 2: Regression Verification
+    - [ ] Verify Farmers/Farms visibility model
+    - [ ] Verify Navigation stack preservation
+    - [ ] Verify Offline-first behavior
+- [ ] Phase 4: Production Readiness Review
+    - [ ] Review Architecture consistency
+    - [ ] Review Synchronization consistency
+    - [ ] Review Exception handling & Localization
+- [ ] Deliverables
+    - [ ] UAT Report
+    - [ ] Regression Report
+    - [ ] Production Readiness Report
+    - [ ] Recommendations

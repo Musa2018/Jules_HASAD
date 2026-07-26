@@ -4,18 +4,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
+import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart';
+import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:drift/native.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_card.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class MockAuthorizationService extends Mock implements AuthorizationService {}
+class MockLocationRepository extends Mock implements LocationRepository {}
 
 void main() {
   late MockAuthorizationService mockAuthService;
+  late MockLocationRepository mockLocationRepo;
+  late AppDatabase db;
 
   setUp(() {
     mockAuthService = MockAuthorizationService();
+    mockLocationRepo = MockLocationRepository();
+    db = AppDatabase.withExecutor(NativeDatabase.memory());
+
+    // Prevent background fetches in tests
+    when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => []);
+    when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId'), directorateId: any(named: 'directorateId')))
+        .thenAnswer((_) async => []);
+  });
+
+  tearDown(() async {
+    await db.close();
   });
 
   final testFarmer = Farmer(
@@ -43,6 +62,8 @@ void main() {
     return ProviderScope(
       overrides: [
         authorizationServiceProvider.overrideWithValue(mockAuthService),
+        databaseProvider.overrideWithValue(db),
+        locationRepositoryProvider.overrideWithValue(mockLocationRepo),
       ],
       child: MaterialApp(
         localizationsDelegates: const [
@@ -67,8 +88,8 @@ void main() {
 
     await tester.pumpWidget(createWidget());
 
-    // Verify "مزرعة" button does NOT exist
-    expect(find.text('مزرعة'), findsNothing);
+    // Verify "المزارع" button does NOT exist
+    expect(find.text('المزارع'), findsNothing);
     expect(find.byIcon(Icons.agriculture), findsNothing);
     
     // Verify "تعديل" button does NOT exist
@@ -82,8 +103,8 @@ void main() {
 
     await tester.pumpWidget(createWidget());
 
-    // Verify "مزرعة" button exists
-    expect(find.text('مزرعة'), findsOneWidget);
+    // Verify "المزارع" button exists
+    expect(find.text('المزارع'), findsOneWidget);
     expect(find.byIcon(Icons.agriculture), findsOneWidget);
   });
 }

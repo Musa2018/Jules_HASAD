@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
+import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
+import 'package:drift/native.dart';
 import 'package:mobile/features/farms/domain/farm_filter.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/presentation/farms_list_screen.dart';
@@ -19,6 +22,7 @@ class MockAuthorizationService extends Mock implements AuthorizationService {}
 void main() {
   late MockFarmRepository mockRepo;
   late MockAuthorizationService mockAuthService;
+  late AppDatabase db;
 
   setUpAll(() {
     registerFallbackValue(const FarmFilter());
@@ -27,7 +31,12 @@ void main() {
   setUp(() {
     mockRepo = MockFarmRepository();
     mockAuthService = MockAuthorizationService();
+    db = AppDatabase.withExecutor(NativeDatabase.memory());
     when(() => mockAuthService.canManageFarms()).thenReturn(true);
+  });
+
+  tearDown(() async {
+    await db.close();
   });
 
   Widget createWidget({Stream<List<Farm>>? stream}) {
@@ -35,6 +44,7 @@ void main() {
       overrides: [
         authorizationServiceProvider.overrideWithValue(mockAuthService),
         farmRepositoryProvider.overrideWithValue(mockRepo),
+        databaseProvider.overrideWithValue(db),
         if (stream != null)
           farmsListStreamProvider.overrideWith((ref) => stream),
         governoratesProvider.overrideWith((ref) => []),

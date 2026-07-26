@@ -5,16 +5,29 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/farmers_list_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
+import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:drift/native.dart';
 
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
 void main() {
+  late AppDatabase db;
+
   setUpAll(() {
     if (!EnvironmentConfig.isInitialized) {
       EnvironmentConfig.setEnvironment(AppEnvironment.dev);
     }
+  });
+
+  setUp(() {
+    db = AppDatabase.withExecutor(NativeDatabase.memory());
+  });
+
+  tearDown(() async {
+    await db.close();
   });
 
   testWidgets('FarmersListScreen shows farmers list', (tester) async {
@@ -45,6 +58,7 @@ void main() {
       ProviderScope(
         overrides: [
           farmersListProvider.overrideWith((ref) => Stream.value(farmers)),
+          databaseProvider.overrideWithValue(db),
         ],
         child: const MaterialApp(
           localizationsDelegates: [
@@ -70,6 +84,7 @@ void main() {
       ProviderScope(
         overrides: [
           farmersListProvider.overrideWith((ref) => Stream.value([])),
+          databaseProvider.overrideWithValue(db),
         ],
         child: const MaterialApp(
           localizationsDelegates: [

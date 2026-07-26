@@ -84,7 +84,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     String? searchText,
   }) async {
     final farmers = _db.farmers;
-    final farms = _db.farms;
+    final localities = _db.localities;
 
     // Check if we need to apply Directorate scoping based on role
     final session = _session;
@@ -95,7 +95,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
     final query = needsScoping
         ? _db.select(farmers).join([
-            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+            innerJoin(localities, localities.id.equalsExp(farmers.localityId)),
           ])
         : _db.select(farmers).join([]);
 
@@ -103,7 +103,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     predicates.add(farmers.isPendingDelete.equals(false));
 
     if (needsScoping) {
-      predicates.add(farms.directorateId.equals(session.directorateId!));
+      predicates.add(localities.directorateId.equals(session.directorateId!));
     }
 
     if (idNumber != null && idNumber.isNotEmpty) {
@@ -214,7 +214,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     FarmerFilter filter = const FarmerFilter(),
   }) {
     final farmers = _db.farmers;
-    final farms = _db.farms;
+    final localities = _db.localities;
 
     // Check if we need to apply Directorate scoping based on role
     final session = _session;
@@ -225,7 +225,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
     final query = needsScoping
         ? _db.select(farmers).join([
-            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+            innerJoin(localities, localities.id.equalsExp(farmers.localityId)),
           ])
         : _db.select(farmers).join([]);
 
@@ -233,7 +233,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     predicates.add(farmers.isPendingDelete.equals(false));
 
     if (needsScoping) {
-      predicates.add(farms.directorateId.equals(session.directorateId!));
+      predicates.add(localities.directorateId.equals(session.directorateId!));
     }
 
     if (filter.searchText.isNotEmpty) {

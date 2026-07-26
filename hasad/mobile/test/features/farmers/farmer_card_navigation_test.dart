@@ -4,16 +4,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
+import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart';
+import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:drift/native.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_card.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class MockAuthorizationService extends Mock implements AuthorizationService {}
+class MockLocationRepository extends Mock implements LocationRepository {}
 
 void main() {
   late MockAuthorizationService mockAuthService;
+  late MockLocationRepository mockLocationRepo;
+  late AppDatabase db;
 
   setUpAll(() {
     EnvironmentConfig.setEnvironment(AppEnvironment.dev);
@@ -21,8 +29,19 @@ void main() {
 
   setUp(() {
     mockAuthService = MockAuthorizationService();
+    mockLocationRepo = MockLocationRepository();
+    db = AppDatabase.withExecutor(NativeDatabase.memory());
     when(() => mockAuthService.canManageFarmers()).thenReturn(true);
     when(() => mockAuthService.canManageFarms()).thenReturn(true);
+
+    // Prevent background fetches in tests
+    when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => []);
+    when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId'), directorateId: any(named: 'directorateId')))
+        .thenAnswer((_) async => []);
+  });
+
+  tearDown(() async {
+    await db.close();
   });
 
   final testFarmer = Farmer(
@@ -51,6 +70,8 @@ void main() {
       ProviderScope(
         overrides: [
           authorizationServiceProvider.overrideWithValue(mockAuthService),
+          databaseProvider.overrideWithValue(db),
+          locationRepositoryProvider.overrideWithValue(mockLocationRepo),
         ],
         child: MaterialApp(
           localizationsDelegates: const [

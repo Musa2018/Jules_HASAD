@@ -27,6 +27,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get damageReports => 'Damage Reports';
 
   @override
+  String get damageReportsForms => 'Damage Reports';
+
+  @override
+  String get allDamageReports => 'All Damage Reports';
+
+  @override
+  String get newDamageReport => 'New Damage Report';
+
+  @override
+  String get editAssessment => 'Edit Assessment';
+
+  @override
+  String get reportHeader => 'Report Header';
+
+  @override
+  String get incidentDetails => 'Incident Details';
+
+  @override
+  String get damageCause => 'Damage Cause';
+
+  @override
+  String get reportNumber => 'Report Number';
+
+  @override
+  String get evidence => 'Evidence';
+
+  @override
+  String get addEvidence => 'Add Evidence';
+
+  @override
+  String get noEvidence => 'No evidence available';
+
+  @override
+  String get awaitingSyncToAddItems => 'Awaiting sync to add items';
+
+  @override
+  String get awaitingSyncToEnableItems =>
+      'Awaiting synchronization to enable assessment items';
+
+  @override
+  String get duplicateReportError =>
+      'A damage report already exists for this farm and date';
+
+  @override
+  String get retrySync => 'Retry Sync';
+
+  @override
+  String get submitForReview => 'Submit for Review';
+
+  @override
+  String get natureLockedInfo => 'Damage nature locked based on the first item';
+
+  @override
+  String get technicalLoss => 'Technical Loss';
+
+  @override
+  String get totalTechnicalValuation => 'Total Technical Valuation';
+
+  @override
   String get map => 'Map';
 
   @override
@@ -284,6 +343,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locality => 'Locality';
+
+  @override
+  String get latitude => 'Latitude';
+
+  @override
+  String get longitude => 'Longitude';
+
+  @override
+  String get getCurrentLocation => 'Get Current Location';
 
   @override
   String get landArea => 'Land Area';

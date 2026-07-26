@@ -35,6 +35,7 @@ These principles apply to every current and future form unless explicitly docume
 | UAT-005 | Farmer / Farm UX | Form Actions | Sticky Save button standard. | Farm save button scrolls away; inconsistent with Farmer form. | Every form must have a persistent sticky bottom action area. | Medium | Introduced reusable FormSaveFooter component. | CLOSED | [f8e4d2a](https://github.com/musa/Jules_HASAD/commit/f8e4d2a) | VERIFIED |
 | UAT-006 | Farmer / Farm UX | Form Validation | Visual validation feedback on Save button. | Save button state doesn't reflect validation errors live. | Save button turns RED immediately when validation fails. | Medium | FormSaveFooter implemented with live validation state binding. | CLOSED | [f8e4d2a](https://github.com/musa/Jules_HASAD/commit/f8e4d2a) | VERIFIED |
 | UAT-007 | Farmer Module | Identity Search / Uniqueness | Global IdentityNumber uniqueness (Active records). | Multiple farmers allowed with same number + different type; causes search ambiguity. | IdentityNumber must be globally unique for all active farmers. | Critical | Enforced global IdentityNumber uniqueness across all layers. | CLOSED | [f8e4d2a](https://github.com/musa/Jules_HASAD/commit/f8e4d2a) | VERIFIED |
+| UAT-008 | Farmer Module | Operational View | Scoping for users without registered farms. | Farmers without farms are invisible in Operational View due to inner join on Farms table. | Farmers must be scoped by their LocalityId to ensure visibility within Directorate before farm registration. | High | Scoping was incorrectly tied to Farm ownership instead of Farmer's primary geographic locality. | CLOSED | [0ae807d](https://github.com/musa/Jules_HASAD/commit/0ae807d) | VERIFIED |
 
 ## Status Lifecycle Definitions
 - **NOT STARTED**: Issue identified but work has not begun.
@@ -78,7 +79,7 @@ These principles apply to every current and future form unless explicitly docume
 
 | ID | Decision | Rationale | Date |
 | :--- | :--- | :--- | :--- |
-| | | | |
+| UAT-D-01 | Farmer Locality-based Scoping | Farmer visibility for Directorate-level roles is determined by the Farmer's `LocalityId` (mapped to `DirectorateId`), not their associated farms. This allows registration workflow visibility before farms are added. | 2026-07-26 |
 
 ---
 

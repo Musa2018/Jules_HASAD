@@ -7,9 +7,11 @@ import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 import 'package:drift/native.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:drift/drift.dart';
 
 class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
 class MockFarmerRepository extends Mock implements FarmerRepository {}
+class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
   late AppDatabase db;
@@ -23,7 +25,8 @@ void main() {
 
   final engineerSession = AuthSession(
     userId: 'eng-1',
-    userName: 'Engineer',
+    fullName: 'Engineer',
+    email: 'eng@hasad.ps',
     roles: ['AgriculturalEngineer'],
     governorateId: jerichoGovId,
     directorateId: jerichoDirId,
@@ -36,11 +39,13 @@ void main() {
     mockSyncService = MockBackgroundSyncService();
     mockRemoteRepository = MockFarmerRepository();
 
+    final mockConnectivity = MockConnectivity();
+
     repository = OfflineFirstFarmerRepository(
       db,
       mockSyncService,
       mockRemoteRepository,
-      any(), // Connectivity
+      mockConnectivity,
       AuthorizationService(engineerSession),
       engineerSession,
     );
@@ -49,25 +54,25 @@ void main() {
     // 1. Farmer in Jericho (Residence Locality A)
     await db.into(db.farmers).insert(FarmersCompanion.insert(
       id: 'farmer-1',
-      firstNameAr: 'Farmer 1',
-      governorateId: jerichoGovId,
-      localityId: 'locality-a',
+      firstNameAr: const Value('Farmer 1'),
+      governorateId: Value(jerichoGovId),
+      localityId: const Value('locality-a'),
     ));
 
     // 2. Farmer in Jericho (Residence Locality B)
     await db.into(db.farmers).insert(FarmersCompanion.insert(
       id: 'farmer-2',
-      firstNameAr: 'Farmer 2',
-      governorateId: jerichoGovId,
-      localityId: 'locality-b',
+      firstNameAr: const Value('Farmer 2'),
+      governorateId: Value(jerichoGovId),
+      localityId: const Value('locality-b'),
     ));
 
     // 3. Farmer in Nablus
     await db.into(db.farmers).insert(FarmersCompanion.insert(
       id: 'farmer-3',
-      firstNameAr: 'Farmer 3',
-      governorateId: nablusGovId,
-      localityId: 'locality-c',
+      firstNameAr: const Value('Farmer 3'),
+      governorateId: Value(nablusGovId),
+      localityId: const Value('locality-c'),
     ));
 
     // 4. Farm for Farmer 1 in Jericho Directorate

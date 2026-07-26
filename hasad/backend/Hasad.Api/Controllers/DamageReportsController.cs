@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hasad.Api.Controllers;
 
 [ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
+[Route("api/v{version:apiVersion}/damage-reports")]
 [ApiVersion("1.0")]
 [Authorize]
 public class DamageReportsController : ControllerBase

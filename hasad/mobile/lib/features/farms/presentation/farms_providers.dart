@@ -5,6 +5,7 @@ import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/data/offline_first_farm_repository.dart';
+import 'package:mobile/features/farms/data/remote_farm_repository.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 
 import 'package:mobile/features/farms/domain/farm_filter.dart';
@@ -13,6 +14,8 @@ final farmRepositoryProvider = Provider<FarmRepository>((ref) {
   return OfflineFirstFarmRepository(
     ref.watch(databaseProvider),
     ref.watch(syncServiceProvider),
+    RemoteFarmRepository(ref.watch(apiDioProvider)),
+    ref.watch(connectivityProvider),
     ref.watch(authorizationServiceProvider),
   );
 });

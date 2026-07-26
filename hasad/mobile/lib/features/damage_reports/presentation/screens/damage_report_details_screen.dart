@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -65,7 +69,7 @@ class DamageReportDetailsScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _HeaderSection(report: liveReport),
+        _HeaderSection(report: liveReport, farm: farm),
         const Divider(height: 32),
         _ItemsSection(report: liveReport),
         const Divider(height: 32),
@@ -75,13 +79,38 @@ class DamageReportDetailsScreen extends ConsumerWidget {
   }
 }
 
-class _HeaderSection extends StatelessWidget {
+class _HeaderSection extends ConsumerWidget {
   final DamageReport report;
-  const _HeaderSection({required this.report});
+  final Farm farm;
+  const _HeaderSection({required this.report, required this.farm});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
+    final govAsync = ref.watch(governoratesProvider);
+    final dirAsync = ref.watch(directoratesProvider(farm.governorateId));
+    final locAsync = ref.watch(localitiesProvider((farm.governorateId, farm.directorateId)));
+
+    String govName = farm.governorateId;
+    String dirName = farm.directorateId;
+    String locName = farm.localityId;
+
+    govAsync.whenData((list) {
+      final match = list.where((e) => e.id == farm.governorateId).firstOrNull;
+      if (match != null) govName = isAr ? match.nameAr : match.nameEn;
+    });
+
+    dirAsync.whenData((list) {
+      final match = list.where((e) => e.id == farm.directorateId).firstOrNull;
+      if (match != null) dirName = isAr ? match.nameAr : match.nameEn;
+    });
+
+    locAsync.whenData((list) {
+      final match = list.where((e) => e.id == farm.localityId).firstOrNull;
+      if (match != null) locName = isAr ? match.nameAr : match.nameEn;
+    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +119,7 @@ class _HeaderSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "حالة التقرير: ${_getStatusLabel(context, report.statusId)}",
+              "${l10n.status}: ${_getStatusLabel(context, report.statusId)}",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: _getStatusColor(report.statusId),
@@ -98,15 +127,22 @@ class _HeaderSection extends StatelessWidget {
             ),
             if (report.syncStatus != "completed")
               Chip(
-                label: Text(report.syncStatus),
+                label: Text(report.syncStatus == 'pending' ? l10n.pendingSync : report.syncStatus),
                 backgroundColor: Colors.orange.shade100,
               ),
           ],
         ),
         const SizedBox(height: 16),
+        _InfoRow(label: "المزرعة", value: farm.localFarmName),
+        _InfoRow(label: l10n.locationSection, value: "$govName / $dirName / $locName"),
+        if (farm.latitude != null && farm.longitude != null)
+          _InfoRow(
+            label: "الإحداثيات الجغرافية",
+            value: "${l10n.latitude}: ${farm.latitude!.toStringAsFixed(5)}, ${l10n.longitude}: ${farm.longitude!.toStringAsFixed(5)}",
+          ),
         _InfoRow(label: "تاريخ الضرر", value: DateFormat("yyyy-MM-dd").format(report.damageDate)),
-        _InfoRow(label: "رقم الاستمارة", value: report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber),
-        _InfoRow(label: "الملاحظات", value: report.notes),
+        _InfoRow(label: l10n.reportNumber, value: report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber),
+        _InfoRow(label: l10n.notes, value: report.notes),
       ],
     );
   }
@@ -227,16 +263,23 @@ class _WorkflowActionBar extends ConsumerWidget {
     // Determine allowed actions based on role and current status
     final List<Widget> actions = [];
 
-    if (status == 'Draft') {
+    if (status == DamageReportStatus.draft || status == DamageReportStatus.pendingTechnicalVerification) {
       if (auth.hasRole("AgriculturalEngineer") || auth.hasRole("FieldSurveyor")) {
+        actions.add(_ActionButton(
+          label: "تعديل التقييم",
+          icon: Icons.edit,
+          color: Colors.blue,
+          onPressed: () => context.push(AppRoutes.editDamageReport, extra: report.id),
+        ));
+        
         actions.add(_ActionButton(
           label: "إرسال للمراجعة",
           icon: Icons.send,
-          color: Colors.blue,
-          onPressed: () => _handleTransition(context, ref, 'TechReview'),
+          color: Colors.green,
+          onPressed: () => _handleTransition(context, ref, DamageReportStatus.techReview),
         ));
       }
-    } else if (status == 'TechReview') {
+    } else if (status == DamageReportStatus.techReview) {
       if (auth.hasRole("TechnicalReviewer")) {
         actions.add(_ActionButton(
           label: "تحويل للأرشفة",

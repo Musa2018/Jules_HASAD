@@ -1,4 +1,4 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -11,12 +11,11 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 class MockSyncService extends Mock implements BackgroundSyncService {}
-
 class MockRemoteRepository extends Mock implements FarmerRepository {}
-
 class MockConnectivity extends Mock implements Connectivity {}
-
 class MockAuthorizationService extends Mock implements AuthorizationService {}
 
 void main() {
@@ -61,6 +60,7 @@ void main() {
     mockAuthService = MockAuthorizationService();
     
     when(() => mockAuthService.canManageFarmers()).thenReturn(true);
+    when(() => mockConnectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
     
     repository = OfflineFirstFarmerRepository(
       db,
@@ -536,6 +536,56 @@ void main() {
         operation: 'delete',
         data: any(named: 'data'),
       )).called(1);
+    });
+  });
+
+  group('Pull Synchronization', () {
+    final farmer1 = Farmer(
+      id: 'f1', idTypeId: 1, idNumber: '1', firstNameAr: 'N1',
+      fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+      firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
+      birthDate: DateTime(1990), gender: Gender.male, phoneNumber: '',
+      familySize: 1, governorateId: 'G1', localityId: 'L1', address: '',
+    );
+
+    test('synchronize() upserts remote data and handles idempotency', () async {
+      when(() => mockRemoteRepository.getFarmers(
+        pageNumber: 1, pageSize: 50, updatedSince: any(named: 'updatedSince'),
+      )).thenAnswer((_) async => [farmer1]);
+
+      await repository.synchronize();
+
+      final local = await db.select(db.farmers).get();
+      expect(local.length, 1);
+      expect(local.first.id, 'f1');
+      expect(local.first.syncStatus, 'completed');
+
+      // Run again - still 1
+      await repository.synchronize();
+      expect((await db.select(db.farmers).get()).length, 1);
+    });
+
+    test('synchronize() skips records with pending local changes', () async {
+      // 1. Setup local record as pending update
+      await db.into(db.farmers).insert(
+        FarmersCompanion.insert(
+          id: 'f1',
+          firstNameAr: const Value('Local Original'),
+          syncStatus: const Value('pending'),
+        ),
+      );
+
+      // 2. Mock remote data having different name
+      when(() => mockRemoteRepository.getFarmers(
+        pageNumber: 1, pageSize: 50, updatedSince: any(named: 'updatedSince'),
+      )).thenAnswer((_) async => [farmer1.copyWith(firstNameAr: 'Remote Change')]);
+
+      await repository.synchronize();
+
+      // 3. Verify local data PRESERVED
+      final local = await db.select(db.farmers).getSingle();
+      expect(local.firstNameAr, 'Local Original');
+      expect(local.syncStatus, 'pending');
     });
   });
 }

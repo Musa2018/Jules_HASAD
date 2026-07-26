@@ -14,8 +14,6 @@ public record UpdateDamageReportCommand(
     int AgriculturalSectorId,
     int DamageCauseCategoryId,
     int DamageCauseId,
-    string? SettlementName,
-    string? CompanyName,
     string Notes,
     string RowVersion) : IRequest<Result<DamageReportDto>>;
 
@@ -89,11 +87,10 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         }
 
         report.DamageDate = request.DamageDate;
+        report.DamageYear = request.DamageDate.Year;
         report.AgriculturalSectorId = request.AgriculturalSectorId;
         report.DamageCauseCategoryId = request.DamageCauseCategoryId;
         report.DamageCauseId = request.DamageCauseId;
-        report.SettlementName = request.SettlementName;
-        report.CompanyName = request.CompanyName;
         report.Notes = request.Notes;
         report.UpdatedAt = DateTime.UtcNow;
 
@@ -113,21 +110,17 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             ReportNumber = report.ReportNumber,
             PermanentFormNumber = report.PermanentFormNumber,
             TemporaryFormNumber = report.TemporaryFormNumber,
-            DamageYear = report.DamageDate.Year,
+            DamageYear = report.DamageYear,
             FarmId = report.FarmId,
-            FarmerId = report.Farm?.FarmerId ?? Guid.Empty,
+            FarmerId = report.FarmerId,
             DamageDate = report.DamageDate,
             DocumentationDate = report.DocumentationDate,
             AgriculturalSectorId = report.AgriculturalSectorId,
             DamageCauseCategoryId = report.DamageCauseCategoryId,
             DamageCauseId = report.DamageCauseId,
-            SettlementName = report.SettlementName,
-            CompanyName = report.CompanyName,
-            GovernorateId = report.Farm?.GovernorateId ?? Guid.Empty,
-            DirectorateId = report.Farm?.DirectorateId ?? Guid.Empty,
-            LocalityId = report.Farm?.LocalityId ?? Guid.Empty,
-            Latitude = report.Farm?.Latitude,
-            Longitude = report.Farm?.Longitude,
+            GovernorateId = report.GovernorateId,
+            DirectorateId = report.DirectorateId,
+            LocalityId = report.LocalityId,
             StatusId = report.StatusId,
             Notes = report.Notes,
             RowVersion = Convert.ToBase64String(report.RowVersion),

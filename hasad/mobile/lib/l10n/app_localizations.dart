@@ -134,6 +134,120 @@ abstract class AppLocalizations {
   /// **'Damage Reports'**
   String get damageReports;
 
+  /// No description provided for @damageReportsForms.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Reports'**
+  String get damageReportsForms;
+
+  /// No description provided for @allDamageReports.
+  ///
+  /// In en, this message translates to:
+  /// **'All Damage Reports'**
+  String get allDamageReports;
+
+  /// No description provided for @newDamageReport.
+  ///
+  /// In en, this message translates to:
+  /// **'New Damage Report'**
+  String get newDamageReport;
+
+  /// No description provided for @editAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Assessment'**
+  String get editAssessment;
+
+  /// No description provided for @reportHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Header'**
+  String get reportHeader;
+
+  /// No description provided for @incidentDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Details'**
+  String get incidentDetails;
+
+  /// No description provided for @damageCause.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Cause'**
+  String get damageCause;
+
+  /// No description provided for @reportNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Number'**
+  String get reportNumber;
+
+  /// No description provided for @evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence'**
+  String get evidence;
+
+  /// No description provided for @addEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Evidence'**
+  String get addEvidence;
+
+  /// No description provided for @noEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'No evidence available'**
+  String get noEvidence;
+
+  /// No description provided for @awaitingSyncToAddItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting sync to add items'**
+  String get awaitingSyncToAddItems;
+
+  /// No description provided for @awaitingSyncToEnableItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting synchronization to enable assessment items'**
+  String get awaitingSyncToEnableItems;
+
+  /// No description provided for @duplicateReportError.
+  ///
+  /// In en, this message translates to:
+  /// **'A damage report already exists for this farm and date'**
+  String get duplicateReportError;
+
+  /// No description provided for @retrySync.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry Sync'**
+  String get retrySync;
+
+  /// No description provided for @submitForReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for Review'**
+  String get submitForReview;
+
+  /// No description provided for @natureLockedInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage nature locked based on the first item'**
+  String get natureLockedInfo;
+
+  /// No description provided for @technicalLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Loss'**
+  String get technicalLoss;
+
+  /// No description provided for @totalTechnicalValuation.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Technical Valuation'**
+  String get totalTechnicalValuation;
+
   /// No description provided for @map.
   ///
   /// In en, this message translates to:
@@ -643,6 +757,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Locality'**
   String get locality;
+
+  /// No description provided for @latitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get latitude;
+
+  /// No description provided for @longitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get longitude;
+
+  /// No description provided for @getCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Current Location'**
+  String get getCurrentLocation;
 
   /// No description provided for @landArea.
   ///

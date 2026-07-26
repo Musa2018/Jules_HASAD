@@ -36,7 +36,8 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - **Inheritance Rule**: Authorization for child entities (Damage Items, Attachments, Workflow History) must be validated against the parent managed record's operational scope.
 - **Managed Record Authorization Inheritance**: `DamageReport` authorization is strictly inherited from its parent `Farm`.
 - **Authorization Source of Truth**: `Farm.DirectorateId` is the authoritative source for regional security boundaries.
-- **Derived Authorization Optimization**: `DamageReport` stores a denormalized `DirectorateId` (snapshot from parent Farm) to support high-performance scoped queries and O(1) security checks.
+- **Derived Authorization Optimization**: `DamageReport` stores denormalized snapshot fields (`FarmerId`, `GovernorateId`, `DirectorateId`, `LocalityId`, `DamageYear`, `Latitude`, `Longitude`) captured at creation time. These fields support high-performance scoped queries and O(1) security checks, while maintaining a historical record of the incident context.
+- **Audit Rule**: `DamageReport` includes `CreatedBy` (user identity) and `CreatedAt` to track origin.
 - **Regional Isolation**: Agricultural Engineers and Field Surveyors are restricted to data within their assigned Directorate. Supervisors and Directors are restricted to their Governorate.
 ### Pricing Catalog & Costing (Sprint 13.2)
 - **Hierarchy**: `Catalog -> Version -> Item`.
@@ -72,12 +73,12 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Status**: Sprint 11.2 will proceed with `AreaUnit` as a Farm-specific lookup, with refactoring deferred to maintain sprint velocity.
 
 ## 4. Current Project Status
-- **Current Branch**: `Farms`
-- **Latest Completed Sprint**: Sprint 12.2 — Hierarchical Classification UI
-- **Latest Commit Hash**: `e073d75` (Branch: DamageReport)
+- **Current Branch**: `DamageReport`
+- **Latest Completed Sprint**: Sprint 13.0 — Offline-First Pull Synchronization & Visibility Stabilization
+- **Latest Commit Hash**: `DamageReport` (Baseline Reference)
 - **main**: Stable production-ready code.
 - **Farms**: Completed and hardened.
-- **DamageReport**: Active development branch for Sprint 12.
+- **DamageReport**: Active development branch for Phase 2.1 (Damage Assessment Items).
 
 ## 5. Completed Work (Verified Sprints)
 ### Sprint 12.2 - Hierarchical Classification UI
@@ -228,6 +229,22 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farmer Data**: Strictly **Offline-First**. All writes (Create/Update) happen in Drift first, then added to `SyncQueue`.
 - **Location Data**: **Offline-First**. Retrieved from Drift with automatic remote synchronization/caching.
 - **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
+
+### Sprint 13.0 - Offline-First Pull Synchronization & Visibility Stabilization
+- **Pull Synchronization Architecture**:
+  - Implemented `PullSyncCoordinator` for incremental data retrieval.
+  - Standardized `SyncMetadata` watermarking (`UpdatedSince`) for all core entities.
+  - **Preservation Rule**: Pull operations are strictly non-destructive; they must never overwrite local records with pending sync tasks.
+  - **Conflict Visibility**: Synchronization conflicts are captured and remain visible to the user for manual resolution.
+- **Farmer/Farm Foundation Stabilization**:
+  - Validated RoleScope architecture: Farmer visibility is restricted to `Locality -> Directorate`.
+  - Hardened Agricultural Engineer and Field Surveyor geographic restrictions.
+  - Verified "Operational Display Filter" and "All View" for administrative roles.
+- **DamageReport Header Lifecycle**:
+  - Established Header-first workflow: Header must be saved and assigned a UUID/ReportNumber before items can be added.
+  - **Snapshot Principle**: Denormalized geographic and identity data is snapshotted at creation time to ensure historical integrity and O(1) authorization checks.
+  - Initial status standardized to `PendingTechnicalVerification`.
+  - Removed all "Draft" states; reports are saved directly to local storage as official records.
 
 ### Sprint 12.4 - DamageReport Security Alignment
 - **Security Baseline**: Implemented strict authorization inheritance from `Farm` to `DamageReport` and all child entities (`DamageItem`, `Attachment`, `WorkflowHistory`).

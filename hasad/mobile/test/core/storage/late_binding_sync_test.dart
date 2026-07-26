@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
+import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
@@ -18,6 +19,7 @@ class MockFarmerRepo extends Mock implements FarmerRepository {}
 class MockFarmRepo extends Mock implements FarmRepository {}
 class MockReportRepo extends Mock implements DamageReportRepository {}
 class MockAttachmentRepo extends Mock implements DamageReportAttachmentRepository {}
+class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
 class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
@@ -58,7 +60,7 @@ void main() {
     connectivity = MockConnectivity();
 
     syncService = BackgroundSyncService(
-      db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity,
+      db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity, () async {},
     );
   });
 

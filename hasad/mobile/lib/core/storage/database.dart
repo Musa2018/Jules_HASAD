@@ -202,18 +202,15 @@ class DamageReports extends Table {
   IntColumn get agriculturalSectorId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseCategoryId => integer().withDefault(const Constant(0))();
   IntColumn get damageCauseId => integer().withDefault(const Constant(0))();
-  TextColumn get settlementName => text().nullable()();
-  TextColumn get companyName => text().nullable()();
 
   TextColumn get governorateId => text().withDefault(const Constant(''))();
   TextColumn get directorateId => text().withDefault(const Constant(''))();
   TextColumn get localityId => text().withDefault(const Constant(''))();
-  RealColumn get latitude => real().nullable()();
-  RealColumn get longitude => real().nullable()();
 
   TextColumn get statusId => text().withLength(max: 50)();
   TextColumn get notes => text()();
 
+  TextColumn get createdBy => text().withDefault(const Constant(''))();
   TextColumn get rowVersion => text().withDefault(const Constant(''))();
   TextColumn get syncStatus =>
       text().withDefault(const Constant('completed'))();
@@ -428,6 +425,17 @@ class CostingSheetItems extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('SyncMetadataLocal')
+class SyncMetadata extends Table {
+  TextColumn get entity => text()(); // e.g., 'farmer', 'farm'
+  DateTimeColumn get lastSyncedAt => dateTime().nullable()();
+  TextColumn get lastSyncStatus => text().withDefault(const Constant('idle'))();
+  TextColumn get lastSyncError => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {entity};
+}
+
 @DriftDatabase(
   tables: [
     Farmers,
@@ -457,6 +465,7 @@ class CostingSheetItems extends Table {
     CostingSheetItems,
     CostingSheets,
     DamageWorkflowHistories,
+    SyncMetadata,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -464,7 +473,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 21;
+  int get schemaVersion => 27;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -485,8 +494,10 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(damageReports, damageReports.damageYear);
         await m.addColumn(damageReports, damageReports.damageCauseCategoryId);
         await m.addColumn(damageReports, damageReports.damageCauseId);
-        await m.addColumn(damageReports, damageReports.settlementName);
-        await m.addColumn(damageReports, damageReports.companyName);
+        
+        // Use customStatement for removed columns to avoid compilation errors in old migration logic
+        await customStatement('ALTER TABLE damage_reports ADD COLUMN settlement_name TEXT;');
+        await customStatement('ALTER TABLE damage_reports ADD COLUMN company_name TEXT;');
 
         await m.addColumn(damageItems, damageItems.classificationId);
         await m.addColumn(damageItems, damageItems.costingSheetId);
@@ -618,8 +629,8 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(damageReports, damageReports.governorateId);
         await m.addColumn(damageReports, damageReports.directorateId);
         await m.addColumn(damageReports, damageReports.localityId);
-        await m.addColumn(damageReports, damageReports.latitude);
-        await m.addColumn(damageReports, damageReports.longitude);
+        
+        // Removed latitude/longitude from here to prevent re-adding them in new installs
         
         // Backfill from Farms
         await transaction(() async {
@@ -636,6 +647,65 @@ class AppDatabase extends _$AppDatabase {
             WHERE EXISTS (SELECT 1 FROM farms WHERE farms.id = damage_reports.farm_id);
           ''');
         });
+      }
+      if (from < 22) {
+        // Phase 2: Damage Assessment Header Hardening
+        await m.addColumn(damageReports, damageReports.createdBy);
+      }
+      if (from < 23) {
+        // Phase 2: Pull Synchronization Infrastructure
+        await m.createTable(syncMetadata);
+      }
+      if (from < 24) {
+        // Phase 2 Cleanup: Remove Settlement and Company names
+        await m.alterTable(TableMigration(damageReports));
+      }
+      if (from < 25) {
+        // Correcting Location Persistence: Move to Farms, Remove from Reports
+        // Ensure Farms has the columns (safe to call even if they exist)
+        try {
+          await customStatement('ALTER TABLE farms ADD COLUMN latitude REAL;');
+        } catch (_) {}
+        try {
+          await customStatement('ALTER TABLE farms ADD COLUMN longitude REAL;');
+        } catch (_) {}
+        
+        // Attempt to clean DamageReports
+        await m.alterTable(TableMigration(damageReports));
+      }
+      if (from < 26) {
+        // FINAL CLEANUP: Force recreate DamageReports without coordinates
+        await m.alterTable(TableMigration(damageReports));
+      }
+      if (from < 27) {
+        // BRUTE FORCE RECONSTRUCTION: 
+        // Some SQLite environments or Drift versions don't drop columns via alterTable as expected.
+        // We manually recreate the table.
+        await customStatement('PRAGMA foreign_keys = OFF;');
+        await transaction(() async {
+          await customStatement('ALTER TABLE damage_reports RENAME TO damage_reports_old;');
+          await m.createTable(damageReports);
+          await customStatement('''
+            INSERT INTO damage_reports (
+              id, server_id, report_number, permanent_form_number, temporary_form_number,
+              damage_year, farm_id, farmer_id, damage_date, documentation_date,
+              damage_nature_id, agricultural_sector_id, damage_cause_category_id, damage_cause_id,
+              governorate_id, directorate_id, locality_id, status_id, notes,
+              created_by, row_version, sync_status, last_sync_error, is_pending_delete,
+              created_at, updated_at
+            )
+            SELECT 
+              id, server_id, report_number, permanent_form_number, temporary_form_number,
+              damage_year, farm_id, farmer_id, damage_date, documentation_date,
+              damage_nature_id, agricultural_sector_id, damage_cause_category_id, damage_cause_id,
+              governorate_id, directorate_id, locality_id, status_id, notes,
+              created_by, row_version, sync_status, last_sync_error, is_pending_delete,
+              created_at, updated_at
+            FROM damage_reports_old;
+          ''');
+          await customStatement('DROP TABLE damage_reports_old;');
+        });
+        await customStatement('PRAGMA foreign_keys = ON;');
       }
     },
     beforeOpen: (details) async {

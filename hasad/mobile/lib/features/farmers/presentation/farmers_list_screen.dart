@@ -58,7 +58,10 @@ class FarmersListScreen extends ConsumerWidget {
                   );
                 }
                 return RefreshIndicator(
-                  onRefresh: () async => ref.invalidate(farmersListProvider),
+                  onRefresh: () async {
+                    await ref.read(farmerRepositoryProvider).synchronize();
+                    ref.invalidate(farmersListProvider);
+                  },
                   child: ListView.separated(
                     padding: const EdgeInsets.all(12),
                     itemCount: farmers.length,

@@ -8,20 +8,29 @@ import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farms/data/offline_first_farm_repository.dart';
 
+import 'package:mobile/features/farms/data/farm_repository.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
 class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
+class MockRemoteFarmRepository extends Mock implements FarmRepository {}
+class MockConnectivity extends Mock implements Connectivity {}
 class MockAuthorizationService extends Mock implements AuthorizationService {}
 
 void main() {
   late AppDatabase db;
   late MockBackgroundSyncService mockSyncService;
+  late MockRemoteFarmRepository mockRemoteRepo;
+  late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
   late OfflineFirstFarmRepository repo;
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockSyncService = MockBackgroundSyncService();
+    mockRemoteRepo = MockRemoteFarmRepository();
+    mockConnectivity = MockConnectivity();
     mockAuthService = MockAuthorizationService();
-    repo = OfflineFirstFarmRepository(db, mockSyncService, mockAuthService);
+    repo = OfflineFirstFarmRepository(db, mockSyncService, mockRemoteRepo, mockConnectivity, mockAuthService);
   });
 
   tearDown(() async {

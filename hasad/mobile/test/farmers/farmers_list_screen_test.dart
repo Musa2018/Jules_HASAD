@@ -13,6 +13,8 @@ import 'package:drift/native.dart';
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
+import 'package:mobile/features/location/presentation/location_providers.dart';
+
 void main() {
   late AppDatabase db;
 
@@ -59,6 +61,8 @@ void main() {
         overrides: [
           farmersListProvider.overrideWith((ref) => Stream.value(farmers)),
           databaseProvider.overrideWithValue(db),
+          governoratesProvider.overrideWith((ref) => Future.value([])),
+          localitiesProvider.overrideWith((ref, _) => Future.value([])),
         ],
         child: const MaterialApp(
           localizationsDelegates: [

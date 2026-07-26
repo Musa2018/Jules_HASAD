@@ -4,6 +4,7 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 
 class ClassificationWizardState {
   final int currentStep;
+  final int? lockedNatureId;
   final DamageNature? selectedNature;
   final DamageAction? selectedAction;
   final DamageCategory? selectedCategory;
@@ -15,6 +16,7 @@ class ClassificationWizardState {
 
   const ClassificationWizardState({
     this.currentStep = 1,
+    this.lockedNatureId,
     this.selectedNature,
     this.selectedAction,
     this.selectedCategory,
@@ -27,6 +29,7 @@ class ClassificationWizardState {
 
   ClassificationWizardState copyWith({
     int? currentStep,
+    int? lockedNatureId,
     DamageNature? selectedNature,
     bool clearNature = false,
     DamageAction? selectedAction,
@@ -45,6 +48,7 @@ class ClassificationWizardState {
   }) {
     return ClassificationWizardState(
       currentStep: currentStep ?? this.currentStep,
+      lockedNatureId: lockedNatureId ?? this.lockedNatureId,
       selectedNature: clearNature ? null : (selectedNature ?? this.selectedNature),
       selectedAction: clearAction ? null : (selectedAction ?? this.selectedAction),
       selectedCategory: clearCategory ? null : (selectedCategory ?? this.selectedCategory),
@@ -60,10 +64,34 @@ class ClassificationWizardState {
 class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardState> {
   final Ref _ref;
 
-  ClassificationWizardNotifier(this._ref)
-      : super(const ClassificationWizardState());
+  ClassificationWizardNotifier(this._ref, [int? initialNatureId])
+      : super(ClassificationWizardState(lockedNatureId: initialNatureId)) {
+    if (initialNatureId != null) {
+      _initializeWithNature(initialNatureId);
+    }
+  }
+
+  Future<void> _initializeWithNature(int natureId) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final natures = await _ref.read(naturesProvider.future);
+      final nature = natures.where((n) => n.id == natureId).firstOrNull;
+      if (nature != null) {
+        state = state.copyWith(
+          selectedNature: nature,
+          currentStep: 2,
+          isLoading: false,
+        );
+      } else {
+        state = state.copyWith(isLoading: false, error: 'Nature not found.');
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
 
   void setNature(DamageNature nature) {
+    if (state.lockedNatureId != null) return;
     state = state.copyWith(
       selectedNature: nature,
       clearAction: true,
@@ -141,9 +169,9 @@ class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardSta
 }
 
 final classificationWizardProvider = StateNotifierProvider.family
-    .autoDispose<ClassificationWizardNotifier, ClassificationWizardState, int>(
-        (ref, sectorId) {
-  return ClassificationWizardNotifier(ref);
+    .autoDispose<ClassificationWizardNotifier, ClassificationWizardState, Map<String, int?>>(
+        (ref, params) {
+  return ClassificationWizardNotifier(ref, params['lockedNatureId']);
 });
 
 // Cascading Filter Providers

@@ -33,7 +33,8 @@ public class GetLocalitiesQueryHandler : IRequestHandler<GetLocalitiesQuery, Res
                 Id = l.Id,
                 NameAr = l.NameAr,
                 NameEn = l.NameEn,
-                GovernorateId = l.GovernorateId
+                GovernorateId = l.GovernorateId,
+                DirectorateId = l.DirectorateId
             })
             .ToListAsync(cancellationToken);
 

@@ -1,4 +1,4 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -6,8 +6,6 @@ import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
-import 'package:mobile/features/farmers/domain/farmer.dart';
-import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farms/presentation/farms_providers.dart';
@@ -34,7 +32,7 @@ void main() {
       ],
     );
 
-    coordinator = PullSyncCoordinator(db, container);
+    coordinator = PullSyncCoordinator(db);
   });
 
   tearDown(() async {
@@ -49,11 +47,12 @@ void main() {
       when(() => mockFarmRepo.synchronize(updatedSince: any(named: 'updatedSince')))
           .thenAnswer((_) async => {});
 
-      await coordinator.synchronizeAll();
+      await coordinator.synchronizeEntity('farmer', mockFarmerRepo.synchronize);
+      await coordinator.synchronizeEntity('farm', mockFarmRepo.synchronize);
 
       final farmerMeta = await (db.select(db.syncMetadata)..where((t) => t.entity.equals('farmer'))).getSingle();
       expect(farmerMeta.lastSyncStatus, 'completed');
-      expect(farmerMeta.lastSyncedAt, isNotNull);
+      expect(farmerMeta.lastSyncedAt, isA<DateTime>());
 
       final farmMeta = await (db.select(db.syncMetadata)..where((t) => t.entity.equals('farm'))).getSingle();
       expect(farmMeta.lastSyncStatus, 'completed');
@@ -70,7 +69,7 @@ void main() {
       when(() => mockFarmerRepo.synchronize(updatedSince: lastYear))
           .thenAnswer((_) async => {});
 
-      await coordinator.synchronizeFarmers();
+      await coordinator.synchronizeEntity('farmer', mockFarmerRepo.synchronize);
 
       verify(() => mockFarmerRepo.synchronize(updatedSince: lastYear)).called(1);
     });

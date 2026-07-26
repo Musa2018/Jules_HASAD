@@ -11,6 +11,7 @@ import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/attachment_gallery_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_report_details_screen.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_report_header_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_report_form_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_reports_list_screen.dart';
 import 'package:mobile/features/agricultural_assistance/presentation/agricultural_assistance_screen.dart';
@@ -244,7 +245,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.damageReports,
         builder: (context, state) =>
-            DamageReportsListScreen(farm: state.extra as Farm),
+            DamageReportsListScreen(farm: state.extra as Farm?),
       ),
       GoRoute(
         path: AppRoutes.damageReportDetails,
@@ -259,16 +260,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.addDamageReport,
         builder: (context, state) =>
-            DamageReportFormScreen(farm: state.extra as Farm),
+            DamageReportHeaderScreen(farm: state.extra as Farm),
       ),
       GoRoute(
         path: AppRoutes.editDamageReport,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return DamageReportFormScreen(
-            farm: extra['farm'] as Farm,
-            report: extra['report'] as DamageReport,
-          );
+          final id = state.extra as String;
+          return DamageReportFormScreen(reportId: id);
         },
       ),
       GoRoute(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/offline_first_damage_report_attachment_repository.dart';
@@ -16,6 +17,7 @@ final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   return OfflineFirstDamageReportRepository(
     ref.watch(databaseProvider),
     ref.watch(syncServiceProvider),
+    ref.watch(authProvider).session,
   );
 });
 
@@ -35,6 +37,10 @@ final damageReportsListByFarmProvider = FutureProvider.autoDispose
           .getDamageReportsByFarm(farmId);
     });
 
+final allDamageReportsProvider = FutureProvider.autoDispose<List<DamageReport>>((ref) async {
+  return ref.watch(damageReportRepositoryProvider).getDamageReports();
+});
+
 final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
   final db = ref.watch(databaseProvider);
   return (db.select(db.damageReports)..where((t) => Expression.and([t.id.equals(id), t.isPendingDelete.equals(false)])))
@@ -47,6 +53,7 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
     return DamageReport(
       id: row.id,
       serverId: row.serverId,
+      reportNumber: row.reportNumber,
       permanentFormNumber: row.permanentFormNumber,
       temporaryFormNumber: row.temporaryFormNumber,
       damageYear: row.damageYear,
@@ -56,13 +63,9 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
       documentationDate: row.documentationDate,
       damageCauseCategoryId: row.damageCauseCategoryId,
       damageCauseId: row.damageCauseId,
-      settlementName: row.settlementName,
-      companyName: row.companyName,
       governorateId: row.governorateId,
       directorateId: row.directorateId,
       localityId: row.localityId,
-      latitude: row.latitude,
-      longitude: row.longitude,
       statusId: row.statusId,
       notes: row.notes,
       rowVersion: row.rowVersion,
@@ -173,6 +176,42 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
       state = const DamageReportFormState(
         errors: ['An unexpected error occurred.'],
       );
+    }
+  }
+
+  Future<void> addDamageItem(DamageItem item) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.addDamageItem(item);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['Failed to add item.']);
+    }
+  }
+
+  Future<void> updateDamageItem(DamageItem item) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.updateDamageItem(item);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['Failed to update item.']);
+    }
+  }
+
+  Future<void> deleteDamageItem(String id) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.deleteDamageItem(id);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['Failed to delete item.']);
     }
   }
 }

@@ -11,4 +11,11 @@ abstract class FarmRepository {
   Future<Farm> updateFarm(Farm farm, {AuthSession? session});
   Future<void> deleteFarm(String id, {AuthSession? session});
   Future<void> cancelDeleteFarm(String id);
+  Future<List<Farm>> getFarms({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  });
+  Future<void> synchronize({DateTime? updatedSince});
 }

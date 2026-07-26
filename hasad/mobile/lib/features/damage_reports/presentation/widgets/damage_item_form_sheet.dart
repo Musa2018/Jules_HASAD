@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/core/presentation/widgets/form_save_footer.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/services/valuation_engine.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
@@ -14,12 +15,14 @@ class DamageItemFormSheet extends ConsumerStatefulWidget {
   final String reportId;
   final int sectorId;
   final DamageItem? existingItem;
+  final int? lockedNatureId;
 
   const DamageItemFormSheet({
     super.key,
     required this.reportId,
     required this.sectorId,
     this.existingItem,
+    this.lockedNatureId,
   });
 
   @override
@@ -55,7 +58,8 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(classificationWizardProvider(widget.sectorId));
+    final params = {'sectorId': widget.sectorId, 'lockedNatureId': widget.lockedNatureId};
+    final state = ref.watch(classificationWizardProvider(params));
     final l10n = AppLocalizations.of(context)!;
 
     return DraggableScrollableSheet(
@@ -76,8 +80,11 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
             const Divider(),
             Expanded(
               child: state.selectedClassification == null
-                  ? ClassificationSelector(sectorId: widget.sectorId)
-                  : _buildDetailsForm(state, l10n),
+                  ? ClassificationSelector(
+                      sectorId: widget.sectorId,
+                      lockedNatureId: widget.lockedNatureId,
+                    )
+                  : _buildDetailsForm(state, l10n, params),
             ),
           ],
         );
@@ -85,7 +92,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     );
   }
 
-  Widget _buildDetailsForm(ClassificationWizardState state, AppLocalizations l10n) {
+  Widget _buildDetailsForm(ClassificationWizardState state, AppLocalizations l10n, Map<String, int?> params) {
     final costing = state.resolvedCosting;
     
     final unitAsync = costing?.measurementUnitId != null
@@ -105,61 +112,68 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
       damagePercentage: _percentage,
     );
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildSelectionPath(state),
-            const SizedBox(height: 24),
-            if (costing == null)
-              _buildPricingMissingWarning(l10n)
-            else
-              _buildPricingPreview(costing, l10n),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: _quantityController,
-              decoration: InputDecoration(labelText: l10n.quantity),
-              keyboardType: TextInputType.number,
-              onChanged: (_) => setState(() {}),
-              validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildSelectionPath(state),
+                  const SizedBox(height: 24),
+                  if (costing == null)
+                    _buildPricingMissingWarning(l10n)
+                  else
+                    _buildPricingPreview(costing, l10n),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _quantityController,
+                    decoration: InputDecoration(labelText: l10n.quantity),
+                    keyboardType: TextInputType.number,
+                    onChanged: (_) => setState(() {}),
+                    validator: (v) => (v == null || v.isEmpty) ? l10n.requiredField : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _percentageController,
+                    decoration: InputDecoration(labelText: l10n.damagePercentage),
+                    keyboardType: TextInputType.number,
+                    onChanged: (_) => setState(() {}),
+                    validator: (v) {
+                      final val = double.tryParse(v ?? '');
+                      if (val == null) return l10n.requiredField;
+                      if (val < 0 || val > 100) return l10n.invalidValue;
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _areaController,
+                    decoration: InputDecoration(labelText: l10n.affectedAreaOptional),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 32),
+                  _buildValuationPreview(estimatedLoss, l10n),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _percentageController,
-              decoration: InputDecoration(labelText: l10n.damagePercentage),
-              keyboardType: TextInputType.number,
-              onChanged: (_) => setState(() {}),
-              validator: (v) {
-                final val = double.tryParse(v ?? '');
-                if (val == null) return l10n.requiredField;
-                if (val < 0 || val > 100) return l10n.invalidValue;
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _areaController,
-              decoration: InputDecoration(labelText: l10n.affectedAreaOptional),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 32),
-            _buildValuationPreview(estimatedLoss, l10n),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: costing == null ? null : () => _save(unitName),
-              child: Text(l10n.save),
-            ),
-            TextButton(
-              onPressed: () => ref.read(classificationWizardProvider(widget.sectorId).notifier).reset(),
-              child: Text(l10n.cancel),
-            ),
-          ],
+          ),
         ),
-      ),
+        FormSaveFooter(
+          onSave: costing == null ? null : () => _save(unitName, params),
+          isLoading: false,
+          isValid: _formKey.currentState?.validate() ?? true,
+        ),
+        TextButton(
+          onPressed: () => ref.read(classificationWizardProvider(params).notifier).reset(),
+          child: Text(l10n.cancel),
+        ),
+      ],
     );
+
   }
 
   Widget _buildSelectionPath(ClassificationWizardState state) {
@@ -261,10 +275,10 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     );
   }
 
-  void _save(String unitName) {
+  void _save(String unitName, Map<String, int?> params) {
     if (!_formKey.currentState!.validate()) return;
 
-    final state = ref.read(classificationWizardProvider(widget.sectorId));
+    final state = ref.read(classificationWizardProvider(params));
     final costing = state.resolvedCosting!;
 
     final item = DamageItem(

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
+import 'package:mobile/features/damage_reports/presentation/screens/damage_report_header_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_report_form_screen.dart';
 import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
@@ -16,10 +18,12 @@ import 'package:mocktail/mocktail.dart';
 
 class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
 class MockDamageReportRepository extends Mock implements DamageReportRepository {}
+class MockGoRouter extends Mock implements GoRouter {}
 
 void main() {
   late MockReferenceDataRepository mockRefRepo;
   late MockDamageReportRepository mockDamageRepo;
+  late MockGoRouter mockRouter;
 
   final testFarm = Farm(
     id: 'FARM-1',
@@ -40,6 +44,7 @@ void main() {
   setUp(() {
     mockRefRepo = MockReferenceDataRepository();
     mockDamageRepo = MockDamageReportRepository();
+    mockRouter = MockGoRouter();
 
     registerFallbackValue(DamageReport(
       id: '',
@@ -52,10 +57,11 @@ void main() {
       localityId: '',
       statusId: '',
       notes: '',
+      createdBy: '',
     ));
   });
 
-  Widget buildTestApp({DamageReport? report}) {
+  Widget buildTestApp({String? reportId}) {
     return ProviderScope(
       overrides: [
         referenceDataRepositoryProvider.overrideWithValue(mockRefRepo),
@@ -69,19 +75,25 @@ void main() {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en')],
-        home: MediaQuery(
-          data: const MediaQueryData(size: Size(800, 1200)),
-          child: DamageReportFormScreen(farm: testFarm, report: report),
+        home: InheritedGoRouter(
+          goRouter: mockRouter,
+          child: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 1200)),
+            child: (reportId == null
+                ? DamageReportHeaderScreen(farm: testFarm)
+                : DamageReportFormScreen(reportId: reportId)) as Widget,
+          ),
         ),
       ),
     );
   }
 
-  testWidgets('DamageReportFormScreen requires nature and cause selection', (tester) async {
+  testWidgets('DamageReportHeaderScreen requires cause selection', (tester) async {
     when(() => mockRefRepo.getDamageCauseCategories()).thenAnswer((_) async => []);
     when(() => mockRefRepo.getNatures()).thenAnswer((_) async => []);
     final refData = ReferenceData(
-      ownershipTypes: [], agriculturalSectors: [], politicalClassifications: [],
+      ownershipTypes: [], agriculturalSectors: [const AgriculturalSector(id: 1, nameAr: 'S1', nameEn: 'S1')], 
+      politicalClassifications: [],
       areaUnits: [], measurementUnits: [], relationshipToOwners: [],
       damageNatures: [], damageActions: [], damageCategories: [], damageSubCategories: [], damageClassifications: [],
       damageCauseCategories: [], damageCauses: []
@@ -91,16 +103,16 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    final saveButton = find.text('Save & Next');
+    final saveButton = find.text('Save');
     await tester.ensureVisible(saveButton);
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('Please select an agricultural sector.'), findsOneWidget);
+    expect(find.text('Please select a damage cause.'), findsOneWidget);
     verifyNever(() => mockDamageRepo.createDamageReport(any()));
   });
 
-  testWidgets('DamageReportFormScreen transitions to Step 2 after header save', (tester) async {
+  testWidgets('DamageReportHeaderScreen successfully saves header', (tester) async {
     final natures = [const DamageNature(id: 1, nameAr: 'NatureAr', nameEn: 'NatureEn')];
     final categories = [const DamageCauseCategory(id: 1, nameAr: 'CatAr', nameEn: 'CatEn')];
     final causes = [const DamageCause(id: 10, parentId: 1, nameAr: 'CauseAr', nameEn: 'CauseEn')];
@@ -110,7 +122,7 @@ void main() {
     when(() => mockRefRepo.getDamageCauses(1)).thenAnswer((_) async => causes);
 
     final refData = ReferenceData(
-      ownershipTypes: [], agriculturalSectors: natures.map((e) => AgriculturalSector(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn)).toList(), 
+      ownershipTypes: [], agriculturalSectors: [const AgriculturalSector(id: 1, nameAr: 'NatureAr', nameEn: 'NatureEn')], 
       politicalClassifications: [],
       areaUnits: [], measurementUnits: [], relationshipToOwners: [],
       damageNatures: natures, damageActions: [], damageCategories: [], damageSubCategories: [], damageClassifications: [],
@@ -120,16 +132,13 @@ void main() {
     
     when(() => mockDamageRepo.createDamageReport(any())).thenAnswer((inv) async {
       final report = inv.positionalArguments[0] as DamageReport;
-      return report.copyWith(reportNumber: 'NB-NAB-2026-000001');
+      return report.copyWith(id: 'NEW-ID', reportNumber: 'NB-NAB-2026-000001');
     });
 
-    await tester.pumpWidget(buildTestApp());
-    await tester.pumpAndSettle();
+    when(() => mockRouter.pushReplacement(any(), extra: any(named: 'extra')))
+        .thenAnswer((_) async => null);
 
-    // Select Nature
-    await tester.tap(find.text('Agricultural Sector'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('NatureAr').last);
+    await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
     // Select Cause
@@ -140,15 +149,14 @@ void main() {
     await tester.tap(find.text('CauseAr'));
     await tester.pumpAndSettle();
 
-    // Save & Next
-    final saveButton = find.text('Save & Next');
+    // Save
+    final saveButton = find.text('Save');
     await tester.ensureVisible(saveButton);
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
 
-    // Verify in Step 2
-    expect(find.text('Official Report Number'), findsOneWidget);
-    expect(find.text('NB-NAB-2026-000001'), findsOneWidget);
-    expect(find.text('Damage Assessment'), findsOneWidget);
+    // Verify success message
+    expect(find.text('Header saved. Proceeding to assessment.'), findsOneWidget);
+    verify(() => mockDamageRepo.createDamageReport(any())).called(1);
   });
 }

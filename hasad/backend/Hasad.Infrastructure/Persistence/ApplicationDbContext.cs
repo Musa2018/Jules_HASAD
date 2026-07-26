@@ -399,7 +399,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasIndex(e => e.ClientId).IsUnique();
             entity.HasIndex(e => e.ReportNumber).IsUnique();
             entity.HasIndex(e => e.PermanentFormNumber).IsUnique();
+            entity.HasIndex(e => e.DirectorateId);
             entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
+
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
 
             entity.HasOne(e => e.Farm)
                 .WithMany()

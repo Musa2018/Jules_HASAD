@@ -53,6 +53,11 @@ class HomeScreen extends ConsumerWidget {
                   icon: Icons.agriculture,
                   onTap: () => context.push(AppRoutes.farms),
                 ),
+                _FeatureCard(
+                  title: l10n.damageReportsForms,
+                  icon: Icons.assignment,
+                  onTap: () => context.push(AppRoutes.damageReports),
+                ),
                 if (session?.roles.contains('SuperAdmin') ?? false)
                   _FeatureCard(
                     title: l10n.users,

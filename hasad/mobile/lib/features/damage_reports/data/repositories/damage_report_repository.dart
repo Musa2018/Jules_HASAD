@@ -3,9 +3,11 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 
 abstract class DamageReportRepository {
+  Future<List<DamageReport>> getDamageReports();
   Future<List<DamageReport>> getDamageReportsByFarm(String farmId);
   Future<DamageReport> getDamageReport(String id);
   Future<DamageReport> createDamageReport(DamageReport report);
+  Future<DamageReport> createDamageReportFromJson(Map<String, dynamic> json);
   Future<DamageReport> updateDamageReport(DamageReport report);
   Future<void> deleteDamageReport(String id);
 

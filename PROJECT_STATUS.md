@@ -2,11 +2,19 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.14.0-alpha (Contract Synchronization)
-- **Current Sprint**: Phase 4 — DamageReport Sprint 14.x Synchronization
+- **Current Version**: v0.15.0-alpha (Offline Baseline)
+- **Current Sprint**: Phase 2.1 — Damage Assessment Items
 - **Current Branch**: `DamageReport`
-- **Last Updated**: 2026-07-24
-- **Latest Commit**: `15e42d7`
+- **Last Updated**: 2026-07-26
+- **Latest Commit**: `DamageReport` (Baseline Reference)
+
+## Sprint 15.0 — COMPLETED
+Offline-First Pull Synchronization & Visibility Stabilization:
+- **Architecture**: Implemented `PullSyncCoordinator` for incremental watermarked synchronization.
+- **Security**: Hardened RoleScope architecture (Farmer -> Locality -> Directorate) and geographic restrictions.
+- **Lifecycle**: Established Header-first `DamageReport` lifecycle with snapshot-based authorization.
+- **Baseline**: Certified "Engineering Baseline" for Damage Assessment.
+- **Status**: ✅ **Production Ready**.
 
 ## Sprint 13.2 — IN PROGRESS
 Damage Assessment & Valuation Engine:

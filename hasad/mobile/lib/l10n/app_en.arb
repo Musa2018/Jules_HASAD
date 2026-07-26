@@ -14,6 +14,8 @@
   "editAssessment": "Edit Assessment",
   "reportHeader": "Report Header",
   "incidentDetails": "Incident Details",
+  "damageDate": "Damage Date",
+  "documentationDate": "Documentation Date",
   "damageCause": "Damage Cause",
   "reportNumber": "Report Number",
   "evidence": "Evidence",

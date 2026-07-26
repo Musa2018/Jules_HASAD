@@ -45,6 +45,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get incidentDetails => 'Incident Details';
 
   @override
+  String get damageDate => 'Damage Date';
+
+  @override
+  String get documentationDate => 'Documentation Date';
+
+  @override
   String get damageCause => 'Damage Cause';
 
   @override

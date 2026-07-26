@@ -170,6 +170,18 @@ abstract class AppLocalizations {
   /// **'Incident Details'**
   String get incidentDetails;
 
+  /// No description provided for @damageDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Date'**
+  String get damageDate;
+
+  /// No description provided for @documentationDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Documentation Date'**
+  String get documentationDate;
+
   /// No description provided for @damageCause.
   ///
   /// In en, this message translates to:

@@ -149,8 +149,8 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
                   children: [
                     _buildFarmInfo(),
                     const Divider(height: 32),
-                    _buildDateTile(l10n.dateOfBirth, _damageDate, (picked) => setState(() => _damageDate = picked)),
-                    _buildReadOnlyField(l10n.createdAt, DateFormat.yMMMd().format(_documentationDate)),
+                    _buildDateTile(l10n.damageDate, _damageDate, (picked) => setState(() => _damageDate = picked)),
+                    _buildReadOnlyField(l10n.documentationDate, DateFormat.yMMMd().format(_documentationDate)),
                     const SizedBox(height: 16),
                     _buildSectorSelector(l10n),
                     const SizedBox(height: 16),

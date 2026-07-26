@@ -11,6 +11,8 @@
   "editAssessment": "تعديل التقييم",
   "reportHeader": "رأس التقرير",
   "incidentDetails": "تفاصيل الحادثة",
+  "damageDate": "تاريخ الضرر",
+  "documentationDate": "تاريخ التوثيق",
   "damageCause": "سبب الضرر",
   "reportNumber": "رقم التقرير",
   "evidence": "البينة/الدليل",

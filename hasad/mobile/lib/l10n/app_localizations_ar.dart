@@ -45,6 +45,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get incidentDetails => 'تفاصيل الحادثة';
 
   @override
+  String get damageDate => 'تاريخ الضرر';
+
+  @override
+  String get documentationDate => 'تاريخ التوثيق';
+
+  @override
   String get damageCause => 'سبب الضرر';
 
   @override

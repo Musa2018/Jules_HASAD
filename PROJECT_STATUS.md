@@ -6,7 +6,19 @@
 - **Current Sprint**: Phase 2.1 — Damage Assessment Items
 - **Current Branch**: `DamageReport`
 - **Last Updated**: 2026-07-26
-- **Latest Commit**: `DamageReport` (Baseline Reference)
+- **Latest Commit**: `DamageReport` (`d37d38a`)
+
+## Sprint 15.1 — COMPLETED (Stability Point)
+Damage Report Structural Stabilization & Location SSOT:
+- **Architecture**: Established `Farm` as the Single Source of Truth (SSOT) for geography. Removed redundant `Latitude`, `Longitude`, `SettlementName`, and `CompanyName` from the `DamageReport` entity across all layers.
+- **Backend Hardening**: Applied EF Core migration (`DropCoordinatesFromDamageReportFinal`) to physically drop obsolete columns from SQL Server. Updated all Commands, Queries, and DTOs to align with the refined entity model.
+- **Mobile Persistence**: Upgraded Drift to **Version 27** using a manual reconstruction (Nuclear Migration) to ensure columns are physically dropped from the SQLite file.
+- **Sync Integrity**: Implemented "Late Binding Location Injection" in `BackgroundSyncService`. Coordinates are now retrieved from the local `Farms` table at sync time and injected into the server payload, ensuring the backend receives necessary data without double storage on mobile.
+- **GIS Hardware Integration**:
+    - Resolved GPS access failures by adding mandatory permissions to `AndroidManifest.xml` (Fine/Coarse) and `Info.plist`.
+    - Enhanced `FarmFormScreen` with a reactive loading state and error handling for the "Get Current Location" feature.
+- **Terminology**: Corrected date labels in the Damage Report header (Damage Date vs. Documentation Date) in both Arabic and English.
+- **Status**: ✅ **Stability Point Reached**.
 
 ## Sprint 15.0 — COMPLETED
 Offline-First Pull Synchronization & Visibility Stabilization:

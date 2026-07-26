@@ -36,7 +36,9 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - **Inheritance Rule**: Authorization for child entities (Damage Items, Attachments, Workflow History) must be validated against the parent managed record's operational scope.
 - **Managed Record Authorization Inheritance**: `DamageReport` authorization is strictly inherited from its parent `Farm`.
 - **Authorization Source of Truth**: `Farm.DirectorateId` is the authoritative source for regional security boundaries.
-- **Derived Authorization Optimization**: `DamageReport` stores denormalized snapshot fields (`FarmerId`, `GovernorateId`, `DirectorateId`, `LocalityId`, `DamageYear`, `Latitude`, `Longitude`) captured at creation time. These fields support high-performance scoped queries and O(1) security checks, while maintaining a historical record of the incident context.
+- **Location Source of Truth**: `Farm` is the authoritative source for coordinates (`Latitude`, `Longitude`). `DamageReport` no longer stores these fields locally.
+- **Late Binding Injection**: During synchronization, `BackgroundSyncService` fetches coordinates from the parent `Farm` and injects them into the `DamageReport` server payload.
+- **Derived Authorization Optimization**: `DamageReport` stores denormalized snapshot fields (`FarmerId`, `GovernorateId`, `DirectorateId`, `LocalityId`, `DamageYear`) captured at creation time. These fields support high-performance scoped queries and O(1) security checks, while maintaining a historical record of the incident context.
 - **Audit Rule**: `DamageReport` includes `CreatedBy` (user identity) and `CreatedAt` to track origin.
 - **Regional Isolation**: Agricultural Engineers and Field Surveyors are restricted to data within their assigned Directorate. Supervisors and Directors are restricted to their Governorate.
 ### Pricing Catalog & Costing (Sprint 13.2)
@@ -74,8 +76,8 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 4. Current Project Status
 - **Current Branch**: `DamageReport`
-- **Latest Completed Sprint**: Sprint 13.0 — Offline-First Pull Synchronization & Visibility Stabilization
-- **Latest Commit Hash**: `DamageReport` (Baseline Reference)
+- **Latest Completed Sprint**: Sprint 15.1 — Damage Report Structural Stabilization & Location SSOT
+- **Latest Commit Hash**: `DamageReport` (`d37d38a`)
 - **main**: Stable production-ready code.
 - **Farms**: Completed and hardened.
 - **DamageReport**: Active development branch for Phase 2.1 (Damage Assessment Items).

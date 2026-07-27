@@ -3298,6 +3298,7 @@ CostingSheetItem _$CostingSheetItemFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$CostingSheetItem {
   String get id => throw _privateConstructorUsedError;
+  String get code => throw _privateConstructorUsedError;
   String get versionId => throw _privateConstructorUsedError;
   int get classificationId => throw _privateConstructorUsedError;
   int? get measurementUnitId => throw _privateConstructorUsedError;
@@ -3323,6 +3324,7 @@ abstract class $CostingSheetItemCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String code,
     String versionId,
     int classificationId,
     int? measurementUnitId,
@@ -3347,6 +3349,7 @@ class _$CostingSheetItemCopyWithImpl<$Res, $Val extends CostingSheetItem>
   @override
   $Res call({
     Object? id = null,
+    Object? code = null,
     Object? versionId = null,
     Object? classificationId = null,
     Object? measurementUnitId = freezed,
@@ -3358,6 +3361,10 @@ class _$CostingSheetItemCopyWithImpl<$Res, $Val extends CostingSheetItem>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            code: null == code
+                ? _value.code
+                : code // ignore: cast_nullable_to_non_nullable
                       as String,
             versionId: null == versionId
                 ? _value.versionId
@@ -3396,6 +3403,7 @@ abstract class _$$CostingSheetItemImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String code,
     String versionId,
     int classificationId,
     int? measurementUnitId,
@@ -3419,6 +3427,7 @@ class __$$CostingSheetItemImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? code = null,
     Object? versionId = null,
     Object? classificationId = null,
     Object? measurementUnitId = freezed,
@@ -3430,6 +3439,10 @@ class __$$CostingSheetItemImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        code: null == code
+            ? _value.code
+            : code // ignore: cast_nullable_to_non_nullable
                   as String,
         versionId: null == versionId
             ? _value.versionId
@@ -3461,6 +3474,7 @@ class __$$CostingSheetItemImplCopyWithImpl<$Res>
 class _$CostingSheetItemImpl implements _CostingSheetItem {
   const _$CostingSheetItemImpl({
     required this.id,
+    this.code = '',
     required this.versionId,
     required this.classificationId,
     this.measurementUnitId,
@@ -3474,6 +3488,9 @@ class _$CostingSheetItemImpl implements _CostingSheetItem {
   @override
   final String id;
   @override
+  @JsonKey()
+  final String code;
+  @override
   final String versionId;
   @override
   final int classificationId;
@@ -3486,7 +3503,7 @@ class _$CostingSheetItemImpl implements _CostingSheetItem {
 
   @override
   String toString() {
-    return 'CostingSheetItem(id: $id, versionId: $versionId, classificationId: $classificationId, measurementUnitId: $measurementUnitId, unitPrice: $unitPrice, createdAt: $createdAt)';
+    return 'CostingSheetItem(id: $id, code: $code, versionId: $versionId, classificationId: $classificationId, measurementUnitId: $measurementUnitId, unitPrice: $unitPrice, createdAt: $createdAt)';
   }
 
   @override
@@ -3495,6 +3512,7 @@ class _$CostingSheetItemImpl implements _CostingSheetItem {
         (other.runtimeType == runtimeType &&
             other is _$CostingSheetItemImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.code, code) || other.code == code) &&
             (identical(other.versionId, versionId) ||
                 other.versionId == versionId) &&
             (identical(other.classificationId, classificationId) ||
@@ -3512,6 +3530,7 @@ class _$CostingSheetItemImpl implements _CostingSheetItem {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    code,
     versionId,
     classificationId,
     measurementUnitId,
@@ -3539,6 +3558,7 @@ class _$CostingSheetItemImpl implements _CostingSheetItem {
 abstract class _CostingSheetItem implements CostingSheetItem {
   const factory _CostingSheetItem({
     required final String id,
+    final String code,
     required final String versionId,
     required final int classificationId,
     final int? measurementUnitId,
@@ -3551,6 +3571,8 @@ abstract class _CostingSheetItem implements CostingSheetItem {
 
   @override
   String get id;
+  @override
+  String get code;
   @override
   String get versionId;
   @override

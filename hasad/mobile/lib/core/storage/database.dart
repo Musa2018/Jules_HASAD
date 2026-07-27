@@ -415,6 +415,7 @@ class CostingSheetVersions extends Table {
 
 class CostingSheetItems extends Table {
   TextColumn get id => text()(); // Guid
+  TextColumn get code => text().withDefault(const Constant(''))();
   TextColumn get versionId => text()(); // Guid
   IntColumn get classificationId => integer()();
   IntColumn get measurementUnitId => integer().nullable()();
@@ -473,7 +474,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 27;
+  int get schemaVersion => 28;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -677,35 +678,9 @@ class AppDatabase extends _$AppDatabase {
         // FINAL CLEANUP: Force recreate DamageReports without coordinates
         await m.alterTable(TableMigration(damageReports));
       }
-      if (from < 27) {
-        // BRUTE FORCE RECONSTRUCTION: 
-        // Some SQLite environments or Drift versions don't drop columns via alterTable as expected.
-        // We manually recreate the table.
-        await customStatement('PRAGMA foreign_keys = OFF;');
-        await transaction(() async {
-          await customStatement('ALTER TABLE damage_reports RENAME TO damage_reports_old;');
-          await m.createTable(damageReports);
-          await customStatement('''
-            INSERT INTO damage_reports (
-              id, server_id, report_number, permanent_form_number, temporary_form_number,
-              damage_year, farm_id, farmer_id, damage_date, documentation_date,
-              damage_nature_id, agricultural_sector_id, damage_cause_category_id, damage_cause_id,
-              governorate_id, directorate_id, locality_id, status_id, notes,
-              created_by, row_version, sync_status, last_sync_error, is_pending_delete,
-              created_at, updated_at
-            )
-            SELECT 
-              id, server_id, report_number, permanent_form_number, temporary_form_number,
-              damage_year, farm_id, farmer_id, damage_date, documentation_date,
-              damage_nature_id, agricultural_sector_id, damage_cause_category_id, damage_cause_id,
-              governorate_id, directorate_id, locality_id, status_id, notes,
-              created_by, row_version, sync_status, last_sync_error, is_pending_delete,
-              created_at, updated_at
-            FROM damage_reports_old;
-          ''');
-          await customStatement('DROP TABLE damage_reports_old;');
-        });
-        await customStatement('PRAGMA foreign_keys = ON;');
+      if (from < 28) {
+        // Sprint 14.x: Costing Item Search Code
+        await m.addColumn(this.costingSheetItems, this.costingSheetItems.code);
       }
     },
     beforeOpen: (details) async {

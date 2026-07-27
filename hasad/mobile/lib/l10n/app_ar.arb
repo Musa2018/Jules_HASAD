@@ -183,5 +183,8 @@
   "status_MinArchive": "أرشفة الوزارة",
   "status_GenManager": "المدير العام",
   "status_Completed": "مكتمل",
-  "operationalView": "العرض التشغيلي"
+  "operationalView": "العرض التشغيلي",
+  "searchByCodeOrName": "بحث بالكود أو الاسم",
+  "noItemsFound": "لم يتم العثور على بنود",
+  "damageAction": "فعل الضرر"
 }

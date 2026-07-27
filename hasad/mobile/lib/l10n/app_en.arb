@@ -215,5 +215,8 @@
   "status_MinArchive": "Ministry Archive",
   "status_GenManager": "General Manager",
   "status_Completed": "Completed",
-  "operationalView": "Operational View"
+  "operationalView": "Operational View",
+  "searchByCodeOrName": "Search by Code or Name",
+  "noItemsFound": "No items found",
+  "damageAction": "Damage Action"
 }

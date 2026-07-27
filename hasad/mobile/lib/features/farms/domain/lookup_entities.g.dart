@@ -273,6 +273,7 @@ _$CostingSheetItemImpl _$$CostingSheetItemImplFromJson(
   Map<String, dynamic> json,
 ) => _$CostingSheetItemImpl(
   id: json['id'] as String,
+  code: json['code'] as String? ?? '',
   versionId: json['versionId'] as String,
   classificationId: (json['classificationId'] as num).toInt(),
   measurementUnitId: (json['measurementUnitId'] as num?)?.toInt(),
@@ -284,6 +285,7 @@ Map<String, dynamic> _$$CostingSheetItemImplToJson(
   _$CostingSheetItemImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
+  'code': instance.code,
   'versionId': instance.versionId,
   'classificationId': instance.classificationId,
   'measurementUnitId': instance.measurementUnitId,

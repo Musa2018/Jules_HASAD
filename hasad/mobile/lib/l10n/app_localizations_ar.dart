@@ -570,4 +570,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get operationalView => 'العرض التشغيلي';
+
+  @override
+  String get searchByCodeOrName => 'بحث بالكود أو الاسم';
+
+  @override
+  String get noItemsFound => 'لم يتم العثور على بنود';
+
+  @override
+  String get damageAction => 'فعل الضرر';
 }

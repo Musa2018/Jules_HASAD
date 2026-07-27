@@ -21,4 +21,5 @@ abstract class ReferenceDataRepository {
 
   // Search
   Future<List<DamageClassification>> searchClassifications(String query);
+  Future<List<CostingSheetItem>> searchCostingItems(String query);
 }

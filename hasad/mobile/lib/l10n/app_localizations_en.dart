@@ -570,4 +570,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get operationalView => 'Operational View';
+
+  @override
+  String get searchByCodeOrName => 'Search by Code or Name';
+
+  @override
+  String get noItemsFound => 'No items found';
+
+  @override
+  String get damageAction => 'Damage Action';
 }

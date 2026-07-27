@@ -147,6 +147,45 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         .toList();
   }
 
+  @override
+  Future<List<domain.CostingSheetItem>> searchCostingItems(String query) async {
+    // Search in items code OR join with classifications to search by name
+    final queryExp = _db.select(_db.costingSheetItems).join([
+      innerJoin(
+        _db.costingSheetVersions,
+        _db.costingSheetVersions.id.equalsExp(_db.costingSheetItems.versionId),
+      ),
+      innerJoin(
+        _db.damageClassifications,
+        _db.damageClassifications.id
+            .equalsExp(_db.costingSheetItems.classificationId),
+      ),
+    ])
+      ..where(_db.costingSheetVersions.status.equals(2)); // Only Active
+
+    if (query.isNotEmpty) {
+      final pattern = '%$query%';
+      queryExp.where(_db.costingSheetItems.code.like(pattern) |
+          _db.damageClassifications.nameAr.like(pattern) |
+          _db.damageClassifications.nameEn.like(pattern));
+    }
+
+    final rows = await queryExp.get();
+
+    return rows.map((row) {
+      final item = row.readTable(_db.costingSheetItems);
+      return domain.CostingSheetItem(
+        id: item.id,
+        code: item.code,
+        versionId: item.versionId,
+        classificationId: item.classificationId,
+        measurementUnitId: item.measurementUnitId,
+        unitPrice: item.unitPrice,
+        createdAt: item.createdAt,
+      );
+    }).toList();
+  }
+
   Future<ReferenceData> _loadFromLocal() async {
     final ownership = await _db.select(_db.ownershipTypes).get();
     final sectors = await _db.select(_db.agriculturalSectors).get();
@@ -244,6 +283,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       costingSheetItems: items
           .map((e) => domain.CostingSheetItem(
               id: e.id,
+              code: e.code,
               versionId: e.versionId,
               classificationId: e.classificationId,
               measurementUnitId: e.measurementUnitId,
@@ -392,6 +432,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
 
       batch.insertAll(_db.costingSheetItems, data.costingSheetItems.map((e) => CostingSheetItemsCompanion.insert(
         id: e.id,
+        code: Value(e.code),
         versionId: e.versionId,
         classificationId: e.classificationId,
         measurementUnitId: Value(e.measurementUnitId),
@@ -422,6 +463,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
 
         batch.insertAll(_db.costingSheetItems, data.legacyCostingSheets.map((e) => CostingSheetItemsCompanion.insert(
           id: e.id,
+          code: Value(e.code),
           versionId: serverLegacyVersionId,
           classificationId: e.classificationId,
           measurementUnitId: Value(e.measurementUnitId),

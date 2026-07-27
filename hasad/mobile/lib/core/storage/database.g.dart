@@ -12451,6 +12451,16 @@ class $CostingSheetItemsTable extends CostingSheetItems
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _versionIdMeta = const VerificationMeta(
     'versionId',
   );
@@ -12510,6 +12520,7 @@ class $CostingSheetItemsTable extends CostingSheetItems
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    code,
     versionId,
     classificationId,
     measurementUnitId,
@@ -12532,6 +12543,12 @@ class $CostingSheetItemsTable extends CostingSheetItems
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
     }
     if (data.containsKey('version_id')) {
       context.handle(
@@ -12588,6 +12605,10 @@ class $CostingSheetItemsTable extends CostingSheetItems
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
       versionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}version_id'],
@@ -12620,6 +12641,7 @@ class $CostingSheetItemsTable extends CostingSheetItems
 class CostingSheetItem extends DataClass
     implements Insertable<CostingSheetItem> {
   final String id;
+  final String code;
   final String versionId;
   final int classificationId;
   final int? measurementUnitId;
@@ -12627,6 +12649,7 @@ class CostingSheetItem extends DataClass
   final DateTime createdAt;
   const CostingSheetItem({
     required this.id,
+    required this.code,
     required this.versionId,
     required this.classificationId,
     this.measurementUnitId,
@@ -12637,6 +12660,7 @@ class CostingSheetItem extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['code'] = Variable<String>(code);
     map['version_id'] = Variable<String>(versionId);
     map['classification_id'] = Variable<int>(classificationId);
     if (!nullToAbsent || measurementUnitId != null) {
@@ -12650,6 +12674,7 @@ class CostingSheetItem extends DataClass
   CostingSheetItemsCompanion toCompanion(bool nullToAbsent) {
     return CostingSheetItemsCompanion(
       id: Value(id),
+      code: Value(code),
       versionId: Value(versionId),
       classificationId: Value(classificationId),
       measurementUnitId: measurementUnitId == null && nullToAbsent
@@ -12667,6 +12692,7 @@ class CostingSheetItem extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CostingSheetItem(
       id: serializer.fromJson<String>(json['id']),
+      code: serializer.fromJson<String>(json['code']),
       versionId: serializer.fromJson<String>(json['versionId']),
       classificationId: serializer.fromJson<int>(json['classificationId']),
       measurementUnitId: serializer.fromJson<int?>(json['measurementUnitId']),
@@ -12679,6 +12705,7 @@ class CostingSheetItem extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'code': serializer.toJson<String>(code),
       'versionId': serializer.toJson<String>(versionId),
       'classificationId': serializer.toJson<int>(classificationId),
       'measurementUnitId': serializer.toJson<int?>(measurementUnitId),
@@ -12689,6 +12716,7 @@ class CostingSheetItem extends DataClass
 
   CostingSheetItem copyWith({
     String? id,
+    String? code,
     String? versionId,
     int? classificationId,
     Value<int?> measurementUnitId = const Value.absent(),
@@ -12696,6 +12724,7 @@ class CostingSheetItem extends DataClass
     DateTime? createdAt,
   }) => CostingSheetItem(
     id: id ?? this.id,
+    code: code ?? this.code,
     versionId: versionId ?? this.versionId,
     classificationId: classificationId ?? this.classificationId,
     measurementUnitId: measurementUnitId.present
@@ -12707,6 +12736,7 @@ class CostingSheetItem extends DataClass
   CostingSheetItem copyWithCompanion(CostingSheetItemsCompanion data) {
     return CostingSheetItem(
       id: data.id.present ? data.id.value : this.id,
+      code: data.code.present ? data.code.value : this.code,
       versionId: data.versionId.present ? data.versionId.value : this.versionId,
       classificationId: data.classificationId.present
           ? data.classificationId.value
@@ -12723,6 +12753,7 @@ class CostingSheetItem extends DataClass
   String toString() {
     return (StringBuffer('CostingSheetItem(')
           ..write('id: $id, ')
+          ..write('code: $code, ')
           ..write('versionId: $versionId, ')
           ..write('classificationId: $classificationId, ')
           ..write('measurementUnitId: $measurementUnitId, ')
@@ -12735,6 +12766,7 @@ class CostingSheetItem extends DataClass
   @override
   int get hashCode => Object.hash(
     id,
+    code,
     versionId,
     classificationId,
     measurementUnitId,
@@ -12746,6 +12778,7 @@ class CostingSheetItem extends DataClass
       identical(this, other) ||
       (other is CostingSheetItem &&
           other.id == this.id &&
+          other.code == this.code &&
           other.versionId == this.versionId &&
           other.classificationId == this.classificationId &&
           other.measurementUnitId == this.measurementUnitId &&
@@ -12755,6 +12788,7 @@ class CostingSheetItem extends DataClass
 
 class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   final Value<String> id;
+  final Value<String> code;
   final Value<String> versionId;
   final Value<int> classificationId;
   final Value<int?> measurementUnitId;
@@ -12763,6 +12797,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   final Value<int> rowid;
   const CostingSheetItemsCompanion({
     this.id = const Value.absent(),
+    this.code = const Value.absent(),
     this.versionId = const Value.absent(),
     this.classificationId = const Value.absent(),
     this.measurementUnitId = const Value.absent(),
@@ -12772,6 +12807,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   });
   CostingSheetItemsCompanion.insert({
     required String id,
+    this.code = const Value.absent(),
     required String versionId,
     required int classificationId,
     this.measurementUnitId = const Value.absent(),
@@ -12784,6 +12820,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
        unitPrice = Value(unitPrice);
   static Insertable<CostingSheetItem> custom({
     Expression<String>? id,
+    Expression<String>? code,
     Expression<String>? versionId,
     Expression<int>? classificationId,
     Expression<int>? measurementUnitId,
@@ -12793,6 +12830,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (code != null) 'code': code,
       if (versionId != null) 'version_id': versionId,
       if (classificationId != null) 'classification_id': classificationId,
       if (measurementUnitId != null) 'measurement_unit_id': measurementUnitId,
@@ -12804,6 +12842,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
 
   CostingSheetItemsCompanion copyWith({
     Value<String>? id,
+    Value<String>? code,
     Value<String>? versionId,
     Value<int>? classificationId,
     Value<int?>? measurementUnitId,
@@ -12813,6 +12852,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   }) {
     return CostingSheetItemsCompanion(
       id: id ?? this.id,
+      code: code ?? this.code,
       versionId: versionId ?? this.versionId,
       classificationId: classificationId ?? this.classificationId,
       measurementUnitId: measurementUnitId ?? this.measurementUnitId,
@@ -12827,6 +12867,9 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
     }
     if (versionId.present) {
       map['version_id'] = Variable<String>(versionId.value);
@@ -12853,6 +12896,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   String toString() {
     return (StringBuffer('CostingSheetItemsCompanion(')
           ..write('id: $id, ')
+          ..write('code: $code, ')
           ..write('versionId: $versionId, ')
           ..write('classificationId: $classificationId, ')
           ..write('measurementUnitId: $measurementUnitId, ')
@@ -20845,6 +20889,7 @@ typedef $$CostingSheetVersionsTableProcessedTableManager =
 typedef $$CostingSheetItemsTableCreateCompanionBuilder =
     CostingSheetItemsCompanion Function({
       required String id,
+      Value<String> code,
       required String versionId,
       required int classificationId,
       Value<int?> measurementUnitId,
@@ -20855,6 +20900,7 @@ typedef $$CostingSheetItemsTableCreateCompanionBuilder =
 typedef $$CostingSheetItemsTableUpdateCompanionBuilder =
     CostingSheetItemsCompanion Function({
       Value<String> id,
+      Value<String> code,
       Value<String> versionId,
       Value<int> classificationId,
       Value<int?> measurementUnitId,
@@ -20874,6 +20920,11 @@ class $$CostingSheetItemsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -20917,6 +20968,11 @@ class $$CostingSheetItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get versionId => $composableBuilder(
     column: $table.versionId,
     builder: (column) => ColumnOrderings(column),
@@ -20954,6 +21010,9 @@ class $$CostingSheetItemsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
 
   GeneratedColumn<String> get versionId =>
       $composableBuilder(column: $table.versionId, builder: (column) => column);
@@ -21016,6 +21075,7 @@ class $$CostingSheetItemsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String> code = const Value.absent(),
                 Value<String> versionId = const Value.absent(),
                 Value<int> classificationId = const Value.absent(),
                 Value<int?> measurementUnitId = const Value.absent(),
@@ -21024,6 +21084,7 @@ class $$CostingSheetItemsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => CostingSheetItemsCompanion(
                 id: id,
+                code: code,
                 versionId: versionId,
                 classificationId: classificationId,
                 measurementUnitId: measurementUnitId,
@@ -21034,6 +21095,7 @@ class $$CostingSheetItemsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                Value<String> code = const Value.absent(),
                 required String versionId,
                 required int classificationId,
                 Value<int?> measurementUnitId = const Value.absent(),
@@ -21042,6 +21104,7 @@ class $$CostingSheetItemsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => CostingSheetItemsCompanion.insert(
                 id: id,
+                code: code,
                 versionId: versionId,
                 classificationId: classificationId,
                 measurementUnitId: measurementUnitId,

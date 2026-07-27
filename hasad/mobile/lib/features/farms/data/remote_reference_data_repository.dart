@@ -75,6 +75,10 @@ class RemoteReferenceDataRepository implements ReferenceDataRepository {
       throw UnimplementedError();
 
   @override
+  Future<List<CostingSheetItem>> searchCostingItems(String query) =>
+      throw UnimplementedError();
+
+  @override
   Future<List<DamageCauseCategory>> getDamageCauseCategories() =>
       throw UnimplementedError();
 

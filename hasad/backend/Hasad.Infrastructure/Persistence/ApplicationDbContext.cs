@@ -532,8 +532,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<CostingSheetItem>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
             entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasIndex(e => e.Code).IsUnique();
 
             entity.HasOne(e => e.Version)
                 .WithMany(v => v.Items)

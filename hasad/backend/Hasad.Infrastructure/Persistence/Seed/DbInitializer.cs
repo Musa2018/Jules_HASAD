@@ -261,7 +261,8 @@ public static class DbInitializer
             new DamageAction { Id = 7, NameAr = "قص", NameEn = "Cutting" },
             new DamageAction { Id = 8, NameAr = "إغراق", NameEn = "Flooding" },
             new DamageAction { Id = 9, NameAr = "تخريب", NameEn = "Vandalism" },
-            new DamageAction { Id = 10, NameAr = "أخرى", NameEn = "Other" }
+            new DamageAction { Id = 10, NameAr = "منع وصول", NameEn = "Prevention of access" },
+            new DamageAction { Id = 11, NameAr = "أخرى", NameEn = "Other" }
         });
 
         // 3. Damage Categories
@@ -269,15 +270,14 @@ public static class DbInitializer
         {
             new DamageCategory { Id = 1, AgriculturalSectorId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
             new DamageCategory { Id = 2, AgriculturalSectorId = 1, NameAr = "خضروات", NameEn = "Vegetables" },
-            new DamageCategory { Id = 3, AgriculturalSectorId = 1, NameAr = "أشجار مثمرة", NameEn = "Fruit Trees" },
-            new DamageCategory { Id = 4, AgriculturalSectorId = 1, NameAr = "أشجار زيتون", NameEn = "Olive Trees" },
-            new DamageCategory { Id = 5, AgriculturalSectorId = 1, NameAr = "دفيئات", NameEn = "Greenhouses" },
-            new DamageCategory { Id = 6, AgriculturalSectorId = 1, NameAr = "مشاتل", NameEn = "Nurseries" },
-            new DamageCategory { Id = 7, AgriculturalSectorId = 2, NameAr = "أبقار", NameEn = "Cattle" },
-            new DamageCategory { Id = 8, AgriculturalSectorId = 2, NameAr = "أغنام", NameEn = "Sheep" },
-            new DamageCategory { Id = 9, AgriculturalSectorId = 2, NameAr = "ماعز", NameEn = "Goats" },
-            new DamageCategory { Id = 10, AgriculturalSectorId = 2, NameAr = "دواجن", NameEn = "Poultry" },
-            new DamageCategory { Id = 11, AgriculturalSectorId = 2, NameAr = "نحل", NameEn = "Bees" }
+            new DamageCategory { Id = 3, AgriculturalSectorId = 1, NameAr = "أشجار", NameEn = "Trees" },
+            new DamageCategory { Id = 4, AgriculturalSectorId = 1, NameAr = "دفيئات", NameEn = "Greenhouses" },
+            new DamageCategory { Id = 5, AgriculturalSectorId = 1, NameAr = "مشاتل", NameEn = "Nurseries" },
+            new DamageCategory { Id = 6, AgriculturalSectorId = 2, NameAr = "أبقار", NameEn = "Cattle" },
+            new DamageCategory { Id = 7, AgriculturalSectorId = 2, NameAr = "أغنام", NameEn = "Sheep" },
+            new DamageCategory { Id = 8, AgriculturalSectorId = 2, NameAr = "ماعز", NameEn = "Goats" },
+            new DamageCategory { Id = 9, AgriculturalSectorId = 2, NameAr = "دواجن", NameEn = "Poultry" },
+            new DamageCategory { Id = 10, AgriculturalSectorId = 2, NameAr = "نحل", NameEn = "Bees" }
         });
 
         // 4. Damage SubCategories
@@ -286,11 +286,12 @@ public static class DbInitializer
             new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "حبوب", NameEn = "Cereals" },
             new DamageSubCategory { Id = 2, CategoryId = 2, NameAr = "مكشوفة", NameEn = "Open Field" },
             new DamageSubCategory { Id = 3, CategoryId = 3, NameAr = "حمضيات", NameEn = "Citrus" },
-            new DamageSubCategory { Id = 4, CategoryId = 3, NameAr = "فواكه أخرى", NameEn = "Other Fruits" },
-            new DamageSubCategory { Id = 5, CategoryId = 5, NameAr = "خضروات محمية", NameEn = "Protected Vegetables" },
-            new DamageSubCategory { Id = 6, CategoryId = 7, NameAr = "إنتاج حليب", NameEn = "Dairy" },
-            new DamageSubCategory { Id = 7, CategoryId = 10, NameAr = "لاحم", NameEn = "Broilers" },
-            new DamageSubCategory { Id = 8, CategoryId = 11, NameAr = "خلايا نحل", NameEn = "Hives" }
+            new DamageSubCategory { Id = 4, CategoryId = 3, NameAr = "زيتون", NameEn = "Olive" },
+            new DamageSubCategory { Id = 5, CategoryId = 4, NameAr = "خضروات محمية", NameEn = "Protected Vegetables" },
+            new DamageSubCategory { Id = 6, CategoryId = 6, NameAr = "إنتاج حليب", NameEn = "Dairy" },
+            new DamageSubCategory { Id = 7, CategoryId = 9, NameAr = "لاحم", NameEn = "Broilers" },
+            new DamageSubCategory { Id = 8, CategoryId = 10, NameAr = "خلايا نحل", NameEn = "Hives" },
+            new DamageSubCategory { Id = 9, CategoryId = 3, NameAr = "فواكه أخرى", NameEn = "Other Fruits" }
         });
 
         // 5. Damage Classifications
@@ -300,10 +301,12 @@ public static class DbInitializer
             new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "شعير", NameEn = "Barley" },
             new DamageClassification { Id = 3, SubCategoryId = 2, NameAr = "بندورة", NameEn = "Tomato" },
             new DamageClassification { Id = 4, SubCategoryId = 2, NameAr = "خيار", NameEn = "Cucumber" },
-            new DamageClassification { Id = 5, SubCategoryId = 4, NameAr = "زيتون", NameEn = "Olive" },
-            new DamageClassification { Id = 6, SubCategoryId = 4, NameAr = "عنب", NameEn = "Grape" },
+            new DamageClassification { Id = 5, SubCategoryId = 4, NameAr = "زيتون (1-5 سنوات)", NameEn = "Olive (1-5 years)" },
+            new DamageClassification { Id = 11, SubCategoryId = 4, NameAr = "زيتون (5-10 سنوات)", NameEn = "Olive (5-10 years)" },
+            new DamageClassification { Id = 12, SubCategoryId = 4, NameAr = "زيتون (أكثر من 10 سنوات)", NameEn = "Olive (10+ years)" },
+            new DamageClassification { Id = 6, SubCategoryId = 9, NameAr = "عنب", NameEn = "Grape" },
             new DamageClassification { Id = 7, SubCategoryId = 3, NameAr = "حمضيات", NameEn = "Citrus" },
-            new DamageClassification { Id = 8, SubCategoryId = 4, NameAr = "نخيل", NameEn = "Date Palm" }
+            new DamageClassification { Id = 8, SubCategoryId = 9, NameAr = "نخيل", NameEn = "Date Palm" }
         });
 
         // 6. Damage Cause Categories
@@ -365,24 +368,42 @@ public static class DbInitializer
             await context.SaveChangesAsync();
         }
 
-        // Seed a baseline item for "Olive" (Id 5) if it doesn't exist
-        var existingItem = await context.CostingSheetItems
-            .AnyAsync(i => i.VersionId == version.Id && i.ClassificationId == 5);
-
-        if (!existingItem)
+        // Seed baseline items for all classifications if they don't exist
+        var baselineItems = new[]
         {
-            Log.Information("Seeding baseline Costing Item for Olive (Classification 5)");
-            context.CostingSheetItems.Add(new CostingSheetItem
+            (Id: 1, Code: "C001", Price: 120m, UnitId: 1), // Wheat - Dunum
+            (Id: 2, Code: "C002", Price: 100m, UnitId: 1), // Barley - Dunum
+            (Id: 3, Code: "C003", Price: 400m, UnitId: 1), // Tomato - Dunum
+            (Id: 4, Code: "C004", Price: 450m, UnitId: 1), // Cucumber - Dunum
+            (Id: 5, Code: "C005", Price: 40m, UnitId: 4),  // Olive (1-5) - Tree
+            (Id: 11, Code: "C006", Price: 80m, UnitId: 4), // Olive (5-10) - Tree
+            (Id: 12, Code: "C007", Price: 150m, UnitId: 4),// Olive (10+) - Tree
+            (Id: 6, Code: "C008", Price: 500m, UnitId: 1), // Grape - Dunum
+            (Id: 7, Code: "C009", Price: 450m, UnitId: 1), // Citrus - Dunum
+            (Id: 8, Code: "C010", Price: 200m, UnitId: 4)  // Date Palm - Tree
+        };
+
+        foreach (var item in baselineItems)
+        {
+            var exists = await context.CostingSheetItems
+                .AnyAsync(i => i.VersionId == version.Id && i.ClassificationId == item.Id);
+
+            if (!exists)
             {
-                Id = Guid.NewGuid(),
-                VersionId = version.Id,
-                ClassificationId = 5,
-                UnitPrice = 100,
-                MeasurementUnitId = 1, // Dunum
-                CreatedAt = DateTime.UtcNow
-            });
-            await context.SaveChangesAsync();
+                Log.Information("Seeding baseline Costing Item for Classification {Id}", item.Id);
+                context.CostingSheetItems.Add(new CostingSheetItem
+                {
+                    Id = Guid.NewGuid(),
+                    Code = item.Code,
+                    VersionId = version.Id,
+                    ClassificationId = item.Id,
+                    UnitPrice = item.Price,
+                    MeasurementUnitId = item.UnitId,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
         }
+        await context.SaveChangesAsync();
     }
 
     private static async Task UpsertLookupsAsync<T>(ApplicationDbContext context, DbSet<T> dbSet, string tableName, T[] items) where T : class

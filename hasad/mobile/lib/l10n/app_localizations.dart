@@ -1207,6 +1207,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Operational View'**
   String get operationalView;
+
+  /// No description provided for @searchByCodeOrName.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by Code or Name'**
+  String get searchByCodeOrName;
+
+  /// No description provided for @noItemsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No items found'**
+  String get noItemsFound;
+
+  /// No description provided for @damageAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Damage Action'**
+  String get damageAction;
 }
 
 class _AppLocalizationsDelegate

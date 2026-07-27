@@ -7,6 +7,8 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/damage_item_form_sheet.dart';
+import 'package:mobile/features/farms/presentation/farms_providers.dart';
+import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class DamageReportFormScreen extends ConsumerStatefulWidget {
@@ -89,6 +91,10 @@ class _DamageReportFormScreenState
   }
 
   Widget _buildHeaderSummary(DamageReport report, AppLocalizations l10n) {
+    final refDataAsync = ref.watch(referenceDataProvider);
+    final farmAsync = ref.watch(farmStreamProvider(report.farmId));
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -97,9 +103,47 @@ class _DamageReportFormScreenState
           children: [
             Text(l10n.incidentDetails, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            _buildSummaryRow(l10n.dateOfBirth, DateFormat.yMMMd().format(report.damageDate)),
-            _buildSummaryRow(l10n.agriculturalSector, report.agriculturalSectorId.toString()),
-            _buildSummaryRow(l10n.damageCause, report.damageCauseId.toString()),
+            _buildSummaryRow(l10n.damageDate, DateFormat.yMMMd().format(report.damageDate)),
+            
+            // Resolve Agricultural Sector from Farm + Reference Data
+            farmAsync.when(
+              data: (farm) {
+                if (farm == null) return _buildSummaryRow(l10n.agriculturalSector, '...');
+                
+                return refDataAsync.when(
+                  data: (refData) {
+                    final sector = refData.agriculturalSectors
+                        .where((s) => s.id == farm.agriculturalSectorId)
+                        .firstOrNull;
+                    final sectorName = sector != null 
+                        ? (isAr ? sector.nameAr : sector.nameEn) 
+                        : farm.agriculturalSectorId.toString();
+                    return _buildSummaryRow(l10n.agriculturalSector, sectorName);
+                  },
+                  loading: () => _buildSummaryRow(l10n.agriculturalSector, '...'),
+                  error: (_, __) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
+                );
+              },
+              loading: () => _buildSummaryRow(l10n.agriculturalSector, '...'),
+              error: (_, __) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
+            ),
+
+            // Resolve Damage Cause from Reference Data
+            refDataAsync.when(
+              data: (data) {
+                final cause = data.damageCauses
+                    .where((c) => c.id == report.damageCauseId)
+                    .firstOrNull;
+                final causeName = cause != null
+                    ? (isAr ? cause.nameAr : cause.nameEn)
+                    : report.damageCauseId.toString();
+
+                return _buildSummaryRow(l10n.damageCause, causeName);
+              },
+              loading: () => _buildSummaryRow(l10n.damageCause, '...'),
+              error: (err, _) => _buildSummaryRow(l10n.damageCause, 'Error'),
+            ),
+            
             if (report.notes.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text('${l10n.notes}: ${report.notes}', style: const TextStyle(fontStyle: FontStyle.italic)),

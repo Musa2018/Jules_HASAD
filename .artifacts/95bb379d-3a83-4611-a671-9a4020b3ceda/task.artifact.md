@@ -1,0 +1,4 @@
+- [ ] Modify `DamageReportHeaderScreen` to make `AgriculturalSector` read-only
+    - [ ] Remove `_buildSectorSelector` dropdown
+    - [ ] Update UI to display the sector name using `_buildReadOnlyField`
+- [ ] Verify the fix

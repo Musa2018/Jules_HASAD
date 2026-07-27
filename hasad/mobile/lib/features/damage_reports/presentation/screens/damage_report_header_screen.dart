@@ -33,9 +33,6 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
   late DateTime _documentationDate;
   late TextEditingController _notesController;
 
-  AgriculturalSector? _selectedSector;
-  bool _initialized = false;
-
   @override
   void initState() {
     super.initState();
@@ -43,28 +40,12 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
     _damageDate = DateTime.now();
     _documentationDate = DateTime.now();
     _notesController = TextEditingController();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeLookup();
-    });
   }
 
   @override
   void dispose() {
     _notesController.dispose();
     super.dispose();
-  }
-
-  void _initializeLookup() async {
-    if (_initialized) return;
-    final refData = await ref.read(referenceDataProvider.future);
-    
-    setState(() {
-      _selectedSector = refData.agriculturalSectors
-          .where((n) => n.id == widget.farm.agriculturalSectorId)
-          .firstOrNull;
-      _initialized = true;
-    });
   }
 
   Future<void> _save() async {
@@ -78,19 +59,12 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
       return;
     }
 
-    if (_selectedSector == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an agricultural sector.')),
-      );
-      return;
-    }
-
     final report = DamageReport(
       id: _localId,
       farmId: widget.farm.id,
       damageDate: _damageDate,
       documentationDate: _documentationDate,
-      agriculturalSectorId: _selectedSector!.id,
+      agriculturalSectorId: widget.farm.agriculturalSectorId,
       damageCauseCategoryId: causeState.selectedCategory!.id,
       damageCauseId: causeState.selectedCause!.id,
       notes: _notesController.text.trim(),
@@ -155,7 +129,7 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
                     _buildDateTile(l10n.damageDate, _damageDate, (picked) => setState(() => _damageDate = picked)),
                     _buildReadOnlyField(l10n.documentationDate, DateFormat.yMMMd().format(_documentationDate)),
                     const SizedBox(height: 16),
-                    _buildSectorSelector(l10n),
+                    _buildSectorDisplay(l10n),
                     const SizedBox(height: 16),
                     _buildCauseSelector(causeState, l10n),
                     const SizedBox(height: 16),
@@ -268,19 +242,21 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
     );
   }
 
-  Widget _buildSectorSelector(AppLocalizations l10n) {
+  Widget _buildSectorDisplay(AppLocalizations l10n) {
     final refDataAsync = ref.watch(referenceDataProvider);
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+
     return refDataAsync.when(
-      data: (data) => DropdownButtonFormField<AgriculturalSector>(
-        initialValue: _selectedSector,
-        decoration: InputDecoration(
-            labelText: l10n.agriculturalSector, border: const OutlineInputBorder()),
-        items: data.agriculturalSectors
-            .map((n) => DropdownMenuItem(value: n, child: Text(n.nameAr)))
-            .toList(),
-        onChanged: (val) => setState(() => _selectedSector = val),
-        validator: (val) => val == null ? l10n.requiredField : null,
-      ),
+      data: (data) {
+        final sector = data.agriculturalSectors
+            .where((n) => n.id == widget.farm.agriculturalSectorId)
+            .firstOrNull;
+        final sectorName = sector != null
+            ? (isAr ? sector.nameAr : sector.nameEn)
+            : widget.farm.agriculturalSectorId.toString();
+
+        return _buildReadOnlyField(l10n.agriculturalSector, sectorName);
+      },
       loading: () => const LinearProgressIndicator(),
       error: (err, _) => Text('Error: $err'),
     );

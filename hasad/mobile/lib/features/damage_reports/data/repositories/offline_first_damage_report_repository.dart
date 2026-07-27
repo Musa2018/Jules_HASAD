@@ -213,6 +213,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       governorateId: farm.governorateId,
       directorateId: farm.directorateId,
       localityId: farm.localityId,
+      agriculturalSectorId: farm.agriculturalSectorId,
       damageYear: report.damageDate.year,
       createdBy: _session?.userId ?? 'System',
     );

@@ -356,7 +356,15 @@ class OfflineFirstFarmRepository implements FarmRepository {
             if (isProtected) continue;
           }
 
+          // Translation: Resolve Server GUIDs to Local Client IDs to fix Operational View linking
+          final localFarmerId = await _resolveLocalIdForFarmer(remote.farmerId);
+          final localOwnerId = remote.ownerFarmerId != null 
+              ? await _resolveLocalIdForFarmer(remote.ownerFarmerId!) 
+              : null;
+
           final companion = _mapToCompanion(remote).copyWith(
+            farmerId: localFarmerId != null ? Value(localFarmerId) : const Value.absent(),
+            ownerFarmerId: localOwnerId != null ? Value(localOwnerId) : Value(remote.ownerFarmerId),
             syncStatus: const Value('completed'),
             lastSyncError: const Value(null),
           );
@@ -368,5 +376,13 @@ class OfflineFirstFarmRepository implements FarmRepository {
       page++;
       hasMore = remoteItems.length == 50;
     }
+  }
+
+  Future<String?> _resolveLocalIdForFarmer(String serverId) async {
+    final local = await (_db.select(_db.farmers)
+          ..where((t) => t.serverId.equals(serverId))
+          ..limit(1))
+        .getSingleOrNull();
+    return local?.id;
   }
 }

@@ -1,4 +1,4 @@
-- [ ] Modify `DamageReportHeaderScreen` to make `AgriculturalSector` read-only
-    - [ ] Remove `_buildSectorSelector` dropdown
-    - [ ] Update UI to display the sector name using `_buildReadOnlyField`
-- [ ] Verify the fix
+- [x] Fix Agricultural Sector display in `DamageReportFormScreen`
+    - [x] Snapshot `agriculturalSectorId` from Farm in `OfflineFirstDamageReportRepository`
+    - [x] Resolve and display sector name from the linked `Farm` in `DamageReportFormScreen`
+- [x] Verify the fix

@@ -57,13 +57,17 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - The Flutter client UI has been updated to use "Measurement Unit" (وحدة القياس) instead of "Area Unit" (وحدة المساحة).
   - Domain models (`Farm`, `DamageItem`) prioritize modern identifiers (`measurementUnitId`, `costingSheetItemId`) while maintaining legacy fields for backward compatibility.
 - **Flutter Implementation**:
-  - Drift schema v16 supports hierarchical pricing tables.
-  - `OfflineFirstReferenceDataRepository` resolves the `Active` price by joining `Items` with their parent `Version`.
+  - Drift schema v28 supports hierarchical pricing tables with searchable codes.
+  - `OfflineFirstReferenceDataRepository` resolves the `Active` pricing version and supports a unified search by code or name.
+  - **Simplified Workflow**: Replaced hierarchical wizard with direct `CostingItem` selection.
+  - **Live Refresh**: Damage Report details use combined Drift streams to automatically reflect item additions/deletions.
   - Legacy pricing records are automatically mapped to a local legacy version during sync and migration.
 
-### Damage Valuation Authority (Sprint 13.2)
+### Damage Valuation Authority (Sprint 14.x)
 - **Authoritative Backend**: Client-side damage calculations are informational only. The backend is the absolute authority for technical loss valuation.
 - **Recalculation Rule**: Command handlers (`CreateDamageReport`, `UpdateDamageItem`) automatically resolve the active `CostingSheetItem` (via its version) and recalculate `EstimatedLoss`.
+- **Searchable Codes**: Each `CostingSheetItem` has a unique sequential code (e.g., `C001`, `C005`) for high-speed offline lookup.
+- **Age-Based Assessment**: Specialized classifications for Olive trees (1-5y, 5-10y, 10+y) with distinct price points.
 - **Costing Verification**: Backend validates that the provided `CostingSheetItemId` matches the `ClassificationId` and its parent version was active on the `DamageDate`.
 - **Decoupling Rule**: Farmer residency is NEVER used as an authorization boundary for managed records (Farms/Reports).
   - **Lifecycle Consistency**: Maintenance operations (Update/Delete) and Query Projections must enforce the same regional boundaries as Creation commands.
@@ -76,13 +80,20 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 
 ## 4. Current Project Status
 - **Current Branch**: `DamageReport`
-- **Latest Completed Sprint**: Sprint 15.1 — Damage Report Structural Stabilization & Location SSOT
-- **Latest Commit Hash**: `DamageReport` (`d37d38a`)
+- **Latest Completed Sprint**: Sprint 14.x — Simplified Assessment & Age-Based Valuation
+- **Latest Commit Hash**: `DamageReport` (`0df6057`)
 - **main**: Stable production-ready code.
 - **Farms**: Completed and hardened.
 - **DamageReport**: Active development branch for Phase 2.1 (Damage Assessment Items).
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 14.x - Simplified Assessment & Age-Based Valuation
+- **Searchable Codes**: Added unique sequential codes (C001-C010) to the Pricing Catalog.
+- **Simplified UI**: Replaced 5-step classification wizard with a unified searchable lookup.
+- **Age-Based Olive Classification**: Split Olive trees into three age brackets (1-5y, 5-10y, 10+y) with distinct price points.
+- **Live UI Refresh**: Refactored `damageReportStreamProvider` to watch both Header and Items tables simultaneously using combined Drift streams.
+- **Absolute Purge Sync**: Hardened `OfflineFirstReferenceDataRepository` to completely purge lookup tables during sync, resolving ID conflicts after server database resets.
+- **Drift Schema v28**: Migrated mobile database to include the new `code` column in `CostingSheetItems`.
 ### Sprint 12.2 - Hierarchical Classification UI
 - **Classification Wizard**: Implemented a mandatory 4-step wizard (`Nature -> Category -> SubCategory -> Classification`) using `ClassificationWizardProvider`.
 - **Automatic Pricing Resolution**: System automatically fetches and snapshots the active `CostingSheetVersion` and `UnitPrice` upon classification selection.

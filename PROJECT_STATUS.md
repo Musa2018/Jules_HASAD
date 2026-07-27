@@ -2,22 +2,18 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.15.0-alpha (Offline Baseline)
-- **Current Sprint**: Phase 2.1 — Damage Assessment Items
+- **Current Sprint**: Phase 2.2 — Evidence & Workflow Lifecycle
 - **Current Branch**: `DamageReport`
-- **Last Updated**: 2026-07-26
-- **Latest Commit**: `DamageReport` (`d37d38a`)
+- **Last Updated**: 2026-07-28
+- **Latest Commit**: `DamageReport` (`0df6057`)
 
-## Sprint 15.1 — COMPLETED (Stability Point)
-Damage Report Structural Stabilization & Location SSOT:
-- **Architecture**: Established `Farm` as the Single Source of Truth (SSOT) for geography. Removed redundant `Latitude`, `Longitude`, `SettlementName`, and `CompanyName` from the `DamageReport` entity across all layers.
-- **Backend Hardening**: Applied EF Core migration (`DropCoordinatesFromDamageReportFinal`) to physically drop obsolete columns from SQL Server. Updated all Commands, Queries, and DTOs to align with the refined entity model.
-- **Mobile Persistence**: Upgraded Drift to **Version 27** using a manual reconstruction (Nuclear Migration) to ensure columns are physically dropped from the SQLite file.
-- **Sync Integrity**: Implemented "Late Binding Location Injection" in `BackgroundSyncService`. Coordinates are now retrieved from the local `Farms` table at sync time and injected into the server payload, ensuring the backend receives necessary data without double storage on mobile.
-- **GIS Hardware Integration**:
-    - Resolved GPS access failures by adding mandatory permissions to `AndroidManifest.xml` (Fine/Coarse) and `Info.plist`.
-    - Enhanced `FarmFormScreen` with a reactive loading state and error handling for the "Get Current Location" feature.
-- **Terminology**: Corrected date labels in the Damage Report header (Damage Date vs. Documentation Date) in both Arabic and English.
+## Sprint 14.x — COMPLETED (New Stability Point)
+Simplified Assessment & Age-Based Valuation:
+- **UX**: Replaced 5-step wizard with a searchable "Price List" widget (Search by Code or Name).
+- **Domain**: Implemented age-based Olive classification (1-5y, 5-10y, 10+y).
+- **Data**: Added unique codes (C001-C010) to all costing items for high-speed lookup.
+- **Persistence**: Upgraded Drift to **Version 28**; Hardened sync with "Absolute Purge" to handle server resets.
+- **Reactivity**: Fixed UI refresh lag using combined Header + Items Drift streams.
 - **Status**: ✅ **Stability Point Reached**.
 
 ## Sprint 15.0 — COMPLETED

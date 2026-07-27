@@ -149,7 +149,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
 
   @override
   Future<List<domain.CostingSheetItem>> searchCostingItems(String query) async {
-    // Search in items code OR join with classifications to search by name
+    // 1. Fetch all active costing items
     final queryExp = _db.select(_db.costingSheetItems).join([
       innerJoin(
         _db.costingSheetVersions,
@@ -163,27 +163,34 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
     ])
       ..where(_db.costingSheetVersions.status.equals(2)); // Only Active
 
-    if (query.isNotEmpty) {
-      final pattern = '%$query%';
-      queryExp.where(_db.costingSheetItems.code.like(pattern) |
-          _db.damageClassifications.nameAr.like(pattern) |
-          _db.damageClassifications.nameEn.like(pattern));
-    }
-
     final rows = await queryExp.get();
 
-    return rows.map((row) {
+    // 2. Map and filter in memory for robustness and better performance on small datasets
+    final items = rows.map((row) {
       final item = row.readTable(_db.costingSheetItems);
-      return domain.CostingSheetItem(
-        id: item.id,
-        code: item.code,
-        versionId: item.versionId,
-        classificationId: item.classificationId,
-        measurementUnitId: item.measurementUnitId,
-        unitPrice: item.unitPrice,
-        createdAt: item.createdAt,
-      );
+      final cl = row.readTable(_db.damageClassifications);
+      
+      return (item: item, classification: cl);
     }).toList();
+
+    final filtered = query.isEmpty 
+      ? items 
+      : items.where((e) {
+          final pattern = query.toLowerCase();
+          return e.item.code.toLowerCase().contains(pattern) ||
+                 e.classification.nameAr.contains(pattern) ||
+                 e.classification.nameEn.toLowerCase().contains(pattern);
+        }).toList();
+
+    return filtered.map((e) => domain.CostingSheetItem(
+      id: e.item.id,
+      code: e.item.code,
+      versionId: e.item.versionId,
+      classificationId: e.item.classificationId,
+      measurementUnitId: e.item.measurementUnitId,
+      unitPrice: e.item.unitPrice,
+      createdAt: e.item.createdAt,
+    )).toList();
   }
 
   Future<ReferenceData> _loadFromLocal() async {
@@ -300,7 +307,8 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         data.politicalClassifications.isNotEmpty &&
         data.measurementUnits.isNotEmpty &&
         data.relationshipToOwners.isNotEmpty &&
-        data.damageNatures.isNotEmpty;
+        data.damageNatures.isNotEmpty &&
+        data.costingSheetItems.isNotEmpty;
   }
 
   Future<void> _saveToLocal(ReferenceData data) async {

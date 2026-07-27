@@ -81,7 +81,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
             const Divider(),
             Expanded(
               child: state.selectedCosting == null
-                  ? const CostingItemSelector()
+                  ? CostingItemSelector(scrollController: scrollController)
                   : _buildDetailsForm(state, l10n),
             ),
           ],

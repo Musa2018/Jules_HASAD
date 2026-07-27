@@ -6,7 +6,8 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class CostingItemSelector extends ConsumerStatefulWidget {
-  const CostingItemSelector({super.key});
+  final ScrollController scrollController;
+  const CostingItemSelector({super.key, required this.scrollController});
 
   @override
   ConsumerState<CostingItemSelector> createState() => _CostingItemSelectorState();
@@ -30,19 +31,13 @@ class _CostingItemSelectorState extends ConsumerState<CostingItemSelector> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Text(
-            l10n.searchByCodeOrName,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
               hintText: l10n.searchByCodeOrName,
               prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               suffixIcon: _query.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear),
@@ -60,10 +55,25 @@ class _CostingItemSelectorState extends ConsumerState<CostingItemSelector> {
           child: itemsAsync.when(
             data: (items) {
               if (items.isEmpty) {
-                return Center(child: Text(l10n.noItemsFound));
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(l10n.noItemsFound),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.sync),
+                        label: Text(l10n.retrySync),
+                        onPressed: () => ref.read(referenceDataRepositoryProvider).synchronize(),
+                      ),
+                    ],
+                  ),
+                );
               }
-              return ListView.builder(
+              return ListView.separated(
+                controller: widget.scrollController,
                 itemCount: items.length,
+                separatorBuilder: (context, index) => const Divider(height: 1),
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return _CostingItemTile(item: item);

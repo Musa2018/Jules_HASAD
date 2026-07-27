@@ -61,6 +61,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - `OfflineFirstReferenceDataRepository` resolves the `Active` pricing version and supports a unified search by code or name.
   - **Simplified Workflow**: Replaced hierarchical wizard with direct `CostingItem` selection.
   - **Live Refresh**: Damage Report details use combined Drift streams to automatically reflect item additions/deletions.
+  - **Hybrid Relational Joins**: Repositories support joining records using both Local Client IDs and Server GUIDs to ensure data visibility immediately after synchronization (fixing "Operational View" linking issues).
   - Legacy pricing records are automatically mapped to a local legacy version during sync and migration.
 
 ### Damage Valuation Authority (Sprint 14.x)
@@ -93,6 +94,7 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Age-Based Olive Classification**: Split Olive trees into three age brackets (1-5y, 5-10y, 10+y) with distinct price points.
 - **Live UI Refresh**: Refactored `damageReportStreamProvider` to watch both Header and Items tables simultaneously using combined Drift streams.
 - **Absolute Purge Sync**: Hardened `OfflineFirstReferenceDataRepository` to completely purge lookup tables during sync, resolving ID conflicts after server database resets.
+- **Hybrid Join Fix**: Implemented flexible relational joins (Local ID | Server ID) in Farmer and Farm repositories to ensure the "Operational View" correctly identifies linked records after a Pull Sync.
 - **Drift Schema v28**: Migrated mobile database to include the new `code` column in `CostingSheetItems`.
 ### Sprint 12.2 - Hierarchical Classification UI
 - **Classification Wizard**: Implemented a mandatory 4-step wizard (`Nature -> Category -> SubCategory -> Classification`) using `ClassificationWizardProvider`.

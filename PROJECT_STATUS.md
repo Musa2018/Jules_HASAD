@@ -14,6 +14,7 @@ Simplified Assessment & Age-Based Valuation:
 - **Data**: Added unique codes (C001-C010) to all costing items for high-speed lookup.
 - **Persistence**: Upgraded Drift to **Version 28**; Hardened sync with "Absolute Purge" to handle server resets.
 - **Reactivity**: Fixed UI refresh lag using combined Header + Items Drift streams.
+- **Relational Stability**: Solved "Operational View" visibility issue via Hybrid Joins (Local ID + Server ID support).
 - **Status**: ✅ **Stability Point Reached**.
 
 ## Sprint 15.0 — COMPLETED

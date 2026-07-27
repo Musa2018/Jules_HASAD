@@ -7,6 +7,7 @@
 - **Searchable Codes**: Introduced sequential unique codes (e.g., `C001`, `C005`) for all pricing items.
 - **Olive Classification**: Implemented age-based categories for Olive trees (1-5y, 5-10y, 10+y) with distinct technical valuation rates.
 - **UI Reactivity**: Enhanced the Damage Report screen to automatically refresh when items are added or removed using reactive Drift streams.
+- **Relational Integrity**: Implemented "Hybrid Relational Joins" to fix broken links between Farmers and Farms in the "Operational View" after synchronization.
 - **Sync Reliability**: Implemented "Absolute Purge" logic in reference data synchronization to handle server-side ID resets gracefully.
 - **Backend Refinement**: Updated `GetReferenceData` to include item codes and ensured pricing versions are active by default in the Seed.
 - **Schema Upgrade**: Drift schema v28 (Mobile) and EF Core updates for sequential coding.

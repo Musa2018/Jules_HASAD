@@ -56,17 +56,34 @@ class _CostingItemSelectorState extends ConsumerState<CostingItemSelector> {
             data: (items) {
               if (items.isEmpty) {
                 return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(l10n.noItemsFound),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.sync),
-                        label: Text(l10n.retrySync),
-                        onPressed: () => ref.read(referenceDataRepositoryProvider).synchronize(),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.info_outline, size: 48, color: Colors.grey),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noItemsFound,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.sync),
+                          label: Text(l10n.retrySync),
+                          onPressed: () async {
+                            final scaffold = ScaffoldMessenger.of(context);
+                            try {
+                              await ref.read(referenceDataRepositoryProvider).synchronize();
+                              scaffold.showSnackBar(const SnackBar(content: Text('Sync successful')));
+                            } catch (e) {
+                              scaffold.showSnackBar(SnackBar(content: Text('Sync failed: $e')));
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }

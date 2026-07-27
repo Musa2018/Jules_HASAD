@@ -399,7 +399,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasIndex(e => e.ClientId).IsUnique();
             entity.HasIndex(e => e.ReportNumber).IsUnique();
             entity.HasIndex(e => e.PermanentFormNumber).IsUnique();
+            entity.HasIndex(e => e.DirectorateId);
             entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
+
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
 
             entity.HasOne(e => e.Farm)
                 .WithMany()
@@ -529,8 +532,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<CostingSheetItem>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
             entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasIndex(e => e.Code).IsUnique();
 
             entity.HasOne(e => e.Version)
                 .WithMany(v => v.Items)

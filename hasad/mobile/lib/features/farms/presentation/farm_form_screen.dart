@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +18,7 @@ import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class FarmFormScreen extends ConsumerStatefulWidget {
@@ -38,6 +41,8 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
   late TextEditingController _parcelController;
   late TextEditingController _areaController;
   late TextEditingController _notesController;
+  late TextEditingController _latController;
+  late TextEditingController _lonController;
 
   // Selected values
   String? _selectedGovernorateId;
@@ -57,6 +62,7 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
 
   Farmer? _resolvedFarmer;
   bool _isFormValid = true;
+  bool _isFetchingLocation = false;
 
   @override
   void initState() {
@@ -67,6 +73,8 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     _parcelController = TextEditingController(text: f?.parcel)..addListener(_updateValidationState);
     _areaController = TextEditingController(text: f?.area.toString() ?? '')..addListener(_updateValidationState);
     _notesController = TextEditingController(text: f?.notes)..addListener(_updateValidationState);
+    _latController = TextEditingController(text: f?.latitude?.toString() ?? '')..addListener(_updateValidationState);
+    _lonController = TextEditingController(text: f?.longitude?.toString() ?? '')..addListener(_updateValidationState);
 
     _selectedGovernorateId = f?.governorateId;
     _selectedDirectorateId = f?.directorateId;
@@ -156,6 +164,8 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
     _parcelController.dispose();
     _areaController.dispose();
     _notesController.dispose();
+    _latController.dispose();
+    _lonController.dispose();
     super.dispose();
   }
 
@@ -189,6 +199,8 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       measurementUnitId: _selectedAreaUnitId,
       agriculturalSectorId: _selectedAgriculturalSectorId ?? 1,
       politicalClassificationId: _selectedPoliticalClassificationId ?? 1,
+      latitude: double.tryParse(_latController.text),
+      longitude: double.tryParse(_lonController.text),
       notes: _notesController.text.trim(),
       rowVersion: widget.farm?.rowVersion ?? '',
       syncStatus: widget.farm?.syncStatus ?? 'pending',
@@ -319,10 +331,20 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
                     enabled: _selectedDirectorateId != null,
                     onChanged: (v) => setState(() => _selectedLocalityId = v?.id),
                     validator: (v) => v == null ? l10n.requiredField : null,
+                    errorText: (items.isEmpty && _selectedDirectorateId != null) ? l10n.noData : null,
                   ),
                   loading: () => const LinearProgressIndicator(),
-                  error: (e, _) => Text(e.toString()),
+                  error: (e, _) => SearchableLookupField<Locality>(
+                    label: l10n.locality,
+                    items: const [],
+                    itemLabel: (_) => '',
+                    onChanged: (_) {},
+                    enabled: false,
+                    errorText: l10n.noData,
+                  ),
                 ),
+                const SizedBox(height: 16),
+                _buildGisSection(l10n),
               ]),
 
               _buildSection(l10n.farmInfoSection, [
@@ -504,6 +526,123 @@ class _FarmFormScreenState extends ConsumerState<FarmFormScreen> {
       }),
       validator: (v) => (_selectedOwnershipTypeId != 1 && _selectedOwnerFarmerId == null) ? l10n.requiredField : null,
     );
+  }
+
+  Widget _buildGisSection(AppLocalizations l10n) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _latController,
+                decoration: InputDecoration(
+                  labelText: l10n.latitude,
+                  prefixIcon: const Icon(Icons.location_on_outlined),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: TextFormField(
+                controller: _lonController,
+                decoration: InputDecoration(
+                  labelText: l10n.longitude,
+                  prefixIcon: const Icon(Icons.location_on_outlined),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _isFetchingLocation ? null : _getCurrentLocation,
+          icon: _isFetchingLocation 
+            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+            : const Icon(Icons.my_location),
+          label: Text(_isFetchingLocation ? 'جاري البحث...' : l10n.getCurrentLocation),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isFetchingLocation = true);
+    try {
+      bool serviceEnabled;
+      LocationPermission permission;
+
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location services are disabled. Please enable GPS.')),
+          );
+        }
+        return;
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location permissions are denied.')),
+            );
+          }
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are permanently denied. Please enable them in settings.')),
+          );
+        }
+        return;
+      }
+
+      // 1. Try last known position first (fast and safe)
+      final lastKnown = await Geolocator.getLastKnownPosition();
+      if (lastKnown != null && mounted) {
+        setState(() {
+          _latController.text = lastKnown.latitude.toStringAsFixed(6);
+          _lonController.text = lastKnown.longitude.toStringAsFixed(6);
+        });
+      }
+
+      // 2. Request fresh position with strict timeout to avoid ANR
+      // Use LocationAccuracy.medium for better compatibility on emulators
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium, 
+        timeLimit: const Duration(seconds: 25),
+      );
+      
+      if (mounted) {
+        setState(() {
+          _latController.text = position.latitude.toStringAsFixed(6);
+          _lonController.text = position.longitude.toStringAsFixed(6);
+        });
+      }
+    } on TimeoutException catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location request timed out. Using last known position if available.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error getting location: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isFetchingLocation = false);
+    }
   }
 
   Widget _buildSection(String title, List<Widget> children) {

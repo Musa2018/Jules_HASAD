@@ -1,0 +1,5 @@
+- [x] Update `OfflineFirstFarmerRepository` to support dual ID lookup
+- [x] Improve `FarmCard` UI
+    - [x] Display Ownership Type
+    - [x] Conditionally hide Owner Farmer row
+- [x] Verify name resolution and UI changes

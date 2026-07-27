@@ -1,0 +1,22 @@
+# Task List: Damage Assessment Items & Home Screen Integration
+
+- [x] **Localization**
+    - [x] Update `app_ar.arb` with new keys
+    - [x] Update `app_en.arb` with new keys
+- [x] **Data Layer**
+    - [x] Update `DamageReportRepository` interface
+    - [x] Implement `getDamageReports()` in `OfflineFirstDamageReportRepository` with regional filtering
+    - [x] Add `allDamageReportsProvider` in `damage_reports_providers.dart`
+- [x] **Navigation & Home Screen**
+    - [x] Update `AppRouter` for global damage reports route
+    - [x] Add "Damage Reports" card to `HomeScreen`
+- [x] **Damage Reports List**
+    - [x] Support global view in `DamageReportsListScreen`
+    - [x] Add search/filter and show farm info in global mode
+- [x] **Assessment Items Logic**
+    - [x] Implement sync gating in `DamageReportFormScreen`
+    - [x] Implement Nature Locking in `DamageItemFormSheet`
+    - [x] Apply UX Principles (sticky actions, validation feedback)
+- [x] **Verification**
+    - [x] Run automated tests
+    - [x] Manual verification of regional filtering and nature locking

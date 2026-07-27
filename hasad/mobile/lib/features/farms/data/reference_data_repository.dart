@@ -4,6 +4,9 @@ import '../domain/reference_data.dart';
 abstract class ReferenceDataRepository {
   Future<ReferenceData> getReferenceData({bool forceRefresh = false});
 
+  /// Synchronizes reference data from remote to local storage.
+  Future<void> synchronize({DateTime? updatedSince});
+
   // Hierarchical Lookups
   Future<List<DamageNature>> getNatures();
   Future<List<DamageAction>> getActions();
@@ -18,4 +21,5 @@ abstract class ReferenceDataRepository {
 
   // Search
   Future<List<DamageClassification>> searchClassifications(String query);
+  Future<List<CostingSheetItem>> searchCostingItems(String query);
 }

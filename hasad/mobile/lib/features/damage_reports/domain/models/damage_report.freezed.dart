@@ -36,15 +36,12 @@ mixin _$DamageReport {
   int get agriculturalSectorId => throw _privateConstructorUsedError;
   int get damageCauseCategoryId => throw _privateConstructorUsedError;
   int get damageCauseId => throw _privateConstructorUsedError;
-  String? get settlementName => throw _privateConstructorUsedError;
-  String? get companyName => throw _privateConstructorUsedError;
   String get governorateId => throw _privateConstructorUsedError;
   String get directorateId => throw _privateConstructorUsedError;
   String get localityId => throw _privateConstructorUsedError;
-  double? get latitude => throw _privateConstructorUsedError;
-  double? get longitude => throw _privateConstructorUsedError;
   String get statusId => throw _privateConstructorUsedError;
   String get notes => throw _privateConstructorUsedError;
+  String get createdBy => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
   List<DamageItem> get items => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
@@ -84,15 +81,12 @@ abstract class $DamageReportCopyWith<$Res> {
     int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
-    String? settlementName,
-    String? companyName,
     String governorateId,
     String directorateId,
     String localityId,
-    double? latitude,
-    double? longitude,
     String statusId,
     String notes,
+    String createdBy,
     String rowVersion,
     List<DamageItem> items,
     String syncStatus,
@@ -131,15 +125,12 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
-    Object? settlementName = freezed,
-    Object? companyName = freezed,
     Object? governorateId = null,
     Object? directorateId = null,
     Object? localityId = null,
-    Object? latitude = freezed,
-    Object? longitude = freezed,
     Object? statusId = null,
     Object? notes = null,
+    Object? createdBy = null,
     Object? rowVersion = null,
     Object? items = null,
     Object? syncStatus = null,
@@ -202,14 +193,6 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.damageCauseId
                 : damageCauseId // ignore: cast_nullable_to_non_nullable
                       as int,
-            settlementName: freezed == settlementName
-                ? _value.settlementName
-                : settlementName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            companyName: freezed == companyName
-                ? _value.companyName
-                : companyName // ignore: cast_nullable_to_non_nullable
-                      as String?,
             governorateId: null == governorateId
                 ? _value.governorateId
                 : governorateId // ignore: cast_nullable_to_non_nullable
@@ -222,14 +205,6 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.localityId
                 : localityId // ignore: cast_nullable_to_non_nullable
                       as String,
-            latitude: freezed == latitude
-                ? _value.latitude
-                : latitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            longitude: freezed == longitude
-                ? _value.longitude
-                : longitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
             statusId: null == statusId
                 ? _value.statusId
                 : statusId // ignore: cast_nullable_to_non_nullable
@@ -237,6 +212,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
             notes: null == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdBy: null == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
                       as String,
             rowVersion: null == rowVersion
                 ? _value.rowVersion
@@ -295,15 +274,12 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
-    String? settlementName,
-    String? companyName,
     String governorateId,
     String directorateId,
     String localityId,
-    double? latitude,
-    double? longitude,
     String statusId,
     String notes,
+    String createdBy,
     String rowVersion,
     List<DamageItem> items,
     String syncStatus,
@@ -341,15 +317,12 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
-    Object? settlementName = freezed,
-    Object? companyName = freezed,
     Object? governorateId = null,
     Object? directorateId = null,
     Object? localityId = null,
-    Object? latitude = freezed,
-    Object? longitude = freezed,
     Object? statusId = null,
     Object? notes = null,
+    Object? createdBy = null,
     Object? rowVersion = null,
     Object? items = null,
     Object? syncStatus = null,
@@ -412,14 +385,6 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.damageCauseId
             : damageCauseId // ignore: cast_nullable_to_non_nullable
                   as int,
-        settlementName: freezed == settlementName
-            ? _value.settlementName
-            : settlementName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        companyName: freezed == companyName
-            ? _value.companyName
-            : companyName // ignore: cast_nullable_to_non_nullable
-                  as String?,
         governorateId: null == governorateId
             ? _value.governorateId
             : governorateId // ignore: cast_nullable_to_non_nullable
@@ -432,14 +397,6 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.localityId
             : localityId // ignore: cast_nullable_to_non_nullable
                   as String,
-        latitude: freezed == latitude
-            ? _value.latitude
-            : latitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        longitude: freezed == longitude
-            ? _value.longitude
-            : longitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
         statusId: null == statusId
             ? _value.statusId
             : statusId // ignore: cast_nullable_to_non_nullable
@@ -447,6 +404,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
         notes: null == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdBy: null == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
                   as String,
         rowVersion: null == rowVersion
             ? _value.rowVersion
@@ -498,15 +459,12 @@ class _$DamageReportImpl implements _DamageReport {
     this.agriculturalSectorId = 0,
     this.damageCauseCategoryId = 0,
     this.damageCauseId = 0,
-    this.settlementName,
-    this.companyName,
     this.governorateId = '',
     this.directorateId = '',
     this.localityId = '',
-    this.latitude,
-    this.longitude,
     this.statusId = DamageReportStatus.pendingTechnicalVerification,
     required this.notes,
+    this.createdBy = '',
     this.rowVersion = '',
     final List<DamageItem> items = const [],
     this.syncStatus = 'completed',
@@ -557,10 +515,6 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final int damageCauseId;
   @override
-  final String? settlementName;
-  @override
-  final String? companyName;
-  @override
   @JsonKey()
   final String governorateId;
   @override
@@ -570,14 +524,13 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final String localityId;
   @override
-  final double? latitude;
-  @override
-  final double? longitude;
-  @override
   @JsonKey()
   final String statusId;
   @override
   final String notes;
+  @override
+  @JsonKey()
+  final String createdBy;
   @override
   @JsonKey()
   final String rowVersion;
@@ -604,7 +557,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, settlementName: $settlementName, companyName: $companyName, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, latitude: $latitude, longitude: $longitude, statusId: $statusId, notes: $notes, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -636,23 +589,17 @@ class _$DamageReportImpl implements _DamageReport {
                 other.damageCauseCategoryId == damageCauseCategoryId) &&
             (identical(other.damageCauseId, damageCauseId) ||
                 other.damageCauseId == damageCauseId) &&
-            (identical(other.settlementName, settlementName) ||
-                other.settlementName == settlementName) &&
-            (identical(other.companyName, companyName) ||
-                other.companyName == companyName) &&
             (identical(other.governorateId, governorateId) ||
                 other.governorateId == governorateId) &&
             (identical(other.directorateId, directorateId) ||
                 other.directorateId == directorateId) &&
             (identical(other.localityId, localityId) ||
                 other.localityId == localityId) &&
-            (identical(other.latitude, latitude) ||
-                other.latitude == latitude) &&
-            (identical(other.longitude, longitude) ||
-                other.longitude == longitude) &&
             (identical(other.statusId, statusId) ||
                 other.statusId == statusId) &&
             (identical(other.notes, notes) || other.notes == notes) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
             (identical(other.rowVersion, rowVersion) ||
                 other.rowVersion == rowVersion) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
@@ -685,15 +632,12 @@ class _$DamageReportImpl implements _DamageReport {
     agriculturalSectorId,
     damageCauseCategoryId,
     damageCauseId,
-    settlementName,
-    companyName,
     governorateId,
     directorateId,
     localityId,
-    latitude,
-    longitude,
     statusId,
     notes,
+    createdBy,
     rowVersion,
     const DeepCollectionEquality().hash(_items),
     syncStatus,
@@ -732,15 +676,12 @@ abstract class _DamageReport implements DamageReport {
     final int agriculturalSectorId,
     final int damageCauseCategoryId,
     final int damageCauseId,
-    final String? settlementName,
-    final String? companyName,
     final String governorateId,
     final String directorateId,
     final String localityId,
-    final double? latitude,
-    final double? longitude,
     final String statusId,
     required final String notes,
+    final String createdBy,
     final String rowVersion,
     final List<DamageItem> items,
     final String syncStatus,
@@ -782,23 +723,17 @@ abstract class _DamageReport implements DamageReport {
   @override
   int get damageCauseId;
   @override
-  String? get settlementName;
-  @override
-  String? get companyName;
-  @override
   String get governorateId;
   @override
   String get directorateId;
   @override
   String get localityId;
   @override
-  double? get latitude;
-  @override
-  double? get longitude;
-  @override
   String get statusId;
   @override
   String get notes;
+  @override
+  String get createdBy;
   @override
   String get rowVersion;
   @override

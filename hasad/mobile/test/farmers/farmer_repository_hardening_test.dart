@@ -145,7 +145,23 @@ void main() {
         db, mockSyncService, mockRemoteRepository, mockConnectivity, mockAuthService, engineerSession,
       );
 
-      // 2. Add two farmers
+      // 2. Add two localities
+      await db.into(db.localities).insert(LocalitiesCompanion.insert(
+        id: 'L1',
+        nameAr: 'Locality 1',
+        nameEn: 'Locality 1',
+        governorateId: 'G1',
+        directorateId: 'D1',
+      ));
+      await db.into(db.localities).insert(LocalitiesCompanion.insert(
+        id: 'L2',
+        nameAr: 'Locality 2',
+        nameEn: 'Locality 2',
+        governorateId: 'G1',
+        directorateId: 'D2',
+      ));
+
+      // 3. Add two farmers (one in D1 locality, one in D2)
       final farmer1 = Farmer(
         id: 'f1', idTypeId: 1, idNumber: '1', firstNameAr: 'F1',
         fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
@@ -153,7 +169,7 @@ void main() {
         birthDate: DateTime(1980), gender: Gender.male, phoneNumber: '',
         familySize: 1, governorateId: 'G1', localityId: 'L1', address: '',
       );
-      final farmer2 = farmer1.copyWith(id: 'f2', idNumber: '2', firstNameAr: 'F2');
+      final farmer2 = farmer1.copyWith(id: 'f2', idNumber: '2', firstNameAr: 'F2', localityId: 'L2');
 
       when(() => mockSyncService.addToQueue(
         localId: any(named: 'localId'),
@@ -165,49 +181,56 @@ void main() {
       await repository.createFarmer(farmer1);
       await repository.createFarmer(farmer2);
 
-      // 3. Add a farm for F1 in D1
-      await db.into(db.farms).insert(FarmsCompanion.insert(
-        id: 'farm1',
-        farmerId: 'f1',
-        localFarmName: 'Farm 1',
-        governorateId: 'G1',
-        directorateId: 'D1',
-        localityId: 'L1',
-        basin: 'B',
-        parcel: 'P',
-        area: 10,
-      ));
+      // 4. Watch with isOperational: true
+      final streamOp = repository.watchFarmers(filter: const FarmerFilter(isOperational: true));
+      final resultOp = await streamOp.first;
 
-      // 4. Add a farm for F2 in D2
-      await db.into(db.farms).insert(FarmsCompanion.insert(
-        id: 'farm2',
-        farmerId: 'f2',
-        localFarmName: 'Farm 2',
-        governorateId: 'G1',
-        directorateId: 'D2', // Different directorate
-        localityId: 'L1',
-        basin: 'B',
-        parcel: 'P',
-        area: 10,
-      ));
+      // Should only contain f1 because f2's locality is in D2
+      expect(resultOp.length, 1);
+      expect(resultOp.first.id, 'f1');
 
-      // 5. Add a damage report for farm1
-      await db.into(db.damageReports).insert(DamageReportsCompanion.insert(
-        id: 'report1',
-        farmId: 'farm1',
-        damageDate: DateTime.now(),
-        documentationDate: DateTime.now(),
-        statusId: 'Draft',
-        notes: '',
-      ));
+      // 5. Watch with isOperational: false (All View)
+      final streamAll = repository.watchFarmers(filter: const FarmerFilter(isOperational: false));
+      final resultAll = await streamAll.first;
 
-      // 6. Watch with isOperational: true
+      // Should contain both because they are in G1 (Authorization Scope)
+      expect(resultAll.length, 2);
+      expect(resultAll.any((e) => e.id == 'f1'), isTrue);
+      expect(resultAll.any((e) => e.id == 'f2'), isTrue);
+    });
+
+    test('watchFarmers allows SuperAdmin to see all regardless of isOperational', () async {
+       // 1. Setup session for SuperAdmin
+      final superSession = adminSession.copyWith(roles: ['SuperAdmin'], directorateId: null);
+      repository = OfflineFirstFarmerRepository(
+        db, mockSyncService, mockRemoteRepository, mockConnectivity, mockAuthService, superSession,
+      );
+
+      // 2. Add two farmers in different governorates
+      final farmer1 = Farmer(
+        id: 'f1', idTypeId: 1, idNumber: '1', firstNameAr: 'F1',
+        fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+        firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
+        birthDate: DateTime(1980), gender: Gender.male, phoneNumber: '',
+        familySize: 1, governorateId: 'G1', localityId: 'L1', address: '',
+      );
+      final farmer2 = farmer1.copyWith(id: 'f2', idNumber: '2', firstNameAr: 'F2', governorateId: 'G2');
+
+      when(() => mockSyncService.addToQueue(
+        localId: any(named: 'localId'),
+        entityType: any(named: 'entityType'),
+        operation: any(named: 'operation'),
+        data: any(named: 'data'),
+      )).thenAnswer((_) async {});
+
+      await repository.createFarmer(farmer1);
+      await repository.createFarmer(farmer2);
+
+      // 3. Watch
       final stream = repository.watchFarmers(filter: const FarmerFilter(isOperational: true));
       final result = await stream.first;
 
-      // Should only contain f1 because f2's farm is in D2
-      expect(result.length, 1);
-      expect(result.first.id, 'f1');
+      expect(result.length, 2);
     });
   });
 }

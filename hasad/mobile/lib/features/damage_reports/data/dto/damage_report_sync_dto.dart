@@ -3,7 +3,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 
 class DamageReportSyncDto {
-  static Map<String, dynamic> toCreateJson(DamageReport report) {
+  static Map<String, dynamic> toCreateJson(DamageReport report, {double? latitude, double? longitude}) {
     return {
       'clientId': report.id,
       'temporaryFormNumber': report.temporaryFormNumber,
@@ -14,13 +14,11 @@ class DamageReportSyncDto {
       'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
-      'settlementName': report.settlementName,
-      'companyName': report.companyName,
       'governorateId': report.governorateId,
       'directorateId': report.directorateId,
       'localityId': report.localityId,
-      'latitude': report.latitude,
-      'longitude': report.longitude,
+      'latitude': latitude,
+      'longitude': longitude,
       'notes': report.notes,
       'items': report.items.isEmpty ? null : report.items.map((i) => itemToCreateJson(i)).toList(),
     };
@@ -36,8 +34,6 @@ class DamageReportSyncDto {
       'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
-      'settlementName': report.settlementName,
-      'companyName': report.companyName,
       'notes': report.notes,
       'rowVersion': report.rowVersion,
     };

@@ -75,3 +75,12 @@ final measurementUnitByIdProvider = FutureProvider.family<MeasurementUnit?, int>
   final units = await ref.watch(measurementUnitsProvider.future);
   return units.where((u) => u.id == id).firstOrNull;
 });
+
+final searchCostingItemsProvider = FutureProvider.family<List<CostingSheetItem>, String>((ref, query) async {
+  return ref.watch(referenceDataRepositoryProvider).searchCostingItems(query);
+});
+
+final damageClassificationByIdProvider = FutureProvider.family<DamageClassification?, int>((ref, id) async {
+  final data = await ref.watch(referenceDataProvider.future);
+  return data.damageClassifications.where((c) => c.id == id).firstOrNull;
+});

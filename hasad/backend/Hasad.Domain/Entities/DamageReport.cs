@@ -14,6 +14,12 @@ public class DamageReport : ISoftDelete
     public Guid FarmId { get; set; }
     public Farm? Farm { get; set; }
 
+    public Guid FarmerId { get; set; }
+    public Guid GovernorateId { get; set; }
+    public Guid DirectorateId { get; set; }
+    public Guid LocalityId { get; set; }
+    public int DamageYear { get; set; }
+
     public DateTime DamageDate { get; set; }
     public DateTime DocumentationDate { get; set; }
 
@@ -26,13 +32,11 @@ public class DamageReport : ISoftDelete
     public int DamageCauseId { get; set; }
     public DamageCause? DamageCause { get; set; }
 
-    public string? SettlementName { get; set; }
-    public string? CompanyName { get; set; }
-
-    public string StatusId { get; set; } = "Draft"; // e.g., Draft, Submitted, Verified, Rejected
+    public string StatusId { get; set; } = "PendingTechnicalVerification";
 
     public string Notes { get; set; } = string.Empty;
 
+    public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 

@@ -125,7 +125,7 @@ public class DamageReportSecurityTests
         await context.SaveChangesAsync();
 
         var handler = new UpdateDamageReportCommandHandler(context, _currentUserMock.Object);
-        var command = new UpdateDamageReportCommand(report.Id, DateTime.UtcNow, 1, 1, 1, null, null, "Notes", Convert.ToBase64String(report.RowVersion));
+        var command = new UpdateDamageReportCommand(report.Id, DateTime.UtcNow, 1, 1, 1, "Notes", Convert.ToBase64String(report.RowVersion));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -217,6 +217,6 @@ public class DamageReportSecurityTests
     private CreateDamageReportCommand CreateValidCreateCommand(Guid farmId, Guid farmerId)
     {
         return new CreateDamageReportCommand(
-            Guid.NewGuid(), "TEMP", farmId, DateTime.UtcNow, 1, 1, 1, null, null, "", new List<CreateDamageItemInput>());
+            Guid.NewGuid(), "TEMP", farmId, DateTime.UtcNow, 1, 1, 1, "", new List<CreateDamageItemInput>());
     }
 }

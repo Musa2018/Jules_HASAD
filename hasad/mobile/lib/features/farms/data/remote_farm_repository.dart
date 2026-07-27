@@ -118,6 +118,41 @@ class RemoteFarmRepository implements FarmRepository {
     throw UnimplementedError('cancelDeleteFarm is a local-only operation.');
   }
 
+  @override
+  Future<List<Farm>> getFarms({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  }) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/farms',
+        queryParameters: {
+          'pageNumber': pageNumber,
+          'pageSize': pageSize,
+          'searchText': searchText,
+          'updatedSince': updatedSince?.toIso8601String(),
+        },
+      );
+      final envelope = response.data;
+      final data = envelope?['data'];
+      if (envelope?['succeeded'] != true || data == null) {
+        throw SyncException(_errorsFromEnvelope(envelope));
+      }
+
+      final items = data['items'] as List;
+      return items.map((e) => Farm.fromJson(e as Map<String, dynamic>)).toList();
+    } on DioException catch (e) {
+      throw SyncException(_errorsFromDio(e));
+    }
+  }
+
+  @override
+  Future<void> synchronize({DateTime? updatedSince}) {
+    throw UnimplementedError('Remote repository does not support explicit synchronization.');
+  }
+
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
     if (e.response?.statusCode == 404) {

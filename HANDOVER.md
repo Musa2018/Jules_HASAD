@@ -1,18 +1,18 @@
 # Engineering Handover: HASAD Project
 
 ## 1. Project Status
-- **Current Branch**: `main`
-- **Last Commit**: `640d8b7` (feat: complete end-to-end password reset with Gmail SMTP)
-- **Current Milestone**: v0.8.0-alpha (Identity & Sync Infrastructure)
-- **Current Sprint**: Sprint 8 Extension (Identity Hardening & UI Polish)
-- **Current Objective**: Establish a production-ready authentication and synchronization foundation with SQL Server.
+- **Current Branch**: `DamageReport`
+- **Last Commit**: `DamageReport` (Engineering Baseline)
+- **Current Milestone**: v0.15.0-alpha (Offline Baseline)
+- **Current Sprint**: Phase 2.1 — Damage Assessment Items
+- **Current Objective**: Implement Damage Assessment Items with Nature Locking and authoritative backend valuation.
 - **Build Status**: 
   - Backend: Passing (dotnet 8.0.x)
   - Mobile: Passing (Flutter 3.x)
 - **Test Status**: 
-  - Backend: 45 unit/logic tests passing.
-  - Mobile: 44 widget/logic tests passing.
-- **CI Status**: Green on GitHub Actions (pinned to .NET 8.0.422 and Flutter 3.41.2).
+  - Backend: 115+ unit/logic tests passing.
+  - Mobile: 185+ widget/logic tests passing.
+- **CI Status**: Green on GitHub Actions.
 - **Open Issues**: #21 (Junk Cleanup), #27 (Documentation Sync), #28 (Class1 cleanup), Assistance Module implementation.
 - **Closed Issues**: #11-#15 (Auth), #17-#20 (Infra), #24-#26 (Mobile Auth), #22-#23 (CI/CD Hardening).
 
@@ -89,21 +89,21 @@
 
 ## 5. Current State of Every Module
 - **Authentication**: Completed
-- **Farmer**: Completed
-- **Farm**: Completed
-- **Damage Reports**: Completed
+- **Farmer**: Completed & Hardened (RoleScope enforced)
+- **Farm**: Completed & Hardened (RoleScope enforced)
+- **Damage Reports**: Header Lifecycle Completed; Assessment Items In Progress (Phase 2.1)
 - **Attachments**: Completed (Binary upload integrated with sync)
-- **Maps**: Partially implemented (Basic viewer, needs cluster support)
-- **Offline**: Completed (Drift schema v6)
-- **Sync**: Completed (Retry backoff + Idempotency)
-- **Dashboard**: Partially implemented (Needs dynamic stats from local DB)
+- **Maps**: Partially implemented (Basic viewer)
+- **Offline**: Completed (Drift schema v21)
+- **Sync**: Completed (Push/Pull Separation + Watermarking + Idempotency)
+- **Dashboard**: Partially implemented
 - **Settings**: Partially implemented
 - **Notifications**: Not started
 - **Localization**: Completed (AR/EN integrated via `LocaleProvider`)
-- **Testing**: Completed (High coverage on Domain/Application layers)
+- **Testing**: Completed (High coverage: 115 backend / 185 mobile)
 - **CI/CD**: Completed (GitHub Actions active)
-- **Security**: Completed (JWT rotation + SQL encryption enabled)
-- **Documentation**: Completed (ADRs and Feature docs updated)
+- **Security**: Completed (JWT rotation + SQL encryption + Authorization guards)
+- **Documentation**: Completed (ADRs, AI_CONTEXT, PROJECT_STATUS, Walkthroughs)
 
 ---
 

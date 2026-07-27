@@ -547,11 +547,13 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CompanyName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("DamageCauseCategoryId")
                         .HasColumnType("int");
@@ -562,11 +564,17 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<DateTime>("DamageDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("DamageYear")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("DirectorateId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DocumentationDate")
                         .HasColumnType("datetime2");
@@ -574,8 +582,17 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("FarmId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("FarmerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GovernorateId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<Guid>("LocalityId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -596,9 +613,6 @@ namespace Hasad.Infrastructure.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
-
-                    b.Property<string>("SettlementName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StatusId")
                         .IsRequired()
@@ -623,6 +637,8 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasIndex("DamageCauseCategoryId");
 
                     b.HasIndex("DamageCauseId");
+
+                    b.HasIndex("DirectorateId");
 
                     b.HasIndex("PermanentFormNumber")
                         .IsUnique();

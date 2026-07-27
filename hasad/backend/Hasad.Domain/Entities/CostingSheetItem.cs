@@ -4,6 +4,8 @@ public class CostingSheetItem
 {
     public Guid Id { get; set; }
 
+    public string Code { get; set; } = string.Empty;
+
     public Guid VersionId { get; set; }
     public CostingSheetVersion? Version { get; set; }
 

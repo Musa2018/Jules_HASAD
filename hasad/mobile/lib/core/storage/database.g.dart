@@ -3197,28 +3197,6 @@ class $DamageReportsTable extends DamageReports
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
-  static const VerificationMeta _settlementNameMeta = const VerificationMeta(
-    'settlementName',
-  );
-  @override
-  late final GeneratedColumn<String> settlementName = GeneratedColumn<String>(
-    'settlement_name',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _companyNameMeta = const VerificationMeta(
-    'companyName',
-  );
-  @override
-  late final GeneratedColumn<String> companyName = GeneratedColumn<String>(
-    'company_name',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _governorateIdMeta = const VerificationMeta(
     'governorateId',
   );
@@ -3255,28 +3233,6 @@ class $DamageReportsTable extends DamageReports
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
-  static const VerificationMeta _latitudeMeta = const VerificationMeta(
-    'latitude',
-  );
-  @override
-  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
-    'latitude',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _longitudeMeta = const VerificationMeta(
-    'longitude',
-  );
-  @override
-  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
-    'longitude',
-    aliasedName,
-    true,
-    type: DriftSqlType.double,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _statusIdMeta = const VerificationMeta(
     'statusId',
   );
@@ -3297,6 +3253,18 @@ class $DamageReportsTable extends DamageReports
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _rowVersionMeta = const VerificationMeta(
     'rowVersion',
@@ -3387,15 +3355,12 @@ class $DamageReportsTable extends DamageReports
     agriculturalSectorId,
     damageCauseCategoryId,
     damageCauseId,
-    settlementName,
-    companyName,
     governorateId,
     directorateId,
     localityId,
-    latitude,
-    longitude,
     statusId,
     notes,
+    createdBy,
     rowVersion,
     syncStatus,
     lastSyncError,
@@ -3528,24 +3493,6 @@ class $DamageReportsTable extends DamageReports
         ),
       );
     }
-    if (data.containsKey('settlement_name')) {
-      context.handle(
-        _settlementNameMeta,
-        settlementName.isAcceptableOrUnknown(
-          data['settlement_name']!,
-          _settlementNameMeta,
-        ),
-      );
-    }
-    if (data.containsKey('company_name')) {
-      context.handle(
-        _companyNameMeta,
-        companyName.isAcceptableOrUnknown(
-          data['company_name']!,
-          _companyNameMeta,
-        ),
-      );
-    }
     if (data.containsKey('governorate_id')) {
       context.handle(
         _governorateIdMeta,
@@ -3570,18 +3517,6 @@ class $DamageReportsTable extends DamageReports
         localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
       );
     }
-    if (data.containsKey('latitude')) {
-      context.handle(
-        _latitudeMeta,
-        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
-      );
-    }
-    if (data.containsKey('longitude')) {
-      context.handle(
-        _longitudeMeta,
-        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
-      );
-    }
     if (data.containsKey('status_id')) {
       context.handle(
         _statusIdMeta,
@@ -3597,6 +3532,12 @@ class $DamageReportsTable extends DamageReports
       );
     } else if (isInserting) {
       context.missing(_notesMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
     }
     if (data.containsKey('row_version')) {
       context.handle(
@@ -3705,14 +3646,6 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.int,
         data['${effectivePrefix}damage_cause_id'],
       )!,
-      settlementName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}settlement_name'],
-      ),
-      companyName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}company_name'],
-      ),
       governorateId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}governorate_id'],
@@ -3725,14 +3658,6 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}locality_id'],
       )!,
-      latitude: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}latitude'],
-      ),
-      longitude: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}longitude'],
-      ),
       statusId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}status_id'],
@@ -3740,6 +3665,10 @@ class $DamageReportsTable extends DamageReports
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
       )!,
       rowVersion: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -3790,15 +3719,12 @@ class DamageReportLocal extends DataClass
   final int agriculturalSectorId;
   final int damageCauseCategoryId;
   final int damageCauseId;
-  final String? settlementName;
-  final String? companyName;
   final String governorateId;
   final String directorateId;
   final String localityId;
-  final double? latitude;
-  final double? longitude;
   final String statusId;
   final String notes;
+  final String createdBy;
   final String rowVersion;
   final String syncStatus;
   final String? lastSyncError;
@@ -3820,15 +3746,12 @@ class DamageReportLocal extends DataClass
     required this.agriculturalSectorId,
     required this.damageCauseCategoryId,
     required this.damageCauseId,
-    this.settlementName,
-    this.companyName,
     required this.governorateId,
     required this.directorateId,
     required this.localityId,
-    this.latitude,
-    this.longitude,
     required this.statusId,
     required this.notes,
+    required this.createdBy,
     required this.rowVersion,
     required this.syncStatus,
     this.lastSyncError,
@@ -3855,23 +3778,12 @@ class DamageReportLocal extends DataClass
     map['agricultural_sector_id'] = Variable<int>(agriculturalSectorId);
     map['damage_cause_category_id'] = Variable<int>(damageCauseCategoryId);
     map['damage_cause_id'] = Variable<int>(damageCauseId);
-    if (!nullToAbsent || settlementName != null) {
-      map['settlement_name'] = Variable<String>(settlementName);
-    }
-    if (!nullToAbsent || companyName != null) {
-      map['company_name'] = Variable<String>(companyName);
-    }
     map['governorate_id'] = Variable<String>(governorateId);
     map['directorate_id'] = Variable<String>(directorateId);
     map['locality_id'] = Variable<String>(localityId);
-    if (!nullToAbsent || latitude != null) {
-      map['latitude'] = Variable<double>(latitude);
-    }
-    if (!nullToAbsent || longitude != null) {
-      map['longitude'] = Variable<double>(longitude);
-    }
     map['status_id'] = Variable<String>(statusId);
     map['notes'] = Variable<String>(notes);
+    map['created_by'] = Variable<String>(createdBy);
     map['row_version'] = Variable<String>(rowVersion);
     map['sync_status'] = Variable<String>(syncStatus);
     if (!nullToAbsent || lastSyncError != null) {
@@ -3903,23 +3815,12 @@ class DamageReportLocal extends DataClass
       agriculturalSectorId: Value(agriculturalSectorId),
       damageCauseCategoryId: Value(damageCauseCategoryId),
       damageCauseId: Value(damageCauseId),
-      settlementName: settlementName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(settlementName),
-      companyName: companyName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(companyName),
       governorateId: Value(governorateId),
       directorateId: Value(directorateId),
       localityId: Value(localityId),
-      latitude: latitude == null && nullToAbsent
-          ? const Value.absent()
-          : Value(latitude),
-      longitude: longitude == null && nullToAbsent
-          ? const Value.absent()
-          : Value(longitude),
       statusId: Value(statusId),
       notes: Value(notes),
+      createdBy: Value(createdBy),
       rowVersion: Value(rowVersion),
       syncStatus: Value(syncStatus),
       lastSyncError: lastSyncError == null && nullToAbsent
@@ -3963,15 +3864,12 @@ class DamageReportLocal extends DataClass
         json['damageCauseCategoryId'],
       ),
       damageCauseId: serializer.fromJson<int>(json['damageCauseId']),
-      settlementName: serializer.fromJson<String?>(json['settlementName']),
-      companyName: serializer.fromJson<String?>(json['companyName']),
       governorateId: serializer.fromJson<String>(json['governorateId']),
       directorateId: serializer.fromJson<String>(json['directorateId']),
       localityId: serializer.fromJson<String>(json['localityId']),
-      latitude: serializer.fromJson<double?>(json['latitude']),
-      longitude: serializer.fromJson<double?>(json['longitude']),
       statusId: serializer.fromJson<String>(json['statusId']),
       notes: serializer.fromJson<String>(json['notes']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
@@ -3998,15 +3896,12 @@ class DamageReportLocal extends DataClass
       'agriculturalSectorId': serializer.toJson<int>(agriculturalSectorId),
       'damageCauseCategoryId': serializer.toJson<int>(damageCauseCategoryId),
       'damageCauseId': serializer.toJson<int>(damageCauseId),
-      'settlementName': serializer.toJson<String?>(settlementName),
-      'companyName': serializer.toJson<String?>(companyName),
       'governorateId': serializer.toJson<String>(governorateId),
       'directorateId': serializer.toJson<String>(directorateId),
       'localityId': serializer.toJson<String>(localityId),
-      'latitude': serializer.toJson<double?>(latitude),
-      'longitude': serializer.toJson<double?>(longitude),
       'statusId': serializer.toJson<String>(statusId),
       'notes': serializer.toJson<String>(notes),
+      'createdBy': serializer.toJson<String>(createdBy),
       'rowVersion': serializer.toJson<String>(rowVersion),
       'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncError': serializer.toJson<String?>(lastSyncError),
@@ -4031,15 +3926,12 @@ class DamageReportLocal extends DataClass
     int? agriculturalSectorId,
     int? damageCauseCategoryId,
     int? damageCauseId,
-    Value<String?> settlementName = const Value.absent(),
-    Value<String?> companyName = const Value.absent(),
     String? governorateId,
     String? directorateId,
     String? localityId,
-    Value<double?> latitude = const Value.absent(),
-    Value<double?> longitude = const Value.absent(),
     String? statusId,
     String? notes,
+    String? createdBy,
     String? rowVersion,
     String? syncStatus,
     Value<String?> lastSyncError = const Value.absent(),
@@ -4061,17 +3953,12 @@ class DamageReportLocal extends DataClass
     agriculturalSectorId: agriculturalSectorId ?? this.agriculturalSectorId,
     damageCauseCategoryId: damageCauseCategoryId ?? this.damageCauseCategoryId,
     damageCauseId: damageCauseId ?? this.damageCauseId,
-    settlementName: settlementName.present
-        ? settlementName.value
-        : this.settlementName,
-    companyName: companyName.present ? companyName.value : this.companyName,
     governorateId: governorateId ?? this.governorateId,
     directorateId: directorateId ?? this.directorateId,
     localityId: localityId ?? this.localityId,
-    latitude: latitude.present ? latitude.value : this.latitude,
-    longitude: longitude.present ? longitude.value : this.longitude,
     statusId: statusId ?? this.statusId,
     notes: notes ?? this.notes,
+    createdBy: createdBy ?? this.createdBy,
     rowVersion: rowVersion ?? this.rowVersion,
     syncStatus: syncStatus ?? this.syncStatus,
     lastSyncError: lastSyncError.present
@@ -4117,12 +4004,6 @@ class DamageReportLocal extends DataClass
       damageCauseId: data.damageCauseId.present
           ? data.damageCauseId.value
           : this.damageCauseId,
-      settlementName: data.settlementName.present
-          ? data.settlementName.value
-          : this.settlementName,
-      companyName: data.companyName.present
-          ? data.companyName.value
-          : this.companyName,
       governorateId: data.governorateId.present
           ? data.governorateId.value
           : this.governorateId,
@@ -4132,10 +4013,9 @@ class DamageReportLocal extends DataClass
       localityId: data.localityId.present
           ? data.localityId.value
           : this.localityId,
-      latitude: data.latitude.present ? data.latitude.value : this.latitude,
-      longitude: data.longitude.present ? data.longitude.value : this.longitude,
       statusId: data.statusId.present ? data.statusId.value : this.statusId,
       notes: data.notes.present ? data.notes.value : this.notes,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       rowVersion: data.rowVersion.present
           ? data.rowVersion.value
           : this.rowVersion,
@@ -4170,15 +4050,12 @@ class DamageReportLocal extends DataClass
           ..write('agriculturalSectorId: $agriculturalSectorId, ')
           ..write('damageCauseCategoryId: $damageCauseCategoryId, ')
           ..write('damageCauseId: $damageCauseId, ')
-          ..write('settlementName: $settlementName, ')
-          ..write('companyName: $companyName, ')
           ..write('governorateId: $governorateId, ')
           ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
-          ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude, ')
           ..write('statusId: $statusId, ')
           ..write('notes: $notes, ')
+          ..write('createdBy: $createdBy, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
@@ -4205,15 +4082,12 @@ class DamageReportLocal extends DataClass
     agriculturalSectorId,
     damageCauseCategoryId,
     damageCauseId,
-    settlementName,
-    companyName,
     governorateId,
     directorateId,
     localityId,
-    latitude,
-    longitude,
     statusId,
     notes,
+    createdBy,
     rowVersion,
     syncStatus,
     lastSyncError,
@@ -4239,15 +4113,12 @@ class DamageReportLocal extends DataClass
           other.agriculturalSectorId == this.agriculturalSectorId &&
           other.damageCauseCategoryId == this.damageCauseCategoryId &&
           other.damageCauseId == this.damageCauseId &&
-          other.settlementName == this.settlementName &&
-          other.companyName == this.companyName &&
           other.governorateId == this.governorateId &&
           other.directorateId == this.directorateId &&
           other.localityId == this.localityId &&
-          other.latitude == this.latitude &&
-          other.longitude == this.longitude &&
           other.statusId == this.statusId &&
           other.notes == this.notes &&
+          other.createdBy == this.createdBy &&
           other.rowVersion == this.rowVersion &&
           other.syncStatus == this.syncStatus &&
           other.lastSyncError == this.lastSyncError &&
@@ -4271,15 +4142,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<int> agriculturalSectorId;
   final Value<int> damageCauseCategoryId;
   final Value<int> damageCauseId;
-  final Value<String?> settlementName;
-  final Value<String?> companyName;
   final Value<String> governorateId;
   final Value<String> directorateId;
   final Value<String> localityId;
-  final Value<double?> latitude;
-  final Value<double?> longitude;
   final Value<String> statusId;
   final Value<String> notes;
+  final Value<String> createdBy;
   final Value<String> rowVersion;
   final Value<String> syncStatus;
   final Value<String?> lastSyncError;
@@ -4302,15 +4170,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.agriculturalSectorId = const Value.absent(),
     this.damageCauseCategoryId = const Value.absent(),
     this.damageCauseId = const Value.absent(),
-    this.settlementName = const Value.absent(),
-    this.companyName = const Value.absent(),
     this.governorateId = const Value.absent(),
     this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
-    this.latitude = const Value.absent(),
-    this.longitude = const Value.absent(),
     this.statusId = const Value.absent(),
     this.notes = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
@@ -4334,15 +4199,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.agriculturalSectorId = const Value.absent(),
     this.damageCauseCategoryId = const Value.absent(),
     this.damageCauseId = const Value.absent(),
-    this.settlementName = const Value.absent(),
-    this.companyName = const Value.absent(),
     this.governorateId = const Value.absent(),
     this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
-    this.latitude = const Value.absent(),
-    this.longitude = const Value.absent(),
     required String statusId,
     required String notes,
+    this.createdBy = const Value.absent(),
     this.rowVersion = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSyncError = const Value.absent(),
@@ -4371,15 +4233,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<int>? agriculturalSectorId,
     Expression<int>? damageCauseCategoryId,
     Expression<int>? damageCauseId,
-    Expression<String>? settlementName,
-    Expression<String>? companyName,
     Expression<String>? governorateId,
     Expression<String>? directorateId,
     Expression<String>? localityId,
-    Expression<double>? latitude,
-    Expression<double>? longitude,
     Expression<String>? statusId,
     Expression<String>? notes,
+    Expression<String>? createdBy,
     Expression<String>? rowVersion,
     Expression<String>? syncStatus,
     Expression<String>? lastSyncError,
@@ -4407,15 +4266,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (damageCauseCategoryId != null)
         'damage_cause_category_id': damageCauseCategoryId,
       if (damageCauseId != null) 'damage_cause_id': damageCauseId,
-      if (settlementName != null) 'settlement_name': settlementName,
-      if (companyName != null) 'company_name': companyName,
       if (governorateId != null) 'governorate_id': governorateId,
       if (directorateId != null) 'directorate_id': directorateId,
       if (localityId != null) 'locality_id': localityId,
-      if (latitude != null) 'latitude': latitude,
-      if (longitude != null) 'longitude': longitude,
       if (statusId != null) 'status_id': statusId,
       if (notes != null) 'notes': notes,
+      if (createdBy != null) 'created_by': createdBy,
       if (rowVersion != null) 'row_version': rowVersion,
       if (syncStatus != null) 'sync_status': syncStatus,
       if (lastSyncError != null) 'last_sync_error': lastSyncError,
@@ -4441,15 +4297,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<int>? agriculturalSectorId,
     Value<int>? damageCauseCategoryId,
     Value<int>? damageCauseId,
-    Value<String?>? settlementName,
-    Value<String?>? companyName,
     Value<String>? governorateId,
     Value<String>? directorateId,
     Value<String>? localityId,
-    Value<double?>? latitude,
-    Value<double?>? longitude,
     Value<String>? statusId,
     Value<String>? notes,
+    Value<String>? createdBy,
     Value<String>? rowVersion,
     Value<String>? syncStatus,
     Value<String?>? lastSyncError,
@@ -4474,15 +4327,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       damageCauseCategoryId:
           damageCauseCategoryId ?? this.damageCauseCategoryId,
       damageCauseId: damageCauseId ?? this.damageCauseId,
-      settlementName: settlementName ?? this.settlementName,
-      companyName: companyName ?? this.companyName,
       governorateId: governorateId ?? this.governorateId,
       directorateId: directorateId ?? this.directorateId,
       localityId: localityId ?? this.localityId,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
       statusId: statusId ?? this.statusId,
       notes: notes ?? this.notes,
+      createdBy: createdBy ?? this.createdBy,
       rowVersion: rowVersion ?? this.rowVersion,
       syncStatus: syncStatus ?? this.syncStatus,
       lastSyncError: lastSyncError ?? this.lastSyncError,
@@ -4544,12 +4394,6 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (damageCauseId.present) {
       map['damage_cause_id'] = Variable<int>(damageCauseId.value);
     }
-    if (settlementName.present) {
-      map['settlement_name'] = Variable<String>(settlementName.value);
-    }
-    if (companyName.present) {
-      map['company_name'] = Variable<String>(companyName.value);
-    }
     if (governorateId.present) {
       map['governorate_id'] = Variable<String>(governorateId.value);
     }
@@ -4559,17 +4403,14 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (localityId.present) {
       map['locality_id'] = Variable<String>(localityId.value);
     }
-    if (latitude.present) {
-      map['latitude'] = Variable<double>(latitude.value);
-    }
-    if (longitude.present) {
-      map['longitude'] = Variable<double>(longitude.value);
-    }
     if (statusId.present) {
       map['status_id'] = Variable<String>(statusId.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
     }
     if (rowVersion.present) {
       map['row_version'] = Variable<String>(rowVersion.value);
@@ -4612,15 +4453,12 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('agriculturalSectorId: $agriculturalSectorId, ')
           ..write('damageCauseCategoryId: $damageCauseCategoryId, ')
           ..write('damageCauseId: $damageCauseId, ')
-          ..write('settlementName: $settlementName, ')
-          ..write('companyName: $companyName, ')
           ..write('governorateId: $governorateId, ')
           ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
-          ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude, ')
           ..write('statusId: $statusId, ')
           ..write('notes: $notes, ')
+          ..write('createdBy: $createdBy, ')
           ..write('rowVersion: $rowVersion, ')
           ..write('syncStatus: $syncStatus, ')
           ..write('lastSyncError: $lastSyncError, ')
@@ -12613,6 +12451,16 @@ class $CostingSheetItemsTable extends CostingSheetItems
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _versionIdMeta = const VerificationMeta(
     'versionId',
   );
@@ -12672,6 +12520,7 @@ class $CostingSheetItemsTable extends CostingSheetItems
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    code,
     versionId,
     classificationId,
     measurementUnitId,
@@ -12694,6 +12543,12 @@ class $CostingSheetItemsTable extends CostingSheetItems
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
     }
     if (data.containsKey('version_id')) {
       context.handle(
@@ -12750,6 +12605,10 @@ class $CostingSheetItemsTable extends CostingSheetItems
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
       versionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}version_id'],
@@ -12782,6 +12641,7 @@ class $CostingSheetItemsTable extends CostingSheetItems
 class CostingSheetItem extends DataClass
     implements Insertable<CostingSheetItem> {
   final String id;
+  final String code;
   final String versionId;
   final int classificationId;
   final int? measurementUnitId;
@@ -12789,6 +12649,7 @@ class CostingSheetItem extends DataClass
   final DateTime createdAt;
   const CostingSheetItem({
     required this.id,
+    required this.code,
     required this.versionId,
     required this.classificationId,
     this.measurementUnitId,
@@ -12799,6 +12660,7 @@ class CostingSheetItem extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['code'] = Variable<String>(code);
     map['version_id'] = Variable<String>(versionId);
     map['classification_id'] = Variable<int>(classificationId);
     if (!nullToAbsent || measurementUnitId != null) {
@@ -12812,6 +12674,7 @@ class CostingSheetItem extends DataClass
   CostingSheetItemsCompanion toCompanion(bool nullToAbsent) {
     return CostingSheetItemsCompanion(
       id: Value(id),
+      code: Value(code),
       versionId: Value(versionId),
       classificationId: Value(classificationId),
       measurementUnitId: measurementUnitId == null && nullToAbsent
@@ -12829,6 +12692,7 @@ class CostingSheetItem extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CostingSheetItem(
       id: serializer.fromJson<String>(json['id']),
+      code: serializer.fromJson<String>(json['code']),
       versionId: serializer.fromJson<String>(json['versionId']),
       classificationId: serializer.fromJson<int>(json['classificationId']),
       measurementUnitId: serializer.fromJson<int?>(json['measurementUnitId']),
@@ -12841,6 +12705,7 @@ class CostingSheetItem extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'code': serializer.toJson<String>(code),
       'versionId': serializer.toJson<String>(versionId),
       'classificationId': serializer.toJson<int>(classificationId),
       'measurementUnitId': serializer.toJson<int?>(measurementUnitId),
@@ -12851,6 +12716,7 @@ class CostingSheetItem extends DataClass
 
   CostingSheetItem copyWith({
     String? id,
+    String? code,
     String? versionId,
     int? classificationId,
     Value<int?> measurementUnitId = const Value.absent(),
@@ -12858,6 +12724,7 @@ class CostingSheetItem extends DataClass
     DateTime? createdAt,
   }) => CostingSheetItem(
     id: id ?? this.id,
+    code: code ?? this.code,
     versionId: versionId ?? this.versionId,
     classificationId: classificationId ?? this.classificationId,
     measurementUnitId: measurementUnitId.present
@@ -12869,6 +12736,7 @@ class CostingSheetItem extends DataClass
   CostingSheetItem copyWithCompanion(CostingSheetItemsCompanion data) {
     return CostingSheetItem(
       id: data.id.present ? data.id.value : this.id,
+      code: data.code.present ? data.code.value : this.code,
       versionId: data.versionId.present ? data.versionId.value : this.versionId,
       classificationId: data.classificationId.present
           ? data.classificationId.value
@@ -12885,6 +12753,7 @@ class CostingSheetItem extends DataClass
   String toString() {
     return (StringBuffer('CostingSheetItem(')
           ..write('id: $id, ')
+          ..write('code: $code, ')
           ..write('versionId: $versionId, ')
           ..write('classificationId: $classificationId, ')
           ..write('measurementUnitId: $measurementUnitId, ')
@@ -12897,6 +12766,7 @@ class CostingSheetItem extends DataClass
   @override
   int get hashCode => Object.hash(
     id,
+    code,
     versionId,
     classificationId,
     measurementUnitId,
@@ -12908,6 +12778,7 @@ class CostingSheetItem extends DataClass
       identical(this, other) ||
       (other is CostingSheetItem &&
           other.id == this.id &&
+          other.code == this.code &&
           other.versionId == this.versionId &&
           other.classificationId == this.classificationId &&
           other.measurementUnitId == this.measurementUnitId &&
@@ -12917,6 +12788,7 @@ class CostingSheetItem extends DataClass
 
 class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   final Value<String> id;
+  final Value<String> code;
   final Value<String> versionId;
   final Value<int> classificationId;
   final Value<int?> measurementUnitId;
@@ -12925,6 +12797,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   final Value<int> rowid;
   const CostingSheetItemsCompanion({
     this.id = const Value.absent(),
+    this.code = const Value.absent(),
     this.versionId = const Value.absent(),
     this.classificationId = const Value.absent(),
     this.measurementUnitId = const Value.absent(),
@@ -12934,6 +12807,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   });
   CostingSheetItemsCompanion.insert({
     required String id,
+    this.code = const Value.absent(),
     required String versionId,
     required int classificationId,
     this.measurementUnitId = const Value.absent(),
@@ -12946,6 +12820,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
        unitPrice = Value(unitPrice);
   static Insertable<CostingSheetItem> custom({
     Expression<String>? id,
+    Expression<String>? code,
     Expression<String>? versionId,
     Expression<int>? classificationId,
     Expression<int>? measurementUnitId,
@@ -12955,6 +12830,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (code != null) 'code': code,
       if (versionId != null) 'version_id': versionId,
       if (classificationId != null) 'classification_id': classificationId,
       if (measurementUnitId != null) 'measurement_unit_id': measurementUnitId,
@@ -12966,6 +12842,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
 
   CostingSheetItemsCompanion copyWith({
     Value<String>? id,
+    Value<String>? code,
     Value<String>? versionId,
     Value<int>? classificationId,
     Value<int?>? measurementUnitId,
@@ -12975,6 +12852,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   }) {
     return CostingSheetItemsCompanion(
       id: id ?? this.id,
+      code: code ?? this.code,
       versionId: versionId ?? this.versionId,
       classificationId: classificationId ?? this.classificationId,
       measurementUnitId: measurementUnitId ?? this.measurementUnitId,
@@ -12989,6 +12867,9 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
     }
     if (versionId.present) {
       map['version_id'] = Variable<String>(versionId.value);
@@ -13015,6 +12896,7 @@ class CostingSheetItemsCompanion extends UpdateCompanion<CostingSheetItem> {
   String toString() {
     return (StringBuffer('CostingSheetItemsCompanion(')
           ..write('id: $id, ')
+          ..write('code: $code, ')
           ..write('versionId: $versionId, ')
           ..write('classificationId: $classificationId, ')
           ..write('measurementUnitId: $measurementUnitId, ')
@@ -14101,6 +13983,343 @@ class DamageWorkflowHistoriesCompanion
   }
 }
 
+class $SyncMetadataTable extends SyncMetadata
+    with TableInfo<$SyncMetadataTable, SyncMetadataLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncMetadataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _entityMeta = const VerificationMeta('entity');
+  @override
+  late final GeneratedColumn<String> entity = GeneratedColumn<String>(
+    'entity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncStatusMeta = const VerificationMeta(
+    'lastSyncStatus',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncStatus = GeneratedColumn<String>(
+    'last_sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('idle'),
+  );
+  static const VerificationMeta _lastSyncErrorMeta = const VerificationMeta(
+    'lastSyncError',
+  );
+  @override
+  late final GeneratedColumn<String> lastSyncError = GeneratedColumn<String>(
+    'last_sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    entity,
+    lastSyncedAt,
+    lastSyncStatus,
+    lastSyncError,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_metadata';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncMetadataLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('entity')) {
+      context.handle(
+        _entityMeta,
+        entity.isAcceptableOrUnknown(data['entity']!, _entityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityMeta);
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_status')) {
+      context.handle(
+        _lastSyncStatusMeta,
+        lastSyncStatus.isAcceptableOrUnknown(
+          data['last_sync_status']!,
+          _lastSyncStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_sync_error')) {
+      context.handle(
+        _lastSyncErrorMeta,
+        lastSyncError.isAcceptableOrUnknown(
+          data['last_sync_error']!,
+          _lastSyncErrorMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {entity};
+  @override
+  SyncMetadataLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncMetadataLocal(
+      entity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity'],
+      )!,
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+      lastSyncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_status'],
+      )!,
+      lastSyncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_sync_error'],
+      ),
+    );
+  }
+
+  @override
+  $SyncMetadataTable createAlias(String alias) {
+    return $SyncMetadataTable(attachedDatabase, alias);
+  }
+}
+
+class SyncMetadataLocal extends DataClass
+    implements Insertable<SyncMetadataLocal> {
+  final String entity;
+  final DateTime? lastSyncedAt;
+  final String lastSyncStatus;
+  final String? lastSyncError;
+  const SyncMetadataLocal({
+    required this.entity,
+    this.lastSyncedAt,
+    required this.lastSyncStatus,
+    this.lastSyncError,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['entity'] = Variable<String>(entity);
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    map['last_sync_status'] = Variable<String>(lastSyncStatus);
+    if (!nullToAbsent || lastSyncError != null) {
+      map['last_sync_error'] = Variable<String>(lastSyncError);
+    }
+    return map;
+  }
+
+  SyncMetadataCompanion toCompanion(bool nullToAbsent) {
+    return SyncMetadataCompanion(
+      entity: Value(entity),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+      lastSyncStatus: Value(lastSyncStatus),
+      lastSyncError: lastSyncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncError),
+    );
+  }
+
+  factory SyncMetadataLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncMetadataLocal(
+      entity: serializer.fromJson<String>(json['entity']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      lastSyncStatus: serializer.fromJson<String>(json['lastSyncStatus']),
+      lastSyncError: serializer.fromJson<String?>(json['lastSyncError']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'entity': serializer.toJson<String>(entity),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'lastSyncStatus': serializer.toJson<String>(lastSyncStatus),
+      'lastSyncError': serializer.toJson<String?>(lastSyncError),
+    };
+  }
+
+  SyncMetadataLocal copyWith({
+    String? entity,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? lastSyncStatus,
+    Value<String?> lastSyncError = const Value.absent(),
+  }) => SyncMetadataLocal(
+    entity: entity ?? this.entity,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    lastSyncStatus: lastSyncStatus ?? this.lastSyncStatus,
+    lastSyncError: lastSyncError.present
+        ? lastSyncError.value
+        : this.lastSyncError,
+  );
+  SyncMetadataLocal copyWithCompanion(SyncMetadataCompanion data) {
+    return SyncMetadataLocal(
+      entity: data.entity.present ? data.entity.value : this.entity,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      lastSyncStatus: data.lastSyncStatus.present
+          ? data.lastSyncStatus.value
+          : this.lastSyncStatus,
+      lastSyncError: data.lastSyncError.present
+          ? data.lastSyncError.value
+          : this.lastSyncError,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncMetadataLocal(')
+          ..write('entity: $entity, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('lastSyncStatus: $lastSyncStatus, ')
+          ..write('lastSyncError: $lastSyncError')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(entity, lastSyncedAt, lastSyncStatus, lastSyncError);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncMetadataLocal &&
+          other.entity == this.entity &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.lastSyncStatus == this.lastSyncStatus &&
+          other.lastSyncError == this.lastSyncError);
+}
+
+class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataLocal> {
+  final Value<String> entity;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<String> lastSyncStatus;
+  final Value<String?> lastSyncError;
+  final Value<int> rowid;
+  const SyncMetadataCompanion({
+    this.entity = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.lastSyncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncMetadataCompanion.insert({
+    required String entity,
+    this.lastSyncedAt = const Value.absent(),
+    this.lastSyncStatus = const Value.absent(),
+    this.lastSyncError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : entity = Value(entity);
+  static Insertable<SyncMetadataLocal> custom({
+    Expression<String>? entity,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<String>? lastSyncStatus,
+    Expression<String>? lastSyncError,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (entity != null) 'entity': entity,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (lastSyncStatus != null) 'last_sync_status': lastSyncStatus,
+      if (lastSyncError != null) 'last_sync_error': lastSyncError,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncMetadataCompanion copyWith({
+    Value<String>? entity,
+    Value<DateTime?>? lastSyncedAt,
+    Value<String>? lastSyncStatus,
+    Value<String?>? lastSyncError,
+    Value<int>? rowid,
+  }) {
+    return SyncMetadataCompanion(
+      entity: entity ?? this.entity,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      lastSyncStatus: lastSyncStatus ?? this.lastSyncStatus,
+      lastSyncError: lastSyncError ?? this.lastSyncError,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (entity.present) {
+      map['entity'] = Variable<String>(entity.value);
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (lastSyncStatus.present) {
+      map['last_sync_status'] = Variable<String>(lastSyncStatus.value);
+    }
+    if (lastSyncError.present) {
+      map['last_sync_error'] = Variable<String>(lastSyncError.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncMetadataCompanion(')
+          ..write('entity: $entity, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('lastSyncStatus: $lastSyncStatus, ')
+          ..write('lastSyncError: $lastSyncError, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -14146,6 +14365,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CostingSheetsTable costingSheets = $CostingSheetsTable(this);
   late final $DamageWorkflowHistoriesTable damageWorkflowHistories =
       $DamageWorkflowHistoriesTable(this);
+  late final $SyncMetadataTable syncMetadata = $SyncMetadataTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -14178,6 +14398,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     costingSheetItems,
     costingSheets,
     damageWorkflowHistories,
+    syncMetadata,
   ];
 }
 
@@ -15506,15 +15727,12 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       Value<int> agriculturalSectorId,
       Value<int> damageCauseCategoryId,
       Value<int> damageCauseId,
-      Value<String?> settlementName,
-      Value<String?> companyName,
       Value<String> governorateId,
       Value<String> directorateId,
       Value<String> localityId,
-      Value<double?> latitude,
-      Value<double?> longitude,
       required String statusId,
       required String notes,
+      Value<String> createdBy,
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
@@ -15539,15 +15757,12 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<int> agriculturalSectorId,
       Value<int> damageCauseCategoryId,
       Value<int> damageCauseId,
-      Value<String?> settlementName,
-      Value<String?> companyName,
       Value<String> governorateId,
       Value<String> directorateId,
       Value<String> localityId,
-      Value<double?> latitude,
-      Value<double?> longitude,
       Value<String> statusId,
       Value<String> notes,
+      Value<String> createdBy,
       Value<String> rowVersion,
       Value<String> syncStatus,
       Value<String?> lastSyncError,
@@ -15636,16 +15851,6 @@ class $$DamageReportsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get settlementName => $composableBuilder(
-    column: $table.settlementName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get companyName => $composableBuilder(
-    column: $table.companyName,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get governorateId => $composableBuilder(
     column: $table.governorateId,
     builder: (column) => ColumnFilters(column),
@@ -15661,16 +15866,6 @@ class $$DamageReportsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get latitude => $composableBuilder(
-    column: $table.latitude,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get longitude => $composableBuilder(
-    column: $table.longitude,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get statusId => $composableBuilder(
     column: $table.statusId,
     builder: (column) => ColumnFilters(column),
@@ -15678,6 +15873,11 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15791,16 +15991,6 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get settlementName => $composableBuilder(
-    column: $table.settlementName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get companyName => $composableBuilder(
-    column: $table.companyName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get governorateId => $composableBuilder(
     column: $table.governorateId,
     builder: (column) => ColumnOrderings(column),
@@ -15816,16 +16006,6 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get latitude => $composableBuilder(
-    column: $table.latitude,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get longitude => $composableBuilder(
-    column: $table.longitude,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get statusId => $composableBuilder(
     column: $table.statusId,
     builder: (column) => ColumnOrderings(column),
@@ -15833,6 +16013,11 @@ class $$DamageReportsTableOrderingComposer
 
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -15938,16 +16123,6 @@ class $$DamageReportsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get settlementName => $composableBuilder(
-    column: $table.settlementName,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get companyName => $composableBuilder(
-    column: $table.companyName,
-    builder: (column) => column,
-  );
-
   GeneratedColumn<String> get governorateId => $composableBuilder(
     column: $table.governorateId,
     builder: (column) => column,
@@ -15963,17 +16138,14 @@ class $$DamageReportsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get latitude =>
-      $composableBuilder(column: $table.latitude, builder: (column) => column);
-
-  GeneratedColumn<double> get longitude =>
-      $composableBuilder(column: $table.longitude, builder: (column) => column);
-
   GeneratedColumn<String> get statusId =>
       $composableBuilder(column: $table.statusId, builder: (column) => column);
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
 
   GeneratedColumn<String> get rowVersion => $composableBuilder(
     column: $table.rowVersion,
@@ -16051,15 +16223,12 @@ class $$DamageReportsTableTableManager
                 Value<int> agriculturalSectorId = const Value.absent(),
                 Value<int> damageCauseCategoryId = const Value.absent(),
                 Value<int> damageCauseId = const Value.absent(),
-                Value<String?> settlementName = const Value.absent(),
-                Value<String?> companyName = const Value.absent(),
                 Value<String> governorateId = const Value.absent(),
                 Value<String> directorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
-                Value<double?> latitude = const Value.absent(),
-                Value<double?> longitude = const Value.absent(),
                 Value<String> statusId = const Value.absent(),
                 Value<String> notes = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
@@ -16082,15 +16251,12 @@ class $$DamageReportsTableTableManager
                 agriculturalSectorId: agriculturalSectorId,
                 damageCauseCategoryId: damageCauseCategoryId,
                 damageCauseId: damageCauseId,
-                settlementName: settlementName,
-                companyName: companyName,
                 governorateId: governorateId,
                 directorateId: directorateId,
                 localityId: localityId,
-                latitude: latitude,
-                longitude: longitude,
                 statusId: statusId,
                 notes: notes,
+                createdBy: createdBy,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
@@ -16115,15 +16281,12 @@ class $$DamageReportsTableTableManager
                 Value<int> agriculturalSectorId = const Value.absent(),
                 Value<int> damageCauseCategoryId = const Value.absent(),
                 Value<int> damageCauseId = const Value.absent(),
-                Value<String?> settlementName = const Value.absent(),
-                Value<String?> companyName = const Value.absent(),
                 Value<String> governorateId = const Value.absent(),
                 Value<String> directorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
-                Value<double?> latitude = const Value.absent(),
-                Value<double?> longitude = const Value.absent(),
                 required String statusId,
                 required String notes,
+                Value<String> createdBy = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
                 Value<String?> lastSyncError = const Value.absent(),
@@ -16146,15 +16309,12 @@ class $$DamageReportsTableTableManager
                 agriculturalSectorId: agriculturalSectorId,
                 damageCauseCategoryId: damageCauseCategoryId,
                 damageCauseId: damageCauseId,
-                settlementName: settlementName,
-                companyName: companyName,
                 governorateId: governorateId,
                 directorateId: directorateId,
                 localityId: localityId,
-                latitude: latitude,
-                longitude: longitude,
                 statusId: statusId,
                 notes: notes,
+                createdBy: createdBy,
                 rowVersion: rowVersion,
                 syncStatus: syncStatus,
                 lastSyncError: lastSyncError,
@@ -20729,6 +20889,7 @@ typedef $$CostingSheetVersionsTableProcessedTableManager =
 typedef $$CostingSheetItemsTableCreateCompanionBuilder =
     CostingSheetItemsCompanion Function({
       required String id,
+      Value<String> code,
       required String versionId,
       required int classificationId,
       Value<int?> measurementUnitId,
@@ -20739,6 +20900,7 @@ typedef $$CostingSheetItemsTableCreateCompanionBuilder =
 typedef $$CostingSheetItemsTableUpdateCompanionBuilder =
     CostingSheetItemsCompanion Function({
       Value<String> id,
+      Value<String> code,
       Value<String> versionId,
       Value<int> classificationId,
       Value<int?> measurementUnitId,
@@ -20758,6 +20920,11 @@ class $$CostingSheetItemsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -20801,6 +20968,11 @@ class $$CostingSheetItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get versionId => $composableBuilder(
     column: $table.versionId,
     builder: (column) => ColumnOrderings(column),
@@ -20838,6 +21010,9 @@ class $$CostingSheetItemsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
 
   GeneratedColumn<String> get versionId =>
       $composableBuilder(column: $table.versionId, builder: (column) => column);
@@ -20900,6 +21075,7 @@ class $$CostingSheetItemsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String> code = const Value.absent(),
                 Value<String> versionId = const Value.absent(),
                 Value<int> classificationId = const Value.absent(),
                 Value<int?> measurementUnitId = const Value.absent(),
@@ -20908,6 +21084,7 @@ class $$CostingSheetItemsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => CostingSheetItemsCompanion(
                 id: id,
+                code: code,
                 versionId: versionId,
                 classificationId: classificationId,
                 measurementUnitId: measurementUnitId,
@@ -20918,6 +21095,7 @@ class $$CostingSheetItemsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                Value<String> code = const Value.absent(),
                 required String versionId,
                 required int classificationId,
                 Value<int?> measurementUnitId = const Value.absent(),
@@ -20926,6 +21104,7 @@ class $$CostingSheetItemsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => CostingSheetItemsCompanion.insert(
                 id: id,
+                code: code,
                 versionId: versionId,
                 classificationId: classificationId,
                 measurementUnitId: measurementUnitId,
@@ -21511,6 +21690,197 @@ typedef $$DamageWorkflowHistoriesTableProcessedTableManager =
       DamageWorkflowHistoryLocal,
       PrefetchHooks Function()
     >;
+typedef $$SyncMetadataTableCreateCompanionBuilder =
+    SyncMetadataCompanion Function({
+      required String entity,
+      Value<DateTime?> lastSyncedAt,
+      Value<String> lastSyncStatus,
+      Value<String?> lastSyncError,
+      Value<int> rowid,
+    });
+typedef $$SyncMetadataTableUpdateCompanionBuilder =
+    SyncMetadataCompanion Function({
+      Value<String> entity,
+      Value<DateTime?> lastSyncedAt,
+      Value<String> lastSyncStatus,
+      Value<String?> lastSyncError,
+      Value<int> rowid,
+    });
+
+class $$SyncMetadataTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncMetadataTable> {
+  $$SyncMetadataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get entity => $composableBuilder(
+    column: $table.entity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncStatus => $composableBuilder(
+    column: $table.lastSyncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncMetadataTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncMetadataTable> {
+  $$SyncMetadataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get entity => $composableBuilder(
+    column: $table.entity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncStatus => $composableBuilder(
+    column: $table.lastSyncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncMetadataTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncMetadataTable> {
+  $$SyncMetadataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncStatus => $composableBuilder(
+    column: $table.lastSyncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSyncError => $composableBuilder(
+    column: $table.lastSyncError,
+    builder: (column) => column,
+  );
+}
+
+class $$SyncMetadataTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncMetadataTable,
+          SyncMetadataLocal,
+          $$SyncMetadataTableFilterComposer,
+          $$SyncMetadataTableOrderingComposer,
+          $$SyncMetadataTableAnnotationComposer,
+          $$SyncMetadataTableCreateCompanionBuilder,
+          $$SyncMetadataTableUpdateCompanionBuilder,
+          (
+            SyncMetadataLocal,
+            BaseReferences<
+              _$AppDatabase,
+              $SyncMetadataTable,
+              SyncMetadataLocal
+            >,
+          ),
+          SyncMetadataLocal,
+          PrefetchHooks Function()
+        > {
+  $$SyncMetadataTableTableManager(_$AppDatabase db, $SyncMetadataTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncMetadataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncMetadataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncMetadataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> entity = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> lastSyncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncMetadataCompanion(
+                entity: entity,
+                lastSyncedAt: lastSyncedAt,
+                lastSyncStatus: lastSyncStatus,
+                lastSyncError: lastSyncError,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String entity,
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> lastSyncStatus = const Value.absent(),
+                Value<String?> lastSyncError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncMetadataCompanion.insert(
+                entity: entity,
+                lastSyncedAt: lastSyncedAt,
+                lastSyncStatus: lastSyncStatus,
+                lastSyncError: lastSyncError,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncMetadataTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncMetadataTable,
+      SyncMetadataLocal,
+      $$SyncMetadataTableFilterComposer,
+      $$SyncMetadataTableOrderingComposer,
+      $$SyncMetadataTableAnnotationComposer,
+      $$SyncMetadataTableCreateCompanionBuilder,
+      $$SyncMetadataTableUpdateCompanionBuilder,
+      (
+        SyncMetadataLocal,
+        BaseReferences<_$AppDatabase, $SyncMetadataTable, SyncMetadataLocal>,
+      ),
+      SyncMetadataLocal,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -21578,4 +21948,6 @@ class $AppDatabaseManager {
         _db,
         _db.damageWorkflowHistories,
       );
+  $$SyncMetadataTableTableManager get syncMetadata =>
+      $$SyncMetadataTableTableManager(_db, _db.syncMetadata);
 }

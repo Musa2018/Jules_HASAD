@@ -79,7 +79,9 @@ Users are categorized into three scope levels which define their data access and
 2. **Governorate**: Tied to a specific Governorate. Can access all data within that governorate.
 3. **Directorate**: Tied to a specific Directorate within a Governorate. Restricted to local data entry and assessment.
 
-Geographic Hierarchy:
-Governorate -> Directorate -> Locality -> Farm
+Geographic Hierarchy & Scoping Model:
+- **Structure**: Governorate -> Directorate -> Locality -> Farm
+- **Farmer Scoping**: Farmers are visible to Directorate-level roles based on their **Locality**. This ensures newly registered farmers (who may not yet have a Farm record) are visible within their geographic scope.
+- **Farm Scoping**: Farms are visible based on their Directorate assignment.
 
 These rules are enforced in the Backend via `RoleScopeType` validation and in the Flutter app via dynamic UI forms and regional filtering.

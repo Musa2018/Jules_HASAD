@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/offline_first_damage_report_attachment_repository.dart';
@@ -15,7 +16,8 @@ import 'package:mobile/features/damage_reports/domain/models/damage_workflow_his
 final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   return OfflineFirstDamageReportRepository(
     ref.watch(databaseProvider),
-    ref.watch(syncServiceProvider),
+    ref,
+    ref.watch(authProvider).session,
   );
 });
 
@@ -23,7 +25,7 @@ final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
   (ref) {
     return OfflineFirstDamageReportAttachmentRepository(
       ref.watch(databaseProvider),
-      ref.watch(syncServiceProvider),
+      ref,
     );
   },
 );
@@ -35,43 +37,58 @@ final damageReportsListByFarmProvider = FutureProvider.autoDispose
           .getDamageReportsByFarm(farmId);
     });
 
+final allDamageReportsProvider = FutureProvider.autoDispose<List<DamageReport>>((ref) async {
+  return ref.watch(damageReportRepositoryProvider).getDamageReports();
+});
+
 final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
   final db = ref.watch(databaseProvider);
-  return (db.select(db.damageReports)..where((t) => Expression.and([t.id.equals(id), t.isPendingDelete.equals(false)])))
-      .watchSingleOrNull()
-      .asyncMap((row) async {
-    if (row == null) return null;
-    final items = await (db.select(db.damageItems)..where((t) => t.damageReportId.equals(id))).get();
+  
+  // Use a join to watch both tables. This ensures the stream emits whenever 
+  // the report header OR any of its items change.
+  final query = db.select(db.damageReports).join([
+    leftOuterJoin(db.damageItems, db.damageItems.damageReportId.equalsExp(db.damageReports.id)),
+  ])..where(db.damageReports.id.equals(id));
+
+  return query.watch().asyncMap((rows) async {
+    if (rows.isEmpty) return null;
     
-    // Convert to domain (Manual mapping since we don't have the repository method yet)
+    final reportRow = rows.first.readTable(db.damageReports);
+    
+    // Fetch items separately to ensure we get the full list correctly (Drift join returns one row per item)
+    final items = await (db.select(db.damageItems)
+      ..where((t) => t.damageReportId.equals(id) & t.isPendingDelete.equals(false)))
+      .get();
+    
     return DamageReport(
-      id: row.id,
-      serverId: row.serverId,
-      permanentFormNumber: row.permanentFormNumber,
-      temporaryFormNumber: row.temporaryFormNumber,
-      damageYear: row.damageYear,
-      farmId: row.farmId,
-      farmerId: row.farmerId,
-      damageDate: row.damageDate,
-      documentationDate: row.documentationDate,
-      damageCauseCategoryId: row.damageCauseCategoryId,
-      damageCauseId: row.damageCauseId,
-      settlementName: row.settlementName,
-      companyName: row.companyName,
-      governorateId: row.governorateId,
-      directorateId: row.directorateId,
-      localityId: row.localityId,
-      latitude: row.latitude,
-      longitude: row.longitude,
-      statusId: row.statusId,
-      notes: row.notes,
-      rowVersion: row.rowVersion,
-      syncStatus: row.syncStatus,
-      lastSyncError: row.lastSyncError,
+      id: reportRow.id,
+      serverId: reportRow.serverId ?? '',
+      reportNumber: reportRow.reportNumber,
+      permanentFormNumber: reportRow.permanentFormNumber,
+      temporaryFormNumber: reportRow.temporaryFormNumber,
+      damageYear: reportRow.damageYear,
+      farmId: reportRow.farmId,
+      farmerId: reportRow.farmerId,
+      damageDate: reportRow.damageDate,
+      documentationDate: reportRow.documentationDate,
+      agriculturalSectorId: reportRow.agriculturalSectorId,
+      damageCauseCategoryId: reportRow.damageCauseCategoryId,
+      damageCauseId: reportRow.damageCauseId,
+      governorateId: reportRow.governorateId,
+      directorateId: reportRow.directorateId,
+      localityId: reportRow.localityId,
+      statusId: reportRow.statusId,
+      notes: reportRow.notes,
+      createdBy: reportRow.createdBy,
+      rowVersion: reportRow.rowVersion,
+      syncStatus: reportRow.syncStatus,
+      lastSyncError: reportRow.lastSyncError,
       items: items.map((i) => DamageItem(
         id: i.id,
         serverId: i.serverId,
         damageReportId: i.damageReportId,
+        damageNatureId: i.damageNatureId,
+        damageActionId: i.damageActionId,
         classificationId: i.classificationId,
         costingSheetId: i.costingSheetId,
         costingSheetItemId: i.costingSheetItemId,
@@ -173,6 +190,42 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
       state = const DamageReportFormState(
         errors: ['An unexpected error occurred.'],
       );
+    }
+  }
+
+  Future<void> addDamageItem(DamageItem item) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.addDamageItem(item);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['Failed to add item.']);
+    }
+  }
+
+  Future<void> updateDamageItem(DamageItem item) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.updateDamageItem(item);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['Failed to update item.']);
+    }
+  }
+
+  Future<void> deleteDamageItem(String id) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.deleteDamageItem(id);
+      state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      state = DamageReportFormState(errors: e.errors);
+    } catch (_) {
+      state = const DamageReportFormState(errors: ['Failed to delete item.']);
     }
   }
 }

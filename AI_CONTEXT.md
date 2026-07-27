@@ -36,7 +36,10 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - **Inheritance Rule**: Authorization for child entities (Damage Items, Attachments, Workflow History) must be validated against the parent managed record's operational scope.
 - **Managed Record Authorization Inheritance**: `DamageReport` authorization is strictly inherited from its parent `Farm`.
 - **Authorization Source of Truth**: `Farm.DirectorateId` is the authoritative source for regional security boundaries.
-- **Derived Authorization Optimization**: `DamageReport` stores a denormalized `DirectorateId` (snapshot from parent Farm) to support high-performance scoped queries and O(1) security checks.
+- **Location Source of Truth**: `Farm` is the authoritative source for coordinates (`Latitude`, `Longitude`). `DamageReport` no longer stores these fields locally.
+- **Late Binding Injection**: During synchronization, `BackgroundSyncService` fetches coordinates from the parent `Farm` and injects them into the `DamageReport` server payload.
+- **Derived Authorization Optimization**: `DamageReport` stores denormalized snapshot fields (`FarmerId`, `GovernorateId`, `DirectorateId`, `LocalityId`, `DamageYear`) captured at creation time. These fields support high-performance scoped queries and O(1) security checks, while maintaining a historical record of the incident context.
+- **Audit Rule**: `DamageReport` includes `CreatedBy` (user identity) and `CreatedAt` to track origin.
 - **Regional Isolation**: Agricultural Engineers and Field Surveyors are restricted to data within their assigned Directorate. Supervisors and Directors are restricted to their Governorate.
 ### Pricing Catalog & Costing (Sprint 13.2)
 - **Hierarchy**: `Catalog -> Version -> Item`.
@@ -54,13 +57,18 @@ This document provides persistent context for AI agents working on the HASAD (Ag
   - The Flutter client UI has been updated to use "Measurement Unit" (وحدة القياس) instead of "Area Unit" (وحدة المساحة).
   - Domain models (`Farm`, `DamageItem`) prioritize modern identifiers (`measurementUnitId`, `costingSheetItemId`) while maintaining legacy fields for backward compatibility.
 - **Flutter Implementation**:
-  - Drift schema v16 supports hierarchical pricing tables.
-  - `OfflineFirstReferenceDataRepository` resolves the `Active` price by joining `Items` with their parent `Version`.
+  - Drift schema v28 supports hierarchical pricing tables with searchable codes.
+  - `OfflineFirstReferenceDataRepository` resolves the `Active` pricing version and supports a unified search by code or name.
+  - **Simplified Workflow**: Replaced hierarchical wizard with direct `CostingItem` selection.
+  - **Live Refresh**: Damage Report details use combined Drift streams to automatically reflect item additions/deletions.
+  - **Hybrid Relational Joins**: Repositories support joining records using both Local Client IDs and Server GUIDs to ensure data visibility immediately after synchronization (fixing "Operational View" linking issues).
   - Legacy pricing records are automatically mapped to a local legacy version during sync and migration.
 
-### Damage Valuation Authority (Sprint 13.2)
+### Damage Valuation Authority (Sprint 14.x)
 - **Authoritative Backend**: Client-side damage calculations are informational only. The backend is the absolute authority for technical loss valuation.
 - **Recalculation Rule**: Command handlers (`CreateDamageReport`, `UpdateDamageItem`) automatically resolve the active `CostingSheetItem` (via its version) and recalculate `EstimatedLoss`.
+- **Searchable Codes**: Each `CostingSheetItem` has a unique sequential code (e.g., `C001`, `C005`) for high-speed offline lookup.
+- **Age-Based Assessment**: Specialized classifications for Olive trees (1-5y, 5-10y, 10+y) with distinct price points.
 - **Costing Verification**: Backend validates that the provided `CostingSheetItemId` matches the `ClassificationId` and its parent version was active on the `DamageDate`.
 - **Decoupling Rule**: Farmer residency is NEVER used as an authorization boundary for managed records (Farms/Reports).
   - **Lifecycle Consistency**: Maintenance operations (Update/Delete) and Query Projections must enforce the same regional boundaries as Creation commands.
@@ -72,14 +80,22 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Status**: Sprint 11.2 will proceed with `AreaUnit` as a Farm-specific lookup, with refactoring deferred to maintain sprint velocity.
 
 ## 4. Current Project Status
-- **Current Branch**: `Farms`
-- **Latest Completed Sprint**: Sprint 12.2 — Hierarchical Classification UI
-- **Latest Commit Hash**: `e073d75` (Branch: DamageReport)
+- **Current Branch**: `DamageReport`
+- **Latest Completed Sprint**: Sprint 14.x — Simplified Assessment & Age-Based Valuation
+- **Latest Commit Hash**: `DamageReport` (`0df6057`)
 - **main**: Stable production-ready code.
 - **Farms**: Completed and hardened.
-- **DamageReport**: Active development branch for Sprint 12.
+- **DamageReport**: Active development branch for Phase 2.1 (Damage Assessment Items).
 
 ## 5. Completed Work (Verified Sprints)
+### Sprint 14.x - Simplified Assessment & Age-Based Valuation
+- **Searchable Codes**: Added unique sequential codes (C001-C010) to the Pricing Catalog.
+- **Simplified UI**: Replaced 5-step classification wizard with a unified searchable lookup.
+- **Age-Based Olive Classification**: Split Olive trees into three age brackets (1-5y, 5-10y, 10+y) with distinct price points.
+- **Live UI Refresh**: Refactored `damageReportStreamProvider` to watch both Header and Items tables simultaneously using combined Drift streams.
+- **Absolute Purge Sync**: Hardened `OfflineFirstReferenceDataRepository` to completely purge lookup tables during sync, resolving ID conflicts after server database resets.
+- **Hybrid Join Fix**: Implemented flexible relational joins (Local ID | Server ID) in Farmer and Farm repositories to ensure the "Operational View" correctly identifies linked records after a Pull Sync.
+- **Drift Schema v28**: Migrated mobile database to include the new `code` column in `CostingSheetItems`.
 ### Sprint 12.2 - Hierarchical Classification UI
 - **Classification Wizard**: Implemented a mandatory 4-step wizard (`Nature -> Category -> SubCategory -> Classification`) using `ClassificationWizardProvider`.
 - **Automatic Pricing Resolution**: System automatically fetches and snapshots the active `CostingSheetVersion` and `UnitPrice` upon classification selection.
@@ -228,6 +244,22 @@ This document provides persistent context for AI agents working on the HASAD (Ag
 - **Farmer Data**: Strictly **Offline-First**. All writes (Create/Update) happen in Drift first, then added to `SyncQueue`.
 - **Location Data**: **Offline-First**. Retrieved from Drift with automatic remote synchronization/caching.
 - **Sync Infrastructure**: `SyncQueue` and `BackgroundSyncService` remain the standard mechanism for data eventual consistency.
+
+### Sprint 13.0 - Offline-First Pull Synchronization & Visibility Stabilization
+- **Pull Synchronization Architecture**:
+  - Implemented `PullSyncCoordinator` for incremental data retrieval.
+  - Standardized `SyncMetadata` watermarking (`UpdatedSince`) for all core entities.
+  - **Preservation Rule**: Pull operations are strictly non-destructive; they must never overwrite local records with pending sync tasks.
+  - **Conflict Visibility**: Synchronization conflicts are captured and remain visible to the user for manual resolution.
+- **Farmer/Farm Foundation Stabilization**:
+  - Validated RoleScope architecture: Farmer visibility is restricted to `Locality -> Directorate`.
+  - Hardened Agricultural Engineer and Field Surveyor geographic restrictions.
+  - Verified "Operational Display Filter" and "All View" for administrative roles.
+- **DamageReport Header Lifecycle**:
+  - Established Header-first workflow: Header must be saved and assigned a UUID/ReportNumber before items can be added.
+  - **Snapshot Principle**: Denormalized geographic and identity data is snapshotted at creation time to ensure historical integrity and O(1) authorization checks.
+  - Initial status standardized to `PendingTechnicalVerification`.
+  - Removed all "Draft" states; reports are saved directly to local storage as official records.
 
 ### Sprint 12.4 - DamageReport Security Alignment
 - **Security Baseline**: Implemented strict authorization inheritance from `Farm` to `DamageReport` and all child entities (`DamageItem`, `Attachment`, `WorkflowHistory`).

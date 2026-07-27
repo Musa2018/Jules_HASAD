@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart'
     as domain;
@@ -9,9 +11,11 @@ import 'package:uuid/uuid.dart';
 class OfflineFirstDamageReportAttachmentRepository
     implements DamageReportAttachmentRepository {
   final AppDatabase _db;
-  final BackgroundSyncService _syncService;
+  final Ref _ref;
 
-  OfflineFirstDamageReportAttachmentRepository(this._db, this._syncService);
+  OfflineFirstDamageReportAttachmentRepository(this._db, this._ref);
+
+  BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
 
   @override
   Future<domain.DamageReportAttachment> uploadAttachment(

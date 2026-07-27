@@ -29,14 +29,14 @@ public class GetDamageReportsByFarmQueryHandler : IRequestHandler<GetDamageRepor
         {
             if (_currentUser.DirectorateId.HasValue)
             {
-                query = query.Where(r => r.Farm!.DirectorateId == _currentUser.DirectorateId.Value);
+                query = query.Where(r => r.DirectorateId == _currentUser.DirectorateId.Value);
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
             if (_currentUser.GovernorateId.HasValue)
             {
-                query = query.Where(r => r.Farm!.GovernorateId == _currentUser.GovernorateId.Value);
+                query = query.Where(r => r.GovernorateId == _currentUser.GovernorateId.Value);
             }
         }
 
@@ -50,19 +50,17 @@ public class GetDamageReportsByFarmQueryHandler : IRequestHandler<GetDamageRepor
                 ReportNumber = r.ReportNumber,
                 PermanentFormNumber = r.PermanentFormNumber,
                 TemporaryFormNumber = r.TemporaryFormNumber,
-                DamageYear = r.DamageDate.Year,
+                DamageYear = r.DamageYear,
                 FarmId = r.FarmId,
-                FarmerId = r.Farm!.FarmerId,
+                FarmerId = r.FarmerId,
                 DamageDate = r.DamageDate,
                 DocumentationDate = r.DocumentationDate,
                 AgriculturalSectorId = r.AgriculturalSectorId,
                 DamageCauseCategoryId = r.DamageCauseCategoryId,
                 DamageCauseId = r.DamageCauseId,
-                GovernorateId = r.Farm!.GovernorateId,
-                DirectorateId = r.Farm!.DirectorateId,
-                LocalityId = r.Farm!.LocalityId,
-                Latitude = r.Farm!.Latitude,
-                Longitude = r.Farm!.Longitude,
+                GovernorateId = r.GovernorateId,
+                DirectorateId = r.DirectorateId,
+                LocalityId = r.LocalityId,
                 StatusId = r.StatusId,
                 Notes = r.Notes,
                 RowVersion = Convert.ToBase64String(r.RowVersion)

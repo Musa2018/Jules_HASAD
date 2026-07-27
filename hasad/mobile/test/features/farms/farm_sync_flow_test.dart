@@ -5,6 +5,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
+import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
@@ -17,15 +18,17 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 class MockFarmRepository extends Mock implements FarmRepository {}
 class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
+class MockReportRepo extends Mock implements DamageReportRepository {}
+class MockAttachmentRepo extends Mock implements DamageReportAttachmentRepository {}
+class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
 class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
   late AppDatabase db;
   late MockFarmerRepository mockFarmerRepo;
   late MockFarmRepository mockFarmRepo;
-  late MockDamageReportRepository mockDamageRepo;
-  late MockAttachmentRepository mockAttachmentRepo;
+  late MockReportRepo mockDamageRepo;
+  late MockAttachmentRepo mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
   late BackgroundSyncService syncService;
 
@@ -33,11 +36,10 @@ void main() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockFarmerRepo = MockFarmerRepository();
     mockFarmRepo = MockFarmRepository();
-    mockDamageRepo = MockDamageReportRepository();
-    mockAttachmentRepo = MockAttachmentRepository();
+    mockDamageRepo = MockReportRepo();
+    mockAttachmentRepo = MockAttachmentRepo();
     mockConnectivity = MockConnectivity();
 
-    when(() => mockConnectivity.onConnectivityChanged).thenAnswer((_) => const Stream.empty());
     when(() => mockConnectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
 
     syncService = BackgroundSyncService(
@@ -47,6 +49,7 @@ void main() {
       mockDamageRepo,
       mockAttachmentRepo,
       mockConnectivity,
+      () async {},
     );
 
     registerFallbackValue(

@@ -66,12 +66,29 @@ class _FarmsListScreenState extends ConsumerState<FarmsListScreen> {
                     : farms;
 
                 if (displayFarms.isEmpty) {
-                  return Center(child: Text(l10n.noFarms));
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      await ref.read(farmRepositoryProvider).synchronize();
+                      ref.invalidate(farmsListStreamProvider);
+                    },
+                    child: Stack(
+                      children: [
+                        ListView(),
+                        Center(child: Text(l10n.noFarms)),
+                      ],
+                    ),
+                  );
                 }
-                return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 80),
-                  itemCount: displayFarms.length,
-                  itemBuilder: (context, index) => FarmCard(farm: displayFarms[index]),
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await ref.read(farmRepositoryProvider).synchronize();
+                    ref.invalidate(farmsListStreamProvider);
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
+                    itemCount: displayFarms.length,
+                    itemBuilder: (context, index) => FarmCard(farm: displayFarms[index]),
+                  ),
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/presentation/widgets/form_save_footer.dart';
 import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/core/utils/validators.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -171,8 +173,12 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
         ref.invalidate(farmerProvider(widget.farmer!.id));
       }
 
-      // If we are creating, go back to the caller (Search or List)
-      Navigator.of(context).pop(ref.read(farmerFormProvider).farmer);
+      final createdFarmer = ref.read(farmerFormProvider).farmer;
+      
+      // Return the created/updated farmer to the previous screen
+      if (mounted) {
+        Navigator.of(context).pop(createdFarmer);
+      }
       
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }

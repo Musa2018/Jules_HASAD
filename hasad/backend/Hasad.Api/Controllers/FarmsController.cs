@@ -4,6 +4,7 @@ using Hasad.Application.Features.Farms.Commands.DeleteFarm;
 using Hasad.Application.Features.Farms.Commands.UpdateFarm;
 using Hasad.Application.Features.Farms.Queries.GetFarmById;
 using Hasad.Application.Features.Farms.Queries.GetFarmsByFarmer;
+using Hasad.Application.Features.Farms.Queries.GetFarmsList;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,14 @@ public class FarmsController : ControllerBase
     public FarmsController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,Director")]
+    public async Task<IActionResult> GetFarms([FromQuery] GetFarmsListQuery query)
+    {
+        var result = await _mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]

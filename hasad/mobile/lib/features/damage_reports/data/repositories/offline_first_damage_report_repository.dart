@@ -3,22 +3,56 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
-import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as domain;
-import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as domain;
+import 'package:mobile/features/auth/domain/auth_session.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as report_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 import 'package:uuid/uuid.dart';
 
 class OfflineFirstDamageReportRepository implements DamageReportRepository {
   final AppDatabase _db;
-  final BackgroundSyncService _syncService;
+  final Ref _ref;
+  final AuthSession? _session;
 
-  OfflineFirstDamageReportRepository(this._db, this._syncService);
+  OfflineFirstDamageReportRepository(this._db, this._ref, this._session);
+
+  BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
 
   @override
-  Future<List<domain.DamageReport>> getDamageReportsByFarm(
+  Future<List<report_domain.DamageReport>> getDamageReports() async {
+    final query = _db.select(_db.damageReports)
+      ..where((t) => t.isPendingDelete.equals(false));
+
+    // Regional scoping based on session
+    if (_session != null) {
+      if (_session.directorateId != null && _session.directorateId!.isNotEmpty) {
+        query.where((t) => t.directorateId.equals(_session.directorateId!));
+      } else if (_session.governorateId != null && _session.governorateId!.isNotEmpty) {
+        query.where((t) => t.governorateId.equals(_session.governorateId!));
+      }
+    }
+
+    query.orderBy([(t) => OrderingTerm.desc(t.damageDate)]);
+
+    final reports = await query.get();
+
+    List<report_domain.DamageReport> results = [];
+    for (var r in reports) {
+      final items = await (_db.select(_db.damageItems)
+            ..where((t) => t.damageReportId.equals(r.id)))
+          .get();
+      results.add(_mapToDomain(r, items));
+    }
+    return results;
+  }
+
+  @override
+  Future<List<report_domain.DamageReport>> getDamageReportsByFarm(
     String farmId,
   ) async {
     final reports =
@@ -27,7 +61,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
               ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]))
             .get();
 
-    List<domain.DamageReport> results = [];
+    List<report_domain.DamageReport> results = [];
     for (var r in reports) {
       final items = await (_db.select(
         _db.damageItems,
@@ -39,7 +73,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageReport> getDamageReport(String id) async {
+  Future<report_domain.DamageReport> getDamageReport(String id) async {
     final r = await (_db.select(
       _db.damageReports,
     )..where((t) => t.id.equals(id))).getSingle();
@@ -50,29 +84,33 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     return _mapToDomain(r, items);
   }
 
-  domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items) {
-    return domain.DamageReport(
+  report_domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items) {
+    return report_domain.DamageReport(
       id: r.id,
       serverId: r.serverId ?? '',
       reportNumber: r.reportNumber,
       permanentFormNumber: r.permanentFormNumber,
       temporaryFormNumber: r.temporaryFormNumber,
+      damageYear: r.damageYear,
       farmId: r.farmId,
+      farmerId: r.farmerId,
       damageDate: r.damageDate,
       documentationDate: r.documentationDate,
       agriculturalSectorId: r.agriculturalSectorId,
       damageCauseCategoryId: r.damageCauseCategoryId,
       damageCauseId: r.damageCauseId,
-      settlementName: r.settlementName,
-      companyName: r.companyName,
+      governorateId: r.governorateId,
+      directorateId: r.directorateId,
+      localityId: r.localityId,
       statusId: r.statusId,
       notes: r.notes,
+      createdBy: r.createdBy,
       rowVersion: r.rowVersion,
       syncStatus: r.syncStatus,
       lastSyncError: r.lastSyncError,
       items: items
           .map(
-            (i) => domain.DamageItem(
+            (i) => item_domain.DamageItem(
               id: i.id,
               serverId: i.serverId,
               damageReportId: i.damageReportId,
@@ -96,7 +134,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     );
   }
 
-  DamageReportsCompanion _mapReportToCompanion(domain.DamageReport report) {
+  DamageReportsCompanion _mapReportToCompanion(report_domain.DamageReport report) {
     return DamageReportsCompanion.insert(
       id: report.id,
       serverId: Value(report.serverId),
@@ -111,21 +149,18 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       agriculturalSectorId: Value(report.agriculturalSectorId),
       damageCauseCategoryId: Value(report.damageCauseCategoryId),
       damageCauseId: Value(report.damageCauseId),
-      settlementName: Value(report.settlementName),
-      companyName: Value(report.companyName),
       governorateId: Value(report.governorateId),
       directorateId: Value(report.directorateId),
       localityId: Value(report.localityId),
-      latitude: Value(report.latitude),
-      longitude: Value(report.longitude),
       statusId: report.statusId,
       notes: report.notes,
+      createdBy: Value(report.createdBy),
       rowVersion: Value(report.rowVersion),
       lastSyncError: Value(report.lastSyncError),
     );
   }
 
-  DamageItemsCompanion _mapItemToCompanion(domain.DamageItem item) {
+  DamageItemsCompanion _mapItemToCompanion(item_domain.DamageItem item) {
     return DamageItemsCompanion.insert(
       id: item.id,
       serverId: Value(item.serverId),
@@ -147,8 +182,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageReport> createDamageReport(
-    domain.DamageReport report,
+  Future<report_domain.DamageReport> createDamageReport(
+    report_domain.DamageReport report,
   ) async {
     // 1. Duplicate check (Local)
     final existing = await (_db.select(_db.damageReports)
@@ -161,6 +196,15 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       throw Exception('A damage report already exists for this farm and date.');
     }
 
+    // 2. Fetch Farm for denormalization snapshot
+    final farm = await (_db.select(_db.farms)
+          ..where((t) => t.id.equals(report.farmId)))
+        .getSingleOrNull();
+
+    if (farm == null) {
+      throw Exception('Parent farm not found locally. Cannot create damage report header.');
+    }
+
     final localId = report.id.isEmpty ? const Uuid().v4() : report.id;
     final tempNumber = _generateTemporaryNumber();
 
@@ -168,6 +212,14 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       id: localId,
       temporaryFormNumber: tempNumber,
       documentationDate: DateTime.now(),
+      // Snapshots
+      farmerId: farm.farmerId,
+      governorateId: farm.governorateId,
+      directorateId: farm.directorateId,
+      localityId: farm.localityId,
+      agriculturalSectorId: farm.agriculturalSectorId,
+      damageYear: report.damageDate.year,
+      createdBy: _session?.userId ?? 'System',
     );
 
     await _db.transaction(() async {
@@ -210,6 +262,11 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     return createdReport;
   }
 
+  @override
+  Future<report_domain.DamageReport> createDamageReportFromJson(Map<String, dynamic> json) async {
+     return createDamageReport(report_domain.DamageReport.fromJson(json));
+  }
+
   String _generateTemporaryNumber() {
     final date = DateFormat('yyyyMMdd').format(DateTime.now());
     final random = Random().nextInt(10000).toString().padLeft(4, '0');
@@ -217,8 +274,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageReport> updateDamageReport(
-    domain.DamageReport report,
+  Future<report_domain.DamageReport> updateDamageReport(
+    report_domain.DamageReport report,
   ) async {
     // Duplicate check on update
     final existing = await (_db.select(_db.damageReports)
@@ -351,7 +408,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageItem> addDamageItem(domain.DamageItem item) async {
+  Future<item_domain.DamageItem> addDamageItem(item_domain.DamageItem item) async {
     final localId = item.id.isEmpty ? const Uuid().v4() : item.id;
     await _db
         .into(_db.damageItems)
@@ -375,7 +432,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageItem> updateDamageItem(domain.DamageItem item) async {
+  Future<item_domain.DamageItem> updateDamageItem(item_domain.DamageItem item) async {
     await (_db.update(
       _db.damageItems,
     )..where((t) => t.id.equals(item.id))).write(

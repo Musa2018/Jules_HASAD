@@ -266,7 +266,7 @@ public class FarmerCommandHandlerTests
         }
         await context.SaveChangesAsync();
 
-        var handler = new GetFarmersListQueryHandler(context);
+        var handler = new GetFarmersListQueryHandler(context, _currentUserMock.Object);
         var query = new GetFarmersListQuery(PageNumber: 1, PageSize: 10);
 
         var result = await handler.Handle(query, CancellationToken.None);

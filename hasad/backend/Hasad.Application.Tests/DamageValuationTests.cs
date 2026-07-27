@@ -85,7 +85,7 @@ public class DamageValuationTests
         );
 
         var command = new CreateDamageReportCommand(
-            Guid.NewGuid(), "TEMP", farm.Id, damageDate, 1, 1, 1, null, null, "",
+            Guid.NewGuid(), "TEMP", farm.Id, damageDate, 1, 1, 1, "",
             new List<CreateDamageItemInput> { itemInput });
 
         // Act
@@ -145,7 +145,7 @@ public class DamageValuationTests
         await context.SaveChangesAsync();
 
         var itemInput = new CreateDamageItemInput(Guid.NewGuid(), 1, 1, classificationId, wrongCostingSheetId, 50m, "U", 1, 50, 10, 250);
-        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", farm.Id, DateTime.UtcNow, 1, 1, 1, null, null, "", new List<CreateDamageItemInput> { itemInput });
+        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", farm.Id, DateTime.UtcNow, 1, 1, 1, "", new List<CreateDamageItemInput> { itemInput });
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -191,7 +191,7 @@ public class DamageValuationTests
         await context.SaveChangesAsync();
 
         var itemInput = new CreateDamageItemInput(Guid.NewGuid(), 1, 1, classificationId, costingSheetId, 50m, "U", 1, 50, 10, 250);
-        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", farm.Id, damageDate, 1, 1, 1, null, null, "", new List<CreateDamageItemInput> { itemInput });
+        var command = new CreateDamageReportCommand(Guid.NewGuid(), "T", farm.Id, damageDate, 1, 1, 1, "", new List<CreateDamageItemInput> { itemInput });
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);

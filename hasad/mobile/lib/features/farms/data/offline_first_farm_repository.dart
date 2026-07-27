@@ -1,24 +1,37 @@
 // ignore_for_file: deprecated_member_use_from_same_package
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
-import 'package:mobile/features/farms/domain/farm.dart' as domain;
+import 'package:mobile/features/farms/domain/farm.dart' as farm_domain;
 import 'package:mobile/features/farms/domain/farm_filter.dart';
 import 'package:mobile/features/farms/domain/farm_validator.dart';
 import 'package:uuid/uuid.dart';
 
 class OfflineFirstFarmRepository implements FarmRepository {
   final AppDatabase _db;
-  final BackgroundSyncService _syncService;
+  final Ref _ref;
+  final FarmRepository _remoteRepository;
+  final Connectivity _connectivity;
   final AuthorizationService _authService;
 
-  OfflineFirstFarmRepository(this._db, this._syncService, this._authService);
+  OfflineFirstFarmRepository(
+    this._db,
+    this._ref,
+    this._remoteRepository,
+    this._connectivity,
+    this._authService,
+  );
 
-  void _validate(domain.Farm farm, AuthSession? session) {
+  BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
+
+  void _validate(farm_domain.Farm farm, AuthSession? session) {
     if (!_authService.canManageFarms()) {
       throw FarmException(['Access Denied: You do not have permission to manage farms.']);
     }
@@ -29,7 +42,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<List<domain.Farm>> getFarmsByFarmer(String farmerId) async {
+  Future<List<farm_domain.Farm>> getFarmsByFarmer(String farmerId) async {
     final items = await (_db.select(_db.farms)
           ..where((t) => Expression.and([
               t.farmerId.equals(farmerId),
@@ -42,14 +55,14 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<domain.Farm> getFarm(String id) async {
+  Future<farm_domain.Farm> getFarm(String id) async {
     final e = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
         .getSingle();
     return mapToDomain(e);
   }
 
   @override
-  Stream<List<domain.Farm>> watchFarms({
+  Stream<List<farm_domain.Farm>> watchFarms({
     FarmFilter filter = const FarmFilter(),
     AuthSession? session,
   }) {
@@ -57,8 +70,16 @@ class OfflineFirstFarmRepository implements FarmRepository {
     final ownerFarmer = _db.alias(_db.farmers, 'ow');
 
     final query = _db.select(_db.farms).join([
-      leftOuterJoin(operatorFarmer, operatorFarmer.id.equalsExp(_db.farms.farmerId)),
-      leftOuterJoin(ownerFarmer, ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId)),
+      leftOuterJoin(
+        operatorFarmer,
+        operatorFarmer.id.equalsExp(_db.farms.farmerId) |
+            operatorFarmer.serverId.equalsExp(_db.farms.farmerId),
+      ),
+      leftOuterJoin(
+        ownerFarmer,
+        ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId) |
+            ownerFarmer.serverId.equalsExp(_db.farms.ownerFarmerId),
+      ),
     ]);
 
     final List<Expression<bool>> predicates = [];
@@ -122,14 +143,14 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Stream<domain.Farm?> watchFarm(String id) {
+  Stream<farm_domain.Farm?> watchFarm(String id) {
     return (_db.select(_db.farms)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? mapToDomain(e) : null);
   }
 
-  domain.Farm mapToDomain(FarmLocal e) {
-    return domain.Farm(
+  farm_domain.Farm mapToDomain(FarmLocal e) {
+    return farm_domain.Farm(
       id: e.id,
       serverId: e.serverId,
       farmerId: e.farmerId,
@@ -159,7 +180,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
     );
   }
 
-  FarmsCompanion _mapToCompanion(domain.Farm farm) {
+  FarmsCompanion _mapToCompanion(farm_domain.Farm farm) {
     return FarmsCompanion.insert(
       id: farm.id,
       serverId: Value(farm.serverId),
@@ -187,7 +208,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<domain.Farm> createFarm(domain.Farm farm, {AuthSession? session}) async {
+  Future<farm_domain.Farm> createFarm(farm_domain.Farm farm, {AuthSession? session}) async {
     _validate(farm, session);
     final localId = farm.id.isEmpty ? const Uuid().v4() : farm.id;
     final companion = _mapToCompanion(farm).copyWith(
@@ -211,7 +232,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
   }
 
   @override
-  Future<domain.Farm> updateFarm(domain.Farm farm, {AuthSession? session}) async {
+  Future<farm_domain.Farm> updateFarm(farm_domain.Farm farm, {AuthSession? session}) async {
     _validate(farm, session);
     await (_db.update(_db.farms)..where((t) => t.id.equals(farm.id))).write(
       _mapToCompanion(farm).copyWith(
@@ -282,5 +303,94 @@ class OfflineFirstFarmRepository implements FarmRepository {
     await (_db.delete(_db.syncQueue)
           ..where((t) => t.localId.equals(id) & t.entityType.equals('farm') & t.operation.equals('delete')))
         .go();
+  }
+
+  @override
+  Future<List<farm_domain.Farm>> getFarms({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  }) async {
+    // Note: getFarms implementation for local query
+    final query = _db.select(_db.farms);
+    final List<Expression<bool>> predicates = [];
+    predicates.add(_db.farms.isPendingDelete.equals(false));
+
+    if (searchText != null && searchText.isNotEmpty) {
+      final search = '%$searchText%';
+      predicates.add(_db.farms.localFarmName.like(search) |
+          _db.farms.basin.like(search) |
+          _db.farms.parcel.like(search));
+    }
+
+    query.where((t) => Expression.and(predicates));
+    query.limit(pageSize, offset: (pageNumber - 1) * pageSize);
+
+    final items = await query.get();
+    return items.map((e) => mapToDomain(e)).toList();
+  }
+
+  @override
+  Future<void> synchronize({DateTime? updatedSince}) async {
+    final connectivity = await _connectivity.checkConnectivity();
+    if (connectivity.contains(ConnectivityResult.none)) return;
+
+    int page = 1;
+    bool hasMore = true;
+
+    while (hasMore) {
+      final remoteItems = await _remoteRepository.getFarms(
+        pageNumber: page,
+        pageSize: 50,
+        updatedSince: updatedSince,
+      );
+
+      if (remoteItems.isEmpty) break;
+
+      await _db.transaction(() async {
+        for (final remote in remoteItems) {
+          // PROTECTION: Skip if local record has unsynced changes
+          final local = await (_db.select(_db.farms)
+                ..where((t) => t.id.equals(remote.id)))
+              .getSingleOrNull();
+
+          if (local != null) {
+            final isProtected = local.syncStatus == 'pending' ||
+                local.syncStatus == 'syncing' ||
+                local.syncStatus == 'conflict' ||
+                local.isPendingDelete;
+
+            if (isProtected) continue;
+          }
+
+          // Translation: Resolve Server GUIDs to Local Client IDs to fix Operational View linking
+          final localFarmerId = await _resolveLocalIdForFarmer(remote.farmerId);
+          final localOwnerId = remote.ownerFarmerId != null 
+              ? await _resolveLocalIdForFarmer(remote.ownerFarmerId!) 
+              : null;
+
+          final companion = _mapToCompanion(remote).copyWith(
+            farmerId: localFarmerId != null ? Value(localFarmerId) : const Value.absent(),
+            ownerFarmerId: localOwnerId != null ? Value(localOwnerId) : Value(remote.ownerFarmerId),
+            syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
+          );
+
+          await _db.into(_db.farms).insertOnConflictUpdate(companion);
+        }
+      });
+
+      page++;
+      hasMore = remoteItems.length == 50;
+    }
+  }
+
+  Future<String?> _resolveLocalIdForFarmer(String serverId) async {
+    final local = await (_db.select(_db.farmers)
+          ..where((t) => t.serverId.equals(serverId))
+          ..limit(1))
+        .getSingleOrNull();
+    return local?.id;
   }
 }

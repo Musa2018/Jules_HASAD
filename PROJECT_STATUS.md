@@ -2,11 +2,28 @@
 
 > Living document — updated at the end of every sprint.
 
-- **Current Version**: v0.14.0-alpha (Contract Synchronization)
-- **Current Sprint**: Phase 4 — DamageReport Sprint 14.x Synchronization
+- **Current Sprint**: Phase 2.2 — Evidence & Workflow Lifecycle
 - **Current Branch**: `DamageReport`
-- **Last Updated**: 2026-07-24
-- **Latest Commit**: `15e42d7`
+- **Last Updated**: 2026-07-28
+- **Latest Commit**: `DamageReport` (`0df6057`)
+
+## Sprint 14.x — COMPLETED (New Stability Point)
+Simplified Assessment & Age-Based Valuation:
+- **UX**: Replaced 5-step wizard with a searchable "Price List" widget (Search by Code or Name).
+- **Domain**: Implemented age-based Olive classification (1-5y, 5-10y, 10+y).
+- **Data**: Added unique codes (C001-C010) to all costing items for high-speed lookup.
+- **Persistence**: Upgraded Drift to **Version 28**; Hardened sync with "Absolute Purge" to handle server resets.
+- **Reactivity**: Fixed UI refresh lag using combined Header + Items Drift streams.
+- **Relational Stability**: Solved "Operational View" visibility issue via Hybrid Joins (Local ID + Server ID support).
+- **Status**: ✅ **Stability Point Reached**.
+
+## Sprint 15.0 — COMPLETED
+Offline-First Pull Synchronization & Visibility Stabilization:
+- **Architecture**: Implemented `PullSyncCoordinator` for incremental watermarked synchronization.
+- **Security**: Hardened RoleScope architecture (Farmer -> Locality -> Directorate) and geographic restrictions.
+- **Lifecycle**: Established Header-first `DamageReport` lifecycle with snapshot-based authorization.
+- **Baseline**: Certified "Engineering Baseline" for Damage Assessment.
+- **Status**: ✅ **Production Ready**.
 
 ## Sprint 13.2 — IN PROGRESS
 Damage Assessment & Valuation Engine:

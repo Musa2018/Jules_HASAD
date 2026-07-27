@@ -25,6 +25,12 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
   }
 
   @override
+  Future<void> synchronize({DateTime? updatedSince}) async {
+    final remoteData = await _remote.getReferenceData(forceRefresh: true);
+    await _saveToLocal(remoteData);
+  }
+
+  @override
   Future<List<domain.DamageNature>> getNatures() async {
     final items = await _db.select(_db.damageNatures).get();
     return items
@@ -141,6 +147,57 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         .toList();
   }
 
+  @override
+  Future<List<domain.CostingSheetItem>> searchCostingItems(String query) async {
+    // 1. Robust Fetch: Join items with classifications to get names for searching
+    final queryExp = _db.select(_db.costingSheetItems).join([
+      leftOuterJoin(
+        _db.damageClassifications,
+        _db.damageClassifications.id
+            .equalsExp(_db.costingSheetItems.classificationId),
+      ),
+      leftOuterJoin(
+        _db.costingSheetVersions,
+        _db.costingSheetVersions.id.equalsExp(_db.costingSheetItems.versionId),
+      ),
+    ]);
+
+    final rows = await queryExp.get();
+
+    // 2. Map and filter in memory to avoid complex SQL join issues on small datasets
+    final items = rows.map((row) {
+      final item = row.readTable(_db.costingSheetItems);
+      final cl = row.readTableOrNull(_db.damageClassifications);
+      final ver = row.readTableOrNull(_db.costingSheetVersions);
+      
+      return (item: item, classification: cl, version: ver);
+    }).toList();
+
+    final filtered = items.where((e) {
+      // Filter for Active versions only (status 2) if version exists
+      if (e.version != null && e.version!.status != 2) return false;
+      
+      if (query.isEmpty) return true;
+      
+      final pattern = query.toLowerCase();
+      final codeMatch = e.item.code.toLowerCase().contains(pattern);
+      final nameArMatch = e.classification?.nameAr.contains(pattern) ?? false;
+      final nameEnMatch = e.classification?.nameEn.toLowerCase().contains(pattern) ?? false;
+      
+      return codeMatch || nameArMatch || nameEnMatch;
+    }).toList();
+
+    return filtered.map((e) => domain.CostingSheetItem(
+      id: e.item.id,
+      code: e.item.code,
+      versionId: e.item.versionId,
+      classificationId: e.item.classificationId,
+      measurementUnitId: e.item.measurementUnitId,
+      unitPrice: e.item.unitPrice,
+      createdAt: e.item.createdAt,
+    )).toList();
+  }
+
   Future<ReferenceData> _loadFromLocal() async {
     final ownership = await _db.select(_db.ownershipTypes).get();
     final sectors = await _db.select(_db.agriculturalSectors).get();
@@ -238,6 +295,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       costingSheetItems: items
           .map((e) => domain.CostingSheetItem(
               id: e.id,
+              code: e.code,
               versionId: e.versionId,
               classificationId: e.classificationId,
               measurementUnitId: e.measurementUnitId,
@@ -254,12 +312,13 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         data.politicalClassifications.isNotEmpty &&
         data.measurementUnits.isNotEmpty &&
         data.relationshipToOwners.isNotEmpty &&
-        data.damageNatures.isNotEmpty;
+        data.damageNatures.isNotEmpty &&
+        data.costingSheetItems.isNotEmpty;
   }
 
   Future<void> _saveToLocal(ReferenceData data) async {
     await _db.batch((batch) {
-      // Clear existing to ensure sync
+      // 1. ABSOLUTE PURGE: Clear all lookup tables to avoid ID conflicts after server resets
       batch.deleteWhere(_db.ownershipTypes, (t) => const Constant(true));
       batch.deleteWhere(_db.agriculturalSectors, (t) => const Constant(true));
       batch.deleteWhere(_db.politicalClassifications, (t) => const Constant(true));
@@ -273,11 +332,11 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       batch.deleteWhere(_db.damageClassifications, (t) => const Constant(true));
       batch.deleteWhere(_db.damageCauseCategories, (t) => const Constant(true));
       batch.deleteWhere(_db.damageCauses, (t) => const Constant(true));
-      
       batch.deleteWhere(_db.costingSheetCatalogs, (t) => const Constant(true));
       batch.deleteWhere(_db.costingSheetVersions, (t) => const Constant(true));
       batch.deleteWhere(_db.costingSheetItems, (t) => const Constant(true));
 
+      // 2. INSERT FRESH DATA
       batch.insertAll(_db.ownershipTypes, data.ownershipTypes.map((e) => OwnershipTypesCompanion.insert(
         id: Value(e.id),
         nameAr: e.nameAr,
@@ -386,6 +445,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
 
       batch.insertAll(_db.costingSheetItems, data.costingSheetItems.map((e) => CostingSheetItemsCompanion.insert(
         id: e.id,
+        code: Value(e.code),
         versionId: e.versionId,
         classificationId: e.classificationId,
         measurementUnitId: Value(e.measurementUnitId),
@@ -416,6 +476,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
 
         batch.insertAll(_db.costingSheetItems, data.legacyCostingSheets.map((e) => CostingSheetItemsCompanion.insert(
           id: e.id,
+          code: Value(e.code),
           versionId: serverLegacyVersionId,
           classificationId: e.classificationId,
           measurementUnitId: Value(e.measurementUnitId),

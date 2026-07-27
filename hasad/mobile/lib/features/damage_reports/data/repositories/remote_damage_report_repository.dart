@@ -12,6 +12,26 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   RemoteDamageReportRepository(this._dio);
 
   @override
+  Future<List<DamageReport>> getDamageReports() async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/damage-reports',
+      );
+      final envelope = response.data;
+      final data = envelope?['data'];
+      if (envelope?['succeeded'] != true || data == null) {
+        throw SyncException(_errorsFromEnvelope(envelope));
+      }
+      final items = data as List;
+      return items
+          .map((e) => DamageReport.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw SyncException(_errorsFromDio(e));
+    }
+  }
+
+  @override
   Future<List<DamageReport>> getDamageReportsByFarm(String farmId) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -50,10 +70,15 @@ class RemoteDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<DamageReport> createDamageReport(DamageReport report) async {
+    return createDamageReportFromJson(DamageReportSyncDto.toCreateJson(report));
+  }
+
+  @override
+  Future<DamageReport> createDamageReportFromJson(Map<String, dynamic> json) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/damage-reports',
-        data: DamageReportSyncDto.toCreateJson(report),
+        data: json,
       );
       final envelope = response.data;
       final data = envelope?['data'];

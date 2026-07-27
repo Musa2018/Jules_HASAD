@@ -202,6 +202,7 @@ class CostingSheetVersion with _$CostingSheetVersion {
 class CostingSheetItem with _$CostingSheetItem {
   const factory CostingSheetItem({
     required String id,
+    @Default('') String code,
     required String versionId,
     required int classificationId,
     int? measurementUnitId,

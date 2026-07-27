@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/l10n/locale_provider.dart';
 import 'package:mobile/core/router/app_router.dart';
+import 'package:mobile/core/storage/pull_sync_service.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/core/theme/app_theme.dart';
 import 'package:mobile/l10n/app_localizations.dart';
@@ -23,8 +24,16 @@ class HasadApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final locale = ref.watch(localeProvider);
-    // Initialize background sync
+    
+    // Initialize services
     ref.watch(syncServiceProvider);
+    
+    // Trigger initial pull sync
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pullSyncServiceProvider).syncAll().catchError((_) {
+         // Silently fail initial pull on startup (e.g. no internet)
+      });
+    });
 
     return MaterialApp.router(
       title: 'HASAD',

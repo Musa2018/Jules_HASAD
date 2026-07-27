@@ -27,6 +27,71 @@ class AppLocalizationsAr extends AppLocalizations {
   String get damageReports => 'تقارير الأضرار';
 
   @override
+  String get damageReportsForms => 'استمارات الضرر';
+
+  @override
+  String get allDamageReports => 'كافة استمارات الضرر';
+
+  @override
+  String get newDamageReport => 'تقرير ضرر جديد';
+
+  @override
+  String get editAssessment => 'تعديل التقييم';
+
+  @override
+  String get reportHeader => 'رأس التقرير';
+
+  @override
+  String get incidentDetails => 'تفاصيل الحادثة';
+
+  @override
+  String get damageDate => 'تاريخ الضرر';
+
+  @override
+  String get documentationDate => 'تاريخ التوثيق';
+
+  @override
+  String get damageCause => 'سبب الضرر';
+
+  @override
+  String get reportNumber => 'رقم التقرير';
+
+  @override
+  String get evidence => 'البينة/الدليل';
+
+  @override
+  String get addEvidence => 'إضافة بينة';
+
+  @override
+  String get noEvidence => 'لا توجد بينات متوفرة';
+
+  @override
+  String get awaitingSyncToAddItems => 'بانتظار المزامنة لإضافة البنود';
+
+  @override
+  String get awaitingSyncToEnableItems =>
+      'بانتظار المزامنة لتفعيل إضافة بنود التقييم';
+
+  @override
+  String get duplicateReportError =>
+      'يوجد تقرير ضرر مسجل مسبقاً لهذه المزرعة في هذا التاريخ';
+
+  @override
+  String get retrySync => 'إعادة محاولة المزامنة';
+
+  @override
+  String get submitForReview => 'تقديم للمراجعة';
+
+  @override
+  String get natureLockedInfo => 'تم تثبيت طبيعة الضرر بناءً على البند الأول';
+
+  @override
+  String get technicalLoss => 'الخسارة الفنية';
+
+  @override
+  String get totalTechnicalValuation => 'إجمالي التقييم الفني';
+
+  @override
   String get map => 'الخريطة';
 
   @override
@@ -286,6 +351,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get locality => 'التجمع السكاني';
 
   @override
+  String get latitude => 'خط العرض';
+
+  @override
+  String get longitude => 'خط الطول';
+
+  @override
+  String get getCurrentLocation => 'جلب الموقع الحالي';
+
+  @override
   String get landArea => 'المساحة';
 
   @override
@@ -496,4 +570,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get operationalView => 'العرض التشغيلي';
+
+  @override
+  String get searchByCodeOrName => 'بحث بالكود أو الاسم';
+
+  @override
+  String get noItemsFound => 'لم يتم العثور على بنود';
+
+  @override
+  String get damageAction => 'فعل الضرر';
 }

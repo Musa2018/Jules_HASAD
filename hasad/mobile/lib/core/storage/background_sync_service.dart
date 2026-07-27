@@ -7,6 +7,7 @@ import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/utils/debug_logger.dart';
+import 'package:mobile/features/damage_reports/data/dto/damage_report_sync_dto.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
@@ -695,12 +696,16 @@ class BackgroundSyncService {
       throw SyncDependencyException(['Waiting for Farmer ($originalFarmerId) to synchronize.']);
     }
 
+    final farm = await (_db.select(_db.farms)..where((t) => t.id.equals(originalFarmId))).getSingleOrNull();
     final report = report_domain.DamageReport.fromJson(data);
 
     if (item.operation == 'create') {
-      final result = await _remoteDamageReportRepository.createDamageReport(
-        report,
+      final payload = DamageReportSyncDto.toCreateJson(
+        report, 
+        latitude: farm?.latitude, 
+        longitude: farm?.longitude
       );
+      final result = await _remoteDamageReportRepository.createDamageReportFromJson(payload);
       await _db.transaction(() async {
         await (_db.update(
           _db.damageReports,
@@ -992,14 +997,10 @@ class BackgroundSyncService {
               damageDate: Value(remoteReport.damageDate),
               damageCauseCategoryId: Value(remoteReport.damageCauseCategoryId),
               damageCauseId: Value(remoteReport.damageCauseId),
-              settlementName: Value(remoteReport.settlementName),
-              companyName: Value(remoteReport.companyName),
               farmerId: Value(remoteReport.farmerId),
               governorateId: Value(remoteReport.governorateId),
               directorateId: Value(remoteReport.directorateId),
               localityId: Value(remoteReport.localityId),
-              latitude: Value(remoteReport.latitude),
-              longitude: Value(remoteReport.longitude),
               statusId: Value(remoteReport.statusId),
               notes: Value(remoteReport.notes),
               rowVersion: Value(remoteReport.rowVersion),

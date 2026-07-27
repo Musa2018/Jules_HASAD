@@ -23,7 +23,7 @@ final farmerFiltersProvider = StateProvider<FarmerFilter>((ref) {
 final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
   return OfflineFirstFarmerRepository(
     ref.watch(databaseProvider),
-    ref.watch(syncServiceProvider),
+    ref,
     ref.watch(remoteFarmerRepositoryProvider),
     ref.watch(connectivityProvider),
     ref.watch(authorizationServiceProvider),

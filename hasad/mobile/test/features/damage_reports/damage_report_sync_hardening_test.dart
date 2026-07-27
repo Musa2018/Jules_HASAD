@@ -4,6 +4,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
+import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
@@ -19,6 +20,7 @@ class MockFarmerRepo extends Mock implements FarmerRepository {}
 class MockFarmRepo extends Mock implements FarmRepository {}
 class MockReportRepo extends Mock implements DamageReportRepository {}
 class MockAttachmentRepo extends Mock implements DamageReportAttachmentRepository {}
+class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
 class MockConnectivity extends Mock implements Connectivity {}
 
 void main() {
@@ -54,7 +56,7 @@ void main() {
         id: '', farmId: '', farmerId: '', damageDate: DateTime.now(),
         documentationDate: DateTime.now(), governorateId: '', 
         directorateId: '', localityId: '',
-        statusId: '', notes: '',
+        statusId: '', notes: '', createdBy: '',
       ),
     );
   });
@@ -68,9 +70,9 @@ void main() {
     connectivity = MockConnectivity();
 
     syncService = BackgroundSyncService(
-      db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity,
+      db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity, () async {},
     );
-    localRepo = OfflineFirstDamageReportRepository(db, syncService);
+    localRepo = OfflineFirstDamageReportRepository(db, syncService, null);
   });
 
   tearDown(() async {
@@ -94,6 +96,13 @@ void main() {
         statusId: 'Draft',
         notes: 'Notes',
       );
+
+      // 0. Setup farm dependency
+      await db.into(db.farms).insert(FarmsCompanion.insert(
+        id: 'f1', farmerId: 'far1', localFarmName: 'Farm',
+        governorateId: 'G1', directorateId: 'D1', localityId: 'L1',
+        basin: 'B1', parcel: 'P1', area: 10,
+      ));
 
       // 1. Create first report
       final created = await localRepo.createDamageReport(report);

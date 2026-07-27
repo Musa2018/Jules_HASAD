@@ -56,6 +56,7 @@ public class CostingSheetVersionDto
 public class CostingSheetItemDto
 {
     public Guid Id { get; set; }
+    public string Code { get; set; } = string.Empty;
     public Guid VersionId { get; set; }
     public int ClassificationId { get; set; }
     public int? MeasurementUnitId { get; set; }

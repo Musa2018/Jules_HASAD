@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/location/data/location_repository.dart';
@@ -8,8 +9,9 @@ import 'package:mobile/features/location/domain/locality.dart';
 class OfflineFirstLocationRepository implements LocationRepository {
   final AppDatabase _db;
   final LocationRepository _remote;
+  final Connectivity _connectivity;
 
-  OfflineFirstLocationRepository(this._db, this._remote);
+  OfflineFirstLocationRepository(this._db, this._remote, this._connectivity);
 
   @override
   Future<List<Governorate>> getGovernorates() async {
@@ -25,20 +27,27 @@ class OfflineFirstLocationRepository implements LocationRepository {
           .toList();
     }
 
-    final remote = await _remote.getGovernorates();
-    await _db.batch((batch) {
-      batch.insertAll(
-        _db.governorates,
-        remote.map((e) => GovernoratesCompanion.insert(
-              id: e.id,
-              nameAr: e.nameAr,
-              nameEn: e.nameEn,
-              code: e.code,
-            )),
-        mode: InsertMode.insertOrReplace,
-      );
-    });
-    return remote;
+    try {
+      final connectivity = await _connectivity.checkConnectivity();
+      if (connectivity.contains(ConnectivityResult.none)) return [];
+
+      final remote = await _remote.getGovernorates();
+      await _db.batch((batch) {
+        batch.insertAll(
+          _db.governorates,
+          remote.map((e) => GovernoratesCompanion.insert(
+                id: e.id,
+                nameAr: e.nameAr,
+                nameEn: e.nameEn,
+                code: e.code,
+              )),
+          mode: InsertMode.insertOrReplace,
+        );
+      });
+      return remote;
+    } catch (_) {
+      return [];
+    }
   }
 
   @override
@@ -59,20 +68,27 @@ class OfflineFirstLocationRepository implements LocationRepository {
           .toList();
     }
 
-    final remote = await _remote.getDirectorates(governorateId: governorateId);
-    await _db.batch((batch) {
-      batch.insertAll(
-        _db.directorates,
-        remote.map((e) => DirectoratesCompanion.insert(
-              id: e.id,
-              nameAr: e.nameAr,
-              nameEn: e.nameEn,
-              governorateId: e.governorateId,
-            )),
-        mode: InsertMode.insertOrReplace,
-      );
-    });
-    return remote;
+    try {
+      final connectivity = await _connectivity.checkConnectivity();
+      if (connectivity.contains(ConnectivityResult.none)) return [];
+
+      final remote = await _remote.getDirectorates(governorateId: governorateId);
+      await _db.batch((batch) {
+        batch.insertAll(
+          _db.directorates,
+          remote.map((e) => DirectoratesCompanion.insert(
+                id: e.id,
+                nameAr: e.nameAr,
+                nameEn: e.nameEn,
+                governorateId: e.governorateId,
+              )),
+          mode: InsertMode.insertOrReplace,
+        );
+      });
+      return remote;
+    } catch (_) {
+      return [];
+    }
   }
 
   @override
@@ -97,23 +113,48 @@ class OfflineFirstLocationRepository implements LocationRepository {
           .toList();
     }
 
-    final remote = await _remote.getLocalities(governorateId: governorateId);
-    // Note: Remote localities might not have directorateId yet if backend hasn't updated its API response.
-    // But we updated LocalityDto, so it should be there.
-    
-    await _db.batch((batch) {
-      batch.insertAll(
-        _db.localities,
-        remote.map((e) => LocalitiesCompanion.insert(
-              id: e.id,
-              nameAr: e.nameAr,
-              nameEn: e.nameEn,
-              governorateId: e.governorateId,
-              directorateId: e.directorateId,
-            )),
-        mode: InsertMode.insertOrReplace,
+    try {
+      final connectivity = await _connectivity.checkConnectivity();
+      if (connectivity.contains(ConnectivityResult.none)) return [];
+
+      var remote = await _remote.getLocalities(
+        governorateId: governorateId,
+        directorateId: directorateId,
       );
-    });
-    return remote;
+
+      // Fallback: If filtered by Directorate and got nothing, try broader Governorate filter
+      if (remote.isEmpty && directorateId != null && governorateId != null) {
+        remote = await _remote.getLocalities(governorateId: governorateId);
+      }
+      
+      if (remote.isNotEmpty) {
+        await _db.batch((batch) {
+          batch.insertAll(
+            _db.localities,
+            remote.map((e) => LocalitiesCompanion.insert(
+                  id: e.id,
+                  nameAr: e.nameAr,
+                  nameEn: e.nameEn,
+                  governorateId: e.governorateId,
+                  directorateId: e.directorateId,
+                )),
+            mode: InsertMode.insertOrReplace,
+          );
+        });
+      }
+      
+      // Re-query local to ensure we return the items actually matching the request
+      return await query.get().then((rows) => rows
+          .map((e) => Locality(
+                id: e.id,
+                nameAr: e.nameAr,
+                nameEn: e.nameEn,
+                governorateId: e.governorateId,
+                directorateId: e.directorateId,
+              ))
+          .toList());
+    } catch (_) {
+      return [];
+    }
   }
 }

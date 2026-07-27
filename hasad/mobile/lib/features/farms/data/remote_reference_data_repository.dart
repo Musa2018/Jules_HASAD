@@ -27,6 +27,12 @@ class RemoteReferenceDataRepository implements ReferenceDataRepository {
   }
 
   @override
+  Future<void> synchronize({DateTime? updatedSince}) async {
+    // For reference data, we fetch the whole blob since it's relatively small and hierarchical.
+    await getReferenceData(forceRefresh: true);
+  }
+
+  @override
   Future<List<DamageNature>> getNatures() => throw UnimplementedError();
 
   @override
@@ -66,6 +72,10 @@ class RemoteReferenceDataRepository implements ReferenceDataRepository {
 
   @override
   Future<List<DamageClassification>> searchClassifications(String query) =>
+      throw UnimplementedError();
+
+  @override
+  Future<List<CostingSheetItem>> searchCostingItems(String query) =>
       throw UnimplementedError();
 
   @override

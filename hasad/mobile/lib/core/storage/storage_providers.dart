@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
+import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
@@ -20,7 +21,11 @@ final remoteFarmerRepositoryProvider = Provider<RemoteFarmerRepository>((ref) {
   return RemoteFarmerRepository(ref.watch(apiDioProvider));
 });
 
-final syncServiceProvider = Provider<BackgroundSyncService>((ref) {
+final pullSyncCoordinatorProvider = Provider<PullSyncCoordinator>((ref) {
+  return PullSyncCoordinator(ref.watch(databaseProvider));
+});
+
+final Provider<BackgroundSyncService> syncServiceProvider = Provider<BackgroundSyncService>((ref) {
   final service = BackgroundSyncService(
     ref.watch(databaseProvider),
     ref.watch(remoteFarmerRepositoryProvider),
@@ -30,9 +35,7 @@ final syncServiceProvider = Provider<BackgroundSyncService>((ref) {
     ref.watch(connectivityProvider),
   );
   ref.onDispose(() => service.dispose());
-  // Trigger initialization safely.
-  // We don't await here as it's a synchronous provider,
-  // but it starts the async initialization process.
+  // Start queue processing on startup
   service.initialize();
   return service;
 });

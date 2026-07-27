@@ -194,6 +194,7 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             .Select(x => new CostingSheetItemDto
             {
                 Id = x.Id,
+                Code = x.Code ?? string.Empty,
                 VersionId = x.VersionId,
                 ClassificationId = x.ClassificationId,
                 MeasurementUnitId = x.MeasurementUnitId,

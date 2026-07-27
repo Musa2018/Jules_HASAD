@@ -1,25 +1,22 @@
-# Walkthrough - Fixing Agricultural Sector in Damage Report Header
+# Walkthrough - Farmer Name Resolution and Farm Card UI Enhancements
 
-I have updated the Damage Report Header screen to ensure that the Agricultural Sector is displayed as a read-only field, as it is a property of the farm and should not be re-entered by the user.
+I have fixed the issue where farmer names were displayed as IDs and improved the Farm Card UI to provide more relevant information.
 
 ## Changes Made
 
-### Damage Reports Feature
-- **Updated [damage_report_header_screen.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/damage_reports/presentation/screens/damage_report_header_screen.dart)**:
-    - Replaced the `AgriculturalSector` dropdown with a read-only display.
-    - Used `ref.watch(referenceDataProvider)` to reactively fetch the sector name (Arabic/English) based on the current locale.
-    - Simplified the state management by removing redundant variables (`_selectedSector`, `_initialized`) and initialization logic.
-    - Updated the `_save` method to directly use the `agriculturalSectorId` from the `Farm` object.
+### 1. Data Layer Enhancements
+- **Updated [FarmerRepository](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farmers/data/farmer_repository.dart)**:
+    - Modified `getFarmer` and `watchFarmer` to search by both local `clientId` and server `serverId`. This ensures that names can be resolved for both locally created and synchronized records.
 
-## Fixed Damage Report Form Display Labels & Data Integrity
+### 2. UI Enhancements
+- **Updated [FarmCard](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/farms/presentation/widgets/farm_card.dart)**:
+    - **Name Resolution**: Now uses `farmerStreamProvider` for both the operator and the owner, ensuring reactive updates and support for dual ID lookups.
+    - **Ownership Type**: Added a new row to display the human-readable name of the ownership type (e.g., "ملك", "ضمان").
+    - **Smart Conditional Visibility**: The "Owner Farmer" row is now hidden if the ownership type is "Owned" (ID 1), as the owner is the same as the operator. It will only appear for leased or other ownership types.
 
-I have corrected the display of metadata in the "Edit Assessment" screen (`DamageReportFormScreen`) and hardened the data snapshotting process.
+## Verification Results
 
-### Changes Made
-- **[offline_first_damage_report_repository.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/damage_reports/data/repositories/offline_first_damage_report_repository.dart)**:
-    - Added explicit snapshotting of `agriculturalSectorId` from the `Farm` object during report creation. This ensures that the report always carries the correct sector from its parent farm.
-- **[damage_report_form_screen.dart](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/hasad/mobile/lib/features/damage_reports/presentation/screens/damage_report_form_screen.dart)**:
-    - Fixed a compilation error by using the correct `farmStreamProvider` instead of the non-existent `farmProvider`.
-    - Updated the "Agricultural Sector" display to fetch the latest data from the linked **Farm** instead of relying solely on the report's snapshot. This provides a reliable source of truth for the sector name.
-    - Integrated `referenceDataProvider` to resolve human-readable names for both **Agricultural Sector** and **Damage Cause**.
-    - Fixed the label for the incident date to "تاريخ الضرر" (Damage Date).
+### Manual Verification
+- [x] Farmer and owner names now correctly resolve to names (e.g., "Musa") instead of showing UUIDs.
+- [x] Ownership type is clearly visible on the card.
+- [x] The "Owner Farmer" field correctly disappears when a farm is marked as "Owned".

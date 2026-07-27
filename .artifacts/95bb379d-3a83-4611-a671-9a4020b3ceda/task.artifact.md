@@ -1,4 +1,5 @@
-- [x] Fix Agricultural Sector display in `DamageReportFormScreen`
-    - [x] Snapshot `agriculturalSectorId` from Farm in `OfflineFirstDamageReportRepository`
-    - [x] Resolve and display sector name from the linked `Farm` in `DamageReportFormScreen`
-- [x] Verify the fix
+- [x] Update `OfflineFirstFarmerRepository` to support dual ID lookup
+- [x] Improve `FarmCard` UI
+    - [x] Display Ownership Type
+    - [x] Conditionally hide Owner Farmer row
+- [x] Verify name resolution and UI changes

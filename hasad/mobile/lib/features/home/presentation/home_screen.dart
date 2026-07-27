@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/router/app_router.dart';
+import 'package:mobile/core/storage/pull_sync_service.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
@@ -19,6 +20,29 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.dashboard),
         actions: [
+          IconButton(
+            tooltip: l10n.syncStatus,
+            icon: const Icon(Icons.sync),
+            onPressed: () async {
+              try {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.syncing)),
+                );
+                await ref.read(pullSyncServiceProvider).syncAll();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.synced)),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${l10n.syncError}: $e')),
+                  );
+                }
+              }
+            },
+          ),
           IconButton(
             tooltip: l10n.logout,
             icon: const Icon(Icons.logout),

@@ -25,6 +25,12 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
   }
 
   @override
+  Future<void> synchronize({DateTime? updatedSince}) async {
+    final remoteData = await _remote.getReferenceData(forceRefresh: true);
+    await _saveToLocal(remoteData);
+  }
+
+  @override
   Future<List<domain.DamageNature>> getNatures() async {
     final items = await _db.select(_db.damageNatures).get();
     return items

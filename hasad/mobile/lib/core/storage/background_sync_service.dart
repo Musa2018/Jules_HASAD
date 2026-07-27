@@ -28,7 +28,6 @@ class BackgroundSyncService {
   final DamageReportRepository _remoteDamageReportRepository;
   final DamageReportAttachmentRepository _remoteAttachmentRepository;
   final Connectivity _connectivity;
-  final Future<void> Function() _onInitializePull;
 
   StreamSubscription? _connectivitySubscription;
   bool _isProcessing = false;
@@ -40,7 +39,6 @@ class BackgroundSyncService {
     this._remoteDamageReportRepository,
     this._remoteAttachmentRepository,
     this._connectivity,
-    this._onInitializePull,
   );
 
   Future<void> initialize() async {
@@ -53,11 +51,6 @@ class BackgroundSyncService {
     });
     // Trigger initial sync on startup
     await processQueue();
-    // Trigger pull synchronization via callback
-    _onInitializePull().catchError((e) {
-       // Log background pull error but don't block
-       DebugLogger.log('Initial pull failed: $e');
-    });
   }
 
   void dispose() {

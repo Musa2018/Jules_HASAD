@@ -13,7 +13,7 @@ import 'package:mobile/features/farms/domain/farm_filter.dart';
 final farmRepositoryProvider = Provider<FarmRepository>((ref) {
   return OfflineFirstFarmRepository(
     ref.watch(databaseProvider),
-    ref.watch(syncServiceProvider),
+    ref,
     RemoteFarmRepository(ref.watch(apiDioProvider)),
     ref.watch(connectivityProvider),
     ref.watch(authorizationServiceProvider),

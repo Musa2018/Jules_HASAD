@@ -31,10 +31,11 @@ class FarmCard extends ConsumerWidget {
     // Entity lookups
     final sectorsAsync = ref.watch(agriculturalSectorsProvider);
     final areaUnitsAsync = ref.watch(areaUnitsProvider);
+    final ownershipTypesAsync = ref.watch(ownershipTypesProvider);
 
     // Names lookups
-    final operatorAsync = ref.watch(farmerProvider(farm.farmerId));
-    final ownerAsync = farm.ownerFarmerId != null ? ref.watch(farmerProvider(farm.ownerFarmerId!)) : const AsyncValue.data(null);
+    final operatorAsync = ref.watch(farmerStreamProvider(farm.farmerId));
+    final ownerAsync = farm.ownerFarmerId != null ? ref.watch(farmerStreamProvider(farm.ownerFarmerId!)) : const AsyncValue.data(null);
 
     String locationText = farm.localityId;
     govAsync.whenData((govs) {
@@ -64,6 +65,12 @@ class FarmCard extends ConsumerWidget {
     areaUnitsAsync.whenData((items) {
       final item = items.where((i) => i.id == (farm.measurementUnitId ?? farm.areaUnitId)).firstOrNull;
       if (item != null) areaUnitText = isAr ? item.nameAr : item.nameEn;
+    });
+
+    String ownershipTypeText = farm.ownershipTypeId.toString();
+    ownershipTypesAsync.whenData((items) {
+      final item = items.where((i) => i.id == farm.ownershipTypeId).firstOrNull;
+      if (item != null) ownershipTypeText = isAr ? item.nameAr : item.nameEn;
     });
 
     return Opacity(
@@ -113,12 +120,18 @@ class FarmCard extends ConsumerWidget {
                   icon: Icons.person_outline,
                   label: l10n.farmerName,
                   value: operatorAsync.when(
-                    data: (f) => f.fullName,
+                    data: (f) => f?.fullName ?? farm.farmerId,
                     loading: () => "...",
                     error: (_, _) => farm.farmerId,
                   ),
                 ),
-                if (farm.ownerFarmerId != null) ...[
+                const SizedBox(height: 8),
+                _InfoRow(
+                  icon: Icons.vpn_key_outlined,
+                  label: l10n.ownershipType,
+                  value: ownershipTypeText,
+                ),
+                if (farm.ownershipTypeId != 1 && farm.ownerFarmerId != null) ...[
                   const SizedBox(height: 8),
                   _InfoRow(
                     icon: Icons.person_search_outlined,

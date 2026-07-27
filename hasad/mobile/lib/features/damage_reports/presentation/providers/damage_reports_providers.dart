@@ -16,7 +16,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_workflow_his
 final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   return OfflineFirstDamageReportRepository(
     ref.watch(databaseProvider),
-    ref.watch(syncServiceProvider),
+    ref,
     ref.watch(authProvider).session,
   );
 });
@@ -25,7 +25,7 @@ final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
   (ref) {
     return OfflineFirstDamageReportAttachmentRepository(
       ref.watch(databaseProvider),
-      ref.watch(syncServiceProvider),
+      ref,
     );
   },
 );

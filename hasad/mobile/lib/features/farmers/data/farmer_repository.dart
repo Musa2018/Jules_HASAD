@@ -1,11 +1,13 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
-import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/farmers/domain/farmer.dart' as farmer_domain;
 import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/farmer_validator.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -15,7 +17,7 @@ import 'package:uuid/uuid.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 abstract class FarmerRepository {
-  Future<List<domain.Farmer>> getFarmers({
+  Future<List<farmer_domain.Farmer>> getFarmers({
     int pageNumber = 1,
     int pageSize = 10,
     String? idNumber,
@@ -25,13 +27,13 @@ abstract class FarmerRepository {
     bool isOperational = false,
   });
 
-  Stream<List<domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()});
+  Stream<List<farmer_domain.Farmer>> watchFarmers({FarmerFilter filter = const FarmerFilter()});
 
-  Future<domain.Farmer?> findByIdNumber(String idNumber);
-  Future<domain.Farmer> getFarmer(String id);
-  Stream<domain.Farmer?> watchFarmer(String id);
-  Future<domain.Farmer> createFarmer(domain.Farmer farmer);
-  Future<domain.Farmer> updateFarmer(domain.Farmer farmer);
+  Future<farmer_domain.Farmer?> findByIdNumber(String idNumber);
+  Future<farmer_domain.Farmer> getFarmer(String id);
+  Stream<farmer_domain.Farmer?> watchFarmer(String id);
+  Future<farmer_domain.Farmer> createFarmer(farmer_domain.Farmer farmer);
+  Future<farmer_domain.Farmer> updateFarmer(farmer_domain.Farmer farmer);
   Future<void> deleteFarmer(String id);
   Future<void> cancelDeleteFarmer(String id);
   Future<void> synchronize({DateTime? updatedSince});
@@ -39,7 +41,7 @@ abstract class FarmerRepository {
 
 class OfflineFirstFarmerRepository implements FarmerRepository {
   final AppDatabase _db;
-  final BackgroundSyncService _syncService;
+  final Ref _ref;
   final FarmerRepository _remoteRepository;
   final Connectivity _connectivity;
   final AuthorizationService _authService;
@@ -47,14 +49,16 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   OfflineFirstFarmerRepository(
     this._db,
-    this._syncService,
+    this._ref,
     this._remoteRepository,
     this._connectivity,
     this._authService,
     this._session,
   );
 
-  void _validate(domain.Farmer farmer) {
+  BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
+
+  void _validate(farmer_domain.Farmer farmer) {
     if (!_authService.canManageFarmers()) {
       throw FarmerException(['Access Denied: You do not have permission to manage farmers.']);
     }
@@ -64,7 +68,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     }
   }
 
-  Future<void> _checkUniqueness(domain.Farmer farmer) async {
+  Future<void> _checkUniqueness(farmer_domain.Farmer farmer) async {
     final query = _db.select(_db.farmers)
       ..where((t) => Expression.and([
           t.idNumber.equals(farmer.idNumber),
@@ -79,7 +83,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   }
 
   @override
-  Future<List<domain.Farmer>> getFarmers({
+  Future<List<farmer_domain.Farmer>> getFarmers({
     int pageNumber = 1,
     int pageSize = 10,
     String? idNumber,
@@ -161,7 +165,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   }
 
   @override
-  Future<domain.Farmer?> findByIdNumber(String idNumber) async {
+  Future<farmer_domain.Farmer?> findByIdNumber(String idNumber) async {
     // 1. Search local Drift database first (exclude records pending deletion)
     final local = await (_db.select(_db.farmers)
           ..where((t) => Expression.and([
@@ -201,17 +205,15 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   }
 
   @override
-  Future<domain.Farmer> getFarmer(String id) async {
-    final e = await (_db.select(
-      _db.farmers,
-    )..where((t) => t.id.equals(id))).getSingle();
+  Future<farmer_domain.Farmer> getFarmer(String id) async {
+    final e = await (_db.select(_db.farmers)..where((t) => t.id.equals(id) | t.serverId.equals(id))).getSingle();
     return _mapToDomain(e);
   }
 
   @override
-  Stream<domain.Farmer?> watchFarmer(String id) {
+  Stream<farmer_domain.Farmer?> watchFarmer(String id) {
     return (_db.select(_db.farmers)..where((t) => Expression.and([
-        t.id.equals(id),
+        t.id.equals(id) | t.serverId.equals(id),
         t.isPendingDelete.equals(false)
     ])))
         .watchSingleOrNull()
@@ -219,7 +221,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   }
 
   @override
-  Stream<List<domain.Farmer>> watchFarmers({
+  Stream<List<farmer_domain.Farmer>> watchFarmers({
     FarmerFilter filter = const FarmerFilter(),
   }) {
     final farmers = _db.farmers;
@@ -296,8 +298,8 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     return query.watch().map((rows) => rows.map((row) => _mapToDomain(row.readTable(farmers))).toList());
   }
 
-  domain.Farmer _mapToDomain(FarmerLocal e) {
-    return domain.Farmer(
+  farmer_domain.Farmer _mapToDomain(FarmerLocal e) {
+    return farmer_domain.Farmer(
       id: e.id,
       serverId: e.serverId,
       idTypeId: e.idTypeId,
@@ -326,7 +328,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     );
   }
 
-  FarmersCompanion _mapToCompanion(domain.Farmer farmer) {
+  FarmersCompanion _mapToCompanion(farmer_domain.Farmer farmer) {
     return FarmersCompanion.insert(
       id: farmer.id,
       serverId: Value(farmer.serverId),
@@ -354,7 +356,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   }
 
   @override
-  Future<domain.Farmer> createFarmer(domain.Farmer farmer) async {
+  Future<farmer_domain.Farmer> createFarmer(farmer_domain.Farmer farmer) async {
     _validate(farmer);
     await _checkUniqueness(farmer);
     final localId = farmer.id.isEmpty ? const Uuid().v4() : farmer.id;
@@ -378,7 +380,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
   }
 
   @override
-  Future<domain.Farmer> updateFarmer(domain.Farmer farmer) async {
+  Future<farmer_domain.Farmer> updateFarmer(farmer_domain.Farmer farmer) async {
     _validate(farmer);
     await _checkUniqueness(farmer);
     final companion = _mapToCompanion(farmer).copyWith(

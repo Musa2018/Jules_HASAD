@@ -241,16 +241,12 @@ public static class DbInitializer
         // 1. Damage Natures
         await UpsertLookupsAsync(context, context.DamageNatures, "DamageNatures", new[]
         {
-            new DamageNature { Id = 1, NameAr = "جفاف", NameEn = "Drought" },
-            new DamageNature { Id = 2, NameAr = "صقيع", NameEn = "Frost" },
-            new DamageNature { Id = 3, NameAr = "فيضانات", NameEn = "Flood" },
-            new DamageNature { Id = 4, NameAr = "عاصفة", NameEn = "Storm" },
-            new DamageNature { Id = 5, NameAr = "حريق", NameEn = "Fire" },
-            new DamageNature { Id = 6, NameAr = "آفة", NameEn = "Pest" },
-            new DamageNature { Id = 7, NameAr = "مرض", NameEn = "Disease" },
-            new DamageNature { Id = 8, NameAr = "موجة حر", NameEn = "Heat Wave" },
-            new DamageNature { Id = 9, NameAr = "موجة برد", NameEn = "Cold Wave" },
-            new DamageNature { Id = 10, NameAr = "أخرى", NameEn = "Other" }
+            new DamageNature { Id = 1, NameAr = "انتاج نباتي", NameEn = "Plant production" },
+            new DamageNature { Id = 2, NameAr = "انتاج حيواني", NameEn = "Animal production" },
+            new DamageNature { Id = 3, NameAr = "منشأت وبنية تحتية", NameEn = "Facilities and infrastructure" },
+            new DamageNature { Id = 4, NameAr = "مصادر مياه", NameEn = "Water sources" },
+            new DamageNature { Id = 5, NameAr = "مصادر طاقة", NameEn = "Energy sources" },
+            new DamageNature { Id = 6, NameAr = "أخرى", NameEn = "Other" }
         });
 
         // 2. Damage Actions

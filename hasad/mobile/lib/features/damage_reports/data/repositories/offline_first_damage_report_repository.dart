@@ -3,24 +3,28 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
-import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as domain;
-import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as report_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 import 'package:uuid/uuid.dart';
 
 class OfflineFirstDamageReportRepository implements DamageReportRepository {
   final AppDatabase _db;
-  final BackgroundSyncService _syncService;
+  final Ref _ref;
   final AuthSession? _session;
 
-  OfflineFirstDamageReportRepository(this._db, this._syncService, this._session);
+  OfflineFirstDamageReportRepository(this._db, this._ref, this._session);
+
+  BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
 
   @override
-  Future<List<domain.DamageReport>> getDamageReports() async {
+  Future<List<report_domain.DamageReport>> getDamageReports() async {
     final query = _db.select(_db.damageReports)
       ..where((t) => t.isPendingDelete.equals(false));
 
@@ -37,7 +41,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
     final reports = await query.get();
 
-    List<domain.DamageReport> results = [];
+    List<report_domain.DamageReport> results = [];
     for (var r in reports) {
       final items = await (_db.select(_db.damageItems)
             ..where((t) => t.damageReportId.equals(r.id)))
@@ -48,7 +52,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<List<domain.DamageReport>> getDamageReportsByFarm(
+  Future<List<report_domain.DamageReport>> getDamageReportsByFarm(
     String farmId,
   ) async {
     final reports =
@@ -57,7 +61,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
               ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]))
             .get();
 
-    List<domain.DamageReport> results = [];
+    List<report_domain.DamageReport> results = [];
     for (var r in reports) {
       final items = await (_db.select(
         _db.damageItems,
@@ -69,7 +73,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageReport> getDamageReport(String id) async {
+  Future<report_domain.DamageReport> getDamageReport(String id) async {
     final r = await (_db.select(
       _db.damageReports,
     )..where((t) => t.id.equals(id))).getSingle();
@@ -80,8 +84,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     return _mapToDomain(r, items);
   }
 
-  domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items) {
-    return domain.DamageReport(
+  report_domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items) {
+    return report_domain.DamageReport(
       id: r.id,
       serverId: r.serverId ?? '',
       reportNumber: r.reportNumber,
@@ -106,7 +110,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       lastSyncError: r.lastSyncError,
       items: items
           .map(
-            (i) => domain.DamageItem(
+            (i) => item_domain.DamageItem(
               id: i.id,
               serverId: i.serverId,
               damageReportId: i.damageReportId,
@@ -130,7 +134,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     );
   }
 
-  DamageReportsCompanion _mapReportToCompanion(domain.DamageReport report) {
+  DamageReportsCompanion _mapReportToCompanion(report_domain.DamageReport report) {
     return DamageReportsCompanion.insert(
       id: report.id,
       serverId: Value(report.serverId),
@@ -156,7 +160,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     );
   }
 
-  DamageItemsCompanion _mapItemToCompanion(domain.DamageItem item) {
+  DamageItemsCompanion _mapItemToCompanion(item_domain.DamageItem item) {
     return DamageItemsCompanion.insert(
       id: item.id,
       serverId: Value(item.serverId),
@@ -178,8 +182,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageReport> createDamageReport(
-    domain.DamageReport report,
+  Future<report_domain.DamageReport> createDamageReport(
+    report_domain.DamageReport report,
   ) async {
     // 1. Duplicate check (Local)
     final existing = await (_db.select(_db.damageReports)
@@ -259,8 +263,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageReport> createDamageReportFromJson(Map<String, dynamic> json) async {
-     return createDamageReport(domain.DamageReport.fromJson(json));
+  Future<report_domain.DamageReport> createDamageReportFromJson(Map<String, dynamic> json) async {
+     return createDamageReport(report_domain.DamageReport.fromJson(json));
   }
 
   String _generateTemporaryNumber() {
@@ -270,8 +274,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageReport> updateDamageReport(
-    domain.DamageReport report,
+  Future<report_domain.DamageReport> updateDamageReport(
+    report_domain.DamageReport report,
   ) async {
     // Duplicate check on update
     final existing = await (_db.select(_db.damageReports)
@@ -404,7 +408,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageItem> addDamageItem(domain.DamageItem item) async {
+  Future<item_domain.DamageItem> addDamageItem(item_domain.DamageItem item) async {
     final localId = item.id.isEmpty ? const Uuid().v4() : item.id;
     await _db
         .into(_db.damageItems)
@@ -428,7 +432,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<domain.DamageItem> updateDamageItem(domain.DamageItem item) async {
+  Future<item_domain.DamageItem> updateDamageItem(item_domain.DamageItem item) async {
     await (_db.update(
       _db.damageItems,
     )..where((t) => t.id.equals(item.id))).write(

@@ -70,8 +70,16 @@ class OfflineFirstFarmRepository implements FarmRepository {
     final ownerFarmer = _db.alias(_db.farmers, 'ow');
 
     final query = _db.select(_db.farms).join([
-      leftOuterJoin(operatorFarmer, operatorFarmer.id.equalsExp(_db.farms.farmerId)),
-      leftOuterJoin(ownerFarmer, ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId)),
+      leftOuterJoin(
+        operatorFarmer,
+        operatorFarmer.id.equalsExp(_db.farms.farmerId) |
+            operatorFarmer.serverId.equalsExp(_db.farms.farmerId),
+      ),
+      leftOuterJoin(
+        ownerFarmer,
+        ownerFarmer.id.equalsExp(_db.farms.ownerFarmerId) |
+            ownerFarmer.serverId.equalsExp(_db.farms.ownerFarmerId),
+      ),
     ]);
 
     final List<Expression<bool>> predicates = [];

@@ -107,7 +107,11 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
     
     final query = applyOperationalScoping
         ? _db.select(farmers).join([
-            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+            innerJoin(
+              farms,
+              farms.farmerId.equalsExp(farmers.id) |
+                  farms.farmerId.equalsExp(farmers.serverId),
+            ),
           ])
         : _db.select(farmers).join([]);
 
@@ -239,7 +243,11 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
     final query = applyOperationalScoping
         ? _db.select(farmers).join([
-            innerJoin(farms, farms.farmerId.equalsExp(farmers.id)),
+            innerJoin(
+              farms,
+              farms.farmerId.equalsExp(farmers.id) |
+                  farms.farmerId.equalsExp(farmers.serverId),
+            ),
           ])
         : _db.select(farmers).join([]);
 

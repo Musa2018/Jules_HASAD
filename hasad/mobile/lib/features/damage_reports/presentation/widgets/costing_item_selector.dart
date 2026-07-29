@@ -136,14 +136,14 @@ class _CostingItemTile extends ConsumerWidget {
             Text('${item.unitPrice} EUR / ${unitAsync.when(
               data: (u) => u != null ? (isAr ? u.nameAr : u.nameEn) : 'Unit',
               loading: () => '...',
-              error: (_, __) => 'Unit',
+              error: (_, _) => 'Unit',
             )}'),
           ],
         ),
         onTap: () => ref.read(damageItemSelectionProvider.notifier).selectItem(item),
       ),
       loading: () => const ListTile(title: LinearProgressIndicator()),
-      error: (_, __) => const ListTile(title: Text('Error loading classification')),
+      error: (_, _) => const ListTile(title: Text('Error loading classification')),
     );
   }
 

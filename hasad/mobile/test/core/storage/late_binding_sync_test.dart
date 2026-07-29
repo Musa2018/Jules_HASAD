@@ -60,7 +60,7 @@ void main() {
     connectivity = MockConnectivity();
 
     syncService = BackgroundSyncService(
-      db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity, () async {},
+      db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity,
     );
   });
 

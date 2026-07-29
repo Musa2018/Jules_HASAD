@@ -1,0 +1,22 @@
+- `[x]` Core Storage
+    - `[x]` Update `BackgroundSyncService` constructor in `background_sync_service_test.dart`
+    - `[x]` Update `BackgroundSyncService` constructor in `late_binding_sync_test.dart`
+    - `[x]` Remove `this.` in `database.dart`
+- `[x]` Farmers Feature
+    - `[x]` Update `farmer_repository_hardening_test.dart` (MockRef, constructor)
+    - `[x]` Update `farmer_view_scoping_test.dart` (MockRef, constructor)
+    - `[x]` Update `farmer_visibility_regression_test.dart` (MockRef, constructor)
+    - `[x]` Update `offline_first_farmer_repository_test.dart` (MockRef, constructor)
+    - `[x]` Update `search_workflow_test.dart` (MockRef, constructor)
+    - `[x]` Update `soft_delete_workflow_test.dart` (MockRef, constructor)
+    - `[x]` Remove unused imports in `farmer_form_screen.dart`
+- `[x]` Damage Reports Feature
+    - `[x]` Update `damage_report_sync_hardening_test.dart` (MockRef, BackgroundSyncService, constructor)
+    - `[x]` Remove unused import in `damage_report_header_screen.dart`
+    - `[x]` Fix underscores in `damage_report_form_screen.dart`
+    - `[x]` Fix underscores in `costing_item_selector.dart`
+    - `[x]` Fix underscores, `value` -> `initialValue`, `costingSheetId` -> `costingSheetItemId` in `damage_item_form_sheet.dart`
+- `[x]` Farms Feature
+    - `[x]` Update `farm_repository_authorization_test.dart` (MockRef, constructor)
+    - `[x]` Update `farm_sync_flow_test.dart` (BackgroundSyncService constructor)
+    - `[x]` Update `offline_delete_workflow_test.dart` (MockRef, BackgroundSyncService constructor, constructor)

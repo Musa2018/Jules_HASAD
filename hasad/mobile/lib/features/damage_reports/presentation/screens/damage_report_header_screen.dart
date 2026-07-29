@@ -10,7 +10,6 @@ import 'package:mobile/features/damage_reports/presentation/providers/damage_cau
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/damage_cause_selector.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
-import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:intl/intl.dart';

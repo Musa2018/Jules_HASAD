@@ -1,11 +1,13 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/native.dart';
 import 'package:drift/drift.dart' as drift;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
@@ -16,6 +18,8 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/damage_reports/data/repositories/offline_first_damage_report_repository.dart';
 
+class MockSyncService extends Mock implements BackgroundSyncService {}
+class MockRef extends Mock implements Ref {}
 class MockFarmerRepo extends Mock implements FarmerRepository {}
 class MockFarmRepo extends Mock implements FarmRepository {}
 class MockReportRepo extends Mock implements DamageReportRepository {}
@@ -32,6 +36,7 @@ void main() {
   late MockConnectivity connectivity;
   late BackgroundSyncService syncService;
   late OfflineFirstDamageReportRepository localRepo;
+  late MockRef mockRef;
 
   setUpAll(() {
     registerFallbackValue(
@@ -68,11 +73,19 @@ void main() {
     reportRepo = MockReportRepo();
     attachmentRepo = MockAttachmentRepo();
     connectivity = MockConnectivity();
+    mockRef = MockRef();
 
     syncService = BackgroundSyncService(
-      db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity, () async {},
+      db,
+      farmerRepo,
+      farmRepo,
+      reportRepo,
+      attachmentRepo,
+      connectivity,
     );
-    localRepo = OfflineFirstDamageReportRepository(db, syncService, null);
+    when(() => mockRef.read(syncServiceProvider)).thenReturn(syncService);
+
+    localRepo = OfflineFirstDamageReportRepository(db, mockRef, null);
   });
 
   tearDown(() async {

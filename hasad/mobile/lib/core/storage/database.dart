@@ -680,7 +680,7 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 28) {
         // Sprint 14.x: Costing Item Search Code
-        await m.addColumn(this.costingSheetItems, this.costingSheetItems.code);
+        await m.addColumn(costingSheetItems, costingSheetItems.code);
       }
     },
     beforeOpen: (details) async {

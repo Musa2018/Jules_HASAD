@@ -121,11 +121,11 @@ class _DamageReportFormScreenState
                     return _buildSummaryRow(l10n.agriculturalSector, sectorName);
                   },
                   loading: () => _buildSummaryRow(l10n.agriculturalSector, '...'),
-                  error: (_, __) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
+                  error: (_, _) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
                 );
               },
               loading: () => _buildSummaryRow(l10n.agriculturalSector, '...'),
-              error: (_, __) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
+              error: (_, _) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
             ),
 
             // Resolve Damage Cause from Reference Data

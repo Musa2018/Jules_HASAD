@@ -101,7 +101,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
     final unitName = unitAsync.when(
       data: (u) => u != null ? (isAr ? u.nameAr : u.nameEn) : 'Unit',
       loading: () => '...',
-      error: (_, __) => 'Unit',
+      error: (_, _) => 'Unit',
     );
 
     final estimatedLoss = ValuationEngine.calculateEstimatedLoss(
@@ -128,7 +128,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
                   const SizedBox(height: 24),
                   actionsAsync.when(
                     data: (actions) => DropdownButtonFormField<DamageAction>(
-                      value: state.action,
+                      initialValue: state.action,
                       decoration: InputDecoration(labelText: l10n.damageAction),
                       items: actions.map((a) => DropdownMenuItem(
                         value: a,
@@ -142,7 +142,7 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
                       validator: (v) => v == null ? l10n.requiredField : null,
                     ),
                     loading: () => const LinearProgressIndicator(),
-                    error: (_, __) => Text(l10n.noData),
+                    error: (_, _) => Text(l10n.noData),
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -282,7 +282,6 @@ class _DamageItemFormSheetState extends ConsumerState<DamageItemFormSheet> {
       damageNatureId: state.nature?.id ?? 0,
       damageActionId: state.action?.id ?? 0,
       classificationId: state.classification!.id,
-      costingSheetId: costing.id,
       costingSheetItemId: costing.id,
       calculatedUnitPrice: costing.unitPrice,
       measurementUnitSnapshot: unitName,

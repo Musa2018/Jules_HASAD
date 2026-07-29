@@ -1,16 +1,19 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class MockSyncService extends Mock implements BackgroundSyncService {}
+class MockRef extends Mock implements Ref {}
 class MockRemoteRepository extends Mock implements FarmerRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
 class MockAuthorizationService extends Mock implements AuthorizationService {}
@@ -18,6 +21,7 @@ class MockAuthorizationService extends Mock implements AuthorizationService {}
 void main() {
   late AppDatabase db;
   late MockSyncService mockSyncService;
+  late MockRef mockRef;
   late MockRemoteRepository mockRemoteRepository;
   late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
@@ -28,6 +32,8 @@ void main() {
     mockRemoteRepository = MockRemoteRepository();
     mockConnectivity = MockConnectivity();
     mockAuthService = MockAuthorizationService();
+    mockRef = MockRef();
+    when(() => mockRef.read(syncServiceProvider)).thenReturn(mockSyncService);
   });
 
   tearDown(() async {
@@ -49,7 +55,7 @@ void main() {
     test('AgriculturalEngineer in All View can see farmers from other governorates', () async {
       final repository = OfflineFirstFarmerRepository(
         db,
-        mockSyncService,
+        mockRef,
         mockRemoteRepository,
         mockConnectivity,
         mockAuthService,
@@ -98,7 +104,7 @@ void main() {
     test('AgriculturalEngineer in Operational View only sees farmers who have a farm in his directorate', () async {
       final repository = OfflineFirstFarmerRepository(
         db,
-        mockSyncService,
+        mockRef,
         mockRemoteRepository,
         mockConnectivity,
         mockAuthService,
@@ -158,7 +164,7 @@ void main() {
     test('watchFarmers in All View limits to 10 records', () async {
       final repository = OfflineFirstFarmerRepository(
         db,
-        mockSyncService,
+        mockRef,
         mockRemoteRepository,
         mockConnectivity,
         mockAuthService,

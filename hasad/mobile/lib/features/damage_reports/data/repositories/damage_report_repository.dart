@@ -4,12 +4,15 @@ import 'package:mobile/features/damage_reports/domain/models/damage_workflow_his
 
 abstract class DamageReportRepository {
   Future<List<DamageReport>> getDamageReports();
+  Stream<List<DamageReport>> watchDamageReports();
   Future<List<DamageReport>> getDamageReportsByFarm(String farmId);
+  Stream<List<DamageReport>> watchDamageReportsByFarm(String farmId);
   Future<DamageReport> getDamageReport(String id);
   Future<DamageReport> createDamageReport(DamageReport report);
   Future<DamageReport> createDamageReportFromJson(Map<String, dynamic> json);
   Future<DamageReport> updateDamageReport(DamageReport report);
   Future<void> deleteDamageReport(String id);
+  Future<void> cancelDeleteDamageReport(String id);
 
   Future<void> submitReport(String id);
   Future<void> transitionReport(String id, String toStatus, {String? comment, bool isOverride});
@@ -18,4 +21,5 @@ abstract class DamageReportRepository {
   Future<DamageItem> addDamageItem(DamageItem item);
   Future<DamageItem> updateDamageItem(DamageItem item);
   Future<void> deleteDamageItem(String id);
+  Future<void> synchronize();
 }

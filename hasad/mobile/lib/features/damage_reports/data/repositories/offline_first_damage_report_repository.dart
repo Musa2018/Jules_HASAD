@@ -18,8 +18,9 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   final AppDatabase _db;
   final Ref _ref;
   final AuthSession? _session;
+  final DamageReportRepository _remoteRepository;
 
-  OfflineFirstDamageReportRepository(this._db, this._ref, this._session);
+  OfflineFirstDamageReportRepository(this._db, this._ref, this._session, this._remoteRepository);
 
   BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
 
@@ -52,6 +53,34 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Stream<List<report_domain.DamageReport>> watchDamageReports() {
+    final query = _db.select(_db.damageReports)
+      ..where((t) => t.isPendingDelete.equals(false));
+
+    // Regional scoping based on session
+    if (_session != null) {
+      if (_session.directorateId != null && _session.directorateId!.isNotEmpty) {
+        query.where((t) => t.directorateId.equals(_session.directorateId!));
+      } else if (_session.governorateId != null && _session.governorateId!.isNotEmpty) {
+        query.where((t) => t.governorateId.equals(_session.governorateId!));
+      }
+    }
+
+    query.orderBy([(t) => OrderingTerm.desc(t.damageDate)]);
+
+    return query.watch().asyncMap((reports) async {
+      List<report_domain.DamageReport> results = [];
+      for (var r in reports) {
+        final items = await (_db.select(_db.damageItems)
+              ..where((t) => t.damageReportId.equals(r.id)))
+            .get();
+        results.add(_mapToDomain(r, items));
+      }
+      return results;
+    });
+  }
+
+  @override
   Future<List<report_domain.DamageReport>> getDamageReportsByFarm(
     String farmId,
   ) async {
@@ -70,6 +99,24 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       results.add(_mapToDomain(r, items));
     }
     return results;
+  }
+
+  @override
+  Stream<List<report_domain.DamageReport>> watchDamageReportsByFarm(String farmId) {
+    final query = _db.select(_db.damageReports)
+      ..where((t) => t.farmId.equals(farmId) & t.isPendingDelete.equals(false))
+      ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]);
+
+    return query.watch().asyncMap((reports) async {
+      List<report_domain.DamageReport> results = [];
+      for (var r in reports) {
+        final items = await (_db.select(_db.damageItems)
+              ..where((t) => t.damageReportId.equals(r.id)))
+            .get();
+        results.add(_mapToDomain(r, items));
+      }
+      return results;
+    });
   }
 
   @override
@@ -335,6 +382,24 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Future<void> cancelDeleteDamageReport(String id) async {
+    await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+      const DamageReportsCompanion(
+        isPendingDelete: Value(false),
+        syncStatus: Value('completed'),
+        lastSyncError: Value(null),
+      ),
+    );
+
+    await (_db.delete(_db.syncQueue)
+          ..where((t) =>
+              t.localId.equals(id) &
+              t.entityType.equals('damage_report') &
+              t.operation.equals('delete')))
+        .go();
+  }
+
+  @override
   Future<void> submitReport(String id) async {
     final report = await getDamageReport(id);
     // Locally predict state
@@ -476,5 +541,48 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         'clientId': local.id,
       },
     );
+  }
+
+  @override
+  Future<void> synchronize() async {
+    // 1. Fetch from remote
+    try {
+      final remoteReports = await _remoteRepository.getDamageReports();
+
+      await _db.transaction(() async {
+        for (final remote in remoteReports) {
+          final local = await (_db.select(_db.damageReports)
+                ..where((t) => t.id.equals(remote.id)))
+              .getSingleOrNull();
+
+          if (local != null) {
+            final isProtected = local.syncStatus == 'pending' ||
+                local.syncStatus == 'syncing' ||
+                local.syncStatus == 'conflict' ||
+                local.isPendingDelete;
+
+            if (isProtected) continue;
+          }
+
+          // Update header
+          await _db.into(_db.damageReports).insertOnConflictUpdate(
+                _mapReportToCompanion(remote).copyWith(
+                  syncStatus: const Value('completed'),
+                ),
+              );
+
+          // Update items
+          for (final item in remote.items) {
+            await _db.into(_db.damageItems).insertOnConflictUpdate(
+                  _mapItemToCompanion(item).copyWith(
+                    syncStatus: const Value('completed'),
+                  ),
+                );
+          }
+        }
+      });
+    } catch (e) {
+      // Log or handle error
+    }
   }
 }

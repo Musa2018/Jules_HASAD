@@ -7,6 +7,18 @@
 - **Last Updated**: 2026-07-28
 - **Latest Commit**: `DamageReport` (`0df6057`)
 
+## DamageReport List Experience Standardization (2026-07-30) — COMPLETED
+- **Status**: ✅ **Standardized & Hardened**.
+- **UX**: Unified the Damage Report list with the Farmers/Farms module using the "Entity List → Cards → Actions → Child Workflow" pattern.
+- **Components**:
+    - Implemented `DamageReportCard` with full metadata visibility (Farmer, Farm, Cause, Location) and standardized action menu.
+    - Integrated `DamageReportFilter` and `filteredDamageReportsProvider` for advanced searching and regional/status filtering.
+    - Added reactive Drift streams (`watchDamageReports`) to ensure real-time UI updates across the list.
+- **Navigation**: Established "Add Damage Items" as the primary entry point for assessment items, mapping directly to the existing `DamageReportFormScreen`.
+- **Hardening**: Added `cancelDeleteDamageReport` for parity with other modules, allowing users to undo offline deletion attempts.
+- **Integrity**: Hardened `DamageReportHeaderScreen` localization to fix historical workflow tests and ensure RTL consistency.
+- **Sync**: Integrated pull-to-refresh with the `synchronize()` repository pattern.
+
 ## Synchronization Hardening (2026-07-30) — COMPLETED
 - **Status**: ✅ **Hardened & Verified**.
 - **Issue**: DamageReports created offline were missing items upon server synchronization (items: []).

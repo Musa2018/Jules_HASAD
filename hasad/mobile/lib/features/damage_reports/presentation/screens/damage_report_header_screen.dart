@@ -283,7 +283,7 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     )
                   else
-                    Text(l10n.search, style: const TextStyle(color: Colors.grey)),
+                    Text(l10n.selectCause, style: const TextStyle(color: Colors.grey)),
                 ],
               ),
             ),

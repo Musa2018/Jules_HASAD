@@ -1,269 +1,367 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:mobile/core/router/app_router.dart';
-import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report_filter.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
+import 'package:mobile/features/damage_reports/presentation/widgets/damage_report_card.dart';
+import 'package:mobile/features/farms/presentation/lookup_providers.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
+import 'package:mobile/features/location/domain/governorate.dart';
+import 'package:mobile/features/location/domain/locality.dart';
+import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 
-class DamageReportsListScreen extends ConsumerWidget {
+class DamageReportsListScreen extends ConsumerStatefulWidget {
   final Farm? farm;
 
   const DamageReportsListScreen({super.key, this.farm});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DamageReportsListScreen> createState() => _DamageReportsListScreenState();
+}
+
+class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final reportsAsync = farm != null
-        ? ref.watch(damageReportsListByFarmProvider(farm!.id))
-        : ref.watch(allDamageReportsProvider);
+    final reportsAsync = ref.watch(filteredDamageReportsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(farm != null
-            ? '${l10n.damageReports}: ${farm!.localFarmName}'
+        title: Text(widget.farm != null
+            ? '${l10n.damageReports}: ${widget.farm!.localFarmName}'
             : l10n.damageReportsForms),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.invalidate(damageReportsListProvider),
+          ),
+        ],
       ),
-      body: reportsAsync.when(
-        data: (reports) {
-          if (reports.isEmpty) {
-            return Center(
-                child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text(
-                farm != null
-                    ? 'لا يوجد استمارات ضرر لهذه المزرعة.'
-                    : 'لا يوجد استمارات ضرر في منطقتك حالياً.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.grey, fontSize: 16),
-              ),
-            ));
-          }
-          return ListView.builder(
-            itemCount: reports.length,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemBuilder: (context, index) {
-              final report = reports[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                elevation: 2,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              report.reportNumber.isNotEmpty ? report.reportNumber : report.temporaryFormNumber,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              DateFormat.yMMMd().format(report.damageDate),
-                              style: const TextStyle(fontSize: 12, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _StatusBadge(statusId: report.statusId),
-                          const SizedBox(height: 4),
-                          _SyncStatusBadge(syncStatus: report.syncStatus),
-                        ],
-                      ),
-                    ],
-                  ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        children: [
+          _buildSearchAndFilters(context),
+          Expanded(
+            child: reportsAsync.when(
+              data: (reports) {
+                final displayReports = widget.farm != null
+                    ? reports.where((r) => r.farmId == widget.farm!.id).toList()
+                    : reports;
+
+                if (displayReports.isEmpty) {
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      await ref.read(damageReportRepositoryProvider).synchronize();
+                      ref.invalidate(damageReportsListProvider);
+                    },
+                    child: Stack(
                       children: [
-                        Text(
-                          '${report.items.length} ${l10n.assessmentItem}',
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                        if (farm == null) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(Icons.agriculture, size: 14, color: Colors.grey),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  'المزرعة: ${report.farmId.substring(0, 8)}...',
-                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                ),
-                              ),
-                            ],
+                        ListView(),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32.0),
+                            child: Text(
+                              l10n.noData,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.grey, fontSize: 16),
+                            ),
                           ),
-                        ],
+                        ),
                       ],
                     ),
-                  ),
-                  trailing: const Icon(Icons.chevron_left), // RTL
-                  onTap: () async {
-                    Farm? targetFarm = farm;
-                    if (targetFarm == null) {
-                      final db = ref.read(databaseProvider);
-                      final farmLocal = await (db.select(db.farms)
-                            ..where((t) => t.id.equals(report.farmId)))
-                          .getSingleOrNull();
-                      if (farmLocal != null) {
-                        targetFarm = Farm(
-                          id: farmLocal.id,
-                          serverId: farmLocal.serverId,
-                          farmerId: farmLocal.farmerId,
-                          localFarmName: farmLocal.localFarmName,
-                          governorateId: farmLocal.governorateId,
-                          directorateId: farmLocal.directorateId,
-                          localityId: farmLocal.localityId,
-                          agriculturalSectorId: farmLocal.agriculturalSectorId,
-                          politicalClassificationId: farmLocal.politicalClassificationId,
-                          ownershipTypeId: farmLocal.ownershipTypeId,
-                          area: farmLocal.area,
-                          areaUnitId: farmLocal.areaUnitId,
-                          measurementUnitId: farmLocal.measurementUnitId,
-                          basin: farmLocal.basin,
-                          parcel: farmLocal.parcel,
-                          latitude: farmLocal.latitude,
-                          longitude: farmLocal.longitude,
-                          rowVersion: farmLocal.rowVersion,
-                          syncStatus: farmLocal.syncStatus,
-                        );
-                      }
-                    }
-
-                    if (context.mounted) {
-                      if (targetFarm != null) {
-                        context.push(
-                          AppRoutes.damageReportDetails,
-                          extra: {'farm': targetFarm, 'report': report},
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('تعذر تحميل بيانات المزرعة محلياً.')),
-                        );
-                      }
-                    }
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await ref.read(damageReportRepositoryProvider).synchronize();
+                    ref.invalidate(damageReportsListProvider);
                   },
+                  child: ListView.builder(
+                    itemCount: displayReports.length,
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    itemBuilder: (context, index) {
+                      return DamageReportCard(report: displayReports[index]);
+                    },
+                  ),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text('${l10n.errorLoadingDamageReports}: $err'),
+                    TextButton(
+                      onPressed: () => ref.refresh(damageReportsListProvider),
+                      child: Text(l10n.retry),
+                    ),
+                  ],
                 ),
-              );
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+              ),
+            ),
+          ),
+        ],
       ),
-      floatingActionButton: farm != null
-          ? FloatingActionButton(
-              onPressed: () => context.push('/damage-reports/add', extra: farm),
-              child: const Icon(Icons.add),
+      floatingActionButton: widget.farm != null
+          ? FloatingActionButton.extended(
+              onPressed: () => context.push(AppRoutes.addDamageReport, extra: widget.farm),
+              icon: const Icon(Icons.add),
+              label: Text(l10n.addDamageReport),
             )
           : null,
     );
   }
-}
 
-class _SyncStatusBadge extends StatelessWidget {
-  final String syncStatus;
-  const _SyncStatusBadge({required this.syncStatus});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSearchAndFilters(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    String label = syncStatus;
-    Color color = Colors.grey;
-    IconData icon = Icons.sync_problem;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: l10n.search,
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        ref.read(damageReportFilterProvider.notifier).update(
+                            (s) => s.copyWith(searchText: ''));
+                      },
+                    )
+                  : null,
+            ),
+            onChanged: (v) {
+              ref.read(damageReportFilterProvider.notifier).update(
+                  (s) => s.copyWith(searchText: v));
+            },
+          ),
+          const SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _FilterChip(
+                  label: l10n.status,
+                  isActive: ref.watch(damageReportFilterProvider).statusId != null,
+                  onTap: () => _showFilterSheet(context),
+                ),
+                const SizedBox(width: 8),
+                _FilterChip(
+                  label: l10n.syncStatus,
+                  isActive: ref.watch(damageReportFilterProvider).syncStatus != null,
+                  onTap: () => _showFilterSheet(context),
+                ),
+                const SizedBox(width: 8),
+                _FilterChip(
+                  label: l10n.governorate,
+                  isActive: ref.watch(damageReportFilterProvider).governorateId != null,
+                  onTap: () => _showFilterSheet(context),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    switch (syncStatus) {
-      case 'pending':
-        label = l10n.pendingSync;
-        color = Colors.orange;
-        icon = Icons.access_time;
-        break;
-      case 'syncing':
-        label = l10n.syncing;
-        color = Colors.blue;
-        icon = Icons.sync;
-        break;
-      case 'completed':
-        label = l10n.synced;
-        color = Colors.green;
-        icon = Icons.check_circle_outline;
-        break;
-      case 'failed':
-        label = l10n.syncError;
-        color = Colors.red;
-        icon = Icons.error_outline;
-        break;
-      case 'conflict':
-        label = 'Conflict'; // Or l10n.syncConflict if exists
-        color = Colors.deepOrange;
-        icon = Icons.warning_amber_outlined;
-        break;
-    }
-
-    if (syncStatus == 'completed') return const SizedBox.shrink();
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 12, color: color),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w500),
-        ),
-      ],
+  void _showFilterSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => const _DamageReportFilterSheet(),
     );
   }
 }
 
-class _StatusBadge extends StatelessWidget {
-  final String statusId;
-  const _StatusBadge({required this.statusId});
+class _DamageReportFilterSheet extends ConsumerStatefulWidget {
+  const _DamageReportFilterSheet();
+
+  @override
+  ConsumerState<_DamageReportFilterSheet> createState() => _DamageReportFilterSheetState();
+}
+
+class _DamageReportFilterSheetState extends ConsumerState<_DamageReportFilterSheet> {
+  late DamageReportFilter _localFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    _localFilter = ref.read(damageReportFilterProvider);
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    String label = statusId;
-    Color color = Colors.grey;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
-    switch (statusId) {
-      case 'Draft':
-        label = l10n.status_Draft;
-        color = Colors.grey;
-        break;
-      case 'TechReview':
-      case 'MinTechReview':
-        label = l10n.status_TechReview;
-        color = Colors.blue;
-        break;
-      case 'Completed':
-        label = l10n.status_Completed;
-        color = Colors.green;
-        break;
-    }
+    // Location lookups
+    final govAsync = ref.watch(governoratesProvider);
+    final dirAsync = _localFilter.governorateId != null
+        ? ref.watch(directoratesProvider(_localFilter.governorateId))
+        : const AsyncValue<List<Directorate>>.data([]);
+    final locAsync = _localFilter.directorateId != null
+        ? ref.watch(localitiesProvider((_localFilter.governorateId, _localFilter.directorateId)))
+        : const AsyncValue<List<Locality>>.data([]);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.5)),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewInsets.bottom + 16),
+      height: MediaQuery.of(context).size.height * 0.7,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.search, style: Theme.of(context).textTheme.titleLarge),
+              TextButton(
+                onPressed: () {
+                  setState(() => _localFilter = const DamageReportFilter());
+                },
+                child: Text(l10n.all),
+              ),
+            ],
+          ),
+          const Divider(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  govAsync.when(
+                    data: (items) => SearchableLookupField<Governorate>(
+                      label: l10n.governorate,
+                      items: items,
+                      itemLabel: (i) => isAr ? i.nameAr : i.nameEn,
+                      value: items.where((i) => i.id == _localFilter.governorateId).firstOrNull,
+                      onChanged: (v) => setState(() {
+                        _localFilter = _localFilter.copyWith(
+                          governorateId: v?.id,
+                          directorateId: null,
+                          localityId: null,
+                        );
+                      }),
+                    ),
+                    loading: () => const LinearProgressIndicator(),
+                    error: (e, _) => Text(e.toString()),
+                  ),
+                  const SizedBox(height: 16),
+                  dirAsync.when(
+                    data: (items) => SearchableLookupField<Directorate>(
+                      label: l10n.directorate,
+                      items: items,
+                      itemLabel: (i) => isAr ? i.nameAr : i.nameEn,
+                      value: items.where((i) => i.id == _localFilter.directorateId).firstOrNull,
+                      enabled: _localFilter.governorateId != null,
+                      onChanged: (v) => setState(() {
+                        _localFilter = _localFilter.copyWith(
+                          directorateId: v?.id,
+                          localityId: null,
+                        );
+                      }),
+                    ),
+                    loading: () => const LinearProgressIndicator(),
+                    error: (e, _) => Text(e.toString()),
+                  ),
+                  const SizedBox(height: 16),
+                  locAsync.when(
+                    data: (items) => SearchableLookupField<Locality>(
+                      label: l10n.locality,
+                      items: items,
+                      itemLabel: (i) => isAr ? i.nameAr : i.nameEn,
+                      value: items.where((i) => i.id == _localFilter.localityId).firstOrNull,
+                      enabled: _localFilter.directorateId != null,
+                      onChanged: (v) => setState(() {
+                        _localFilter = _localFilter.copyWith(localityId: v?.id);
+                      }),
+                    ),
+                    loading: () => const LinearProgressIndicator(),
+                    error: (e, _) => Text(e.toString()),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _localFilter.statusId,
+                    decoration: InputDecoration(labelText: l10n.status),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(l10n.all)),
+                      DropdownMenuItem(value: 'Draft', child: Text(l10n.status_Draft)),
+                      DropdownMenuItem(value: 'TechReview', child: Text(l10n.status_TechReview)),
+                      DropdownMenuItem(value: 'Completed', child: Text(l10n.status_Completed)),
+                    ],
+                    onChanged: (v) => setState(() {
+                      _localFilter = _localFilter.copyWith(statusId: v);
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _localFilter.syncStatus,
+                    decoration: InputDecoration(labelText: l10n.syncStatus),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(l10n.all)),
+                      DropdownMenuItem(value: 'completed', child: Text(l10n.synced)),
+                      DropdownMenuItem(value: 'pending', child: Text(l10n.pendingSync)),
+                      DropdownMenuItem(value: 'failed', child: Text(l10n.syncError)),
+                    ],
+                    onChanged: (v) => setState(() {
+                      _localFilter = _localFilter.copyWith(syncStatus: v);
+                    }),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(damageReportFilterProvider.notifier).state = _localFilter;
+              Navigator.pop(context);
+            },
+            child: Text(l10n.search),
+          ),
+        ],
       ),
-      child: Text(
-        label,
-        style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
-      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      label: Text(label),
+      selected: isActive,
+      onSelected: (_) => onTap(),
+      selectedColor: Theme.of(context).colorScheme.primaryContainer,
+      checkmarkColor: Theme.of(context).colorScheme.primary,
     );
   }
 }

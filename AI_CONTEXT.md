@@ -45,6 +45,14 @@ For complex aggregates (e.g., DamageReport -> Items -> Evidence):
 ### Synchronization Investigation Workflow
 UI Action → Local Drift Transaction → SyncQueue Creation → BackgroundSyncService Processing → **Aggregate Reloading** → **Late Binding** → Payload Generation → HTTP Request → Backend Handler → Response Mapping → Local Database Update → Queue Completion.
 
+### Standardized UX Pattern
+All major entity modules (Farmers, Farms, Damage Reports) MUST follow:
+**Entity List → Cards → Actions → Child Workflow**
+- **Entity List**: Reactive list screen with search, filtering, and pull-to-refresh sync.
+- **Cards**: Rich cards with title, metadata summary, and status badges (Workflow Status + Sync Status).
+- **Actions**: Bottom-aligned `TextButton.icon` actions for details, editing, and child-entity creation.
+- **Child Workflow**: Child records (e.g., Farms for a Farmer, Items for a Report) are accessed via "Add/View" actions on the parent card.
+
 ### HASAD Terminology Rule
 - Arabic: "مساعدة"
 - English: "Assistance"

@@ -188,6 +188,12 @@ abstract class AppLocalizations {
   /// **'Damage Cause'**
   String get damageCause;
 
+  /// No description provided for @selectCause.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Cause'**
+  String get selectCause;
+
   /// No description provided for @reportNumber.
   ///
   /// In en, this message translates to:
@@ -355,6 +361,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Farmer'**
   String get addFarmer;
+
+  /// No description provided for @addDamageReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Damage Report'**
+  String get addDamageReport;
+
+  /// No description provided for @addAssessmentItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Damage Items'**
+  String get addAssessmentItem;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
 
   /// No description provided for @addNewFarmerAction.
   ///
@@ -955,6 +979,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load farms.'**
   String get errorLoadingFarms;
+
+  /// No description provided for @errorLoadingDamageReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load damage reports.'**
+  String get errorLoadingDamageReports;
 
   /// No description provided for @resetPassword.
   ///

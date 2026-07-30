@@ -32,6 +32,11 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Stream<List<DamageReport>> watchDamageReports() {
+    return Stream.fromFuture(getDamageReports());
+  }
+
+  @override
   Future<List<DamageReport>> getDamageReportsByFarm(String farmId) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -49,6 +54,11 @@ class RemoteDamageReportRepository implements DamageReportRepository {
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Stream<List<DamageReport>> watchDamageReportsByFarm(String farmId) {
+    return Stream.fromFuture(getDamageReportsByFarm(farmId));
   }
 
   @override
@@ -126,6 +136,11 @@ class RemoteDamageReportRepository implements DamageReportRepository {
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Future<void> cancelDeleteDamageReport(String id) async {
+    // Local-only operation
   }
 
   @override
@@ -240,6 +255,11 @@ class RemoteDamageReportRepository implements DamageReportRepository {
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Future<void> synchronize() async {
+    // Remote repository is always "in sync" with itself.
   }
 
   List<String> _errorsFromDio(DioException e) {

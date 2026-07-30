@@ -54,6 +54,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get damageCause => 'سبب الضرر';
 
   @override
+  String get selectCause => 'اختر السبب';
+
+  @override
   String get reportNumber => 'رقم التقرير';
 
   @override
@@ -141,6 +144,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addFarmer => 'إضافة مزارع';
+
+  @override
+  String get addDamageReport => 'إضافة تقرير ضرر';
+
+  @override
+  String get addAssessmentItem => 'إضافة بنود الضرر';
+
+  @override
+  String get details => 'التفاصيل';
 
   @override
   String get addNewFarmerAction => '+ إضافة مزارع جديد';
@@ -443,6 +455,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorLoadingFarms => 'فشل تحميل المزارع.';
+
+  @override
+  String get errorLoadingDamageReports => 'فشل تحميل تقارير الأضرار.';
 
   @override
   String get resetPassword => 'إعادة تعيين كلمة المرور';

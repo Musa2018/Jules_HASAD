@@ -54,6 +54,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get damageCause => 'Damage Cause';
 
   @override
+  String get selectCause => 'Select Cause';
+
+  @override
   String get reportNumber => 'Report Number';
 
   @override
@@ -141,6 +144,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFarmer => 'Add Farmer';
+
+  @override
+  String get addDamageReport => 'Add Damage Report';
+
+  @override
+  String get addAssessmentItem => 'Add Damage Items';
+
+  @override
+  String get details => 'Details';
 
   @override
   String get addNewFarmerAction => '+ Add New Farmer';
@@ -443,6 +455,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorLoadingFarms => 'Failed to load farms.';
+
+  @override
+  String get errorLoadingDamageReports => 'Failed to load damage reports.';
 
   @override
   String get resetPassword => 'Reset Password';

@@ -7,6 +7,18 @@
 - **Last Updated**: 2026-07-28
 - **Latest Commit**: `DamageReport` (`0df6057`)
 
+## Synchronization Hardening (2026-07-30) — COMPLETED
+- **Status**: ✅ **Hardened & Verified**.
+- **Issue**: DamageReports created offline were missing items upon server synchronization (items: []).
+- **Root Cause**:
+    1. **Stale Snapshots**: `SyncQueue` stored a JSON snapshot of the report header at the moment of creation (0 items). The sync worker used this stale data instead of the current database state.
+    2. **UI Blocking**: `DamageReportFormScreen` prevented adding items until `syncStatus == 'completed'`, effectively disabling offline assessment for new reports.
+- **Solution**:
+    1. **Late Binding**: Refactored `BackgroundSyncService` to reload the full `DamageReport` aggregate (Header + Items) from Drift immediately before sync execution.
+    2. **UI Unlocking**: Removed sync-status guards from the UI, enabling seamless offline assessment entry.
+    3. **Atomic Cleanup**: The sync engine now automatically prunes redundant `damage_item` tasks after a successful bulk report creation.
+- **Result**: Successfully verified full offline creation flow (Header + 10 items) with single-request bulk synchronization.
+
 ## Sprint 14.x — COMPLETED (New Stability Point)
 Simplified Assessment & Age-Based Valuation:
 - **UX**: Replaced 5-step wizard with a searchable "Price List" widget (Search by Code or Name).

@@ -7,6 +7,17 @@
 - **Last Updated**: 2026-07-28
 - **Latest Commit**: `DamageReport` (`0df6057`)
 
+## DamageReport Two-Phase Workflow Implementation (2026-07-30) — COMPLETED
+- **Status**: ✅ **Implemented & Verified**.
+- **UX**: Implemented the approved two-phase lifecycle:
+    - **Phase 1**: Header Creation returns the user to the list immediately after local save.
+    - **Phase 2**: "Add Damage Items" is gated until the header is successfully synchronized with the backend (obtains a permanent `serverId`).
+- **Hardening**:
+    - Updated `DamageReportHeaderScreen` to return to the list and provide clear feedback about the sync requirement.
+    - Updated `DamageReportCard` to disable the assessment entry action until the report has a valid server identity.
+    - Verified `BackgroundSyncService` late-binding for `damageReportId` ensures relational integrity during Phase 2.
+- **Validation**: Passed updated `damage_report_form_workflow_test.dart` verifying the two-phase navigation flow.
+
 ## DamageReport List Experience Standardization (2026-07-30) — COMPLETED
 - **Status**: ✅ **Standardized & Hardened**.
 - **UX**: Unified the Damage Report list with the Farmers/Farms module using the "Entity List → Cards → Actions → Child Workflow" pattern.

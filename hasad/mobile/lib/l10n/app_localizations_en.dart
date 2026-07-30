@@ -57,6 +57,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectCause => 'Select Cause';
 
   @override
+  String get selectDamageNature => 'Select Damage Nature';
+
+  @override
+  String get selectDamageAction => 'Select Damage Action';
+
+  @override
+  String get selectCategory => 'Select Category';
+
+  @override
+  String get selectSubCategory => 'Select Sub-Category';
+
+  @override
+  String get selectClassification => 'Select Classification';
+
+  @override
+  String get itemDetails => 'Item Details';
+
+  @override
   String get reportNumber => 'Report Number';
 
   @override

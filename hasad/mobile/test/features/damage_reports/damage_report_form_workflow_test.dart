@@ -112,7 +112,7 @@ void main() {
     verifyNever(() => mockDamageRepo.createDamageReport(any()));
   });
 
-  testWidgets('DamageReportHeaderScreen successfully saves header', (tester) async {
+  testWidgets('DamageReportHeaderScreen successfully saves header and returns to list', (tester) async {
     final natures = [const DamageNature(id: 1, nameAr: 'NatureAr', nameEn: 'NatureEn')];
     final categories = [const DamageCauseCategory(id: 1, nameAr: 'CatAr', nameEn: 'CatEn')];
     final causes = [const DamageCause(id: 10, parentId: 1, nameAr: 'CauseAr', nameEn: 'CauseEn')];
@@ -132,11 +132,10 @@ void main() {
     
     when(() => mockDamageRepo.createDamageReport(any())).thenAnswer((inv) async {
       final report = inv.positionalArguments[0] as DamageReport;
-      return report.copyWith(id: 'NEW-ID', reportNumber: 'NB-NAB-2026-000001');
+      return report.copyWith(id: 'NEW-ID', temporaryFormNumber: 'TEMP-2026-0001');
     });
 
-    when(() => mockRouter.pushReplacement(any(), extra: any(named: 'extra')))
-        .thenAnswer((_) async => null);
+    when(() => mockRouter.pop()).thenAnswer((_) async => null);
 
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
@@ -155,8 +154,9 @@ void main() {
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
 
-    // Verify success message
-    expect(find.text('Header saved. Proceeding to assessment.'), findsOneWidget);
+    // Verify success message and pop
+    expect(find.textContaining('Waiting for synchronization'), findsOneWidget);
     verify(() => mockDamageRepo.createDamageReport(any())).called(1);
+    verify(() => mockRouter.pop()).called(1);
   });
 }

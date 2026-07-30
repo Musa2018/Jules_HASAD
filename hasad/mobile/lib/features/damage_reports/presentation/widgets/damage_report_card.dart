@@ -167,6 +167,14 @@ class DamageReportCard extends ConsumerWidget {
                           onPressed: () => context.push(AppRoutes.editDamageReport, extra: report.id),
                           icon: const Icon(Icons.add_circle_outline, size: 18),
                           label: Text(l10n.addAssessmentItem),
+                        )
+                      else if (report.serverId == null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            l10n.awaitingSyncToAddItems,
+                            style: TextStyle(color: Colors.orange[800], fontSize: 11, fontStyle: FontStyle.italic),
+                          ),
                         ),
                       TextButton.icon(
                         onPressed: () => context.push(AppRoutes.damageReportDetails, extra: {
@@ -207,8 +215,10 @@ class DamageReportCard extends ConsumerWidget {
   }
 
   bool _canAddItems(DamageReport report) {
-    return report.statusId == DamageReportStatus.draft || 
-           report.statusId == DamageReportStatus.pendingTechnicalVerification;
+    // Phase 2 requirement: Header must be synchronized (have a serverId) before items can be added
+    return report.serverId != null && 
+           (report.statusId == DamageReportStatus.draft || 
+            report.statusId == DamageReportStatus.pendingTechnicalVerification);
   }
 
   bool _canDelete(DamageReport report, AuthorizationService auth) {

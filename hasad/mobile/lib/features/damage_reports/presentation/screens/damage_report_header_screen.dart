@@ -79,9 +79,9 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
           final created = formState.createdReport;
           if (created != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Header saved. Proceeding to assessment.')),
+              const SnackBar(content: Text('Damage report header saved. Waiting for synchronization to add items.')),
             );
-            context.pushReplacement(AppRoutes.editDamageReport, extra: created.id);
+            context.pop();
           }
         } else if (formState.errors.isNotEmpty) {
           final l10n = AppLocalizations.of(context)!;

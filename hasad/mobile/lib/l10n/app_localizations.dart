@@ -194,6 +194,42 @@ abstract class AppLocalizations {
   /// **'Select Cause'**
   String get selectCause;
 
+  /// No description provided for @selectDamageNature.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Damage Nature'**
+  String get selectDamageNature;
+
+  /// No description provided for @selectDamageAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Damage Action'**
+  String get selectDamageAction;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Category'**
+  String get selectCategory;
+
+  /// No description provided for @selectSubCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Sub-Category'**
+  String get selectSubCategory;
+
+  /// No description provided for @selectClassification.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Classification'**
+  String get selectClassification;
+
+  /// No description provided for @itemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Details'**
+  String get itemDetails;
+
   /// No description provided for @reportNumber.
   ///
   /// In en, this message translates to:

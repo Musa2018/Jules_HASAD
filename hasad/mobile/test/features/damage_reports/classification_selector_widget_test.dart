@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/classification_selector.dart';
+import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
 import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
@@ -13,6 +14,15 @@ class MockReferenceDataRepository extends Mock implements ReferenceDataRepositor
 
 void main() {
   late MockReferenceDataRepository mockRepo;
+
+  setUpAll(() {
+    registerFallbackValue(const DamageNature(id: 0, nameAr: '', nameEn: ''));
+    registerFallbackValue(const DamageAction(id: 0, nameAr: '', nameEn: ''));
+    registerFallbackValue(const DamageCategory(id: 0, parentId: 0, nameAr: '', nameEn: ''));
+    registerFallbackValue(const DamageSubCategory(id: 0, parentId: 0, nameAr: '', nameEn: ''));
+    registerFallbackValue(const DamageClassification(id: 0, parentId: 0, nameAr: '', nameEn: ''));
+    registerFallbackValue(const ClassificationParams(sectorId: 0));
+  });
 
   setUp(() {
     mockRepo = MockReferenceDataRepository();
@@ -43,7 +53,7 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Select Damage Nature'), findsOneWidget);
+    expect(find.textContaining('Damage Nature'), findsOneWidget);
     expect(find.text('PlantsAr'), findsOneWidget);
   });
 
@@ -63,13 +73,15 @@ void main() {
     await tester.tap(find.text('PlantsAr'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Select Damage Action'), findsOneWidget);
+    expect(find.textContaining('Damage Action'), findsOneWidget);
+    expect(find.textContaining('2 of 5'), findsOneWidget);
 
     // Click Action
     await tester.tap(find.text('ActionAr'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Select Category'), findsOneWidget);
+    expect(find.textContaining('Category'), findsOneWidget);
+    expect(find.textContaining('3 of 5'), findsOneWidget);
     expect(find.text('TreesAr'), findsOneWidget);
   });
 }

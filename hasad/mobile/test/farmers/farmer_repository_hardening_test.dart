@@ -187,6 +187,19 @@ void main() {
       await repository.createFarmer(farmer1);
       await repository.createFarmer(farmer2);
 
+      // 3.5 Add a farm for farmer1 in D1
+      await db.into(db.farms).insert(FarmsCompanion.insert(
+        id: 'farm1',
+        farmerId: 'f1',
+        localFarmName: 'Farm 1',
+        governorateId: 'G1',
+        directorateId: 'D1',
+        localityId: 'L1',
+        basin: 'B1',
+        parcel: 'P1',
+        area: 10,
+      ));
+
       // 4. Watch with isOperational: true
       final streamOp = repository.watchFarmers(filter: const FarmerFilter(isOperational: true));
       final resultOp = await streamOp.first;

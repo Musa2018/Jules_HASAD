@@ -52,6 +52,7 @@ All major entity modules (Farmers, Farms, Damage Reports) MUST follow:
 - **Cards**: Rich cards with title, metadata summary, and status badges (Workflow Status + Sync Status).
 - **Actions**: Bottom-aligned `TextButton.icon` actions for details, editing, and child-entity creation.
 - **Child Workflow**: Child records (e.g., Farms for a Farmer, Items for a Report) are accessed via "Add/View" actions on the parent card.
+- **Two-Phase Creation (Damage Reports)**: Parent aggregate header must be synchronized and obtain a `serverId` before child records (Damage Items) can be added or linked.
 
 ### HASAD Terminology Rule
 - Arabic: "مساعدة"

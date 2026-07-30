@@ -57,6 +57,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectCause => 'اختر السبب';
 
   @override
+  String get selectDamageNature => 'اختر طبيعة الضرر';
+
+  @override
+  String get selectDamageAction => 'اختر فعل الضرر';
+
+  @override
+  String get selectCategory => 'اختر الفئة';
+
+  @override
+  String get selectSubCategory => 'اختر الفئة الفرعية';
+
+  @override
+  String get selectClassification => 'اختر التصنيف';
+
+  @override
+  String get itemDetails => 'تفاصيل البند';
+
+  @override
   String get reportNumber => 'رقم التقرير';
 
   @override

@@ -85,7 +85,7 @@ void main() {
     );
     when(() => mockRef.read(syncServiceProvider)).thenReturn(syncService);
 
-    localRepo = OfflineFirstDamageReportRepository(db, mockRef, null);
+    localRepo = OfflineFirstDamageReportRepository(db, mockRef, null, reportRepo);
   });
 
   tearDown(() async {

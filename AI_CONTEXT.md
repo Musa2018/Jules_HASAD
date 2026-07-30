@@ -1,22 +1,8 @@
-You are working on the HASAD project repository.
+# HASAD Project Context & AI Operating Rules
 
-Task: Improve and harden AI agent guidance by updating AI_CONTEXT.md.
+## HASAD AI Agent Operating Rules
 
-IMPORTANT:
-Do not rewrite the whole file blindly.
-Preserve all existing valuable architectural knowledge, sprint history, ADR references, and technical decisions.
-
-Perform the following:
-
-## 1. Add AI Agent Operating Rules
-
-Add a new top-level section near the beginning of AI_CONTEXT.md:
-
-# HASAD AI Agent Operating Rules
-
-This section must define how any AI agent working on HASAD must behave.
-
-Include the following mandatory rules:
+This section defines how any AI agent working on HASAD must behave.
 
 ### Engineering Approach
 The AI agent must behave as:
@@ -26,283 +12,71 @@ The AI agent must behave as:
 - Offline-First Systems Specialist
 
 Before any code change:
-
 1. Understand existing architecture.
 2. Review:
-  - AI_CONTEXT.md
-  - PROJECT_STATUS.md
-  - Relevant ADRs.
+   - `AI_CONTEXT.md`
+   - `PROJECT_STATUS.md`
+   - Relevant ADRs.
 3. Identify affected modules.
 4. Perform root cause analysis.
 5. Provide evidence before proposing fixes.
 
 Never implement fixes based only on symptoms.
 
----
-
 ### Root Cause Analysis Rule
-
-For every bug investigation:
-
-Follow:
-
+For every bug investigation, follow:
 1. Reproduce the problem.
-2. Collect evidence:
-  - Application logs
-  - Database state
-  - API requests/responses
-  - Stack traces
-  - SyncQueue state
+2. Collect evidence (Logs, DB state, API traces, SyncQueue state).
 3. Identify the first failing operation.
 4. Explain why it failed.
 5. Propose the smallest safe solution.
 
-The first failure point is the root cause, not the final visible error.
-
----
-
 ### Offline-First Synchronization Rules
+- **Drift Database** is the local source of truth before synchronization.
+- **SyncQueue** represents synchronization intent, not authoritative data.
+- **Server** becomes authoritative after successful synchronization.
 
-Define these permanent HASAD rules:
-
-- Drift Database is the local source of truth before synchronization.
-- SyncQueue represents synchronization intent, not authoritative data.
-- Server becomes authoritative after successful synchronization.
-
-For complex aggregates:
-
-Example:
-
-DamageReport
-├── DamageItems
-└── Evidence
-
-The agent must verify:
-
-- Parent-child relationships.
-- ClientId / ServerId mapping.
-- Sync ordering.
-- Retry behavior.
-- Partial failure recovery.
-- Idempotency.
-
-Never assume queued JSON snapshots represent the latest local state.
-
----
+For complex aggregates (e.g., DamageReport -> Items -> Evidence):
+- **Aggregate Reloading**: Always reload the full aggregate from Drift immediately before sync execution to prevent stale snapshots.
+- **Late Binding**: Resolve cross-entity dependencies (`ClientId` to `serverId`) just before transmission.
+- **Ordered Sync**: Verify parent-child relationships and sync ordering.
+- **Idempotency**: Use client-generated UUIDs (`ClientId`) for all creations.
 
 ### Synchronization Investigation Workflow
-
-Add mandatory tracing flow:
-
-UI Action
-↓
-Local Drift Transaction
-↓
-SyncQueue Creation
-↓
-BackgroundSyncService Processing
-↓
-Payload Generation
-↓
-HTTP Request
-↓
-Backend Command Handler
-↓
-Response Mapping
-↓
-Local Database Update
-↓
-Queue Completion
-
-The agent must locate the first broken stage.
-
----
-
-### Backend Contract Alignment
-
-Before changing mobile synchronization:
-
-Verify:
-
-- API endpoint contract.
-- Command models.
-- Validators.
-- Domain rules.
-- Response envelope.
-- Error handling.
-
-Do not fix backend contract violations only from Flutter.
-
----
-
-### Database and Migration Rules
-
-Add:
-
-Never:
-
-- Delete lookup/reference data to solve migration problems.
-- Recreate IDs.
-- Break foreign key relationships.
-- Change existing identifiers without migration strategy.
-
-Always verify:
-
-- Existing data integrity.
-- Foreign keys.
-- Seed ownership.
-- Fresh installation.
-- Upgrade migration path.
-- Offline synchronization compatibility.
-
----
-
-### Testing Requirements
-
-Every implementation must include:
-
-- Unit tests.
-- Integration tests when applicable.
-- Regression verification.
-
-For synchronization changes always test:
-
-Offline Create
-↓
-Offline Update
-↓
-Reconnect
-↓
-Synchronization
-↓
-Failure Retry
-↓
-Recovery
-
----
-
-### Documentation Continuity
-
-After completing any significant task:
-
-Update when required:
-
-- PROJECT_STATUS.md
-- AI_CONTEXT.md
-- ADR documents
-
-Document:
-
-- What changed.
-- Why it changed.
-- Tests executed.
-- Remaining risks.
-- Future technical debt.
-
----
-
-### Code Change Discipline
-
-Before implementation provide:
-
-- Root Cause Analysis.
-- Implementation Plan.
-- Files affected.
-- Risks.
-
-After implementation provide:
-
-- Changed files.
-- Tests executed.
-- Verification results.
-- Suggested commit message.
-
-Avoid unnecessary refactoring.
-
----
+UI Action → Local Drift Transaction → SyncQueue Creation → BackgroundSyncService Processing → **Aggregate Reloading** → **Late Binding** → Payload Generation → HTTP Request → Backend Handler → Response Mapping → Local Database Update → Queue Completion.
 
 ### HASAD Terminology Rule
-
-Ensure all future AI responses and documentation use:
-
-Arabic:
-"مساعدة"
-
-English:
-"Assistance"
-
-Never use:
-"تعويض"
-or
-"Compensation"
-
-for HASAD business processes.
+- Arabic: "مساعدة"
+- English: "Assistance"
+- **Never use**: "تعويض" or "Compensation".
 
 ---
 
-## 2. Review Existing AI_CONTEXT.md for Contradictions
+## Project Architecture Baseline
 
-After adding the rules:
+### Backend (.NET 8)
+- **Architecture**: Clean Architecture with CQRS (MediatR).
+- **Persistence**: EF Core with **SQL Server**.
+- **Security**: ASP.NET Identity, JWT with rotating refresh tokens.
+- **Reference Data**: Owned by `DbInitializer.cs` (ADR-0016).
 
-Perform a consistency audit.
+### Mobile (Flutter)
+- **State Management**: Riverpod.
+- **Navigation**: GoRouter (Avoid `extra` for IDs).
+- **Database**: **Drift (Schema v28)**.
+- **Networking**: Dio.
 
-Look for contradictions between:
-
-- Completed sprints.
-- Architectural decisions.
-- Current status.
-- Technical debt.
-- Migration decisions.
-
-Specifically review:
-
-- MeasurementUnit Consolidation section.
-- DamageReport status.
-- Offline Sync architecture.
-
-If contradictions exist:
-
-Do not delete historical information.
-
-Instead:
-
-- Mark outdated decisions clearly.
-- Move them to historical notes if needed.
-- Preserve project evolution.
+### Core Modules Status
+- **Authentication**: Hardened with session rotation.
+- **Farmers/Farms**: Completed with regional scoping (Directorate-based).
+- **Damage Reports**: **Header-First Lifecycle** (ADR-0015). Numbering generated by server.
+- **Attachments**: Binary upload integrated with sync.
+- **Measurement Units**: Consolidated into a universal entity (Sprint 13.2).
 
 ---
 
-## 3. Preserve Existing Knowledge
-
-Do not remove:
-
-- Sprint history.
-- ADR references.
-- Completed implementation details.
-- Architecture rules.
-- Security decisions.
-
-Only improve organization and clarity.
-
----
-
-## 4. Validation
-
-After editing:
-
-Verify:
-
-- Markdown formatting is valid.
-- No duplicated sections.
-- No conflicting rules remain.
-- The document remains useful for a new AI agent joining the project.
-
-Finally provide:
-
-1. Summary of changes.
-2. Sections added/modified.
-3. Any contradictions discovered.
-4. Recommendations for future AI agent setup.
-
-Do not modify source code.
-Only update documentation files.
+## Authority Hierarchy
+1. **ADRs**: Authoritative for architectural decisions and rationale.
+2. **PROJECT_STATUS.md**: Authoritative for current implementation progress and live branch status.
+3. **AI_CONTEXT.md**: Authoritative for AI operational rules and essential context baseline.
+4. **Reference Docs**: `ARCHITECTURE.md`, `SYNC_DOCS.md`, etc., provide high-level historical and technical details.

@@ -1,5 +1,8 @@
 # Engineering Handover: HASAD Project
 
+> [!IMPORTANT]
+> **Live Status Reference**: While this document contains critical historical context and design notes, **[PROJECT_STATUS.md](file:///C:/Users/musa_/StudioProjects/Jules_HASAD/PROJECT_STATUS.md)** is the authoritative live ledger for current sprint progress, branch status, and completed features.
+
 ## 1. Project Status
 - **Current Branch**: `DamageReport`
 - **Last Commit**: `DamageReport` (Engineering Baseline)

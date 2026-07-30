@@ -6,14 +6,15 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
 ## Mobile (Flutter)
 - **Presentation Layer**: Riverpod for state management, GoRouter for navigation.
 - **Domain Layer**: Entities and Repository interfaces.
-- **Data Layer**: Repository implementations, Data sources (Dio for API, Drift for SQLite).
+- **Data Layer**: Repository implementations, Data sources (Dio for API, Drift for SQLite/SQL Server).
 - **Core**: Cross-cutting concerns like synchronization, secure storage, and networking.
 
 ## Backend (.NET 8)
 - **Web API**: Controllers and Middleware.
 - **Application**: CQRS patterns using MediatR, FluentValidation.
 - **Domain**: Core entities and business rules.
-- **Infrastructure**: Persistence (EF Core, PostgreSQL), Identity, and External Services.
+- **Infrastructure**: Persistence (EF Core, SQL Server), Identity, and External Services.
+- **Historical Note**: Earlier design documents referenced PostgreSQL. As of Sprint 4, SQL Server is the authoritative provider.
 
 ## Offline First Strategy
 - **Local First**: Data is saved to SQLite via Drift first. Every record has a client-generated UUID for backend idempotency.
@@ -34,8 +35,8 @@ HASAD follows a **Clean Architecture** approach combined with a **Feature-First*
     - **Two-Phase Numbering**: Temporary offline IDs replaced by permanent server-assigned numbers upon sync.
 - **Reasoning**: Ensures field work can proceed offline while maintaining strict financial and document integrity.
 
-### ADR 0009: Measurement Units Consolidation (Pending)
-- **Status**: Proposed / Future Target
+### ADR 0009: Measurement Units Consolidation
+- **Status**: Accepted / Implemented (Sprint 13.2)
 - **Decision**: Replace domain-specific lookup tables like `AreaUnit` with a unified `MeasurementUnit` entity.
 - **Reasoning**: Measurement units are cross-domain master data (Land Area, Damage Quantities, Assistance Amounts, Production) and should be managed centrally with category support (LandArea, Weight, Count, Volume, etc.).
 - **Implementation**: Current Sprint 11.2 will continue using `AreaUnit` for the Farm module to maintain focus, with refactoring planned for a future infrastructure sprint.

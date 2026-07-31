@@ -7,10 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as report_domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 import 'package:uuid/uuid.dart';
 
@@ -242,7 +244,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('CONFLICT: A damage report already exists for this farm on ${DateFormat('yyyy-MM-dd').format(normalizedDate)}.');
+      throw DamageReportException(['duplicateReportError']);
     }
 
     // 2. Fetch Farm for denormalization snapshot
@@ -338,7 +340,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('CONFLICT: A damage report already exists for this farm on ${DateFormat('yyyy-MM-dd').format(normalizedDate)}.');
+      throw DamageReportException(['duplicateReportError']);
     }
 
     final finalReport = report.copyWith(damageDate: normalizedDate, damageYear: normalizedDate.year);
@@ -412,7 +414,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     // Locally predict state
     await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
       const DamageReportsCompanion(
-        statusId: Value('Submitted'),
+        statusId: Value(DamageReportStatus.techReview),
         syncStatus: Value('pending'),
       ),
     );

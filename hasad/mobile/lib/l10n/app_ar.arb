@@ -27,7 +27,7 @@
   "noEvidence": "لا توجد بينات متوفرة",
   "awaitingSyncToAddItems": "بانتظار المزامنة لإضافة البنود",
   "awaitingSyncToEnableItems": "بانتظار المزامنة لتفعيل إضافة بنود التقييم",
-  "duplicateReportError": "يوجد تقرير ضرر مسجل مسبقاً لهذه المزرعة في هذا التاريخ",
+  "duplicateReportError": "يوجد تقرير ضرر مسجل مسبقاً لهذه المزرعة في نفس تاريخ الضرر.",
   "retrySync": "إعادة محاولة المزامنة",
   "submitForReview": "تقديم للمراجعة",
   "natureLockedInfo": "تم تثبيت طبيعة الضرر بناءً على البند الأول",

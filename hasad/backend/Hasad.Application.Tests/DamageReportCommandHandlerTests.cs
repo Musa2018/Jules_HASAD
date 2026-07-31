@@ -122,6 +122,7 @@ public class DamageReportCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.False(result.Succeeded);
+        Assert.Equal("DAMAGE_REPORT_DUPLICATE", result.Code);
         Assert.Contains("CONFLICT", result.Errors[0]);
     }
 

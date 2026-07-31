@@ -1,0 +1,27 @@
+# Tasks - DamageReport Final Sync & Localization Hardening
+
+- [x] **Research & Investigation**
+    - [x] Trace `_syncDamageReportWorkflow` in `BackgroundSyncService` to find cause of `failed` status.
+    - [x] Verify `GovernorateCode` availability in `DamageReportNumberService`.
+- [x] **Backend Implementation**
+    - [x] Update `DamageReportNumberService` to use `GovernorateCode-DirectorateCode-Year-Sequence`.
+    - [x] Refactor `CreateDamageReportCommandHandler` to return `DAMAGE_REPORT_DUPLICATE` error code.
+    - [x] Add backend tests for numbering segments (JEN-JEN, JEN-NJEN, NBL-NAB).
+- [x] **Mobile Implementation**
+    - [x] Update `OfflineFirstDamageReportRepository`:
+        - [x] Replace legacy `'Submitted'` status with `DamageReportStatus.techReview`.
+        - [x] Use `duplicateReportError` localization for local duplicate checks.
+    - [x] Update `RemoteDamageReportRepository`:
+        - [x] Extract `DAMAGE_REPORT_DUPLICATE` error code from Dio responses.
+    - [x] Update `BackgroundSyncService`:
+        - [x] Fix `_syncDamageReportWorkflow` status update logic.
+        - [x] Implement `SyncQueue` cleanup for `damage_item` after bulk `damage_report` sync.
+- [x] **Localization**
+    - [x] Ensure `duplicateReportError` keys in `app_localizations_ar.dart` and `app_localizations_en.dart` match the required wording.
+- [x] **Documentation**
+    - [x] Update `ADR-0014` with the explicit `Governorate-Directorate-Year-Sequence` format.
+    - [x] Update `AI_CONTEXT.md` and `PROJECT_STATUS.md`.
+- [x] **Verification**
+    - [x] Run backend tests.
+    - [x] Run Flutter tests.
+    - [x] Manual verification of header sync, items sync, submission, duplicates, numbering, and queue cleanup.

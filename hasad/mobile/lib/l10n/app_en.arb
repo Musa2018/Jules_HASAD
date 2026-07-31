@@ -30,7 +30,7 @@
   "noEvidence": "No evidence available",
   "awaitingSyncToAddItems": "Awaiting sync to add items",
   "awaitingSyncToEnableItems": "Awaiting synchronization to enable assessment items",
-  "duplicateReportError": "A damage report already exists for this farm and date",
+  "duplicateReportError": "A damage report already exists for this farm on the selected date.",
   "retrySync": "Retry Sync",
   "submitForReview": "Submit for Review",
   "natureLockedInfo": "Damage nature locked based on the first item",

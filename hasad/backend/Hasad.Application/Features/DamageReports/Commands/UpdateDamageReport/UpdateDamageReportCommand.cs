@@ -80,7 +80,9 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
 
             if (existingDuplicate)
             {
-                return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm and date." });
+                return Result<DamageReportDto>.Failure(
+                    new[] { "A damage report already exists for this farm and date." },
+                    "DAMAGE_REPORT_DUPLICATE");
             }
         }
 

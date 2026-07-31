@@ -108,7 +108,9 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
 
         if (existingDuplicate != null)
         {
-            return Result<DamageReportDto>.Failure(new[] { $"CONFLICT: A damage report already exists for Farm {farm.LocalFarmName} on {normalizedDate:yyyy-MM-dd}." });
+            return Result<DamageReportDto>.Failure(
+                new[] { $"CONFLICT: A damage report already exists for Farm {farm.LocalFarmName} on {normalizedDate:yyyy-MM-dd}." },
+                "DAMAGE_REPORT_DUPLICATE");
         }
 
         // 5. Generate Official Report Number

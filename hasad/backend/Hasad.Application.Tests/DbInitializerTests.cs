@@ -113,8 +113,8 @@ public class DbInitializerTests
         // Run seed
         await DbInitializer.SeedDamageReferenceDataAsync(context);
 
-        // Verify all 10 natures exist
-        Assert.Equal(10, await context.DamageNatures.CountAsync());
+        // Verify all 6 natures exist
+        Assert.Equal(6, await context.DamageNatures.CountAsync());
         // Verify the manually added one is still there (Id 1)
         Assert.True(await context.DamageNatures.AnyAsync(n => n.Id == 1 && n.NameEn == "Drought"));
     }
@@ -152,11 +152,11 @@ public class DbInitializerTests
         {
             var context = verifyScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             // Every lookup table should have exactly the expected number of records, no more.
-            Assert.Equal(10, await context.DamageNatures.CountAsync());
-            Assert.Equal(10, await context.DamageActions.CountAsync());
-            Assert.Equal(11, await context.DamageCategories.CountAsync());
-            Assert.Equal(8, await context.DamageSubCategories.CountAsync());
-            Assert.Equal(8, await context.DamageClassifications.CountAsync());
+            Assert.Equal(6, await context.DamageNatures.CountAsync());
+            Assert.Equal(11, await context.DamageActions.CountAsync());
+            Assert.Equal(10, await context.DamageCategories.CountAsync());
+            Assert.Equal(9, await context.DamageSubCategories.CountAsync());
+            Assert.Equal(10, await context.DamageClassifications.CountAsync());
 
             // Costing Catalog should be unique
             Assert.Single(context.CostingSheetCatalogs);

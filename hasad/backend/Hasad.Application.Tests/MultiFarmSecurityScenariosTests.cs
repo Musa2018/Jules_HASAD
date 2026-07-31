@@ -126,6 +126,7 @@ public class MultiFarmSecurityScenariosTests
 
         // Assert
         Assert.True(result.Succeeded);
+        Assert.NotNull(result.Data);
         Assert.DoesNotContain(result.Data.Items, f => f.Id == farmerAliId);
     }
 }

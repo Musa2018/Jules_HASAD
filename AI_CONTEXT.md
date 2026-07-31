@@ -58,9 +58,12 @@ All major entity modules (Farmers, Farms, Damage Reports) MUST follow:
     2. **Phase 2: Assessment Assessment**: Once the header is synchronized and has a `ReportNumber`, the surveyor adds `DamageItems`.
     - **Identity Rules**: `DamageReport.Id` (GUID) is the relational key used in the database (`DamageItems.DamageReportId`). `ReportNumber` is the business/display identifier only.
     - **Authorization Rule**: All `DamageReport` workflow and CRUD operations MUST use the denormalized `DirectorateId` and `GovernorateId` fields on the `DamageReport` entity itself for geographic scoping. **Never** navigate to `report.Farm` for authorization.
-    - **Farmer Geography Rule**: `Farmer.DirectorateId` and `Farmer.GovernorateId` are informational (residency). They MUST NOT be used for authorization. Only `Farm` or `DamageReport` geographics are authoritative for operational scope.
-    - **Multi-Farm Scoping Rule**: A user sees a Farmer profile if the Farmer owns at least one Farm in the user's scope. The user ONLY sees the Farms that belong to their own scope when viewing the Farmer's profile.
-    - **Submission Guard**: Submission for review is gated (both in UI and Backend) by: Header synchronized, official `ReportNumber` assigned, at least one `DamageItem` exists, and all `DamageItems` are synchronized and valid.
+    - **Farmer Geography Rule**: `Farmer.DirectorateId`, `Farmer.GovernorateId`, and `Farmer.LocalityId` are purely informational (residency). They MUST NOT be used for authorization or operational scoping. Only `Farm.DirectorateId` and its snapshot in `DamageReport.DirectorateId` are authoritative for geographic security.
+    - **Multi-Farm Scoping Rule**: A user sees a Farmer profile if the Farmer owns at least one Farm in the user's scope. When viewing a Farmer's profile, the user ONLY sees the Farms that belong to their own assigned scope.
+    - **Numbering Rule**: Official report numbers follow the format `GOV-DIR-YEAR-SEQ` (e.g., `JEN-JEN-2026-000001`). The sequence is Directorate-wide and continuous across years.
+    - **Duplicate Prevention Rule**: `FarmId + DamageDate` must be unique. The system rejects duplicates with the error code `DAMAGE_REPORT_DUPLICATE`.
+    - **Financial Security Rule**: All valuation fields (`EstimatedLoss`, `CalculatedUnitPrice`) sent by the client are ignored; the backend MUST recalculate them using the authoritative `ICostingService`.
+    - **Submission Guard**: Submission for review is gated by: Header synchronized, official `ReportNumber` assigned, at least one `DamageItem` exists, and all `DamageItems` are synchronized.
     - **GUID Binding Rule**: Flutter DTOs must explicitly map empty strings `""` or `"null"` to `null` for GUID fields to prevent model binding failures on the backend.
 
 ### HASAD Terminology Rule

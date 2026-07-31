@@ -135,7 +135,7 @@ void main() {
       return report.copyWith(id: 'NEW-ID', temporaryFormNumber: 'TEMP-2026-0001');
     });
 
-    when(() => mockRouter.go(any(), extra: any(named: 'extra'))).thenAnswer((_) async => null);
+    when(() => mockRouter.go(any(), extra: any(named: 'extra'))).thenAnswer((_) async {});
 
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();

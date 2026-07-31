@@ -363,10 +363,10 @@ class _DamageReportFormScreenState
                   .read(damageReportFormProvider.notifier)
                   .submitReport(report.id);
 
-              if (success && mounted) {
+              if (success && context.mounted) {
                 // Fetch the farm to pass it back to the list screen
                 final farm = await ref.read(farmStreamProvider(report.farmId).future);
-                if (mounted) {
+                if (context.mounted) {
                   context.go(AppRoutes.damageReports, extra: farm);
                 }
               }
@@ -418,7 +418,9 @@ class _DamageReportFormScreenState
 
   Color _getWorkflowColor(DamageReport report) {
     if (report.statusId == 'Submitted' ||
-        report.statusId == DamageReportStatus.techReview) return Colors.blue;
+        report.statusId == DamageReportStatus.techReview) {
+      return Colors.blue;
+    }
     if (report.statusId == DamageReportStatus.completed) return Colors.green;
     if (!report.isHeaderSynced) return Colors.orange;
     if (report.isReadyForReview) return Colors.teal;

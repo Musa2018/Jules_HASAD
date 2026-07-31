@@ -7,7 +7,6 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report_filte
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/damage_report_card.dart';
-import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
@@ -39,6 +38,10 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
 
     return Scaffold(
       appBar: AppBar(
+        leading: context.canPop() ? null : IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go(AppRoutes.home),
+        ),
         title: Text(widget.farm != null
             ? '${l10n.damageReports}: ${widget.farm!.localFarmName}'
             : l10n.damageReportsForms),
@@ -299,7 +302,7 @@ class _DamageReportFilterSheetState extends ConsumerState<_DamageReportFilterShe
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: _localFilter.statusId,
+                    initialValue: _localFilter.statusId,
                     decoration: InputDecoration(labelText: l10n.status),
                     items: [
                       DropdownMenuItem(value: null, child: Text(l10n.all)),
@@ -313,7 +316,7 @@ class _DamageReportFilterSheetState extends ConsumerState<_DamageReportFilterShe
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: _localFilter.syncStatus,
+                    initialValue: _localFilter.syncStatus,
                     decoration: InputDecoration(labelText: l10n.syncStatus),
                     items: [
                       DropdownMenuItem(value: null, child: Text(l10n.all)),

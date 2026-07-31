@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/presentation/widgets/form_save_footer.dart';
-import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
@@ -79,9 +78,9 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
           final created = formState.createdReport;
           if (created != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Damage report header saved. Waiting for synchronization to add items.')),
+              const SnackBar(content: Text('Damage report header saved. Items can be added after synchronization.')),
             );
-            context.go(AppRoutes.damageReports, extra: widget.farm);
+            context.pop();
           }
         } else if (formState.errors.isNotEmpty) {
           final l10n = AppLocalizations.of(context)!;

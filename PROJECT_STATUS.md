@@ -5,7 +5,17 @@
 - **Current Sprint**: Phase 2.2 — Evidence & Workflow Lifecycle
 - **Current Branch**: `DamageReport`
 - **Last Updated**: 2026-07-31
-- **Latest Commit**: `DamageReport` (`7f2a1b3`)
+- **Latest Commit**: `DamageReport` (`d021288`)
+
+## DamageReport Navigation Consistency & Hardening (2026-07-31) — COMPLETED
+- **UX Alignment**: Standardized the `DamageReport` navigation flow to match `Farmers` and `Farms` modules.
+- **Context-Aware AppBar**: Implemented a context-aware leading widget in `DamageReportsListScreen` that manually provides a "Back to Dashboard" action if the navigation stack is cleared.
+- **Stack Preservation**: Refactored `DamageReportHeaderScreen` to use `context.pop()` instead of `context.go()` after saving, preserving the underlying dashboard state in the history.
+- **Verification**: Added `damage_reports_navigation_test.dart` to verify navigation behavior in both root and pushed contexts. Updated existing workflow tests to align with new navigation patterns.
+
+## DamageReport Final Sync & Localization Hardening (2026-07-31) — IN PROGRESS
+- **Goal**: Hardening synchronization for edge cases (re-syncing already synced items) and completing localization for all assessment screens.
+
 
 ## DamageReport Authorization & Workflow Hardening (2026-07-31) — COMPLETED
 - **Bug Fix**: Resolved `400 Bad Request` in `TransitionDamageReport` caused by missing `Farm` navigation property during geographic scope validation.

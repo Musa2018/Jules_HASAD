@@ -155,8 +155,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify success message and navigation to list
-    expect(find.textContaining('Waiting for synchronization'), findsOneWidget);
+    expect(find.textContaining('Items can be added after synchronization'), findsOneWidget);
     verify(() => mockDamageRepo.createDamageReport(any())).called(1);
-    verify(() => mockRouter.go('/damage-reports', extra: any(named: 'extra'))).called(1);
+    verify(() => mockRouter.pop()).called(1);
   });
 }

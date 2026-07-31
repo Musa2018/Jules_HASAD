@@ -13,7 +13,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 
-import 'package:mobile/features/auth/presentation/auth_providers.dart';
+
 import 'package:mobile/features/damage_reports/data/repositories/remote_damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_filter.dart';
 

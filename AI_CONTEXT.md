@@ -49,6 +49,7 @@ UI Action → Local Drift Transaction → SyncQueue Creation → BackgroundSyncS
 All major entity modules (Farmers, Farms, Damage Reports) MUST follow:
 **Entity List → Cards → Actions → Child Workflow**
 - **Entity List**: Reactive list screen with search, filtering, and pull-to-refresh sync.
+- **Navigation Consistency**: List screens MUST always provide a return path to the Dashboard. Use context-aware `AppBar` leading widgets (`context.canPop() ? null : IconButton(...)`) to ensure navigation is possible even if the stack is cleared (e.g., after `context.go`).
 - **Cards**: Rich cards with title, metadata summary, and status badges (Workflow Status + Sync Status).
 - **Actions**: Bottom-aligned `TextButton.icon` actions for details, editing, and child-entity creation.
 - **Child Workflow**: Child records (e.g., Farms for a Farmer, Items for a Report) are accessed via "Add/View" actions on the parent card.

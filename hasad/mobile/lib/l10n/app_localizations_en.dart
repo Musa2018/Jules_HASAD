@@ -95,7 +95,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duplicateReportError =>
-      'A damage report already exists for this farm and date';
+      'A damage report already exists for this farm on the selected date.';
 
   @override
   String get retrySync => 'Retry Sync';
@@ -286,6 +286,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationSection => 'Location';
+
+  @override
+  String get personalAddressSection => 'Personal Address (Farmer)';
 
   @override
   String get village => 'Locality/Village';

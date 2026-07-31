@@ -38,7 +38,7 @@ public class GetFarmerByIdQueryHandler : IRequestHandler<GetFarmerByIdQuery, Res
             IdNumber = farmer.IdNumber,
             PhoneNumber = farmer.PhoneNumber,
             Address = farmer.Address,
-            RowVersion = Convert.ToBase64String(farmer.RowVersion),
+            RowVersion = farmer.RowVersion != null ? Convert.ToBase64String(farmer.RowVersion) : string.Empty,
 
             GovernorateId = farmer.GovernorateId,
             LocalityId = farmer.LocalityId,

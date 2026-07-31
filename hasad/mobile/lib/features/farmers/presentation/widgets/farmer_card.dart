@@ -28,11 +28,11 @@ class FarmerCard extends ConsumerWidget {
     final govAsync = ref.watch(governoratesProvider);
     final locAsync = ref.watch(localitiesProvider((farmer.governorateId, null)));
 
-    String locationText = farmer.governorateId;
+    String locationText = farmer.governorateId ?? '';
     govAsync.whenData((govs) {
       final gov = govs.where((g) => g.id == farmer.governorateId).firstOrNull;
       if (gov != null) {
-        String locName = farmer.localityId;
+        String locName = farmer.localityId ?? '';
         locAsync.whenData((locs) {
           final loc = locs.where((l) => l.id == farmer.localityId).firstOrNull;
           if (loc != null) {
@@ -102,7 +102,7 @@ class FarmerCard extends ConsumerWidget {
                 const SizedBox(height: 8),
                 _InfoRow(
                   icon: Icons.location_on_outlined,
-                  label: l10n.locationSection,
+                  label: l10n.personalAddressSection,
                   value: locationText,
                 ),
                 const SizedBox(height: 8),

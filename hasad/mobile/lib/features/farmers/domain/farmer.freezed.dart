@@ -39,8 +39,11 @@ mixin _$Farmer {
   Gender get gender => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
   int get familySize => throw _privateConstructorUsedError;
-  String get governorateId => throw _privateConstructorUsedError;
-  String get localityId => throw _privateConstructorUsedError;
+  String? get governorateId => throw _privateConstructorUsedError;
+  String? get directorateId => throw _privateConstructorUsedError;
+  String? get localityId => throw _privateConstructorUsedError;
+  String get legacyGovernorateId => throw _privateConstructorUsedError;
+  String get legacyLocalityId => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
@@ -80,8 +83,11 @@ abstract class $FarmerCopyWith<$Res> {
     Gender gender,
     String phoneNumber,
     int familySize,
-    String governorateId,
-    String localityId,
+    String? governorateId,
+    String? directorateId,
+    String? localityId,
+    String legacyGovernorateId,
+    String legacyLocalityId,
     String address,
     String rowVersion,
     String syncStatus,
@@ -123,8 +129,11 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
     Object? gender = null,
     Object? phoneNumber = null,
     Object? familySize = null,
-    Object? governorateId = null,
-    Object? localityId = null,
+    Object? governorateId = freezed,
+    Object? directorateId = freezed,
+    Object? localityId = freezed,
+    Object? legacyGovernorateId = null,
+    Object? legacyLocalityId = null,
     Object? address = null,
     Object? rowVersion = null,
     Object? syncStatus = null,
@@ -199,13 +208,25 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
                 ? _value.familySize
                 : familySize // ignore: cast_nullable_to_non_nullable
                       as int,
-            governorateId: null == governorateId
+            governorateId: freezed == governorateId
                 ? _value.governorateId
                 : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            localityId: null == localityId
+                      as String?,
+            directorateId: freezed == directorateId
+                ? _value.directorateId
+                : directorateId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            localityId: freezed == localityId
                 ? _value.localityId
                 : localityId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            legacyGovernorateId: null == legacyGovernorateId
+                ? _value.legacyGovernorateId
+                : legacyGovernorateId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            legacyLocalityId: null == legacyLocalityId
+                ? _value.legacyLocalityId
+                : legacyLocalityId // ignore: cast_nullable_to_non_nullable
                       as String,
             address: null == address
                 ? _value.address
@@ -266,8 +287,11 @@ abstract class _$$FarmerImplCopyWith<$Res> implements $FarmerCopyWith<$Res> {
     Gender gender,
     String phoneNumber,
     int familySize,
-    String governorateId,
-    String localityId,
+    String? governorateId,
+    String? directorateId,
+    String? localityId,
+    String legacyGovernorateId,
+    String legacyLocalityId,
     String address,
     String rowVersion,
     String syncStatus,
@@ -308,8 +332,11 @@ class __$$FarmerImplCopyWithImpl<$Res>
     Object? gender = null,
     Object? phoneNumber = null,
     Object? familySize = null,
-    Object? governorateId = null,
-    Object? localityId = null,
+    Object? governorateId = freezed,
+    Object? directorateId = freezed,
+    Object? localityId = freezed,
+    Object? legacyGovernorateId = null,
+    Object? legacyLocalityId = null,
     Object? address = null,
     Object? rowVersion = null,
     Object? syncStatus = null,
@@ -384,13 +411,25 @@ class __$$FarmerImplCopyWithImpl<$Res>
             ? _value.familySize
             : familySize // ignore: cast_nullable_to_non_nullable
                   as int,
-        governorateId: null == governorateId
+        governorateId: freezed == governorateId
             ? _value.governorateId
             : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        localityId: null == localityId
+                  as String?,
+        directorateId: freezed == directorateId
+            ? _value.directorateId
+            : directorateId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        localityId: freezed == localityId
             ? _value.localityId
             : localityId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        legacyGovernorateId: null == legacyGovernorateId
+            ? _value.legacyGovernorateId
+            : legacyGovernorateId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        legacyLocalityId: null == legacyLocalityId
+            ? _value.legacyLocalityId
+            : legacyLocalityId // ignore: cast_nullable_to_non_nullable
                   as String,
         address: null == address
             ? _value.address
@@ -445,8 +484,11 @@ class _$FarmerImpl extends _Farmer {
     required this.gender,
     required this.phoneNumber,
     required this.familySize,
-    required this.governorateId,
-    required this.localityId,
+    this.governorateId,
+    this.directorateId,
+    this.localityId,
+    this.legacyGovernorateId = '',
+    this.legacyLocalityId = '',
     required this.address,
     this.rowVersion = '',
     this.syncStatus = 'completed',
@@ -495,9 +537,17 @@ class _$FarmerImpl extends _Farmer {
   @override
   final int familySize;
   @override
-  final String governorateId;
+  final String? governorateId;
   @override
-  final String localityId;
+  final String? directorateId;
+  @override
+  final String? localityId;
+  @override
+  @JsonKey()
+  final String legacyGovernorateId;
+  @override
+  @JsonKey()
+  final String legacyLocalityId;
   @override
   final String address;
   @override
@@ -518,7 +568,7 @@ class _$FarmerImpl extends _Farmer {
 
   @override
   String toString() {
-    return 'Farmer(id: $id, serverId: $serverId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, localityId: $localityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isPendingDelete: $isPendingDelete, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Farmer(id: $id, serverId: $serverId, idTypeId: $idTypeId, idNumber: $idNumber, firstNameAr: $firstNameAr, fatherNameAr: $fatherNameAr, grandfatherNameAr: $grandfatherNameAr, familyNameAr: $familyNameAr, firstNameEn: $firstNameEn, fatherNameEn: $fatherNameEn, grandfatherNameEn: $grandfatherNameEn, familyNameEn: $familyNameEn, birthDate: $birthDate, gender: $gender, phoneNumber: $phoneNumber, familySize: $familySize, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, legacyGovernorateId: $legacyGovernorateId, legacyLocalityId: $legacyLocalityId, address: $address, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isPendingDelete: $isPendingDelete, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -558,8 +608,14 @@ class _$FarmerImpl extends _Farmer {
                 other.familySize == familySize) &&
             (identical(other.governorateId, governorateId) ||
                 other.governorateId == governorateId) &&
+            (identical(other.directorateId, directorateId) ||
+                other.directorateId == directorateId) &&
             (identical(other.localityId, localityId) ||
                 other.localityId == localityId) &&
+            (identical(other.legacyGovernorateId, legacyGovernorateId) ||
+                other.legacyGovernorateId == legacyGovernorateId) &&
+            (identical(other.legacyLocalityId, legacyLocalityId) ||
+                other.legacyLocalityId == legacyLocalityId) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.rowVersion, rowVersion) ||
                 other.rowVersion == rowVersion) &&
@@ -596,7 +652,10 @@ class _$FarmerImpl extends _Farmer {
     phoneNumber,
     familySize,
     governorateId,
+    directorateId,
     localityId,
+    legacyGovernorateId,
+    legacyLocalityId,
     address,
     rowVersion,
     syncStatus,
@@ -638,8 +697,11 @@ abstract class _Farmer extends Farmer {
     required final Gender gender,
     required final String phoneNumber,
     required final int familySize,
-    required final String governorateId,
-    required final String localityId,
+    final String? governorateId,
+    final String? directorateId,
+    final String? localityId,
+    final String legacyGovernorateId,
+    final String legacyLocalityId,
     required final String address,
     final String rowVersion,
     final String syncStatus,
@@ -687,9 +749,15 @@ abstract class _Farmer extends Farmer {
   @override
   int get familySize;
   @override
-  String get governorateId;
+  String? get governorateId;
   @override
-  String get localityId;
+  String? get directorateId;
+  @override
+  String? get localityId;
+  @override
+  String get legacyGovernorateId;
+  @override
+  String get legacyLocalityId;
   @override
   String get address;
   @override

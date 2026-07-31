@@ -24,7 +24,16 @@ public class SmtpEmailService : IEmailService
         try
         {
             var email = new MimeMessage();
-            var from = _configuration["EmailSettings:From"];
+            var from = _configuration["EmailSettings:From"]
+                ?? throw new InvalidOperationException("EmailSettings:From is not configured.");
+            var host = _configuration["EmailSettings:Host"]
+                ?? throw new InvalidOperationException("EmailSettings:Host is not configured.");
+            var portStr = _configuration["EmailSettings:Port"] ?? "587";
+            var username = _configuration["EmailSettings:Username"]
+                ?? throw new InvalidOperationException("EmailSettings:Username is not configured.");
+            var password = _configuration["EmailSettings:Password"]
+                ?? throw new InvalidOperationException("EmailSettings:Password is not configured.");
+
             email.From.Add(MailboxAddress.Parse(from));
             email.To.Add(MailboxAddress.Parse(to));
             email.Subject = subject;
@@ -36,13 +45,11 @@ public class SmtpEmailService : IEmailService
             smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
             await smtp.ConnectAsync(
-                _configuration["EmailSettings:Host"],
-                int.Parse(_configuration["EmailSettings:Port"] ?? "587"),
+                host,
+                int.Parse(portStr),
                 SecureSocketOptions.StartTls);
 
-            await smtp.AuthenticateAsync(
-                _configuration["EmailSettings:Username"],
-                _configuration["EmailSettings:Password"]);
+            await smtp.AuthenticateAsync(username, password);
 
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);

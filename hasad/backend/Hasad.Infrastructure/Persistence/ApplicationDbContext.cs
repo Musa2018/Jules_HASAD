@@ -237,9 +237,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                     entity.Property(f => f.FamilySize).IsRequired().HasDefaultValue(1);
                     entity.Property(f => f.Address).HasMaxLength(500);
 
-                    // توافق جغرافي مع Farm و DamageReport
-                    entity.Property(f => f.GovernorateId).IsRequired().HasMaxLength(50);
-                    entity.Property(f => f.LocalityId).IsRequired().HasMaxLength(50);
+                    // Geographic Alignment (Sprint 15.0 Hardening)
+                    entity.Property(f => f.GovernorateId);
+                    entity.Property(f => f.DirectorateId);
+                    entity.Property(f => f.LocalityId);
+
+                    entity.Property(f => f.LegacyGovernorateId).HasMaxLength(50);
+                    entity.Property(f => f.LegacyLocalityId).HasMaxLength(50);
 
                     // إعدادات أخرى
                     entity.Property(f => f.SyncStatus).IsRequired().HasDefaultValue(0);

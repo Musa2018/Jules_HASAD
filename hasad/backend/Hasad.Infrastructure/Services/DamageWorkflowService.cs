@@ -109,7 +109,7 @@ public class DamageWorkflowService : IDamageWorkflowService
         return toIndex < fromIndex;
     }
 
-    public async Task TransitionAsync(DamageReport report, string toStatus, string? comment = null, bool isOverride = false)
+    public Task TransitionAsync(DamageReport report, string toStatus, string? comment = null, bool isOverride = false)
     {
         var fromStatus = report.StatusId;
 
@@ -133,5 +133,6 @@ public class DamageWorkflowService : IDamageWorkflowService
         _context.DamageWorkflowHistories.Add(history);
 
         // We don't call SaveChanges here, the command handler will do it.
+        return Task.CompletedTask;
     }
 }

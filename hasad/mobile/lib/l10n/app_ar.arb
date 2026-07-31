@@ -90,6 +90,7 @@
   "familySize": "عدد أفراد الأسرة",
   "mobileNumber": "رقم الجوال",
   "locationSection": "الموقع",
+  "personalAddressSection": "العنوان الشخصي (للمزارع)",
   "village": "التجمع/القرية",
   "auditSection": "معلومات التدقيق",
   "createdAt": "تاريخ الإنشاء",

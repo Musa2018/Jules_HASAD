@@ -28,12 +28,14 @@ public class AddDamageItemCommandHandler : IRequestHandler<AddDamageItemCommand,
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly ICostingService _costingService;
     private readonly ILogger<AddDamageItemCommandHandler> _logger;
 
-    public AddDamageItemCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser, ILogger<AddDamageItemCommandHandler> logger)
+    public AddDamageItemCommandHandler(IApplicationDbContext context, ICurrentUserService currentUser, ICostingService costingService, ILogger<AddDamageItemCommandHandler> logger)
     {
         _context = context;
         _currentUser = currentUser;
+        _costingService = costingService;
         _logger = logger;
     }
 
@@ -80,6 +82,23 @@ public class AddDamageItemCommandHandler : IRequestHandler<AddDamageItemCommand,
 
         _logger.LogInformation("AddDamageItem: Report {ReportId} found with StatusId: {StatusId}", report.Id, report.StatusId);
 
+        // 6. Valuation Security: Authoritative Recalculation (Sprint 15.0)
+        var priceResult = await _costingService.GetUnitPriceAsync(request.ClassificationId, request.CostingSheetId, report.DamageDate, cancellationToken);
+        if (!priceResult.Succeeded)
+        {
+            return Result<DamageItemDto>.Failure(priceResult.Errors);
+        }
+
+        decimal unitPrice = priceResult.Data;
+        decimal backendCalculatedLoss = request.Quantity * unitPrice * (request.DamagePercentage / 100);
+
+        // Malicious Payload Detection
+        if (Math.Abs(backendCalculatedLoss - request.EstimatedLoss) > 0.01m || Math.Abs(unitPrice - request.CalculatedUnitPrice) > 0.01m)
+        {
+            _logger.LogWarning("Security Audit: Valuation Mismatch for Report {ReportId}. Client sent [Price:{ClientPrice}, Loss:{ClientLoss}], Backend resolved [Price:{BackendPrice}, Loss:{BackendLoss}]",
+                request.DamageReportId, request.CalculatedUnitPrice, request.EstimatedLoss, unitPrice, backendCalculatedLoss);
+        }
+
         var item = new DamageItem
         {
             Id = Guid.NewGuid(),
@@ -89,12 +108,12 @@ public class AddDamageItemCommandHandler : IRequestHandler<AddDamageItemCommand,
             DamageActionId = request.DamageActionId,
             ClassificationId = request.ClassificationId,
             CostingSheetItemId = request.CostingSheetId,
-            CalculatedUnitPrice = request.CalculatedUnitPrice,
+            CalculatedUnitPrice = unitPrice, // Authority price
             MeasurementUnitSnapshot = request.MeasurementUnitSnapshot,
             AffectedArea = request.AffectedArea,
             DamagePercentage = request.DamagePercentage,
             Quantity = request.Quantity,
-            EstimatedLoss = request.EstimatedLoss,
+            EstimatedLoss = backendCalculatedLoss, // Authority loss
             CreatedAt = DateTime.UtcNow
         };
 

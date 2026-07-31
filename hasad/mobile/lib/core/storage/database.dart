@@ -30,8 +30,15 @@ class Farmers extends Table {
   TextColumn get phoneNumber => text().withLength(max: 20).withDefault(const Constant(''))();
   IntColumn get familySize => integer().withDefault(const Constant(1))();
 
-  TextColumn get governorateId => text().withLength(max: 50).withDefault(const Constant(''))();
-  TextColumn get localityId => text().withLength(max: 50).withDefault(const Constant(''))();
+  // Geographic Alignment (Sprint 15.0 Hardening)
+  TextColumn get governorateId => text().nullable()(); // Guid
+  TextColumn get directorateId => text().nullable()(); // Guid
+  TextColumn get localityId => text().nullable()(); // Guid
+
+  // Legacy Geographic Fields (Auditing Only)
+  TextColumn get legacyGovernorateId => text().withLength(max: 50).withDefault(const Constant(''))();
+  TextColumn get legacyLocalityId => text().withLength(max: 50).withDefault(const Constant(''))();
+
   TextColumn get address => text().withLength(max: 500).withDefault(const Constant(''))();
 
   // Deprecated field - kept temporarily for migration safety if needed, or we can use onUpgrade to drop/ignore.
@@ -474,7 +481,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 28;
+  int get schemaVersion => 29;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -681,6 +688,43 @@ class AppDatabase extends _$AppDatabase {
       if (from < 28) {
         // Sprint 14.x: Costing Item Search Code
         await m.addColumn(costingSheetItems, costingSheetItems.code);
+      }
+      if (from < 29) {
+        // Sprint 15.0: Farmer Geographic Hardening (Guid Alignment)
+        await transaction(() async {
+          // 1. Rename existing columns to legacy
+          await customStatement('ALTER TABLE farmers RENAME COLUMN governorate_id TO legacy_governorate_id;');
+          await customStatement('ALTER TABLE farmers RENAME COLUMN locality_id TO legacy_locality_id;');
+
+          // 2. Add new Guid columns
+          await m.addColumn(farmers, farmers.governorateId);
+          await m.addColumn(farmers, farmers.directorateId);
+          await m.addColumn(farmers, farmers.localityId);
+
+          // 3. Backfill from local geographic tables if available
+          await customStatement('''
+            UPDATE farmers 
+            SET governorate_id = (
+              SELECT id FROM governorates 
+              WHERE name_ar = legacy_governorate_id OR name_en = legacy_governorate_id OR code = legacy_governorate_id
+            )
+            WHERE legacy_governorate_id != '';
+          ''');
+
+          await customStatement('''
+            UPDATE farmers 
+            SET 
+              locality_id = (
+                SELECT id FROM localities 
+                WHERE name_ar = legacy_locality_id OR name_en = legacy_locality_id
+              ),
+              directorate_id = (
+                SELECT directorate_id FROM localities 
+                WHERE name_ar = legacy_locality_id OR name_en = legacy_locality_id
+              )
+            WHERE legacy_locality_id != '';
+          ''');
+        });
       }
     },
     beforeOpen: (details) async {

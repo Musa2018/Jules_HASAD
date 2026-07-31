@@ -14,8 +14,13 @@ public class FarmerDto
     public string Address { get; set; } = string.Empty;
     public string RowVersion { get; set; } = string.Empty;
 
-    public string GovernorateId { get; set; } = string.Empty;
-    public string LocalityId { get; set; } = string.Empty;
+    public Guid? GovernorateId { get; set; }
+    public Guid? DirectorateId { get; set; }
+    public Guid? LocalityId { get; set; }
+
+    public string LegacyGovernorateId { get; set; } = string.Empty;
+    public string LegacyLocalityId { get; set; } = string.Empty;
+
     public DateOnly BirthDate { get; set; }
     public Gender Gender { get; set; }
     public int FamilySize { get; set; }

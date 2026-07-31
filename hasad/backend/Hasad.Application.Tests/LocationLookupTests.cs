@@ -62,6 +62,7 @@ public class LocationLookupTests
 
         // Assert
         Assert.True(result.Succeeded);
+        Assert.NotNull(result.Data);
         Assert.Single(result.Data);
         Assert.Equal("L1", result.Data[0].NameEn);
     }

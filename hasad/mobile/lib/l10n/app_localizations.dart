@@ -269,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @duplicateReportError.
   ///
   /// In en, this message translates to:
-  /// **'A damage report already exists for this farm and date'**
+  /// **'A damage report already exists for this farm on the selected date.'**
   String get duplicateReportError;
 
   /// No description provided for @retrySync.
@@ -643,6 +643,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location'**
   String get locationSection;
+
+  /// No description provided for @personalAddressSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Address (Farmer)'**
+  String get personalAddressSection;
 
   /// No description provided for @village.
   ///

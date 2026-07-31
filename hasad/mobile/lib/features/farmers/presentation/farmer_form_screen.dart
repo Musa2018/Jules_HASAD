@@ -7,6 +7,7 @@ import 'package:mobile/core/utils/validators.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
@@ -50,6 +51,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   Gender _gender = Gender.unspecified;
   int _idTypeId = 1;
   String? _selectedGovernorateId;
+  String? _selectedDirectorateId;
   String? _selectedLocalityId;
 
   bool _isFormValid = true;
@@ -78,6 +80,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     _gender = f?.gender ?? Gender.unspecified;
     _idTypeId = f?.idTypeId ?? 1;
     _selectedGovernorateId = f?.governorateId;
+    _selectedDirectorateId = f?.directorateId;
     _selectedLocalityId = f?.localityId;
   }
 
@@ -148,8 +151,11 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
       gender: _gender,
       phoneNumber: _phoneController.text.trim(),
       familySize: int.tryParse(_familySizeController.text) ?? 1,
-      governorateId: _selectedGovernorateId ?? '',
-      localityId: _selectedLocalityId ?? '',
+      governorateId: _selectedGovernorateId,
+      directorateId: _selectedDirectorateId,
+      localityId: _selectedLocalityId,
+      legacyGovernorateId: widget.farmer?.legacyGovernorateId ?? '',
+      legacyLocalityId: widget.farmer?.legacyLocalityId ?? '',
       address: _addressController.text.trim(),
       rowVersion: widget.farmer?.rowVersion ?? '',
       syncStatus: widget.farmer?.syncStatus ?? 'pending',
@@ -186,9 +192,14 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(farmerFormProvider);
-    final govAsync = ref.watch(governoratesProvider);
-    final locAsync = _selectedGovernorateId != null
-        ? ref.watch(localitiesProvider((_selectedGovernorateId, null)))
+    final govsAsync = ref.watch(governoratesProvider);
+    
+    final dirsAsync = _selectedGovernorateId != null
+        ? ref.watch(directoratesProvider(_selectedGovernorateId!))
+        : const AsyncValue<List<Directorate>>.data([]);
+
+    final locsAsync = _selectedDirectorateId != null
+        ? ref.watch(localitiesProvider((_selectedGovernorateId, _selectedDirectorateId)))
         : const AsyncValue<List<Locality>>.data([]);
 
     return Scaffold(
@@ -386,9 +397,9 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
               ),
 
               _buildSection(
-                l10n.locationSection,
+                l10n.personalAddressSection,
                 [
-                  govAsync.when(
+                  govsAsync.when(
                     data: (govs) => SearchableLookupField<Governorate>(
                       label: l10n.governorate,
                       items: govs,
@@ -396,6 +407,7 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                       value: govs.where((g) => g.id == _selectedGovernorateId).firstOrNull,
                       onChanged: (v) => setState(() {
                         _selectedGovernorateId = v?.id;
+                        _selectedDirectorateId = null;
                         _selectedLocalityId = null;
                       }),
                       validator: (v) => v == null ? l10n.requiredField : null,
@@ -406,10 +418,31 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                   const SizedBox(height: 16),
                   _selectedGovernorateId == null
                       ? InputDecorator(
-                          decoration: InputDecoration(labelText: l10n.village),
+                          decoration: InputDecoration(labelText: l10n.directorate),
                           child: Text(l10n.governorate),
                         )
-                      : locAsync.when(
+                      : dirsAsync.when(
+                          data: (dirs) => SearchableLookupField<Directorate>(
+                            label: l10n.directorate,
+                            items: dirs,
+                            itemLabel: (d) => Localizations.localeOf(context).languageCode == 'ar' ? d.nameAr : d.nameEn,
+                            value: dirs.where((d) => d.id == _selectedDirectorateId).firstOrNull,
+                            onChanged: (v) => setState(() {
+                              _selectedDirectorateId = v?.id;
+                              _selectedLocalityId = null;
+                            }),
+                            validator: (v) => v == null ? l10n.requiredField : null,
+                          ),
+                          loading: () => const LinearProgressIndicator(),
+                          error: (e, _) => Text(e.toString()),
+                        ),
+                  const SizedBox(height: 16),
+                  _selectedDirectorateId == null
+                      ? InputDecorator(
+                          decoration: InputDecoration(labelText: l10n.village),
+                          child: Text(l10n.directorate),
+                        )
+                      : locsAsync.when(
                           data: (locs) => SearchableLookupField<Locality>(
                             label: l10n.village,
                             items: locs,

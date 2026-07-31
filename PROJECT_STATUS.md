@@ -5,9 +5,21 @@
 - **Current Sprint**: Phase 2.2 — Evidence & Workflow Lifecycle
 - **Current Branch**: `DamageReport`
 - **Last Updated**: 2026-07-31
-- **Latest Commit**: `DamageReport` (`d021288`)
+- **Latest Commit**: `Hardened` (`HARDEN-15.1`)
 
-## DamageReport Navigation Consistency & Hardening (2026-07-31) — COMPLETED
+## Final Geographic Integrity & Multi-Farm Validation (2026-07-31) — COMPLETED
+- **Architectural Alignment**: Decoupled Farmer residency from operational authorization. Formalized rules in ADR-0013 and AI_CONTEXT.md.
+- **Query Hardening**:
+    - Refactored `GetFarmById` and `GetFarmsByFarmer` to enforce land-based geographic scoping via `ICurrentUserService`.
+    - Hardened `GetFarmersList` (Operational View) to determine visibility based on the existence of farms within the user's scope.
+- **Multi-Farm Scenarios**: Verified that a single farmer (e.g., Ahmed Mohammed) can have multiple farms in different directorates, with each user only seeing the farms relevant to their jurisdiction.
+- **Mobile UX Hardening**: 
+    - Updated terminology to "Personal Address (Farmer)" to distinguish from land location.
+    - Verified offline creation and synchronization of multi-farm scenarios with late binding IDs.
+- **Verification**: 
+    - Passed all 134 backend tests including `MultiFarmSecurityScenariosTests`.
+    - Passed all 202 mobile tests including `multi_farm_offline_sync_test`.
+    - Achieved Zero Warnings build on both backend and mobile.
 - **UX Alignment**: Standardized the `DamageReport` navigation flow to match `Farmers` and `Farms` modules.
 - **Context-Aware AppBar**: Implemented a context-aware leading widget in `DamageReportsListScreen` that manually provides a "Back to Dashboard" action if the navigation stack is cleared.
 - **Stack Preservation**: Refactored `DamageReportHeaderScreen` to use `context.pop()` instead of `context.go()` after saving, preserving the underlying dashboard state in the history.

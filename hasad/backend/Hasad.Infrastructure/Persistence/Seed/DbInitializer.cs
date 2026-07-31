@@ -13,6 +13,26 @@ namespace Hasad.Infrastructure.Persistence.Seed;
 /// </summary>
 public static class DbInitializer
 {
+    public enum IdentityInsertTable
+    {
+        Governorates,
+        Directorates,
+        Localities,
+        OwnershipTypes,
+        AgriculturalSectors,
+        PoliticalClassifications,
+        AreaUnits,
+        MeasurementUnits,
+        RelationshipToOwners,
+        DamageNatures,
+        DamageActions,
+        DamageCategories,
+        DamageSubCategories,
+        DamageClassifications,
+        DamageCauseCategories,
+        DamageCauses
+    }
+
     /// <summary>
     /// Ensures all application roles exist.
     /// </summary>
@@ -91,24 +111,56 @@ public static class DbInitializer
     /// </summary>
     public static async Task SeedGeographicsAsync(ApplicationDbContext context)
     {
-        var geographics = new List<(string Code, string NameAr, string NameEn, (string NameAr, string NameEn, string Code)[] Directorates, (string NameAr, string NameEn)[] Localities)>
+        var geographics = new List<(string Code, string NameAr, string NameEn, (string NameAr, string NameEn, string Code)[] Directorates, (string NameAr, string NameEn, string DirectorateCode)[] Localities)>
         {
-            ("JEN", "جنين", "Jenin", new[] { ("مديرية جنين", "Jenin Directorate", "JEN") }, new[] { ("مدينة جنين", "Jenin City"), ("قباطية", "Qabatiya"), ("اليامون", "Ya'bad") }),
-            ("TUB", "طوباس", "Tubas", new[] { ("مديرية طوباس", "Tubas Directorate", "TUB") }, new[] { ("طوباس", "Tubas"), ("طمون", "Tammun"), ("عقابا", "Aqqaba") }),
-            ("TUL", "طولكرم", "Tulkarm", new[] { ("مديرية طولكرم", "Tulkarm Directorate", "TUL") }, new[] { ("طولكرم", "Tulkarm City"), ("عتيل", "Attil"), ("دير الغصون", "Deir al-Ghusun") }),
-            ("NBL", "نابلس", "Nablus", new[] { ("مديرية نابلس", "Nablus Directorate", "NAB") }, new[] { ("مدينة نابلس", "Nablus City"), ("عصيرة الشمالية", "Asira al-Shamaliya"), ("بيتا", "Beita") }),
-            ("QAL", "قلقيلية", "Qalqilya", new[] { ("مديرية قلقيلية", "Qalqilya Directorate", "QAL") }, new[] { ("قلقيلية", "Qalqilya City"), ("عزون", "Azzun"), ("حبلة", "Habla") }),
-            ("SLF", "سلفيت", "Salfit", new[] { ("مديرية سلفيت", "Salfit Directorate", "SLF") }, new[] { ("سلفيت", "Salfit City"), ("بديا", "Biddya"), ("الزاوية", "Zawiya") }),
-            ("RAM", "رام الله والبيرة", "Ramallah & Al-Bireh", new[] { ("مديرية رام الله", "Ramallah Directorate", "RAM") }, new[] { ("رام الله", "Ramallah City"), ("البيرة", "Al-Bireh"), ("بيتونيا", "Beituniya") }),
-            ("JER", "أريحا", "Jericho", new[] { ("مديرية أريحا", "Jericho Directorate", "JER") }, new[] { ("أريحا", "Jericho City"), ("العوجا", "Al-Auja"), ("الجفتلك", "Al-Jiftlik") }),
-            ("JRS", "القدس", "Jerusalem", new[] { ("مديرية القدس", "Jerusalem Directorate", "JRS") }, new[] { ("القدس", "Jerusalem City"), ("العيزرية", "Al-Eizariya"), ("أبو ديس", "Abu Dis") }),
-            ("BTH", "بيت لحم", "Bethlehem", new[] { ("مديرية بيت لحم", "Bethlehem Directorate", "BTH") }, new[] { ("بيت لحم", "Bethlehem City"), ("بيت جالا", "Beit Jala"), ("بيت ساحور", "Beit Sahour") }),
-            ("HBN", "الخليل", "Hebron", new[] { ("مديرية شمال الخليل", "North Hebron", "NHB"), ("مديرية جنوب الخليل", "South Hebron", "SHB"), ("مديرية الخليل", "Hebron Directorate", "HBN") }, new[] { ("مدينة الخليل", "Hebron City"), ("حلحول", "Halhul"), ("دورا", "Dura"), ("يطا", "Yatta") }),
-            ("NGZ", "شمال غزة", "North Gaza", new[] { ("مديرية شمال غزة", "North Gaza Directorate", "NGZ") }, new[] { ("جباليا", "Jabalia"), ("بيت لاهيا", "Beit Lahiya"), ("بيت حانون", "Beit Hanoun") }),
-            ("GZA", "غزة", "Gaza", new[] { ("مديرية غزة", "Gaza Directorate", "GZA") }, new[] { ("مدينة غزة", "Gaza City"), ("المغراقة", "Al-Mughraqa") }),
-            ("CEN", "دير البلح", "Deir al-Balah", new[] { ("مديرية الوسطى", "Central Directorate", "CEN") }, new[] { ("دير البلح", "Deir al-Balah City"), ("النصيرات", "Nuseirat"), ("البريج", "Maghazi") }),
-            ("KYS", "خانيونس", "Khan Yunis", new[] { ("مديرية خانيونس", "Khan Yunis Directorate", "KYS") }, new[] { ("خانيونس", "Khan Yunis City"), ("بني سهيلا", "Bani Suheila"), ("عبسان الكبيرة", "Abasan al-Kabira") }),
-            ("RFH", "رفح", "Rafah", new[] { ("مديرية رفح", "Rafah Directorate", "RFH") }, new[] { ("رفح", "Rafah City"), ("شوكة الصوفي", "Al-Shoka") })
+            ("JEN", "جنين", "Jenin",
+                new[] { ("مديرية جنين", "Jenin Directorate", "JEN"), ("مديرية شمال جنين", "North Jenin", "NJEN") },
+                new[] { ("مدينة جنين", "Jenin City", "JEN"), ("قباطية", "Qabatiya", "JEN"), ("اليامون", "Ya'bad", "JEN"), ("كفر دان", "Kafr Dan", "NJEN"), ("اليامون", "Yamoun", "NJEN") }),
+            ("TUB", "طوباس", "Tubas",
+                new[] { ("مديرية طوباس", "Tubas Directorate", "TUB") },
+                new[] { ("طوباس", "Tubas", "TUB"), ("طمون", "Tammun", "TUB"), ("عقابا", "Aqqaba", "TUB") }),
+            ("TUL", "طولكرم", "Tulkarm",
+                new[] { ("مديرية طولكرم", "Tulkarm Directorate", "TUL") },
+                new[] { ("طولكرم", "Tulkarm City", "TUL"), ("عتيل", "Attil", "TUL"), ("دير الغصون", "Deir al-Ghusun", "TUL") }),
+            ("NBL", "نابلس", "Nablus",
+                new[] { ("مديرية نابلس", "Nablus Directorate", "NAB") },
+                new[] { ("مدينة نابلس", "Nablus City", "NAB"), ("عصيرة الشمالية", "Asira al-Shamaliya", "NAB"), ("بيتا", "Beita", "NAB") }),
+            ("QAL", "قلقيلية", "Qalqilya",
+                new[] { ("مديرية قلقيلية", "Qalqilya Directorate", "QAL") },
+                new[] { ("قلقيلية", "Qalqilya City", "QAL"), ("عزون", "Azzun", "QAL"), ("حبلة", "Habla", "QAL") }),
+            ("SLF", "سلفيت", "Salfit",
+                new[] { ("مديرية سلفيت", "Salfit Directorate", "SLF") },
+                new[] { ("سلفيت", "Salfit City", "SLF"), ("بديا", "Biddya", "SLF"), ("الزاوية", "Zawiya", "SLF") }),
+            ("RAM", "رام الله والبيرة", "Ramallah & Al-Bireh",
+                new[] { ("مديرية رام الله", "Ramallah Directorate", "RAM") },
+                new[] { ("رام الله", "Ramallah City", "RAM"), ("البيرة", "Al-Bireh", "RAM"), ("بيتونيا", "Beituniya", "RAM") }),
+            ("JER", "أريحا", "Jericho",
+                new[] { ("مديرية أريحا", "Jericho Directorate", "JER") },
+                new[] { ("أريحا", "Jericho City", "JER"), ("العوجا", "Al-Auja", "JER"), ("الجفتلك", "Al-Jiftlik", "JER") }),
+            ("JRS", "القدس", "Jerusalem",
+                new[] { ("مديرية القدس", "Jerusalem Directorate", "JRS") },
+                new[] { ("القدس", "Jerusalem City", "JRS"), ("العيزرية", "Al-Eizariya", "JRS"), ("أبو ديس", "Abu Dis", "JRS") }),
+            ("BTH", "بيت لحم", "Bethlehem",
+                new[] { ("مديرية بيت لحم", "Bethlehem Directorate", "BTH") },
+                new[] { ("بيت لحم", "Bethlehem City", "BTH"), ("بيت جالا", "Beit Jala", "BTH"), ("بيت ساحور", "Beit Sahour", "BTH") }),
+            ("HBN", "الخليل", "Hebron",
+                new[] { ("مديرية شمال الخليل", "North Hebron", "NHB"), ("مديرية جنوب الخليل", "South Hebron", "SHB"), ("مديرية الخليل", "Hebron Directorate", "HBN") },
+                new[] { ("مدينة الخليل", "Hebron City", "HBN"), ("حلحول", "Halhul", "NHB"), ("دورا", "Dura", "SHB"), ("يطا", "Yatta", "SHB") }),
+            ("NGZ", "شمال غزة", "North Gaza",
+                new[] { ("مديرية شمال غزة", "North Gaza Directorate", "NGZ") },
+                new[] { ("جباليا", "Jabalia", "NGZ"), ("بيت لاهيا", "Beit Lahiya", "NGZ"), ("بيت حانون", "Beit Hanoun", "NGZ") }),
+            ("GZA", "غزة", "Gaza",
+                new[] { ("مديرية غزة", "Gaza Directorate", "GZA") },
+                new[] { ("مدينة غزة", "Gaza City", "GZA"), ("المغراقة", "Al-Mughraqa", "GZA") }),
+            ("CEN", "دير البلح", "Deir al-Balah",
+                new[] { ("مديرية الوسطى", "Central Directorate", "CEN") },
+                new[] { ("دير البلح", "Deir al-Balah City", "CEN"), ("النصيرات", "Nuseirat", "CEN"), ("البريج", "Maghazi", "CEN") }),
+            ("KYS", "خانيونس", "Khan Yunis",
+                new[] { ("مديرية خانيونس", "Khan Yunis Directorate", "KYS") },
+                new[] { ("خانيونس", "Khan Yunis City", "KYS"), ("بني سهيلا", "Bani Suheila", "KYS"), ("عبسان الكبيرة", "Abasan al-Kabira", "KYS") }),
+            ("RFH", "رفح", "Rafah",
+                new[] { ("مديرية رفح", "Rafah Directorate", "RFH") },
+                new[] { ("رفح", "Rafah City", "RFH"), ("شوكة الصوفي", "Al-Shoka", "RFH") })
         };
 
         var existingGovernorates = await context.Governorates
@@ -130,6 +182,7 @@ public static class DbInitializer
                     CreatedAt = DateTime.UtcNow
                 };
                 context.Governorates.Add(governorate);
+                existingGovernorates[code] = governorate;
             }
             else
             {
@@ -137,10 +190,11 @@ public static class DbInitializer
                 governorate.NameEn = nameEn;
             }
 
+            // 1. Seed Directorates
             foreach (var (dirNameAr, dirNameEn, dirCode) in directorates)
             {
                 var existingDir = governorate.Directorates
-                    .FirstOrDefault(d => d.NameEn == dirNameEn);
+                    .FirstOrDefault(d => d.Code == dirCode);
 
                 if (existingDir == null)
                 {
@@ -155,44 +209,57 @@ public static class DbInitializer
                         CreatedAt = DateTime.UtcNow
                     };
                     context.Directorates.Add(existingDir);
+                    governorate.Directorates.Add(existingDir);
                 }
                 else
                 {
                     existingDir.NameAr = dirNameAr;
-                    existingDir.Code = dirCode;
+                    existingDir.NameEn = dirNameEn;
                 }
+            }
 
-                // Temporary logic for seeding localities to directorates:
-                // If a locality matches keywords for a directorate, link them.
-                // In a real scenario, this would be a specific mapping provided in the dataset.
-                foreach (var (locNameAr, locNameEn) in localities)
+            // 2. Seed Localities (Fixed Mapping)
+            foreach (var (locNameAr, locNameEn, dirCode) in localities)
+            {
+                var existingLoc = governorate.Localities
+                    .FirstOrDefault(l => l.NameEn == locNameEn);
+
+                var targetDir = governorate.Directorates.First(d => d.Code == dirCode);
+
+                if (existingLoc == null)
                 {
-                    var existingLoc = governorate.Localities
-                        .FirstOrDefault(l => l.NameEn == locNameEn);
-
-                    if (existingLoc == null)
+                    context.Localities.Add(new Locality
                     {
-                        context.Localities.Add(new Locality
-                        {
-                            Id = Guid.NewGuid(),
-                            NameAr = locNameAr,
-                            NameEn = locNameEn,
-                            GovernorateId = governorate.Id,
-                            DirectorateId = existingDir.Id, // Assign to the current directorate in this loop
-                            IsActive = true,
-                            CreatedAt = DateTime.UtcNow
-                        });
-                    }
-                    else
-                    {
-                        existingLoc.NameAr = locNameAr;
-                        existingLoc.DirectorateId = existingDir.Id;
-                    }
+                        Id = Guid.NewGuid(),
+                        NameAr = locNameAr,
+                        NameEn = locNameEn,
+                        GovernorateId = governorate.Id,
+                        DirectorateId = targetDir.Id,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+                else
+                {
+                    existingLoc.NameAr = locNameAr;
+                    existingLoc.DirectorateId = targetDir.Id;
                 }
             }
         }
 
         await context.SaveChangesAsync();
+
+        // 3. Verification: Ensure every locality belongs to exactly one directorate and belongs to the correct governorate
+        var auditFailures = await context.Localities
+            .Where(l => l.DirectorateId == Guid.Empty || l.GovernorateId == Guid.Empty)
+            .CountAsync();
+
+        if (auditFailures > 0)
+        {
+            throw new Exception($"Geographic Seed Integrity Failure: {auditFailures} localities have missing geographic parentage.");
+        }
+
+        Log.Information("Geographic Seed verified: All localities mapped to valid parents.");
     }
 
     /// <summary>
@@ -239,7 +306,7 @@ public static class DbInitializer
     private static async Task SeedDamageReferenceDataInternalAsync(ApplicationDbContext context)
     {
         // 1. Damage Natures
-        await UpsertLookupsAsync(context, context.DamageNatures, "DamageNatures", new[]
+        await UpsertLookupsAsync(context, context.DamageNatures, IdentityInsertTable.DamageNatures, new[]
         {
             new DamageNature { Id = 1, NameAr = "انتاج نباتي", NameEn = "Plant production" },
             new DamageNature { Id = 2, NameAr = "انتاج حيواني", NameEn = "Animal production" },
@@ -250,7 +317,7 @@ public static class DbInitializer
         });
 
         // 2. Damage Actions
-        await UpsertLookupsAsync(context, context.DamageActions, "DamageActions", new[]
+        await UpsertLookupsAsync(context, context.DamageActions, IdentityInsertTable.DamageActions, new[]
         {
             new DamageAction { Id = 1, NameAr = "حرق", NameEn = "Burning" },
             new DamageAction { Id = 2, NameAr = "تكسير", NameEn = "Breaking" },
@@ -266,7 +333,7 @@ public static class DbInitializer
         });
 
         // 3. Damage Categories
-        await UpsertLookupsAsync(context, context.DamageCategories, "DamageCategories", new[]
+        await UpsertLookupsAsync(context, context.DamageCategories, IdentityInsertTable.DamageCategories, new[]
         {
             new DamageCategory { Id = 1, AgriculturalSectorId = 1, NameAr = "محاصيل حقلية", NameEn = "Field Crops" },
             new DamageCategory { Id = 2, AgriculturalSectorId = 1, NameAr = "خضروات", NameEn = "Vegetables" },
@@ -281,7 +348,7 @@ public static class DbInitializer
         });
 
         // 4. Damage SubCategories
-        await UpsertLookupsAsync(context, context.DamageSubCategories, "DamageSubCategories", new[]
+        await UpsertLookupsAsync(context, context.DamageSubCategories, IdentityInsertTable.DamageSubCategories, new[]
         {
             new DamageSubCategory { Id = 1, CategoryId = 1, NameAr = "حبوب", NameEn = "Cereals" },
             new DamageSubCategory { Id = 2, CategoryId = 2, NameAr = "مكشوفة", NameEn = "Open Field" },
@@ -295,7 +362,7 @@ public static class DbInitializer
         });
 
         // 5. Damage Classifications
-        await UpsertLookupsAsync(context, context.DamageClassifications, "DamageClassifications", new[]
+        await UpsertLookupsAsync(context, context.DamageClassifications, IdentityInsertTable.DamageClassifications, new[]
         {
             new DamageClassification { Id = 1, SubCategoryId = 1, NameAr = "قمح", NameEn = "Wheat" },
             new DamageClassification { Id = 2, SubCategoryId = 1, NameAr = "شعير", NameEn = "Barley" },
@@ -310,14 +377,14 @@ public static class DbInitializer
         });
 
         // 6. Damage Cause Categories
-        await UpsertLookupsAsync(context, context.DamageCauseCategories, "DamageCauseCategories", new[]
+        await UpsertLookupsAsync(context, context.DamageCauseCategories, IdentityInsertTable.DamageCauseCategories, new[]
         {
             new DamageCauseCategory { Id = 1, NameAr = "سياسي", NameEn = "Political" },
             new DamageCauseCategory { Id = 2, NameAr = "طبيعي", NameEn = "Natural" }
         });
 
         // 7. Damage Causes
-        await UpsertLookupsAsync(context, context.DamageCauses, "DamageCauses", new[]
+        await UpsertLookupsAsync(context, context.DamageCauses, IdentityInsertTable.DamageCauses, new[]
         {
             new DamageCause { Id = 1, CategoryId = 1, NameAr = "جيش الاحتلال", NameEn = "Army" },
             new DamageCause { Id = 2, CategoryId = 1, NameAr = "مستوطنين", NameEn = "Settlers" },
@@ -406,7 +473,7 @@ public static class DbInitializer
         await context.SaveChangesAsync();
     }
 
-    private static async Task UpsertLookupsAsync<T>(ApplicationDbContext context, DbSet<T> dbSet, string tableName, T[] items) where T : class
+    private static async Task UpsertLookupsAsync<T>(ApplicationDbContext context, DbSet<T> dbSet, IdentityInsertTable tableEnum, T[] items) where T : class
     {
         var existingIds = await dbSet.Select(e => EF.Property<int>(e, "Id")).ToListAsync();
 
@@ -425,16 +492,98 @@ public static class DbInitializer
 
         if (toAdd.Count == 0)
         {
-            Log.Debug("All items for {Table} already exist; skipping.", tableName);
+            Log.Debug("All items for {Table} already exist; skipping.", tableEnum);
             return;
         }
 
-        Log.Information("Seeding {Count} new items into {Table}...", toAdd.Count, tableName);
+        Log.Information("Seeding {Count} new items into {Table}...", toAdd.Count, tableEnum);
         dbSet.AddRange(toAdd);
-        await SaveWithIdentityInsertAsync(context, tableName);
+        await SaveWithIdentityInsertAsync(context, tableEnum);
     }
 
-    private static async Task SaveWithIdentityInsertAsync(ApplicationDbContext context, string tableName)
+    public static async Task SeedUatUsersAsync(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+    {
+        var password = "StrongPassword123!"; // 17 chars, meets all criteria
+
+        // 1. Governorate User (Jenin)
+        var jeninGov = await context.Governorates.FirstAsync(g => g.Code == "JEN");
+        var govUserEmail = "jenin.gov@hasad.ps";
+        if (await userManager.FindByEmailAsync(govUserEmail) == null)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = "jenin_gov",
+                Email = govUserEmail,
+                FullName = "Jenin Governorate User",
+                GovernorateId = jeninGov.Id,
+                EmailConfirmed = true,
+                IsActive = true
+            };
+            var result = await userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, AppRoles.Director);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Failed to create Jenin Governorate User: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+
+        // 2. Directorate User A (Jenin)
+        var jeninDir = await context.Directorates.FirstAsync(d => d.Code == "JEN");
+        var dirAEmail = "jenin.dir@hasad.ps";
+        if (await userManager.FindByEmailAsync(dirAEmail) == null)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = "jenin_dir_a",
+                Email = dirAEmail,
+                FullName = "Jenin Directorate User A",
+                GovernorateId = jeninGov.Id,
+                DirectorateId = jeninDir.Id,
+                EmailConfirmed = true,
+                IsActive = true
+            };
+            var result = await userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, AppRoles.AgriculturalEngineer);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Failed to create Jenin Directorate User A: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+
+        // 3. Directorate User B (North Jenin)
+        var nJeninDir = await context.Directorates.FirstAsync(d => d.Code == "NJEN");
+        var dirBEmail = "njenin.dir@hasad.ps";
+        if (await userManager.FindByEmailAsync(dirBEmail) == null)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = "njenin_dir_b",
+                Email = dirBEmail,
+                FullName = "North Jenin Directorate User B",
+                GovernorateId = jeninGov.Id,
+                DirectorateId = nJeninDir.Id,
+                EmailConfirmed = true,
+                IsActive = true
+            };
+            var result = await userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, AppRoles.AgriculturalEngineer);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Failed to create North Jenin Directorate User B: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+    }
+
+    private static async Task SaveWithIdentityInsertAsync(ApplicationDbContext context, IdentityInsertTable tableEnum)
     {
         if (!context.Database.IsRelational())
         {
@@ -442,12 +591,16 @@ public static class DbInitializer
             return;
         }
 
+        string tableName = tableEnum.ToString();
+
         try
         {
             Log.Debug("Enabling IDENTITY_INSERT for {Table}", tableName);
-            await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {tableName} ON");
+            // IDENTITY_INSERT table names cannot be parameterized.
+            // Using whitelist via Enum to satisfy EF1002 and security requirements.
+            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT " + tableName + " ON");
             await context.SaveChangesAsync();
-            await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {tableName} OFF");
+            await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT " + tableName + " OFF");
             Log.Debug("Disabled IDENTITY_INSERT for {Table}", tableName);
         }
         catch (Exception ex)
@@ -456,7 +609,7 @@ public static class DbInitializer
             // Ensure IDENTITY_INSERT is OFF even on failure if connection is still open
             try
             {
-                await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT {tableName} OFF");
+                await context.Database.ExecuteSqlRawAsync("SET IDENTITY_INSERT " + tableName + " OFF");
             }
             catch
             {

@@ -25,8 +25,11 @@ public record CreateFarmerCommand(
     Gender Gender,
     string PhoneNumber,
     int FamilySize,
-    string GovernorateId,
-    string LocalityId,
+    Guid? GovernorateId,
+    Guid? DirectorateId,
+    Guid? LocalityId,
+    string LegacyGovernorateId,
+    string LegacyLocalityId,
     string Address) : IRequest<Result<FarmerDto>>;
 
 public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, Result<FarmerDto>>
@@ -79,7 +82,10 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
             PhoneNumber = request.PhoneNumber,
             FamilySize = request.FamilySize,
             GovernorateId = request.GovernorateId,
+            DirectorateId = request.DirectorateId,
             LocalityId = request.LocalityId,
+            LegacyGovernorateId = request.LegacyGovernorateId,
+            LegacyLocalityId = request.LegacyLocalityId,
             Address = request.Address,
             SyncStatus = 0,
             CreatedAt = DateTime.UtcNow
@@ -101,7 +107,10 @@ public class CreateFarmerCommandHandler : IRequestHandler<CreateFarmerCommand, R
         Address = farmer.Address,
         RowVersion = Convert.ToBase64String(farmer.RowVersion),
         GovernorateId = farmer.GovernorateId,
+        DirectorateId = farmer.DirectorateId,
         LocalityId = farmer.LocalityId,
+        LegacyGovernorateId = farmer.LegacyGovernorateId,
+        LegacyLocalityId = farmer.LegacyLocalityId,
         BirthDate = farmer.BirthDate,
         Gender = farmer.Gender,
         FamilySize = farmer.FamilySize,
@@ -169,12 +178,6 @@ public class CreateFarmerCommandValidator : AbstractValidator<CreateFarmerComman
 
         RuleFor(v => v.FamilySize)
             .GreaterThan(0).WithMessage("Family Size must be at least 1.");
-
-        RuleFor(v => v.GovernorateId)
-            .NotEmpty().MaximumLength(50);
-
-        RuleFor(v => v.LocalityId)
-            .NotEmpty().MaximumLength(50);
 
         RuleFor(v => v.PhoneNumber)
             .NotEmpty().WithMessage("Phone Number is required.")

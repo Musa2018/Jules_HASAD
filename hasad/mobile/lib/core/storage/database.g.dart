@@ -212,11 +212,20 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
   late final GeneratedColumn<String> governorateId = GeneratedColumn<String>(
     'governorate_id',
     aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+    true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _directorateIdMeta = const VerificationMeta(
+    'directorateId',
+  );
+  @override
+  late final GeneratedColumn<String> directorateId = GeneratedColumn<String>(
+    'directorate_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _localityIdMeta = const VerificationMeta(
     'localityId',
@@ -224,6 +233,30 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
   @override
   late final GeneratedColumn<String> localityId = GeneratedColumn<String>(
     'locality_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _legacyGovernorateIdMeta =
+      const VerificationMeta('legacyGovernorateId');
+  @override
+  late final GeneratedColumn<String> legacyGovernorateId =
+      GeneratedColumn<String>(
+        'legacy_governorate_id',
+        aliasedName,
+        false,
+        additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
+  static const VerificationMeta _legacyLocalityIdMeta = const VerificationMeta(
+    'legacyLocalityId',
+  );
+  @override
+  late final GeneratedColumn<String> legacyLocalityId = GeneratedColumn<String>(
+    'legacy_locality_id',
     aliasedName,
     false,
     additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
@@ -382,7 +415,10 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     phoneNumber,
     familySize,
     governorateId,
+    directorateId,
     localityId,
+    legacyGovernorateId,
+    legacyLocalityId,
     address,
     name,
     nationalId,
@@ -538,10 +574,37 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         ),
       );
     }
+    if (data.containsKey('directorate_id')) {
+      context.handle(
+        _directorateIdMeta,
+        directorateId.isAcceptableOrUnknown(
+          data['directorate_id']!,
+          _directorateIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('locality_id')) {
       context.handle(
         _localityIdMeta,
         localityId.isAcceptableOrUnknown(data['locality_id']!, _localityIdMeta),
+      );
+    }
+    if (data.containsKey('legacy_governorate_id')) {
+      context.handle(
+        _legacyGovernorateIdMeta,
+        legacyGovernorateId.isAcceptableOrUnknown(
+          data['legacy_governorate_id']!,
+          _legacyGovernorateIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('legacy_locality_id')) {
+      context.handle(
+        _legacyLocalityIdMeta,
+        legacyLocalityId.isAcceptableOrUnknown(
+          data['legacy_locality_id']!,
+          _legacyLocalityIdMeta,
+        ),
       );
     }
     if (data.containsKey('address')) {
@@ -692,10 +755,22 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
       governorateId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}governorate_id'],
-      )!,
+      ),
+      directorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}directorate_id'],
+      ),
       localityId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}locality_id'],
+      ),
+      legacyGovernorateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}legacy_governorate_id'],
+      )!,
+      legacyLocalityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}legacy_locality_id'],
       )!,
       address: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -767,8 +842,11 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
   final int gender;
   final String phoneNumber;
   final int familySize;
-  final String governorateId;
-  final String localityId;
+  final String? governorateId;
+  final String? directorateId;
+  final String? localityId;
+  final String legacyGovernorateId;
+  final String legacyLocalityId;
   final String address;
   final String name;
   final String nationalId;
@@ -797,8 +875,11 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     required this.gender,
     required this.phoneNumber,
     required this.familySize,
-    required this.governorateId,
-    required this.localityId,
+    this.governorateId,
+    this.directorateId,
+    this.localityId,
+    required this.legacyGovernorateId,
+    required this.legacyLocalityId,
     required this.address,
     required this.name,
     required this.nationalId,
@@ -834,8 +915,17 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     map['gender'] = Variable<int>(gender);
     map['phone_number'] = Variable<String>(phoneNumber);
     map['family_size'] = Variable<int>(familySize);
-    map['governorate_id'] = Variable<String>(governorateId);
-    map['locality_id'] = Variable<String>(localityId);
+    if (!nullToAbsent || governorateId != null) {
+      map['governorate_id'] = Variable<String>(governorateId);
+    }
+    if (!nullToAbsent || directorateId != null) {
+      map['directorate_id'] = Variable<String>(directorateId);
+    }
+    if (!nullToAbsent || localityId != null) {
+      map['locality_id'] = Variable<String>(localityId);
+    }
+    map['legacy_governorate_id'] = Variable<String>(legacyGovernorateId);
+    map['legacy_locality_id'] = Variable<String>(legacyLocalityId);
     map['address'] = Variable<String>(address);
     map['name'] = Variable<String>(name);
     map['national_id'] = Variable<String>(nationalId);
@@ -880,8 +970,17 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       gender: Value(gender),
       phoneNumber: Value(phoneNumber),
       familySize: Value(familySize),
-      governorateId: Value(governorateId),
-      localityId: Value(localityId),
+      governorateId: governorateId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(governorateId),
+      directorateId: directorateId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(directorateId),
+      localityId: localityId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localityId),
+      legacyGovernorateId: Value(legacyGovernorateId),
+      legacyLocalityId: Value(legacyLocalityId),
       address: Value(address),
       name: Value(name),
       nationalId: Value(nationalId),
@@ -926,8 +1025,13 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       gender: serializer.fromJson<int>(json['gender']),
       phoneNumber: serializer.fromJson<String>(json['phoneNumber']),
       familySize: serializer.fromJson<int>(json['familySize']),
-      governorateId: serializer.fromJson<String>(json['governorateId']),
-      localityId: serializer.fromJson<String>(json['localityId']),
+      governorateId: serializer.fromJson<String?>(json['governorateId']),
+      directorateId: serializer.fromJson<String?>(json['directorateId']),
+      localityId: serializer.fromJson<String?>(json['localityId']),
+      legacyGovernorateId: serializer.fromJson<String>(
+        json['legacyGovernorateId'],
+      ),
+      legacyLocalityId: serializer.fromJson<String>(json['legacyLocalityId']),
       address: serializer.fromJson<String>(json['address']),
       name: serializer.fromJson<String>(json['name']),
       nationalId: serializer.fromJson<String>(json['nationalId']),
@@ -961,8 +1065,11 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       'gender': serializer.toJson<int>(gender),
       'phoneNumber': serializer.toJson<String>(phoneNumber),
       'familySize': serializer.toJson<int>(familySize),
-      'governorateId': serializer.toJson<String>(governorateId),
-      'localityId': serializer.toJson<String>(localityId),
+      'governorateId': serializer.toJson<String?>(governorateId),
+      'directorateId': serializer.toJson<String?>(directorateId),
+      'localityId': serializer.toJson<String?>(localityId),
+      'legacyGovernorateId': serializer.toJson<String>(legacyGovernorateId),
+      'legacyLocalityId': serializer.toJson<String>(legacyLocalityId),
       'address': serializer.toJson<String>(address),
       'name': serializer.toJson<String>(name),
       'nationalId': serializer.toJson<String>(nationalId),
@@ -994,8 +1101,11 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     int? gender,
     String? phoneNumber,
     int? familySize,
-    String? governorateId,
-    String? localityId,
+    Value<String?> governorateId = const Value.absent(),
+    Value<String?> directorateId = const Value.absent(),
+    Value<String?> localityId = const Value.absent(),
+    String? legacyGovernorateId,
+    String? legacyLocalityId,
     String? address,
     String? name,
     String? nationalId,
@@ -1024,8 +1134,15 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     gender: gender ?? this.gender,
     phoneNumber: phoneNumber ?? this.phoneNumber,
     familySize: familySize ?? this.familySize,
-    governorateId: governorateId ?? this.governorateId,
-    localityId: localityId ?? this.localityId,
+    governorateId: governorateId.present
+        ? governorateId.value
+        : this.governorateId,
+    directorateId: directorateId.present
+        ? directorateId.value
+        : this.directorateId,
+    localityId: localityId.present ? localityId.value : this.localityId,
+    legacyGovernorateId: legacyGovernorateId ?? this.legacyGovernorateId,
+    legacyLocalityId: legacyLocalityId ?? this.legacyLocalityId,
     address: address ?? this.address,
     name: name ?? this.name,
     nationalId: nationalId ?? this.nationalId,
@@ -1081,9 +1198,18 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       governorateId: data.governorateId.present
           ? data.governorateId.value
           : this.governorateId,
+      directorateId: data.directorateId.present
+          ? data.directorateId.value
+          : this.directorateId,
       localityId: data.localityId.present
           ? data.localityId.value
           : this.localityId,
+      legacyGovernorateId: data.legacyGovernorateId.present
+          ? data.legacyGovernorateId.value
+          : this.legacyGovernorateId,
+      legacyLocalityId: data.legacyLocalityId.present
+          ? data.legacyLocalityId.value
+          : this.legacyLocalityId,
       address: data.address.present ? data.address.value : this.address,
       name: data.name.present ? data.name.value : this.name,
       nationalId: data.nationalId.present
@@ -1128,7 +1254,10 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           ..write('phoneNumber: $phoneNumber, ')
           ..write('familySize: $familySize, ')
           ..write('governorateId: $governorateId, ')
+          ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
+          ..write('legacyGovernorateId: $legacyGovernorateId, ')
+          ..write('legacyLocalityId: $legacyLocalityId, ')
           ..write('address: $address, ')
           ..write('name: $name, ')
           ..write('nationalId: $nationalId, ')
@@ -1163,7 +1292,10 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     phoneNumber,
     familySize,
     governorateId,
+    directorateId,
     localityId,
+    legacyGovernorateId,
+    legacyLocalityId,
     address,
     name,
     nationalId,
@@ -1197,7 +1329,10 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           other.phoneNumber == this.phoneNumber &&
           other.familySize == this.familySize &&
           other.governorateId == this.governorateId &&
+          other.directorateId == this.directorateId &&
           other.localityId == this.localityId &&
+          other.legacyGovernorateId == this.legacyGovernorateId &&
+          other.legacyLocalityId == this.legacyLocalityId &&
           other.address == this.address &&
           other.name == this.name &&
           other.nationalId == this.nationalId &&
@@ -1228,8 +1363,11 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   final Value<int> gender;
   final Value<String> phoneNumber;
   final Value<int> familySize;
-  final Value<String> governorateId;
-  final Value<String> localityId;
+  final Value<String?> governorateId;
+  final Value<String?> directorateId;
+  final Value<String?> localityId;
+  final Value<String> legacyGovernorateId;
+  final Value<String> legacyLocalityId;
   final Value<String> address;
   final Value<String> name;
   final Value<String> nationalId;
@@ -1260,7 +1398,10 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.phoneNumber = const Value.absent(),
     this.familySize = const Value.absent(),
     this.governorateId = const Value.absent(),
+    this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
+    this.legacyGovernorateId = const Value.absent(),
+    this.legacyLocalityId = const Value.absent(),
     this.address = const Value.absent(),
     this.name = const Value.absent(),
     this.nationalId = const Value.absent(),
@@ -1292,7 +1433,10 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.phoneNumber = const Value.absent(),
     this.familySize = const Value.absent(),
     this.governorateId = const Value.absent(),
+    this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
+    this.legacyGovernorateId = const Value.absent(),
+    this.legacyLocalityId = const Value.absent(),
     this.address = const Value.absent(),
     this.name = const Value.absent(),
     this.nationalId = const Value.absent(),
@@ -1324,7 +1468,10 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Expression<String>? phoneNumber,
     Expression<int>? familySize,
     Expression<String>? governorateId,
+    Expression<String>? directorateId,
     Expression<String>? localityId,
+    Expression<String>? legacyGovernorateId,
+    Expression<String>? legacyLocalityId,
     Expression<String>? address,
     Expression<String>? name,
     Expression<String>? nationalId,
@@ -1356,7 +1503,11 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       if (phoneNumber != null) 'phone_number': phoneNumber,
       if (familySize != null) 'family_size': familySize,
       if (governorateId != null) 'governorate_id': governorateId,
+      if (directorateId != null) 'directorate_id': directorateId,
       if (localityId != null) 'locality_id': localityId,
+      if (legacyGovernorateId != null)
+        'legacy_governorate_id': legacyGovernorateId,
+      if (legacyLocalityId != null) 'legacy_locality_id': legacyLocalityId,
       if (address != null) 'address': address,
       if (name != null) 'name': name,
       if (nationalId != null) 'national_id': nationalId,
@@ -1389,8 +1540,11 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Value<int>? gender,
     Value<String>? phoneNumber,
     Value<int>? familySize,
-    Value<String>? governorateId,
-    Value<String>? localityId,
+    Value<String?>? governorateId,
+    Value<String?>? directorateId,
+    Value<String?>? localityId,
+    Value<String>? legacyGovernorateId,
+    Value<String>? legacyLocalityId,
     Value<String>? address,
     Value<String>? name,
     Value<String>? nationalId,
@@ -1422,7 +1576,10 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       familySize: familySize ?? this.familySize,
       governorateId: governorateId ?? this.governorateId,
+      directorateId: directorateId ?? this.directorateId,
       localityId: localityId ?? this.localityId,
+      legacyGovernorateId: legacyGovernorateId ?? this.legacyGovernorateId,
+      legacyLocalityId: legacyLocalityId ?? this.legacyLocalityId,
       address: address ?? this.address,
       name: name ?? this.name,
       nationalId: nationalId ?? this.nationalId,
@@ -1492,8 +1649,19 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     if (governorateId.present) {
       map['governorate_id'] = Variable<String>(governorateId.value);
     }
+    if (directorateId.present) {
+      map['directorate_id'] = Variable<String>(directorateId.value);
+    }
     if (localityId.present) {
       map['locality_id'] = Variable<String>(localityId.value);
+    }
+    if (legacyGovernorateId.present) {
+      map['legacy_governorate_id'] = Variable<String>(
+        legacyGovernorateId.value,
+      );
+    }
+    if (legacyLocalityId.present) {
+      map['legacy_locality_id'] = Variable<String>(legacyLocalityId.value);
     }
     if (address.present) {
       map['address'] = Variable<String>(address.value);
@@ -1554,7 +1722,10 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
           ..write('phoneNumber: $phoneNumber, ')
           ..write('familySize: $familySize, ')
           ..write('governorateId: $governorateId, ')
+          ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
+          ..write('legacyGovernorateId: $legacyGovernorateId, ')
+          ..write('legacyLocalityId: $legacyLocalityId, ')
           ..write('address: $address, ')
           ..write('name: $name, ')
           ..write('nationalId: $nationalId, ')
@@ -14420,8 +14591,11 @@ typedef $$FarmersTableCreateCompanionBuilder =
       Value<int> gender,
       Value<String> phoneNumber,
       Value<int> familySize,
-      Value<String> governorateId,
-      Value<String> localityId,
+      Value<String?> governorateId,
+      Value<String?> directorateId,
+      Value<String?> localityId,
+      Value<String> legacyGovernorateId,
+      Value<String> legacyLocalityId,
       Value<String> address,
       Value<String> name,
       Value<String> nationalId,
@@ -14453,8 +14627,11 @@ typedef $$FarmersTableUpdateCompanionBuilder =
       Value<int> gender,
       Value<String> phoneNumber,
       Value<int> familySize,
-      Value<String> governorateId,
-      Value<String> localityId,
+      Value<String?> governorateId,
+      Value<String?> directorateId,
+      Value<String?> localityId,
+      Value<String> legacyGovernorateId,
+      Value<String> legacyLocalityId,
       Value<String> address,
       Value<String> name,
       Value<String> nationalId,
@@ -14563,8 +14740,23 @@ class $$FarmersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get localityId => $composableBuilder(
     column: $table.localityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get legacyGovernorateId => $composableBuilder(
+    column: $table.legacyGovernorateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get legacyLocalityId => $composableBuilder(
+    column: $table.legacyLocalityId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14718,8 +14910,23 @@ class $$FarmersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get localityId => $composableBuilder(
     column: $table.localityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get legacyGovernorateId => $composableBuilder(
+    column: $table.legacyGovernorateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get legacyLocalityId => $composableBuilder(
+    column: $table.legacyLocalityId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -14861,8 +15068,23 @@ class $$FarmersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get directorateId => $composableBuilder(
+    column: $table.directorateId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get localityId => $composableBuilder(
     column: $table.localityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get legacyGovernorateId => $composableBuilder(
+    column: $table.legacyGovernorateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get legacyLocalityId => $composableBuilder(
+    column: $table.legacyLocalityId,
     builder: (column) => column,
   );
 
@@ -14957,8 +15179,11 @@ class $$FarmersTableTableManager
                 Value<int> gender = const Value.absent(),
                 Value<String> phoneNumber = const Value.absent(),
                 Value<int> familySize = const Value.absent(),
-                Value<String> governorateId = const Value.absent(),
-                Value<String> localityId = const Value.absent(),
+                Value<String?> governorateId = const Value.absent(),
+                Value<String?> directorateId = const Value.absent(),
+                Value<String?> localityId = const Value.absent(),
+                Value<String> legacyGovernorateId = const Value.absent(),
+                Value<String> legacyLocalityId = const Value.absent(),
                 Value<String> address = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> nationalId = const Value.absent(),
@@ -14989,7 +15214,10 @@ class $$FarmersTableTableManager
                 phoneNumber: phoneNumber,
                 familySize: familySize,
                 governorateId: governorateId,
+                directorateId: directorateId,
                 localityId: localityId,
+                legacyGovernorateId: legacyGovernorateId,
+                legacyLocalityId: legacyLocalityId,
                 address: address,
                 name: name,
                 nationalId: nationalId,
@@ -15021,8 +15249,11 @@ class $$FarmersTableTableManager
                 Value<int> gender = const Value.absent(),
                 Value<String> phoneNumber = const Value.absent(),
                 Value<int> familySize = const Value.absent(),
-                Value<String> governorateId = const Value.absent(),
-                Value<String> localityId = const Value.absent(),
+                Value<String?> governorateId = const Value.absent(),
+                Value<String?> directorateId = const Value.absent(),
+                Value<String?> localityId = const Value.absent(),
+                Value<String> legacyGovernorateId = const Value.absent(),
+                Value<String> legacyLocalityId = const Value.absent(),
                 Value<String> address = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> nationalId = const Value.absent(),
@@ -15053,7 +15284,10 @@ class $$FarmersTableTableManager
                 phoneNumber: phoneNumber,
                 familySize: familySize,
                 governorateId: governorateId,
+                directorateId: directorateId,
                 localityId: localityId,
+                legacyGovernorateId: legacyGovernorateId,
+                legacyLocalityId: legacyLocalityId,
                 address: address,
                 name: name,
                 nationalId: nationalId,

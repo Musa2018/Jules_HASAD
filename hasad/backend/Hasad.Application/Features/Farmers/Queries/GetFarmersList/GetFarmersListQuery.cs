@@ -96,7 +96,7 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
             FatherNameEn = f.FatherNameEn,
             GrandfatherNameEn = f.GrandfatherNameEn,
             FamilyNameEn = f.FamilyNameEn,
-            RowVersion = Convert.ToBase64String(f.RowVersion),
+            RowVersion = f.RowVersion != null ? Convert.ToBase64String(f.RowVersion) : string.Empty,
             CreatedAt = f.CreatedAt,
             UpdatedAt = f.UpdatedAt
         }).ToList();

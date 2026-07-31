@@ -95,7 +95,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get duplicateReportError =>
-      'يوجد تقرير ضرر مسجل مسبقاً لهذه المزرعة في هذا التاريخ';
+      'يوجد تقرير ضرر مسجل مسبقاً لهذه المزرعة في نفس تاريخ الضرر.';
 
   @override
   String get retrySync => 'إعادة محاولة المزامنة';
@@ -286,6 +286,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get locationSection => 'الموقع';
+
+  @override
+  String get personalAddressSection => 'العنوان الشخصي (للمزارع)';
 
   @override
   String get village => 'التجمع/القرية';

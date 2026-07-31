@@ -122,6 +122,7 @@
   "familySize": "Family Size",
   "mobileNumber": "Mobile Number",
   "locationSection": "Location",
+  "personalAddressSection": "Personal Address (Farmer)",
   "village": "Locality/Village",
   "auditSection": "Audit Info",
   "createdAt": "Created At",

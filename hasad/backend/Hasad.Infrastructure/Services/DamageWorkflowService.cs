@@ -79,20 +79,12 @@ public class DamageWorkflowService : IDamageWorkflowService
         // 3. Geographic Scope check (inherited from ADR 0013 logic)
         if (!_currentUser.IsInRole(AppRoles.SuperAdmin) && !_currentUser.IsInRole(AppRoles.GeneralManager))
         {
-            // Ensure Farm is loaded if needed. Since this is a service, we assume report might not have it.
-            // But usually the caller provides the report.
-            if (report.Farm == null)
-            {
-                // This is a safety guard. In production, we should probably load it if missing.
-                // For now, let's assume it's included as per repository patterns.
-            }
-
-            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return false;
             }
 
-            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return false;
             }

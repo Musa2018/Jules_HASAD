@@ -91,7 +91,7 @@ public class DamageReportCommandHandlerTests
     }
 
     [Fact]
-    public async Task CreateDamageReport_OpensExisting_WhenDuplicateOnSameDay()
+    public async Task CreateDamageReport_Fails_WhenDuplicateOnSameDay()
     {
         var context = CreateContext();
         var farmId = Guid.NewGuid();
@@ -100,7 +100,7 @@ public class DamageReportCommandHandlerTests
         var reportId = Guid.NewGuid();
 
         var farmer = new Farmer { Id = Guid.NewGuid(), IdTypeId = 1, IdNumber = "1", FirstNameAr = "A", FatherNameAr = "B", GrandfatherNameAr = "C", FamilyNameAr = "D" };
-        var farm = new Farm { Id = farmId, FarmerId = farmer.Id, LocalFarmName = "F", DirectorateId = Guid.NewGuid() };
+        var farm = new Farm { Id = farmId, FarmerId = farmer.Id, LocalFarmName = "TestFarm", DirectorateId = Guid.NewGuid() };
         context.Farmers.Add(farmer);
         context.Farms.Add(farm);
         context.DamageReports.Add(new DamageReport
@@ -121,8 +121,8 @@ public class DamageReportCommandHandlerTests
 
         var result = await handler.Handle(command, CancellationToken.None);
 
-        Assert.True(result.Succeeded);
-        Assert.Equal(reportId, result.Data!.Id);
+        Assert.False(result.Succeeded);
+        Assert.Contains("CONFLICT", result.Errors[0]);
     }
 
     [Fact]

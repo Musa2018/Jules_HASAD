@@ -135,7 +135,7 @@ void main() {
       return report.copyWith(id: 'NEW-ID', temporaryFormNumber: 'TEMP-2026-0001');
     });
 
-    when(() => mockRouter.pop()).thenAnswer((_) async => null);
+    when(() => mockRouter.go(any(), extra: any(named: 'extra'))).thenAnswer((_) async => null);
 
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
@@ -154,9 +154,9 @@ void main() {
     await tester.tap(saveButton);
     await tester.pumpAndSettle();
 
-    // Verify success message and pop
+    // Verify success message and navigation to list
     expect(find.textContaining('Waiting for synchronization'), findsOneWidget);
     verify(() => mockDamageRepo.createDamageReport(any())).called(1);
-    verify(() => mockRouter.pop()).called(1);
+    verify(() => mockRouter.go('/damage-reports', extra: any(named: 'extra'))).called(1);
   });
 }

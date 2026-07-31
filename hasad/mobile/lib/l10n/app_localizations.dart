@@ -1268,6 +1268,48 @@ abstract class AppLocalizations {
   /// **'Completed'**
   String get status_Completed;
 
+  /// No description provided for @saveLocallyAndSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Locally & Sync'**
+  String get saveLocallyAndSync;
+
+  /// No description provided for @workflowState_DraftHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft Header'**
+  String get workflowState_DraftHeader;
+
+  /// No description provided for @workflowState_HeaderSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Header Synced (Ready for Assessment)'**
+  String get workflowState_HeaderSynced;
+
+  /// No description provided for @workflowState_HeaderSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Header Sync Failed'**
+  String get workflowState_HeaderSyncFailed;
+
+  /// No description provided for @workflowState_AssessmentInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment In Progress'**
+  String get workflowState_AssessmentInProgress;
+
+  /// No description provided for @workflowState_AssessmentPendingSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment Pending Sync'**
+  String get workflowState_AssessmentPendingSync;
+
+  /// No description provided for @workflowState_ReadyForReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for Review'**
+  String get workflowState_ReadyForReview;
+
   /// No description provided for @operationalView.
   ///
   /// In en, this message translates to:

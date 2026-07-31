@@ -18,13 +18,13 @@ To enable O(1) authorization checks in high-volume queries and list operations w
 - **Constraint**: The field is immutable regarding independent updates; it must always be synchronized with the parent farm's location at the time of report capture.
 
 ### 3. Authorization Inheritance Chain
-Security follows a strict parent-to-child inheritance model:
-- `DamageReport` inherits from `Farm`.
-- `DamageItem` inherits from `DamageReport`.
-- `DamageReportAttachment` inherits from `DamageReport`.
+Security follows a strict parent-to-child inheritance model using denormalized fields for performance and robustness:
+- `DamageReport` inherits from `Farm` (via `DirectorateId` snapshot).
+- `DamageItem` inherits from `DamageReport` (using `DamageReport.DirectorateId`).
+- `DamageReportAttachment` inherits from `DamageReport` (using `DamageReport.DirectorateId`).
 - `DamageWorkflowHistory` inherits from `DamageReport`.
 
-In the application layer, all commands affecting child entities MUST perform a join or lookup to the parent `DamageReport` to verify the user's operational scope (`DirectorateId` or `GovernorateId`).
+In the application layer, all commands affecting a `DamageReport` or its child entities MUST use the `DamageReport.DirectorateId` or `DamageReport.GovernorateId` fields for authorization. Navigation to the `Farm` entity for authorization purposes is strictly prohibited to avoid performance penalties and "Missing Include" bugs.
 
 ### 4. Decoupling from Farmer residency
 Farmer residency (`Farmer.GovernorateId`) is explicitly excluded from authorization boundaries for managed assets. An Agricultural Engineer assigned to Directorate A can manage a farm located in Directorate A even if the owner farmer resides in Directorate B.

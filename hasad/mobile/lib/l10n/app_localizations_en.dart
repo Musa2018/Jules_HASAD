@@ -602,6 +602,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get status_Completed => 'Completed';
 
   @override
+  String get saveLocallyAndSync => 'Save Locally & Sync';
+
+  @override
+  String get workflowState_DraftHeader => 'Draft Header';
+
+  @override
+  String get workflowState_HeaderSynced =>
+      'Header Synced (Ready for Assessment)';
+
+  @override
+  String get workflowState_HeaderSyncFailed => 'Header Sync Failed';
+
+  @override
+  String get workflowState_AssessmentInProgress => 'Assessment In Progress';
+
+  @override
+  String get workflowState_AssessmentPendingSync => 'Assessment Pending Sync';
+
+  @override
+  String get workflowState_ReadyForReview => 'Ready for Review';
+
+  @override
   String get operationalView => 'Operational View';
 
   @override

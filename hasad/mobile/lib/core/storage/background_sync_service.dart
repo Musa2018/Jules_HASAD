@@ -328,16 +328,23 @@ class BackgroundSyncService {
           clearPendingDelete: true,
         );
       } else {
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: e.toString());
+        
+        // For new entities (create), do NOT automatically resolve conflicts.
+        // Let the user decide how to handle the duplicate.
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       }
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString())),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: e.toString());
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       } else {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(
@@ -353,8 +360,10 @@ class BackgroundSyncService {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString())),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: e.toString());
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       } else {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(
@@ -370,8 +379,10 @@ class BackgroundSyncService {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString())),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: e.toString());
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       } else {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(

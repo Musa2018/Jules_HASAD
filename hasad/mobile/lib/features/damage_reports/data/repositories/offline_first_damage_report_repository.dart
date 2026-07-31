@@ -233,14 +233,16 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     report_domain.DamageReport report,
   ) async {
     // 1. Duplicate check (Local)
+    final normalizedDate = DateTime(report.damageDate.year, report.damageDate.month, report.damageDate.day);
+    
     final existing = await (_db.select(_db.damageReports)
           ..where((t) => t.farmId.equals(report.farmId) & 
-                         t.damageDate.equals(report.damageDate) &
+                         t.damageDate.equals(normalizedDate) &
                          t.isPendingDelete.equals(false)))
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('A damage report already exists for this farm and date.');
+      throw Exception('CONFLICT: A damage report already exists for this farm on ${DateFormat('yyyy-MM-dd').format(normalizedDate)}.');
     }
 
     // 2. Fetch Farm for denormalization snapshot
@@ -259,13 +261,14 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       id: localId,
       temporaryFormNumber: tempNumber,
       documentationDate: DateTime.now(),
+      damageDate: normalizedDate,
       // Snapshots
       farmerId: farm.farmerId,
       governorateId: farm.governorateId,
       directorateId: farm.directorateId,
       localityId: farm.localityId,
       agriculturalSectorId: farm.agriculturalSectorId,
-      damageYear: report.damageDate.year,
+      damageYear: normalizedDate.year,
       createdBy: _session?.userId ?? 'System',
     );
 
@@ -324,22 +327,26 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   Future<report_domain.DamageReport> updateDamageReport(
     report_domain.DamageReport report,
   ) async {
+    final normalizedDate = DateTime(report.damageDate.year, report.damageDate.month, report.damageDate.day);
+
     // Duplicate check on update
     final existing = await (_db.select(_db.damageReports)
           ..where((t) => t.id.equals(report.id).not() &
                          t.farmId.equals(report.farmId) & 
-                         t.damageDate.equals(report.damageDate) &
+                         t.damageDate.equals(normalizedDate) &
                          t.isPendingDelete.equals(false)))
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('A damage report already exists for this farm and date.');
+      throw Exception('CONFLICT: A damage report already exists for this farm on ${DateFormat('yyyy-MM-dd').format(normalizedDate)}.');
     }
+
+    final finalReport = report.copyWith(damageDate: normalizedDate, damageYear: normalizedDate.year);
 
     await (_db.update(
       _db.damageReports,
     )..where((t) => t.id.equals(report.id))).write(
-      _mapReportToCompanion(report).copyWith(
+      _mapReportToCompanion(finalReport).copyWith(
         syncStatus: const Value('pending'),
         lastSyncError: const Value(null),
         updatedAt: Value(DateTime.now()),
@@ -350,10 +357,10 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       localId: report.id,
       entityType: 'damage_report',
       operation: 'update',
-      data: report.toJson(),
+      data: finalReport.toJson(),
     );
 
-    return report;
+    return finalReport;
   }
 
   @override

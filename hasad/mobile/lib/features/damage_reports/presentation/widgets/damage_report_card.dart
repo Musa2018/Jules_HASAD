@@ -63,7 +63,9 @@ class DamageReportCard extends ConsumerWidget {
 
     final title = report.reportNumber.isNotEmpty 
         ? report.reportNumber 
-        : (report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber);
+        : (report.temporaryFormNumber.isNotEmpty ? report.temporaryFormNumber : report.id.substring(0, 8));
+
+    final workflowLabel = _getWorkflowLabel(context, report.workflowStateKey);
 
     return Opacity(
       opacity: report.isDeleted == true ? 0.6 : 1.0,
@@ -86,13 +88,26 @@ class DamageReportCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                              decoration: report.isDeleted == true ? TextDecoration.lineThrough : null,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  decoration: report.isDeleted == true ? TextDecoration.lineThrough : null,
+                                ),
+                          ),
+                          Text(
+                            workflowLabel,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _getWorkflowColor(report),
+                              fontWeight: FontWeight.w500,
                             ),
+                          ),
+                        ],
                       ),
                     ),
                     FarmerSyncStatusBadge(
@@ -165,10 +180,13 @@ class DamageReportCard extends ConsumerWidget {
                       if (_canAddItems(report))
                         TextButton.icon(
                           onPressed: () => context.push(AppRoutes.editDamageReport, extra: report.id),
-                          icon: const Icon(Icons.add_circle_outline, size: 18),
-                          label: Text(l10n.addAssessmentItem),
+                          icon: Icon(
+                            report.hasItems ? Icons.edit_note : Icons.add_circle_outline,
+                            size: 18,
+                          ),
+                          label: Text(report.hasItems ? l10n.editAssessment : l10n.addAssessmentItem),
                         )
-                      else if (report.serverId == null)
+                      else if (!report.isHeaderSynced)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
@@ -214,9 +232,32 @@ class DamageReportCard extends ConsumerWidget {
     );
   }
 
+  String _getWorkflowLabel(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (key) {
+      case 'status_TechReview': return l10n.status_TechReview;
+      case 'status_Completed': return l10n.status_Completed;
+      case 'workflowState_DraftHeader': return l10n.workflowState_DraftHeader;
+      case 'workflowState_HeaderSynced': return l10n.workflowState_HeaderSynced;
+      case 'workflowState_HeaderSyncFailed': return l10n.workflowState_HeaderSyncFailed;
+      case 'workflowState_AssessmentInProgress': return l10n.workflowState_AssessmentInProgress;
+      case 'workflowState_AssessmentPendingSync': return l10n.workflowState_AssessmentPendingSync;
+      case 'workflowState_ReadyForReview': return l10n.workflowState_ReadyForReview;
+      default: return key;
+    }
+  }
+
+  Color _getWorkflowColor(DamageReport report) {
+    if (report.statusId == 'Submitted' || report.statusId == DamageReportStatus.techReview) return Colors.blue;
+    if (report.statusId == DamageReportStatus.completed) return Colors.green;
+    if (!report.isHeaderSynced) return Colors.orange;
+    if (report.isReadyForReview) return Colors.teal;
+    return Colors.grey[700]!;
+  }
+
   bool _canAddItems(DamageReport report) {
-    // Phase 2 requirement: Header must be synchronized (have a serverId) before items can be added
-    return report.serverId != null && 
+    // Phase 2 requirement: Header must be synchronized (have serverId and official report number)
+    return report.isHeaderSynced && 
            (report.statusId == DamageReportStatus.draft || 
             report.statusId == DamageReportStatus.pendingTechnicalVerification);
   }

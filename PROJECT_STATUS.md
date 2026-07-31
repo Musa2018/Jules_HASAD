@@ -4,19 +4,39 @@
 
 - **Current Sprint**: Phase 2.2 — Evidence & Workflow Lifecycle
 - **Current Branch**: `DamageReport`
-- **Last Updated**: 2026-07-28
-- **Latest Commit**: `DamageReport` (`0df6057`)
+- **Last Updated**: 2026-07-31
+- **Latest Commit**: `DamageReport` (`7f2a1b3`)
 
-## DamageReport Two-Phase Workflow Implementation (2026-07-30) — COMPLETED
+## DamageReport Authorization & Workflow Hardening (2026-07-31) — COMPLETED
+- **Bug Fix**: Resolved `400 Bad Request` in `TransitionDamageReport` caused by missing `Farm` navigation property during geographic scope validation.
+- **Architecture Alignment**: Refactored `DamageWorkflowService` and all `DamageReport` related commands to use denormalized `DirectorateId` and `GovernorateId` fields on the `DamageReport` entity itself, eliminating the dependency on `Farm` navigation for authorization.
+- **ADR Compliance**: Updated ADR-0013 to strictly mandate using denormalized fields for operational scope checks.
+- **Verification**: Updated `DamageWorkflowTests` to verify transitions succeed without loading the `Farm` entity and correctly enforce scope via denormalized fields.
+
+## DamageReport Sequence & Duplicate Hardening (2026-07-31) — COMPLETED
+- **Numbering Correction**: Refactored `DamageReportNumberService` to use a non-resetting sequence per Directorate. Format: `JEN-JEN-2026-000001`.
+- **Data Migration**: Implemented MAX-based sequence seeding to ensure continuity from existing issued report numbers.
+- **Duplicate Prevention**: Hardened `CreateDamageReport` (Backend) and `DamageReportRepository` (Mobile) to enforce uniqueness on `FarmId + DamageDate`.
+- **Offline Integrity**: Updated `BackgroundSyncService` to prevent silent merges and mark duplicate creation as conflicts.
+
+## DamageReport Two-Phase Workflow Refinement (2026-07-31) — COMPLETED
 - **Status**: ✅ **Implemented & Verified**.
-- **UX**: Implemented the approved two-phase lifecycle:
-    - **Phase 1**: Header Creation returns the user to the list immediately after local save.
-    - **Phase 2**: "Add Damage Items" is gated until the header is successfully synchronized with the backend (obtains a permanent `serverId`).
-- **Hardening**:
-    - Updated `DamageReportHeaderScreen` to return to the list and provide clear feedback about the sync requirement.
-    - Updated `DamageReportCard` to disable the assessment entry action until the report has a valid server identity.
-    - Verified `BackgroundSyncService` late-binding for `damageReportId` ensures relational integrity during Phase 2.
-- **Validation**: Passed updated `damage_report_form_workflow_test.dart` verifying the two-phase navigation flow.
+- **Lifecycle Separation**: Officially separated Header and Assessment phases.
+- **Workflow State Machine**: Implemented a comprehensive state machine (`workflowStateKey`) to guide surveyors:
+    - **Draft Header**: Local-only, awaiting sync.
+    - **Header Synced**: Official `ReportNumber` assigned, assessment enabled.
+    - **Assessment In Progress**: Items added but not all synced.
+    - **Ready For Review**: Header synced, items exist, all items synced.
+- **Identity Enforcement**:
+    - Users interact with `ReportNumber` as the business identifier.
+    - `DamageReport.Id` remains the technical foreign key for `DamageItems`.
+- **Submission Guards**: "Submit for Review" is strictly gated by header sync, item existence, and item sync completion.
+- **Validation**: Added `damage_report_two_phase_lifecycle_test.dart` and updated existing workflow tests.
+- **Architecture Verification**: Confirmed `workflowStateKey` is UI-derived only (non-persisted). Hardened backend `SubmitDamageReportCommand` to enforce ReportNumber existence and item validity. Verified relational vs. display identity separation.
+- **Sync Fix (HTTP 400)**: Resolved damage item synchronization failure by:
+    - Aligning `AddDamageItemCommand` (Backend) with full `DamageItem` entity requirements.
+    - Implementing strict GUID binding in `DamageReportSyncDto` (Flutter) to convert empty strings to `null`.
+    - Consolidating validation rules across bulk creation and single item addition.
 
 ## DamageReport List Experience Standardization (2026-07-30) — COMPLETED
 - **Status**: ✅ **Standardized & Hardened**.

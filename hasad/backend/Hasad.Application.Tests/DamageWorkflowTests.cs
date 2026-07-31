@@ -60,13 +60,11 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
-        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            Farm = new Farm { DirectorateId = directorateId, FarmerId = farmer.Id }
+            DirectorateId = directorateId
         };
-        context.Farmers.Add(farmer);
 
         // Attempting to return TechReview -> PendingTechnicalVerification without comment
         var result = service.CanTransition(report, DamageReportStatus.PendingTechnicalVerification, null);
@@ -85,13 +83,11 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
-        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            Farm = new Farm { DirectorateId = directorateId, FarmerId = farmer.Id }
+            DirectorateId = directorateId
         };
-        context.Farmers.Add(farmer);
 
         var result = service.CanTransition(report, DamageReportStatus.PendingTechnicalVerification, "Correction needed");
 
@@ -110,13 +106,11 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(myDirectorateId);
 
-        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             StatusId = DamageReportStatus.TechReview,
-            Farm = new Farm { DirectorateId = otherDirectorateId, FarmerId = farmer.Id }
+            DirectorateId = otherDirectorateId
         };
-        context.Farmers.Add(farmer);
 
         var result = service.CanTransition(report, DamageReportStatus.ArchiveDir, null);
 
@@ -124,8 +118,9 @@ public class DamageWorkflowTests
     }
 
     [Fact]
-    public async Task Handle_TransitionCommand_SucceedsForValidFlow()
+    public async Task Handle_TransitionCommand_SucceedsWithoutFarmNavigation()
     {
+        // Scenario 2: DamageReport Farm navigation property not loaded.
         var context = CreateContext();
         var directorateId = Guid.NewGuid();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
@@ -135,22 +130,19 @@ public class DamageWorkflowTests
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
-        var farmer = new Farmer { Id = Guid.NewGuid() };
         var report = new DamageReport
         {
             Id = Guid.NewGuid(),
             StatusId = DamageReportStatus.Draft,
-            Farm = new Farm
-            {
-                DirectorateId = directorateId,
-                GovernorateId = Guid.NewGuid(),
-                LocalityId = Guid.NewGuid(),
-                FarmerId = farmer.Id
-            }
+            DirectorateId = directorateId,
+            GovernorateId = Guid.NewGuid(),
+            FarmId = Guid.NewGuid() // Link exists but Farm object not in context
         };
-        context.Farmers.Add(farmer);
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
+
+        // Clear tracker to ensure Farm is NOT loaded
+        context.ChangeTracker.Clear();
 
         var command = new TransitionDamageReportCommand(report.Id, DamageReportStatus.PendingTechnicalVerification);
 
@@ -159,5 +151,28 @@ public class DamageWorkflowTests
         Assert.True(result.Succeeded);
         var updatedReport = await context.DamageReports.FindAsync(report.Id);
         Assert.Equal(DamageReportStatus.PendingTechnicalVerification, updatedReport!.StatusId);
+    }
+
+    [Fact]
+    public void CanTransition_Succeeds_WhenDirectorateMatches()
+    {
+        // Scenario 1: Transition with DamageReport.DirectorateId matching user scope.
+        var context = CreateContext();
+        var directorateId = Guid.NewGuid();
+        var service = new DamageWorkflowService(context, _currentUserMock.Object);
+
+        _currentUserMock.Setup(x => x.UserId).Returns("user1");
+        _currentUserMock.Setup(x => x.IsInRole(AppRoles.TechnicalReviewer)).Returns(true);
+        _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
+
+        var report = new DamageReport
+        {
+            StatusId = DamageReportStatus.TechReview,
+            DirectorateId = directorateId
+        };
+
+        var result = service.CanTransition(report, DamageReportStatus.ArchiveDir, null);
+
+        Assert.True(result);
     }
 }

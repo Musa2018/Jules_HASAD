@@ -608,7 +608,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReportSequence>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasIndex(e => new { e.DirectorateId, e.DamageYear }).IsUnique();
+            entity.HasIndex(e => e.DirectorateId).IsUnique();
 
             entity.HasOne(e => e.Directorate)
                 .WithMany()

@@ -196,17 +196,20 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     }
   }
 
-  Future<void> submitReport(String id) async {
+  Future<bool> submitReport(String id) async {
     state = const DamageReportFormState(isLoading: true);
     try {
       await _repository.submitReport(id);
       state = const DamageReportFormState(success: true);
+      return true;
     } on DamageReportException catch (e) {
       state = DamageReportFormState(errors: e.errors);
+      return false;
     } catch (_) {
       state = const DamageReportFormState(
         errors: ['Failed to submit report.'],
       );
+      return false;
     }
   }
 

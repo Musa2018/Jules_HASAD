@@ -602,6 +602,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get status_Completed => 'مكتمل';
 
   @override
+  String get saveLocallyAndSync => 'حفظ محلي ومزامنة';
+
+  @override
+  String get workflowState_DraftHeader => 'مسودة الرأس';
+
+  @override
+  String get workflowState_HeaderSynced => 'الرأس متزامن (جاهز للتقييم)';
+
+  @override
+  String get workflowState_HeaderSyncFailed => 'فشل مزامنة الرأس';
+
+  @override
+  String get workflowState_AssessmentInProgress => 'التقييم قيد التنفيذ';
+
+  @override
+  String get workflowState_AssessmentPendingSync => 'التقييم بانتظار المزامنة';
+
+  @override
+  String get workflowState_ReadyForReview => 'جاهز للمراجعة';
+
+  @override
   String get operationalView => 'العرض التشغيلي';
 
   @override

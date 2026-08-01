@@ -15,22 +15,27 @@ public class DamageReportNumberService : IDamageReportNumberService
 
     public async Task<string> GeneratePermanentNumberAsync(Guid directorateId, int year, CancellationToken cancellationToken = default)
     {
-        // 1. Get the Governorate Code and Directorate Code
+        // 1. Get the Directorate and its Governorate Code
         var directorate = await _context.Directorates
             .Include(d => d.Governorate)
             .FirstOrDefaultAsync(d => d.Id == directorateId, cancellationToken);
 
-        if (directorate == null || directorate.Governorate == null)
+        if (directorate == null)
         {
-            throw new Exception("Directorate or associated Governorate not found.");
+            throw new Exception("Directorate not found.");
         }
 
-        var govCode = directorate.Governorate.Code; // e.g., NB
-        var dirCode = directorate.Code; // e.g., NAB
+        if (directorate.Governorate == null)
+        {
+            throw new Exception("Governorate not found for the specified directorate.");
+        }
 
-        // 2. Manage Sequence (Atomic)
+        var govCode = directorate.Governorate.Code; // e.g., JEN
+        var dirCode = directorate.Code; // e.g., JEN or NJEN
+
+        // 2. Manage Sequence (Atomic per Directorate)
         var sequence = await _context.DamageReportSequences
-            .FirstOrDefaultAsync(s => s.DirectorateId == directorateId && s.DamageYear == year, cancellationToken);
+            .FirstOrDefaultAsync(s => s.DirectorateId == directorateId, cancellationToken);
 
         if (sequence == null)
         {
@@ -38,7 +43,6 @@ public class DamageReportNumberService : IDamageReportNumberService
             {
                 Id = Guid.NewGuid(),
                 DirectorateId = directorateId,
-                DamageYear = year,
                 LastSequence = 1
             };
             _context.DamageReportSequences.Add(sequence);

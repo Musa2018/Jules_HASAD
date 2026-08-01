@@ -185,7 +185,7 @@ public class FarmCommandHandlerTests
         var farmer = new Farmer
         {
             Id = Guid.NewGuid(),
-            GovernorateId = Guid.NewGuid().ToString(), // Different Gov
+            GovernorateId = Guid.NewGuid(), // Different Gov
             FirstNameAr = "Bethlehem Farmer",
             IdTypeId = 1,
             IdNumber = "123"

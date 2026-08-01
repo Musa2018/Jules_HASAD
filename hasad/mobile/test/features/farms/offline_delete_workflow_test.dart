@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
@@ -9,6 +10,7 @@ import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
@@ -21,6 +23,7 @@ class MockDamageReportRepository extends Mock implements DamageReportRepository 
 class MockAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
 class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
 class MockConnectivity extends Mock implements Connectivity {}
+class MockRef extends Mock implements Ref {}
 class MockAuthorizationService extends Mock implements AuthorizationService {}
 
 void main() {
@@ -31,6 +34,7 @@ void main() {
   late MockAttachmentRepository mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
+  late MockRef mockRef;
   late BackgroundSyncService syncService;
 
   setUp(() {
@@ -41,6 +45,7 @@ void main() {
     mockAttachmentRepo = MockAttachmentRepository();
     mockConnectivity = MockConnectivity();
     mockAuthService = MockAuthorizationService();
+    mockRef = MockRef();
 
     when(() => mockAuthService.canManageFarms()).thenReturn(true);
     
@@ -51,8 +56,8 @@ void main() {
       mockDamageRepo,
       mockAttachmentRepo,
       mockConnectivity,
-      () async {},
     );
+    when(() => mockRef.read(syncServiceProvider)).thenReturn(syncService);
   });
 
   tearDown(() async {
@@ -213,7 +218,7 @@ void main() {
       );
 
       // 2. Undo via repository logic (we'll implement it in repository, test verifies logic)
-      final repo = OfflineFirstFarmRepository(db, syncService, mockFarmRepo, mockConnectivity, mockAuthService);
+    final repo = OfflineFirstFarmRepository(db, mockRef, mockFarmRepo, mockConnectivity, mockAuthService);
       await repo.cancelDeleteFarm(localId);
 
       // 3. Verify

@@ -13,12 +13,54 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 
+
+import 'package:mobile/features/damage_reports/data/repositories/remote_damage_report_repository.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report_filter.dart';
+
+final remoteDamageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
+  return RemoteDamageReportRepository(ref.watch(apiDioProvider));
+});
+
 final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   return OfflineFirstDamageReportRepository(
     ref.watch(databaseProvider),
     ref,
     ref.watch(authProvider).session,
+    ref.watch(remoteDamageReportRepositoryProvider),
   );
+});
+
+final damageReportFilterProvider = StateProvider<DamageReportFilter>((ref) => const DamageReportFilter());
+
+final damageReportsListProvider = StreamProvider.autoDispose<List<DamageReport>>((ref) {
+  return ref.watch(damageReportRepositoryProvider).watchDamageReports();
+});
+
+final damageReportsByFarmListProvider = StreamProvider.autoDispose.family<List<DamageReport>, String>((ref, farmId) {
+  return ref.watch(damageReportRepositoryProvider).watchDamageReportsByFarm(farmId);
+});
+
+final filteredDamageReportsProvider = Provider.autoDispose<AsyncValue<List<DamageReport>>>((ref) {
+  final filter = ref.watch(damageReportFilterProvider);
+  final reportsAsync = ref.watch(damageReportsListProvider);
+
+  return reportsAsync.whenData((reports) {
+    return reports.where((r) {
+      if (filter.searchText.isNotEmpty) {
+        final search = filter.searchText.toLowerCase();
+        final matchesNumber = r.reportNumber.toLowerCase().contains(search) ||
+            r.temporaryFormNumber.toLowerCase().contains(search) ||
+            r.permanentFormNumber.toLowerCase().contains(search);
+        if (!matchesNumber) return false;
+      }
+      if (filter.statusId != null && r.statusId != filter.statusId) return false;
+      if (filter.syncStatus != null && r.syncStatus != filter.syncStatus) return false;
+      if (filter.governorateId != null && r.governorateId != filter.governorateId) return false;
+      if (filter.directorateId != null && r.directorateId != filter.directorateId) return false;
+      if (filter.localityId != null && r.localityId != filter.localityId) return false;
+      return true;
+    }).toList();
+  });
 });
 
 final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
@@ -29,17 +71,6 @@ final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
     );
   },
 );
-
-final damageReportsListByFarmProvider = FutureProvider.autoDispose
-    .family<List<DamageReport>, String>((ref, farmId) async {
-      return ref
-          .watch(damageReportRepositoryProvider)
-          .getDamageReportsByFarm(farmId);
-    });
-
-final allDamageReportsProvider = FutureProvider.autoDispose<List<DamageReport>>((ref) async {
-  return ref.watch(damageReportRepositoryProvider).getDamageReports();
-});
 
 final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
   final db = ref.watch(databaseProvider);
@@ -165,17 +196,20 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     }
   }
 
-  Future<void> submitReport(String id) async {
+  Future<bool> submitReport(String id) async {
     state = const DamageReportFormState(isLoading: true);
     try {
       await _repository.submitReport(id);
       state = const DamageReportFormState(success: true);
+      return true;
     } on DamageReportException catch (e) {
       state = DamageReportFormState(errors: e.errors);
+      return false;
     } catch (_) {
       state = const DamageReportFormState(
         errors: ['Failed to submit report.'],
       );
+      return false;
     }
   }
 

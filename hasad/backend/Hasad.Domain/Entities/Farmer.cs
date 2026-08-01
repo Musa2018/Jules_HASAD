@@ -36,11 +36,15 @@ namespace Hasad.Domain.Entities
         public string PhoneNumber { get; set; } = string.Empty;
         public int FamilySize { get; set; }
 
-        // --- التحديث الجغرافي ليتوافق مع جداول النظام (المحافظة والمديرية/التجمع) ---
-        public string GovernorateId { get; set; } = string.Empty; // من نوع String كما في Farm
-        public string LocalityId { get; set; } = string.Empty;    // بدلاً من CityId، و من نوع String كما في Farm
+        // Geographic Alignment (Sprint 15.0 Hardening)
+        public Guid? GovernorateId { get; set; }
+        public Guid? DirectorateId { get; set; }
+        public Guid? LocalityId { get; set; }
 
-        // إذا كان هناك حاجة للعنوان التفصيلي كحقل نصي، نستعيده لأنك ذكرته في النسخة القديمة
+        // Legacy Geographic Fields (Auditing Only)
+        public string LegacyGovernorateId { get; set; } = string.Empty;
+        public string LegacyLocalityId { get; set; } = string.Empty;
+
         public string Address { get; set; } = string.Empty;
 
         // Metadata

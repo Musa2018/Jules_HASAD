@@ -237,6 +237,15 @@ class BackgroundSyncService {
   }
 
   Future<void> _processItem(SyncQueueData item) async {
+    // 1. Verify item still exists (it might have been pruned by a preceding bulk sync task)
+    final fresh = await (_db.select(_db.syncQueue)..where((t) => t.id.equals(item.id))).getSingleOrNull();
+    if (fresh == null) {
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.log('Sync task ${item.id} (${item.entityType}) no longer exists. Skipping.');
+      }
+      return;
+    }
+
     final now = DateTime.now();
     try {
       if (DebugLogger.enableSyncDebug) {
@@ -314,9 +323,13 @@ class BackgroundSyncService {
       );
     } on SyncConflictException catch (e) {
       final isDependencyConflict = e.code == 'FARMER_HAS_DEPENDENCIES' || e.code == 'FARM_HAS_DEPENDENCIES';
+      
+      final errorMessage = e.code == 'DAMAGE_REPORT_DUPLICATE' 
+          ? 'duplicateReportError' 
+          : e.toString();
 
       await _db.update(_db.syncQueue).replace(
-        item.copyWith(status: 'conflict', lastError: Value(e.toString())),
+        item.copyWith(status: 'conflict', lastError: Value(errorMessage)),
       );
 
       if (item.operation == 'delete' && isDependencyConflict) {
@@ -324,20 +337,27 @@ class BackgroundSyncService {
           item.entityType,
           item.localId,
           'conflict',
-          error: e.toString(),
+          error: errorMessage,
           clearPendingDelete: true,
         );
       } else {
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: errorMessage);
+        
+        // For new entities (create), do NOT automatically resolve conflicts.
+        // Let the user decide how to handle the duplicate.
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       }
     } on FarmerException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString())),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: e.toString());
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       } else {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(
@@ -353,8 +373,10 @@ class BackgroundSyncService {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString())),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: e.toString());
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       } else {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(
@@ -370,8 +392,10 @@ class BackgroundSyncService {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(status: 'conflict', lastError: Value(e.toString())),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict');
-        await _resolveConflict(item);
+        await _updateEntitySyncStatus(item.entityType, item.localId, 'conflict', error: e.toString());
+        if (item.operation != 'create') {
+          await _resolveConflict(item);
+        }
       } else {
         await _db.update(_db.syncQueue).replace(
           item.copyWith(
@@ -732,6 +756,9 @@ class BackgroundSyncService {
           );
         }
       });
+
+      // Cleanup redundant item tasks after bulk creation
+      await _pruneDamageItemTasks(item.localId);
     } else if (item.operation == 'update') {
       final result = await _remoteDamageReportRepository.updateDamageReport(
         report,
@@ -753,6 +780,11 @@ class BackgroundSyncService {
     final originalReportId = item.localId;
     final resolvedReportId = await _resolveDamageReportId(originalReportId);
 
+    if (DebugLogger.enableSyncDebug) {
+      DebugLogger.log('Starting Workflow Sync for Report: $originalReportId (Server: $resolvedReportId)');
+      DebugLogger.log('Workflow Action: ${data['action']}');
+    }
+
     if (resolvedReportId == null) {
       throw SyncDependencyException(
           ['Waiting for Damage Report ($originalReportId) to synchronize.']);
@@ -770,12 +802,20 @@ class BackgroundSyncService {
     }
 
     // Refresh history and report state after successful transition
+    if (DebugLogger.enableSyncDebug) {
+      DebugLogger.log('Workflow action successful, refreshing report and history...');
+    }
+
     final updatedReport = await _remoteDamageReportRepository.getDamageReport(
         resolvedReportId);
     final history = await _remoteDamageReportRepository.getReportHistory(
         resolvedReportId);
 
     await _db.transaction(() async {
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.log('Updating local status to: ${updatedReport.statusId}');
+      }
+
       // Update report status
       await (_db.update(_db.damageReports)
             ..where((t) => t.id.equals(item.localId)))
@@ -791,6 +831,7 @@ class BackgroundSyncService {
       await (_db.delete(_db.damageWorkflowHistories)
             ..where((t) => t.damageReportId.equals(item.localId)))
           .go();
+      
       for (var h in history) {
         await _db.into(_db.damageWorkflowHistories).insert(
               DamageWorkflowHistoriesCompanion.insert(
@@ -807,6 +848,10 @@ class BackgroundSyncService {
             );
       }
     });
+
+    if (DebugLogger.enableSyncDebug) {
+      DebugLogger.log('Workflow Sync Completed Successfully for Report: $originalReportId');
+    }
   }
 
   Future<void> _syncDamageItem(SyncQueueData item) async {
@@ -1117,6 +1162,27 @@ class BackgroundSyncService {
     final report = await (_db.select(_db.damageReports)..where((t) => t.id.equals(localId))).getSingleOrNull();
     if (report == null) return localId;
     return report.serverId;
+  }
+
+  Future<void> _pruneDamageItemTasks(String reportId) async {
+    try {
+      final items = await (_db.select(_db.damageItems)
+            ..where((t) => t.damageReportId.equals(reportId)))
+          .get();
+      final itemIds = items.map((i) => i.id).toList();
+
+      if (itemIds.isNotEmpty) {
+        final count = await (_db.delete(_db.syncQueue)
+              ..where((t) =>
+                  t.entityType.equals('damage_item') & t.localId.isIn(itemIds)))
+            .go();
+        if (DebugLogger.enableSyncDebug) {
+          DebugLogger.log('Pruned $count redundant damage_item tasks for Report $reportId');
+        }
+      }
+    } catch (e) {
+      DebugLogger.log('Error pruning damage_item tasks: $e');
+    }
   }
 
   void _logDeleteAttempt(SyncQueueData item, dynamic serverId, dynamic clientId) {

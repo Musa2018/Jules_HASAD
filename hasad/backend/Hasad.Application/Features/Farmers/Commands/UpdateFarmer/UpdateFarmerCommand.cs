@@ -25,8 +25,9 @@ public record UpdateFarmerCommand(
     Gender Gender,
     string PhoneNumber,
     int FamilySize,
-    string GovernorateId,
-    string LocalityId,
+    Guid? GovernorateId,
+    Guid? DirectorateId,
+    Guid? LocalityId,
     string Address,
     string RowVersion) : IRequest<Result<FarmerDto>>;
 
@@ -82,6 +83,7 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
         farmer.PhoneNumber = request.PhoneNumber;
         farmer.FamilySize = request.FamilySize;
         farmer.GovernorateId = request.GovernorateId;
+        farmer.DirectorateId = request.DirectorateId;
         farmer.LocalityId = request.LocalityId;
         farmer.Address = request.Address;
 
@@ -108,7 +110,10 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
             Address = farmer.Address,
             RowVersion = Convert.ToBase64String(farmer.RowVersion),
             GovernorateId = farmer.GovernorateId,
+            DirectorateId = farmer.DirectorateId,
             LocalityId = farmer.LocalityId,
+            LegacyGovernorateId = farmer.LegacyGovernorateId,
+            LegacyLocalityId = farmer.LegacyLocalityId,
             BirthDate = farmer.BirthDate,
             Gender = farmer.Gender,
             FamilySize = farmer.FamilySize,
@@ -180,12 +185,6 @@ public class UpdateFarmerCommandValidator : AbstractValidator<UpdateFarmerComman
 
         RuleFor(v => v.FamilySize)
             .GreaterThan(0).WithMessage("Family Size must be at least 1.");
-
-        RuleFor(v => v.GovernorateId)
-            .NotEmpty().MaximumLength(50);
-
-        RuleFor(v => v.LocalityId)
-            .NotEmpty().MaximumLength(50);
 
         RuleFor(v => v.PhoneNumber)
             .NotEmpty().WithMessage("Phone Number is required.")

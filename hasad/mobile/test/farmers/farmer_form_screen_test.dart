@@ -8,6 +8,7 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/data/location_repository.dart';
@@ -44,6 +45,7 @@ void main() {
         phoneNumber: '',
         familySize: 1,
         governorateId: '',
+        directorateId: '',
         localityId: '',
         address: '',
       ),
@@ -84,16 +86,21 @@ void main() {
     expect(find.text('Arabic Name'), findsOneWidget);
     expect(find.text('English Name'), findsOneWidget);
     expect(find.text('Demographics'), findsOneWidget);
-    expect(find.text('Location'), findsOneWidget);
+    expect(find.text('Personal Address (Farmer)'), findsOneWidget);
   });
 
   testWidgets('FarmerFormScreen handles Cascading Lookups', (tester) async {
     final govs = [const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1', code: 'G1')];
+    final dirs = [const Directorate(id: 'd1', nameAr: 'مديرية 1', nameEn: 'Dir 1', governorateId: 'g1')];
     final locs = [const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1', directorateId: 'd1')];
 
     when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => govs);
-    when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId')))
-        .thenAnswer((_) async => locs);
+    when(() => mockLocationRepo.getDirectorates(governorateId: any(named: 'governorateId')))
+        .thenAnswer((_) async => dirs);
+    when(() => mockLocationRepo.getLocalities(
+          governorateId: any(named: 'governorateId'),
+          directorateId: any(named: 'directorateId'),
+        )).thenAnswer((_) async => locs);
 
     await tester.pumpWidget(createWidget(const FarmerFormScreen()));
     await tester.pumpAndSettle();
@@ -111,6 +118,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Gov 1'), findsOneWidget);
+
+    // Select Directorate
+    final dirField = find.ancestor(
+      of: find.text('Directorate'),
+      matching: find.byType(InkWell),
+    ).first;
+    await tester.ensureVisible(dirField);
+    await tester.tap(dirField);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Dir 1'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Dir 1'), findsOneWidget);
 
     // Verify Locality is now available
     final locField = find.ancestor(
@@ -145,6 +166,7 @@ void main() {
       phoneNumber: '059',
       familySize: 4,
       governorateId: 'g1',
+      directorateId: 'd1',
       localityId: 'l1',
       address: 'Addr',
       rowVersion: 'v1',
@@ -153,8 +175,14 @@ void main() {
     when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => [
       const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1', code: 'G1')
     ]);
-    when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId')))
+    when(() => mockLocationRepo.getDirectorates(governorateId: any(named: 'governorateId')))
         .thenAnswer((_) async => [
+      const Directorate(id: 'd1', nameAr: 'مديرية 1', nameEn: 'Dir 1', governorateId: 'g1')
+    ]);
+    when(() => mockLocationRepo.getLocalities(
+          governorateId: any(named: 'governorateId'),
+          directorateId: any(named: 'directorateId'),
+        )).thenAnswer((_) async => [
       const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1', directorateId: 'd1')
     ]);
     when(() => mockFarmerRepo.updateFarmer(any())).thenAnswer((_) async => farmer);

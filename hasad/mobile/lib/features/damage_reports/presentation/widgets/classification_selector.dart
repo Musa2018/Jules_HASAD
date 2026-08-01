@@ -10,7 +10,7 @@ class ClassificationSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final params = {'sectorId': sectorId, 'lockedNatureId': lockedNatureId};
+    final params = ClassificationParams(sectorId: sectorId, lockedNatureId: lockedNatureId);
     final state = ref.watch(classificationWizardProvider(params));
     final l10n = AppLocalizations.of(context)!;
 
@@ -26,33 +26,33 @@ class ClassificationSelector extends ConsumerWidget {
   }
 
   Widget _buildHeader(BuildContext context, WidgetRef ref,
-      ClassificationWizardState state, AppLocalizations l10n, Map<String, int?> params) {
+      ClassificationWizardState state, AppLocalizations l10n, ClassificationParams params) {
     String title;
     switch (state.currentStep) {
       case 1:
-        title = 'Select Damage Nature';
+        title = l10n.selectDamageNature;
         break;
       case 2:
-        title = 'Select Damage Action';
+        title = l10n.selectDamageAction;
         break;
       case 3:
-        title = 'Select Category';
+        title = l10n.selectCategory;
         break;
       case 4:
-        title = 'Select Sub-Category';
+        title = l10n.selectSubCategory;
         break;
       case 5:
-        title = 'Select Classification';
+        title = l10n.selectClassification;
         break;
       default:
-        title = 'Item Details';
+        title = l10n.itemDetails;
     }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          if (state.currentStep > (lockedNatureId != null ? 2 : 1))
+          if (state.currentStep > (params.lockedNatureId != null ? 2 : 1))
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () =>
@@ -71,7 +71,7 @@ class ClassificationSelector extends ConsumerWidget {
   }
 
   Widget _buildStepContent(BuildContext context, WidgetRef ref,
-      ClassificationWizardState state, AppLocalizations l10n, Map<String, int?> params) {
+      ClassificationWizardState state, AppLocalizations l10n, ClassificationParams params) {
     switch (state.currentStep) {
       case 1:
         return _NatureSelectionList(params: params);
@@ -91,7 +91,7 @@ class ClassificationSelector extends ConsumerWidget {
 }
 
 class _NatureSelectionList extends ConsumerWidget {
-  final Map<String, int?> params;
+  final ClassificationParams params;
   const _NatureSelectionList({required this.params});
 
   @override
@@ -118,7 +118,7 @@ class _NatureSelectionList extends ConsumerWidget {
 }
 
 class _ActionSelectionList extends ConsumerWidget {
-  final Map<String, int?> params;
+  final ClassificationParams params;
   const _ActionSelectionList({required this.params});
 
   @override
@@ -145,12 +145,12 @@ class _ActionSelectionList extends ConsumerWidget {
 }
 
 class _CategorySelectionList extends ConsumerWidget {
-  final Map<String, int?> params;
+  final ClassificationParams params;
   const _CategorySelectionList({required this.params});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sectorId = params['sectorId']!;
+    final sectorId = params.sectorId;
     final categoriesAsync = ref.watch(categoriesBySectorProvider(sectorId));
 
     return categoriesAsync.when(
@@ -173,7 +173,7 @@ class _CategorySelectionList extends ConsumerWidget {
 
 class _SubCategorySelectionList extends ConsumerWidget {
   final int categoryId;
-  final Map<String, int?> params;
+  final ClassificationParams params;
   const _SubCategorySelectionList({required this.categoryId, required this.params});
 
   @override
@@ -202,7 +202,7 @@ class _SubCategorySelectionList extends ConsumerWidget {
 
 class _ClassificationSelectionList extends ConsumerWidget {
   final int subCategoryId;
-  final Map<String, int?> params;
+  final ClassificationParams params;
   const _ClassificationSelectionList({required this.subCategoryId, required this.params});
 
   @override

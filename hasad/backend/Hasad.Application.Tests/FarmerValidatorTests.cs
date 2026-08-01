@@ -85,6 +85,9 @@ public class FarmerValidatorTests
             Gender.Male,
             "0599123456",
             5,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             "GOV-1",
             "LOC-1",
             "Main Street");

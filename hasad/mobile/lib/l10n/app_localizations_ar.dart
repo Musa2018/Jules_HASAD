@@ -54,6 +54,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get damageCause => 'سبب الضرر';
 
   @override
+  String get selectCause => 'اختر السبب';
+
+  @override
+  String get selectDamageNature => 'اختر طبيعة الضرر';
+
+  @override
+  String get selectDamageAction => 'اختر فعل الضرر';
+
+  @override
+  String get selectCategory => 'اختر الفئة';
+
+  @override
+  String get selectSubCategory => 'اختر الفئة الفرعية';
+
+  @override
+  String get selectClassification => 'اختر التصنيف';
+
+  @override
+  String get itemDetails => 'تفاصيل البند';
+
+  @override
   String get reportNumber => 'رقم التقرير';
 
   @override
@@ -74,7 +95,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get duplicateReportError =>
-      'يوجد تقرير ضرر مسجل مسبقاً لهذه المزرعة في هذا التاريخ';
+      'يوجد تقرير ضرر مسجل مسبقاً لهذه المزرعة في نفس تاريخ الضرر.';
 
   @override
   String get retrySync => 'إعادة محاولة المزامنة';
@@ -141,6 +162,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addFarmer => 'إضافة مزارع';
+
+  @override
+  String get addDamageReport => 'إضافة تقرير ضرر';
+
+  @override
+  String get addAssessmentItem => 'إضافة بنود الضرر';
+
+  @override
+  String get details => 'التفاصيل';
 
   @override
   String get addNewFarmerAction => '+ إضافة مزارع جديد';
@@ -256,6 +286,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get locationSection => 'الموقع';
+
+  @override
+  String get personalAddressSection => 'العنوان الشخصي (للمزارع)';
 
   @override
   String get village => 'التجمع/القرية';
@@ -445,6 +478,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errorLoadingFarms => 'فشل تحميل المزارع.';
 
   @override
+  String get errorLoadingDamageReports => 'فشل تحميل تقارير الأضرار.';
+
+  @override
   String get resetPassword => 'إعادة تعيين كلمة المرور';
 
   @override
@@ -567,6 +603,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get status_Completed => 'مكتمل';
+
+  @override
+  String get saveLocallyAndSync => 'حفظ محلي ومزامنة';
+
+  @override
+  String get workflowState_DraftHeader => 'مسودة الرأس';
+
+  @override
+  String get workflowState_HeaderSynced => 'الرأس متزامن (جاهز للتقييم)';
+
+  @override
+  String get workflowState_HeaderSyncFailed => 'فشل مزامنة الرأس';
+
+  @override
+  String get workflowState_AssessmentInProgress => 'التقييم قيد التنفيذ';
+
+  @override
+  String get workflowState_AssessmentPendingSync => 'التقييم بانتظار المزامنة';
+
+  @override
+  String get workflowState_ReadyForReview => 'جاهز للمراجعة';
 
   @override
   String get operationalView => 'العرض التشغيلي';

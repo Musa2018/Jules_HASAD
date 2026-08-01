@@ -31,8 +31,6 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
     public async Task<Result<DamageReportDto>> Handle(UpdateDamageReportCommand request, CancellationToken cancellationToken)
     {
         var report = await _context.DamageReports
-            .Include(r => r.Farm)
-            .ThenInclude(f => f!.Farmer)
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
@@ -44,14 +42,14 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
         // Authorization check
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
-            if (_currentUser.DirectorateId.HasValue && report.Farm?.DirectorateId != _currentUser.DirectorateId.Value)
+            if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
             {
                 return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned directorate." });
             }
         }
         else if (_currentUser.IsInRole(AppRoles.Director))
         {
-            if (_currentUser.GovernorateId.HasValue && report.Farm?.GovernorateId != _currentUser.GovernorateId.Value)
+            if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
             {
                 return Result<DamageReportDto>.Failure(new[] { "Access Denied: You can only manage reports within your assigned governorate." });
             }
@@ -82,7 +80,9 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
 
             if (existingDuplicate)
             {
-                return Result<DamageReportDto>.Failure(new[] { "A damage report already exists for this farm and date." });
+                return Result<DamageReportDto>.Failure(
+                    new[] { "A damage report already exists for this farm and date." },
+                    "DAMAGE_REPORT_DUPLICATE");
             }
         }
 

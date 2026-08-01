@@ -3,20 +3,27 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 
 class DamageReportSyncDto {
+  static String? _guidOrNull(String? value) {
+    if (value == null) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty || trimmed == 'null') return null;
+    return trimmed;
+  }
+
   static Map<String, dynamic> toCreateJson(DamageReport report, {double? latitude, double? longitude}) {
     return {
       'clientId': report.id,
       'temporaryFormNumber': report.temporaryFormNumber,
       'damageYear': report.damageYear,
-      'farmId': report.farmId,
-      'farmerId': report.farmerId,
+      'farmId': _guidOrNull(report.farmId),
+      'farmerId': _guidOrNull(report.farmerId),
       'damageDate': report.damageDate.toIso8601String(),
       'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
-      'governorateId': report.governorateId,
-      'directorateId': report.directorateId,
-      'localityId': report.localityId,
+      'governorateId': _guidOrNull(report.governorateId),
+      'directorateId': _guidOrNull(report.directorateId),
+      'localityId': _guidOrNull(report.localityId),
       'latitude': latitude,
       'longitude': longitude,
       'notes': report.notes,
@@ -45,7 +52,7 @@ class DamageReportSyncDto {
       'damageNatureId': item.damageNatureId,
       'damageActionId': item.damageActionId,
       'classificationId': item.classificationId,
-      'costingSheetId': item.costingSheetId,
+      'costingSheetId': _guidOrNull(item.costingSheetItemId ?? item.costingSheetId),
       'calculatedUnitPrice': item.calculatedUnitPrice,
       'measurementUnitSnapshot': item.measurementUnitSnapshot,
       'affectedArea': item.affectedArea,
@@ -64,7 +71,7 @@ class DamageReportSyncDto {
       'damageNatureId': item.damageNatureId,
       'damageActionId': item.damageActionId,
       'classificationId': item.classificationId,
-      'costingSheetId': item.costingSheetId,
+      'costingSheetId': _guidOrNull(item.costingSheetItemId ?? item.costingSheetId),
       'calculatedUnitPrice': item.calculatedUnitPrice,
       'measurementUnitSnapshot': item.measurementUnitSnapshot,
       'affectedArea': item.affectedArea,

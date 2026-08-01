@@ -40,3 +40,36 @@ class DamageReport with _$DamageReport {
   factory DamageReport.fromJson(Map<String, dynamic> json) =>
       _$DamageReportFromJson(json);
 }
+
+extension DamageReportWorkflowX on DamageReport {
+  bool get isHeaderSynced => serverId != null && serverId!.isNotEmpty && reportNumber.isNotEmpty;
+
+  bool get areItemsSynced => items.every((item) => item.syncStatus == 'completed');
+
+  bool get hasItems => items.isNotEmpty;
+
+  bool get isReadyForReview {
+    return isHeaderSynced &&
+        hasItems &&
+        areItemsSynced &&
+        statusId != DamageReportStatus.completed &&
+        statusId != 'Submitted'; // Check for legacy status if any
+  }
+
+  String get workflowStateKey {
+    if (statusId == 'Submitted' || statusId == DamageReportStatus.techReview) return 'status_TechReview';
+    if (statusId == DamageReportStatus.completed) return 'status_Completed';
+
+    if (!isHeaderSynced) {
+      return syncStatus == 'failed' ? 'workflowState_HeaderSyncFailed' : 'workflowState_DraftHeader';
+    }
+
+    if (!hasItems) return 'workflowState_HeaderSynced';
+
+    if (!areItemsSynced) return 'workflowState_AssessmentPendingSync';
+
+    if (isReadyForReview) return 'workflowState_ReadyForReview';
+
+    return 'workflowState_AssessmentInProgress';
+  }
+}

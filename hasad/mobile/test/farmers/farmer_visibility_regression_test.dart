@@ -1,8 +1,10 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
@@ -11,6 +13,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:drift/drift.dart';
 
 class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
+class MockRef extends Mock implements Ref {}
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
 
@@ -18,6 +21,7 @@ void main() {
   late AppDatabase db;
   late OfflineFirstFarmerRepository repository;
   late MockBackgroundSyncService mockSyncService;
+  late MockRef mockRef;
   late MockFarmerRepository mockRemoteRepository;
 
   const jerichoGovId = 'jericho-gov-id';
@@ -39,12 +43,14 @@ void main() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockSyncService = MockBackgroundSyncService();
     mockRemoteRepository = MockFarmerRepository();
+    mockRef = MockRef();
+    when(() => mockRef.read(syncServiceProvider)).thenReturn(mockSyncService);
 
     final mockConnectivity = MockConnectivity();
 
     repository = OfflineFirstFarmerRepository(
       db,
-      mockSyncService,
+      mockRef,
       mockRemoteRepository,
       mockConnectivity,
       AuthorizationService(engineerSession),

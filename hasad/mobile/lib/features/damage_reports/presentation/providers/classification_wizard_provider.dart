@@ -168,10 +168,28 @@ class ClassificationWizardNotifier extends StateNotifier<ClassificationWizardSta
   }
 }
 
+class ClassificationParams {
+  final int sectorId;
+  final int? lockedNatureId;
+
+  const ClassificationParams({required this.sectorId, this.lockedNatureId});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ClassificationParams &&
+          runtimeType == other.runtimeType &&
+          sectorId == other.sectorId &&
+          lockedNatureId == other.lockedNatureId;
+
+  @override
+  int get hashCode => sectorId.hashCode ^ lockedNatureId.hashCode;
+}
+
 final classificationWizardProvider = StateNotifierProvider.family
-    .autoDispose<ClassificationWizardNotifier, ClassificationWizardState, Map<String, int?>>(
+    .autoDispose<ClassificationWizardNotifier, ClassificationWizardState, ClassificationParams>(
         (ref, params) {
-  return ClassificationWizardNotifier(ref, params['lockedNatureId']);
+  return ClassificationWizardNotifier(ref, params.lockedNatureId);
 });
 
 // Cascading Filter Providers

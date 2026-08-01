@@ -11,6 +11,7 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/data/location_repository.dart';
@@ -51,6 +52,7 @@ void main() {
         phoneNumber: '',
         familySize: 1,
         governorateId: '',
+        directorateId: '',
         localityId: '',
         address: '',
       ),
@@ -65,11 +67,16 @@ void main() {
     when(() => mockAuthService.canManageFarmers()).thenReturn(true);
     
     final govs = [const Governorate(id: 'g1', nameAr: 'محافظة 1', nameEn: 'Gov 1', code: 'G1')];
+    final dirs = [const Directorate(id: 'd1', nameAr: 'مديرية 1', nameEn: 'Dir 1', governorateId: 'g1')];
     final locs = [const Locality(id: 'l1', nameAr: 'تجمع 1', nameEn: 'Loc 1', governorateId: 'g1', directorateId: 'd1')];
     
     when(() => mockLocationRepo.getGovernorates()).thenAnswer((_) async => govs);
-    when(() => mockLocationRepo.getLocalities(governorateId: any(named: 'governorateId')))
-        .thenAnswer((_) async => locs);
+    when(() => mockLocationRepo.getDirectorates(governorateId: any(named: 'governorateId')))
+        .thenAnswer((_) async => dirs);
+    when(() => mockLocationRepo.getLocalities(
+          governorateId: any(named: 'governorateId'),
+          directorateId: any(named: 'directorateId'),
+        )).thenAnswer((_) async => locs);
     
     when(() => mockFarmerRepo.watchFarmers(filter: any(named: 'filter')))
         .thenAnswer((_) => Stream.value([]));
@@ -129,6 +136,7 @@ void main() {
       phoneNumber: '0599123456',
       familySize: 5,
       governorateId: 'g1',
+      directorateId: 'd1',
       localityId: 'l1',
       address: 'Street 1',
     );
@@ -187,6 +195,13 @@ void main() {
     await tester.tap(govField);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Gov 1').last);
+    await tester.pumpAndSettle();
+
+    final dirField = find.byType(SearchableLookupField<Directorate>).first;
+    await tester.ensureVisible(dirField);
+    await tester.tap(dirField);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Dir 1').last);
     await tester.pumpAndSettle();
 
     final locField = find.byType(SearchableLookupField<Locality>).first;

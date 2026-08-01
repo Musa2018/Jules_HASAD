@@ -188,6 +188,48 @@ abstract class AppLocalizations {
   /// **'Damage Cause'**
   String get damageCause;
 
+  /// No description provided for @selectCause.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Cause'**
+  String get selectCause;
+
+  /// No description provided for @selectDamageNature.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Damage Nature'**
+  String get selectDamageNature;
+
+  /// No description provided for @selectDamageAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Damage Action'**
+  String get selectDamageAction;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Category'**
+  String get selectCategory;
+
+  /// No description provided for @selectSubCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Sub-Category'**
+  String get selectSubCategory;
+
+  /// No description provided for @selectClassification.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Classification'**
+  String get selectClassification;
+
+  /// No description provided for @itemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Details'**
+  String get itemDetails;
+
   /// No description provided for @reportNumber.
   ///
   /// In en, this message translates to:
@@ -227,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @duplicateReportError.
   ///
   /// In en, this message translates to:
-  /// **'A damage report already exists for this farm and date'**
+  /// **'A damage report already exists for this farm on the selected date.'**
   String get duplicateReportError;
 
   /// No description provided for @retrySync.
@@ -355,6 +397,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Farmer'**
   String get addFarmer;
+
+  /// No description provided for @addDamageReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Damage Report'**
+  String get addDamageReport;
+
+  /// No description provided for @addAssessmentItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Damage Items'**
+  String get addAssessmentItem;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
 
   /// No description provided for @addNewFarmerAction.
   ///
@@ -583,6 +643,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location'**
   String get locationSection;
+
+  /// No description provided for @personalAddressSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Address (Farmer)'**
+  String get personalAddressSection;
 
   /// No description provided for @village.
   ///
@@ -956,6 +1022,12 @@ abstract class AppLocalizations {
   /// **'Failed to load farms.'**
   String get errorLoadingFarms;
 
+  /// No description provided for @errorLoadingDamageReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load damage reports.'**
+  String get errorLoadingDamageReports;
+
   /// No description provided for @resetPassword.
   ///
   /// In en, this message translates to:
@@ -1201,6 +1273,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed'**
   String get status_Completed;
+
+  /// No description provided for @saveLocallyAndSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Locally & Sync'**
+  String get saveLocallyAndSync;
+
+  /// No description provided for @workflowState_DraftHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft Header'**
+  String get workflowState_DraftHeader;
+
+  /// No description provided for @workflowState_HeaderSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Header Synced (Ready for Assessment)'**
+  String get workflowState_HeaderSynced;
+
+  /// No description provided for @workflowState_HeaderSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Header Sync Failed'**
+  String get workflowState_HeaderSyncFailed;
+
+  /// No description provided for @workflowState_AssessmentInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment In Progress'**
+  String get workflowState_AssessmentInProgress;
+
+  /// No description provided for @workflowState_AssessmentPendingSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment Pending Sync'**
+  String get workflowState_AssessmentPendingSync;
+
+  /// No description provided for @workflowState_ReadyForReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for Review'**
+  String get workflowState_ReadyForReview;
 
   /// No description provided for @operationalView.
   ///

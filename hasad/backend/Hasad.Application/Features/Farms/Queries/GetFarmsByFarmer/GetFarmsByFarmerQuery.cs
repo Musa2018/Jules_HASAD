@@ -11,40 +11,54 @@ public record GetFarmsByFarmerQuery(Guid FarmerId) : IRequest<Result<List<FarmDt
 public class GetFarmsByFarmerQueryHandler : IRequestHandler<GetFarmsByFarmerQuery, Result<List<FarmDto>>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public GetFarmsByFarmerQueryHandler(IApplicationDbContext context)
+    public GetFarmsByFarmerQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<List<FarmDto>>> Handle(GetFarmsByFarmerQuery request, CancellationToken cancellationToken)
     {
-        var farms = await _context.Farms
-            .AsNoTracking()
-            .Include(f => f.OwnershipType)
-            .Include(f => f.Locality)
-            .Include(f => f.MeasurementUnit)
-            .Where(f => f.FarmerId == request.FarmerId)
-            .Select(f => new FarmDto
+        var query = _context.Farms.AsNoTracking();
+
+        // Authorization Scoping (Land-based)
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (_currentUser.DirectorateId.HasValue)
             {
-                Id = f.Id,
-                ClientId = f.ClientId,
-                FarmerId = f.FarmerId,
-                LocalFarmName = f.LocalFarmName,
-                OwnershipTypeId = f.OwnershipTypeId,
-                OwnershipTypeName = f.OwnershipType != null ? f.OwnershipType.NameAr : null,
-                LocalityId = f.LocalityId,
-                LocalityName = f.Locality != null ? f.Locality.NameAr : null,
-                Basin = f.Basin,
-                Parcel = f.Parcel,
-                Area = f.Area,
-                MeasurementUnitId = f.MeasurementUnitId,
-                MeasurementUnitName = f.MeasurementUnit != null ? f.MeasurementUnit.NameAr : null,
-                RowVersion = Convert.ToBase64String(f.RowVersion),
-                CreatedAt = f.CreatedAt
-            })
+                query = query.Where(f => f.DirectorateId == _currentUser.DirectorateId.Value);
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (_currentUser.GovernorateId.HasValue)
+            {
+                query = query.Where(f => f.GovernorateId == _currentUser.GovernorateId.Value);
+            }
+        }
+
+        var dbFarms = await query
+            .Where(f => f.FarmerId == request.FarmerId)
             .ToListAsync(cancellationToken);
 
-        return Result<List<FarmDto>>.Success(farms);
+        var items = dbFarms.Select(f => new FarmDto
+        {
+            Id = f.Id,
+            ClientId = f.ClientId,
+            FarmerId = f.FarmerId,
+            LocalFarmName = f.LocalFarmName,
+            OwnershipTypeId = f.OwnershipTypeId,
+            LocalityId = f.LocalityId,
+            Basin = f.Basin,
+            Parcel = f.Parcel,
+            Area = f.Area,
+            MeasurementUnitId = f.MeasurementUnitId,
+            RowVersion = f.RowVersion != null ? Convert.ToBase64String(f.RowVersion) : string.Empty,
+            CreatedAt = f.CreatedAt
+        }).ToList();
+
+        return Result<List<FarmDto>>.Success(items);
     }
 }

@@ -1,10 +1,10 @@
-using Hasad.Application.Common.Interfaces;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
 using Hasad.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
+using Hasad.Application.Common.Interfaces;
 
 namespace Hasad.Application.Tests;
 
@@ -26,72 +26,87 @@ public class DamageReportNumberServiceTests
     }
 
     [Fact]
-    public async Task GeneratePermanentNumberAsync_ReturnsCorrectFormat()
+    public async Task GeneratePermanentNumber_UsesGovernorateAndDirectorateCodes()
     {
         var context = CreateContext();
-        var gov = new Governorate { Id = Guid.NewGuid(), Code = "NBL", NameAr = "نابلس", NameEn = "Nablus" };
-        var dir = new Directorate { Id = Guid.NewGuid(), Code = "NAB", NameAr = "مديرية نابلس", NameEn = "Nablus Directorate", GovernorateId = gov.Id };
-        context.Governorates.Add(gov);
-        context.Directorates.Add(dir);
+        var governorateId = Guid.NewGuid();
+        var directorateId = Guid.NewGuid();
+
+        context.Governorates.Add(new Governorate { Id = governorateId, Code = "NBL", NameAr = "نابلس", NameEn = "Nablus" });
+        context.Directorates.Add(new Directorate
+        {
+            Id = directorateId,
+            GovernorateId = governorateId,
+            Code = "NAB",
+            NameAr = "نابلس",
+            NameEn = "Nablus"
+        });
         await context.SaveChangesAsync();
 
         var service = new DamageReportNumberService(context);
-        var number = await service.GeneratePermanentNumberAsync(dir.Id, 2026);
 
+        var number = await service.GeneratePermanentNumberAsync(directorateId, 2026);
         Assert.Equal("NBL-NAB-2026-000001", number);
     }
 
     [Fact]
-    public async Task GeneratePermanentNumberAsync_IncrementsSequence()
+    public async Task GeneratePermanentNumber_WorksWhenCodesAreIdentical()
     {
         var context = CreateContext();
-        var gov = new Governorate { Id = Guid.NewGuid(), Code = "NBL", NameAr = "نابلس", NameEn = "Nablus" };
-        var dir = new Directorate { Id = Guid.NewGuid(), Code = "NAB", NameAr = "مديرية نابلس", NameEn = "Nablus Directorate", GovernorateId = gov.Id };
-        context.Governorates.Add(gov);
-        context.Directorates.Add(dir);
+        var governorateId = Guid.NewGuid();
+        var directorateId = Guid.NewGuid();
+
+        context.Governorates.Add(new Governorate { Id = governorateId, Code = "JEN", NameAr = "جنين", NameEn = "Jenin" });
+        context.Directorates.Add(new Directorate
+        {
+            Id = directorateId,
+            GovernorateId = governorateId,
+            Code = "JEN",
+            NameAr = "جنين",
+            NameEn = "Jenin"
+        });
         await context.SaveChangesAsync();
 
         var service = new DamageReportNumberService(context);
-        await service.GeneratePermanentNumberAsync(dir.Id, 2026);
-        await context.SaveChangesAsync();
-        var number2 = await service.GeneratePermanentNumberAsync(dir.Id, 2026);
-        await context.SaveChangesAsync();
 
-        Assert.Equal("NBL-NAB-2026-000002", number2);
+        var number = await service.GeneratePermanentNumberAsync(directorateId, 2026);
+        Assert.Equal("JEN-JEN-2026-000001", number);
     }
 
     [Fact]
-    public async Task GeneratePermanentNumberAsync_IsolatesByDirectorate()
+    public async Task GeneratePermanentNumber_IncrementsAcrossYears_ForSameDirectorate()
     {
         var context = CreateContext();
-        var gov = new Governorate { Id = Guid.NewGuid(), Code = "NBL", NameAr = "نابلس", NameEn = "Nablus" };
-        var dir1 = new Directorate { Id = Guid.NewGuid(), Code = "NAB", NameAr = "مديرية نابلس", NameEn = "Nablus Directorate", GovernorateId = gov.Id };
-        var dir2 = new Directorate { Id = Guid.NewGuid(), Code = "SNB", NameAr = "مديرية جنوب نابلس", NameEn = "South Nablus", GovernorateId = gov.Id };
-        context.Governorates.Add(gov);
-        context.Directorates.AddRange(dir1, dir2);
+        var governorateId = Guid.NewGuid();
+        var directorateId = Guid.NewGuid();
+
+        context.Governorates.Add(new Governorate { Id = governorateId, Code = "JEN", NameAr = "جنين", NameEn = "Jenin" });
+        var directorate = new Directorate
+        {
+            Id = directorateId,
+            GovernorateId = governorateId,
+            Code = "JEN",
+            NameAr = "جنين",
+            NameEn = "Jenin"
+        };
+        context.Directorates.Add(directorate);
         await context.SaveChangesAsync();
 
         var service = new DamageReportNumberService(context);
-        await service.GeneratePermanentNumberAsync(dir1.Id, 2026);
-        var numberDir2 = await service.GeneratePermanentNumberAsync(dir2.Id, 2026);
 
-        Assert.Equal("NBL-SNB-2026-000001", numberDir2);
-    }
-
-    [Fact]
-    public async Task GeneratePermanentNumberAsync_IsolatesByYear()
-    {
-        var context = CreateContext();
-        var gov = new Governorate { Id = Guid.NewGuid(), Code = "NBL", NameAr = "نابلس", NameEn = "Nablus" };
-        var dir = new Directorate { Id = Guid.NewGuid(), Code = "NAB", NameAr = "مديرية نابلس", NameEn = "Nablus Directorate", GovernorateId = gov.Id };
-        context.Governorates.Add(gov);
-        context.Directorates.Add(dir);
+        // First report in 2026
+        var number1 = await service.GeneratePermanentNumberAsync(directorateId, 2026);
         await context.SaveChangesAsync();
+        Assert.Equal("JEN-JEN-2026-000001", number1);
 
-        var service = new DamageReportNumberService(context);
-        await service.GeneratePermanentNumberAsync(dir.Id, 2026);
-        var number2027 = await service.GeneratePermanentNumberAsync(dir.Id, 2027);
+        // Second report in 2019 (Historical)
+        var number2 = await service.GeneratePermanentNumberAsync(directorateId, 2019);
+        await context.SaveChangesAsync();
+        Assert.Equal("JEN-JEN-2019-000002", number2);
 
-        Assert.Equal("NBL-NAB-2027-000001", number2027);
+        // Third report in 2026
+        var number3 = await service.GeneratePermanentNumberAsync(directorateId, 2026);
+        await context.SaveChangesAsync();
+        Assert.Equal("JEN-JEN-2026-000003", number3);
     }
 }

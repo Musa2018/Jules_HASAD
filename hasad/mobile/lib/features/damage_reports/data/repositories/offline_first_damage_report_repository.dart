@@ -7,10 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as report_domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 import 'package:uuid/uuid.dart';
 
@@ -18,8 +20,9 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   final AppDatabase _db;
   final Ref _ref;
   final AuthSession? _session;
+  final DamageReportRepository _remoteRepository;
 
-  OfflineFirstDamageReportRepository(this._db, this._ref, this._session);
+  OfflineFirstDamageReportRepository(this._db, this._ref, this._session, this._remoteRepository);
 
   BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
 
@@ -52,6 +55,34 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Stream<List<report_domain.DamageReport>> watchDamageReports() {
+    final query = _db.select(_db.damageReports)
+      ..where((t) => t.isPendingDelete.equals(false));
+
+    // Regional scoping based on session
+    if (_session != null) {
+      if (_session.directorateId != null && _session.directorateId!.isNotEmpty) {
+        query.where((t) => t.directorateId.equals(_session.directorateId!));
+      } else if (_session.governorateId != null && _session.governorateId!.isNotEmpty) {
+        query.where((t) => t.governorateId.equals(_session.governorateId!));
+      }
+    }
+
+    query.orderBy([(t) => OrderingTerm.desc(t.damageDate)]);
+
+    return query.watch().asyncMap((reports) async {
+      List<report_domain.DamageReport> results = [];
+      for (var r in reports) {
+        final items = await (_db.select(_db.damageItems)
+              ..where((t) => t.damageReportId.equals(r.id)))
+            .get();
+        results.add(_mapToDomain(r, items));
+      }
+      return results;
+    });
+  }
+
+  @override
   Future<List<report_domain.DamageReport>> getDamageReportsByFarm(
     String farmId,
   ) async {
@@ -70,6 +101,24 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       results.add(_mapToDomain(r, items));
     }
     return results;
+  }
+
+  @override
+  Stream<List<report_domain.DamageReport>> watchDamageReportsByFarm(String farmId) {
+    final query = _db.select(_db.damageReports)
+      ..where((t) => t.farmId.equals(farmId) & t.isPendingDelete.equals(false))
+      ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]);
+
+    return query.watch().asyncMap((reports) async {
+      List<report_domain.DamageReport> results = [];
+      for (var r in reports) {
+        final items = await (_db.select(_db.damageItems)
+              ..where((t) => t.damageReportId.equals(r.id)))
+            .get();
+        results.add(_mapToDomain(r, items));
+      }
+      return results;
+    });
   }
 
   @override
@@ -186,14 +235,16 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     report_domain.DamageReport report,
   ) async {
     // 1. Duplicate check (Local)
+    final normalizedDate = DateTime(report.damageDate.year, report.damageDate.month, report.damageDate.day);
+    
     final existing = await (_db.select(_db.damageReports)
           ..where((t) => t.farmId.equals(report.farmId) & 
-                         t.damageDate.equals(report.damageDate) &
+                         t.damageDate.equals(normalizedDate) &
                          t.isPendingDelete.equals(false)))
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('A damage report already exists for this farm and date.');
+      throw DamageReportException(['duplicateReportError']);
     }
 
     // 2. Fetch Farm for denormalization snapshot
@@ -212,13 +263,14 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       id: localId,
       temporaryFormNumber: tempNumber,
       documentationDate: DateTime.now(),
+      damageDate: normalizedDate,
       // Snapshots
       farmerId: farm.farmerId,
       governorateId: farm.governorateId,
       directorateId: farm.directorateId,
       localityId: farm.localityId,
       agriculturalSectorId: farm.agriculturalSectorId,
-      damageYear: report.damageDate.year,
+      damageYear: normalizedDate.year,
       createdBy: _session?.userId ?? 'System',
     );
 
@@ -277,22 +329,26 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   Future<report_domain.DamageReport> updateDamageReport(
     report_domain.DamageReport report,
   ) async {
+    final normalizedDate = DateTime(report.damageDate.year, report.damageDate.month, report.damageDate.day);
+
     // Duplicate check on update
     final existing = await (_db.select(_db.damageReports)
           ..where((t) => t.id.equals(report.id).not() &
                          t.farmId.equals(report.farmId) & 
-                         t.damageDate.equals(report.damageDate) &
+                         t.damageDate.equals(normalizedDate) &
                          t.isPendingDelete.equals(false)))
         .getSingleOrNull();
     
     if (existing != null) {
-      throw Exception('A damage report already exists for this farm and date.');
+      throw DamageReportException(['duplicateReportError']);
     }
+
+    final finalReport = report.copyWith(damageDate: normalizedDate, damageYear: normalizedDate.year);
 
     await (_db.update(
       _db.damageReports,
     )..where((t) => t.id.equals(report.id))).write(
-      _mapReportToCompanion(report).copyWith(
+      _mapReportToCompanion(finalReport).copyWith(
         syncStatus: const Value('pending'),
         lastSyncError: const Value(null),
         updatedAt: Value(DateTime.now()),
@@ -303,10 +359,10 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       localId: report.id,
       entityType: 'damage_report',
       operation: 'update',
-      data: report.toJson(),
+      data: finalReport.toJson(),
     );
 
-    return report;
+    return finalReport;
   }
 
   @override
@@ -335,12 +391,30 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Future<void> cancelDeleteDamageReport(String id) async {
+    await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+      const DamageReportsCompanion(
+        isPendingDelete: Value(false),
+        syncStatus: Value('completed'),
+        lastSyncError: Value(null),
+      ),
+    );
+
+    await (_db.delete(_db.syncQueue)
+          ..where((t) =>
+              t.localId.equals(id) &
+              t.entityType.equals('damage_report') &
+              t.operation.equals('delete')))
+        .go();
+  }
+
+  @override
   Future<void> submitReport(String id) async {
     final report = await getDamageReport(id);
     // Locally predict state
     await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
       const DamageReportsCompanion(
-        statusId: Value('Submitted'),
+        statusId: Value(DamageReportStatus.techReview),
         syncStatus: Value('pending'),
       ),
     );
@@ -476,5 +550,48 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         'clientId': local.id,
       },
     );
+  }
+
+  @override
+  Future<void> synchronize() async {
+    // 1. Fetch from remote
+    try {
+      final remoteReports = await _remoteRepository.getDamageReports();
+
+      await _db.transaction(() async {
+        for (final remote in remoteReports) {
+          final local = await (_db.select(_db.damageReports)
+                ..where((t) => t.id.equals(remote.id)))
+              .getSingleOrNull();
+
+          if (local != null) {
+            final isProtected = local.syncStatus == 'pending' ||
+                local.syncStatus == 'syncing' ||
+                local.syncStatus == 'conflict' ||
+                local.isPendingDelete;
+
+            if (isProtected) continue;
+          }
+
+          // Update header
+          await _db.into(_db.damageReports).insertOnConflictUpdate(
+                _mapReportToCompanion(remote).copyWith(
+                  syncStatus: const Value('completed'),
+                ),
+              );
+
+          // Update items
+          for (final item in remote.items) {
+            await _db.into(_db.damageItems).insertOnConflictUpdate(
+                  _mapItemToCompanion(item).copyWith(
+                    syncStatus: const Value('completed'),
+                  ),
+                );
+          }
+        }
+      });
+    } catch (e) {
+      // Log or handle error
+    }
   }
 }

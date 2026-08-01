@@ -1,12 +1,14 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
@@ -14,6 +16,7 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 
 class MockSyncService extends Mock implements BackgroundSyncService {}
+class MockRef extends Mock implements Ref {}
 class MockRemoteRepository extends Mock implements FarmerRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
 class MockAuthorizationService extends Mock implements AuthorizationService {}
@@ -21,6 +24,7 @@ class MockAuthorizationService extends Mock implements AuthorizationService {}
 void main() {
   late AppDatabase db;
   late MockSyncService mockSyncService;
+  late MockRef mockRef;
   late MockRemoteRepository mockRemoteRepository;
   late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
@@ -51,9 +55,11 @@ void main() {
     mockAuthService = MockAuthorizationService();
     
     when(() => mockAuthService.canManageFarmers()).thenReturn(true);
+    mockRef = MockRef();
+    when(() => mockRef.read(syncServiceProvider)).thenReturn(mockSyncService);
     
     repository = OfflineFirstFarmerRepository(
-      db, mockSyncService, mockRemoteRepository, mockConnectivity, mockAuthService, adminSession,
+      db, mockRef, mockRemoteRepository, mockConnectivity, mockAuthService, adminSession,
     );
   });
 
@@ -142,7 +148,7 @@ void main() {
       // 1. Setup session for Engineer in D1
       final engineerSession = adminSession.copyWith(roles: ['AgriculturalEngineer'], directorateId: 'D1');
       repository = OfflineFirstFarmerRepository(
-        db, mockSyncService, mockRemoteRepository, mockConnectivity, mockAuthService, engineerSession,
+        db, mockRef, mockRemoteRepository, mockConnectivity, mockAuthService, engineerSession,
       );
 
       // 2. Add two localities
@@ -181,6 +187,19 @@ void main() {
       await repository.createFarmer(farmer1);
       await repository.createFarmer(farmer2);
 
+      // 3.5 Add a farm for farmer1 in D1
+      await db.into(db.farms).insert(FarmsCompanion.insert(
+        id: 'farm1',
+        farmerId: 'f1',
+        localFarmName: 'Farm 1',
+        governorateId: 'G1',
+        directorateId: 'D1',
+        localityId: 'L1',
+        basin: 'B1',
+        parcel: 'P1',
+        area: 10,
+      ));
+
       // 4. Watch with isOperational: true
       final streamOp = repository.watchFarmers(filter: const FarmerFilter(isOperational: true));
       final resultOp = await streamOp.first;
@@ -203,7 +222,7 @@ void main() {
        // 1. Setup session for SuperAdmin
       final superSession = adminSession.copyWith(roles: ['SuperAdmin'], directorateId: null);
       repository = OfflineFirstFarmerRepository(
-        db, mockSyncService, mockRemoteRepository, mockConnectivity, mockAuthService, superSession,
+        db, mockRef, mockRemoteRepository, mockConnectivity, mockAuthService, superSession,
       );
 
       // 2. Add two farmers in different governorates

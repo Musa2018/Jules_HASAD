@@ -49,7 +49,6 @@ void main() {
       mockDamageRepo,
       mockAttachmentRepo,
       mockConnectivity,
-      () async {},
     );
 
     registerFallbackValue(

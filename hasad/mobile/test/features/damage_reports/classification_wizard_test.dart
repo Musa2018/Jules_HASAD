@@ -39,13 +39,13 @@ void main() {
 
   group('ClassificationWizardNotifier', () {
     test('initial state is correct', () {
-      final state = container.read(classificationWizardProvider({'sectorId': 1, 'lockedNatureId': null}));
+      final state = container.read(classificationWizardProvider(const ClassificationParams(sectorId: 1, lockedNatureId: null)));
       expect(state.currentStep, 1);
       expect(state.selectedNature, isNull);
     });
 
     test('setting nature moves to step 2 and clears children', () {
-      final params = {'sectorId': 1, 'lockedNatureId': null};
+      const params = ClassificationParams(sectorId: 1, lockedNatureId: null);
       final notifier = container.read(classificationWizardProvider(params).notifier);
       notifier.setNature(nature);
       
@@ -58,7 +58,7 @@ void main() {
       when(() => mockRepo.getActiveCostingSheet(1000))
           .thenAnswer((_) async => costing);
 
-      final params = {'sectorId': 1, 'lockedNatureId': null};
+      const params = ClassificationParams(sectorId: 1, lockedNatureId: null);
       final notifier = container.read(classificationWizardProvider(params).notifier);
       notifier.setNature(nature);
       notifier.setCategory(category);
@@ -76,7 +76,7 @@ void main() {
       when(() => mockRepo.getActiveCostingSheet(1000))
           .thenAnswer((_) async => costing);
 
-      final params = {'sectorId': 1, 'lockedNatureId': null};
+      const params = ClassificationParams(sectorId: 1, lockedNatureId: null);
       final notifier = container.read(classificationWizardProvider(params).notifier);
       notifier.setNature(nature);
       notifier.setCategory(category);
@@ -103,7 +103,7 @@ void main() {
       when(() => mockRepo.getActiveCostingSheet(1000))
           .thenAnswer((_) async => null);
 
-      final params = {'sectorId': 1, 'lockedNatureId': null};
+      const params = ClassificationParams(sectorId: 1, lockedNatureId: null);
       final notifier = container.read(classificationWizardProvider(params).notifier);
       await notifier.setClassification(classification);
 

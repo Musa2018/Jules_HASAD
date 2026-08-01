@@ -54,6 +54,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get damageCause => 'Damage Cause';
 
   @override
+  String get selectCause => 'Select Cause';
+
+  @override
+  String get selectDamageNature => 'Select Damage Nature';
+
+  @override
+  String get selectDamageAction => 'Select Damage Action';
+
+  @override
+  String get selectCategory => 'Select Category';
+
+  @override
+  String get selectSubCategory => 'Select Sub-Category';
+
+  @override
+  String get selectClassification => 'Select Classification';
+
+  @override
+  String get itemDetails => 'Item Details';
+
+  @override
   String get reportNumber => 'Report Number';
 
   @override
@@ -74,7 +95,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duplicateReportError =>
-      'A damage report already exists for this farm and date';
+      'A damage report already exists for this farm on the selected date.';
 
   @override
   String get retrySync => 'Retry Sync';
@@ -141,6 +162,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFarmer => 'Add Farmer';
+
+  @override
+  String get addDamageReport => 'Add Damage Report';
+
+  @override
+  String get addAssessmentItem => 'Add Damage Items';
+
+  @override
+  String get details => 'Details';
 
   @override
   String get addNewFarmerAction => '+ Add New Farmer';
@@ -256,6 +286,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationSection => 'Location';
+
+  @override
+  String get personalAddressSection => 'Personal Address (Farmer)';
 
   @override
   String get village => 'Locality/Village';
@@ -445,6 +478,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingFarms => 'Failed to load farms.';
 
   @override
+  String get errorLoadingDamageReports => 'Failed to load damage reports.';
+
+  @override
   String get resetPassword => 'Reset Password';
 
   @override
@@ -567,6 +603,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get status_Completed => 'Completed';
+
+  @override
+  String get saveLocallyAndSync => 'Save Locally & Sync';
+
+  @override
+  String get workflowState_DraftHeader => 'Draft Header';
+
+  @override
+  String get workflowState_HeaderSynced =>
+      'Header Synced (Ready for Assessment)';
+
+  @override
+  String get workflowState_HeaderSyncFailed => 'Header Sync Failed';
+
+  @override
+  String get workflowState_AssessmentInProgress => 'Assessment In Progress';
+
+  @override
+  String get workflowState_AssessmentPendingSync => 'Assessment Pending Sync';
+
+  @override
+  String get workflowState_ReadyForReview => 'Ready for Review';
 
   @override
   String get operationalView => 'Operational View';

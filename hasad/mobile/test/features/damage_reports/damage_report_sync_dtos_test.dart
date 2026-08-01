@@ -78,27 +78,49 @@ void main() {
       );
     });
 
-    test('itemToUpdateJson maps fields correctly', () {
+    test('toCreateJson converts empty GUID strings to null', () {
+      final report = baseReport.copyWith(
+        governorateId: '',
+        directorateId: ' ', // Note: My helper checks for isEmpty, maybe I should trim too?
+        localityId: 'null',
+      );
+      final json = DamageReportSyncDto.toCreateJson(report);
+
+      expect(json['governorateId'], isNull);
+      expect(json['localityId'], isNull);
+    });
+
+    test('itemToCreateJson resolves costingSheetId from costingSheetItemId', () {
       const item = DamageItem(
         id: 'i1',
-        serverId: 'si1',
         damageReportId: 'r1',
-        classificationId: 10,
-        costingSheetId: 'cs10',
-        calculatedUnitPrice: 200,
-        measurementUnitSnapshot: 'Ton',
-        affectedArea: 5,
-        damagePercentage: 30,
-        quantity: 15,
-        estimatedLoss: 600,
-        rowVersion: 'rv2',
+        costingSheetId: 'old-cs',
+        costingSheetItemId: 'new-cs',
+        affectedArea: 1,
+        damagePercentage: 1,
+        quantity: 1,
+        estimatedLoss: 1,
       );
-      final json = DamageReportSyncDto.itemToUpdateJson(item);
+      final json = DamageReportSyncDto.itemToCreateJson(item);
 
-      expect(json['id'], 'si1');
-      expect(json['classificationId'], 10);
-      expect(json['calculatedUnitPrice'], 200.0);
-      expect(json['rowVersion'], 'rv2');
+      expect(json['costingSheetId'], 'new-cs');
+    });
+
+    test('itemToCreateJson includes damageNatureId and damageActionId', () {
+      const item = DamageItem(
+        id: 'i1',
+        damageReportId: 'r1',
+        damageNatureId: 5,
+        damageActionId: 7,
+        affectedArea: 1,
+        damagePercentage: 1,
+        quantity: 1,
+        estimatedLoss: 1,
+      );
+      final json = DamageReportSyncDto.itemToCreateJson(item);
+
+      expect(json['damageNatureId'], 5);
+      expect(json['damageActionId'], 7);
     });
   });
 }

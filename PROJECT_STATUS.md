@@ -4,8 +4,102 @@
 
 - **Current Sprint**: Phase 2.2 — Evidence & Workflow Lifecycle
 - **Current Branch**: `DamageReport`
-- **Last Updated**: 2026-07-28
-- **Latest Commit**: `DamageReport` (`0df6057`)
+- **Last Updated**: 2026-07-31
+- **Latest Commit**: `Hardened` (`HARDEN-15.1`)
+
+## Production Readiness Acceptance (2026-07-31) — COMPLETED
+- **Git Synchronization**: Successfully finalized all `DamageReport` hardening and security validation. Pushed to `origin/DamageReport`.
+- **Backend Quality**: Achieved Zero Warnings build and 100% pass rate on 134 backend tests.
+- **Mobile Quality**: Achieved 100% pass rate on 202 mobile tests.
+- **Security Audit**: 
+    - Verified **ADR-0013** geographic isolation: `Farm.DirectorateId` is the single source of truth.
+    - Verified **Financial Integrity**: Authoritative backend recalculation of loss and unit price.
+    - Verified **Multi-Farm Scoping**: Cross-directorate asset isolation for single farmers.
+- **Numbering System**: Validated `GOV-DIR-YEAR-SEQ` generation and persistence.
+- **Duplicate Prevention**: Confirmed `DAMAGE_REPORT_DUPLICATE` enforcement with localized Arabic messaging.
+- **Workflow Integrity**: Hardened sync lifecycle to ensure `Submit Review` state consistency.
+- **Manual UAT Scenarios**: Executed comprehensive user journeys covering Farmer, Farm, and Damage Report lifecycles with offline/online transitions.
+
+## Final Geographic Integrity & Multi-Farm Validation (2026-07-31) — COMPLETED
+- **Architectural Alignment**: Decoupled Farmer residency from operational authorization. Formalized rules in ADR-0013 and AI_CONTEXT.md.
+- **Query Hardening**:
+    - Refactored `GetFarmById` and `GetFarmsByFarmer` to enforce land-based geographic scoping via `ICurrentUserService`.
+    - Hardened `GetFarmersList` (Operational View) to determine visibility based on the existence of farms within the user's scope.
+- **Multi-Farm Scenarios**: Verified that a single farmer (e.g., Ahmed Mohammed) can have multiple farms in different directorates, with each user only seeing the farms relevant to their jurisdiction.
+- **Mobile UX Hardening**: 
+    - Updated terminology to "Personal Address (Farmer)" to distinguish from land location.
+    - Verified offline creation and synchronization of multi-farm scenarios with late binding IDs.
+- **Verification**: 
+    - Passed all 134 backend tests including `MultiFarmSecurityScenariosTests`.
+    - Passed all 202 mobile tests including `multi_farm_offline_sync_test`.
+    - Achieved Zero Warnings build on both backend and mobile.
+- **UX Alignment**: Standardized the `DamageReport` navigation flow to match `Farmers` and `Farms` modules.
+- **Context-Aware AppBar**: Implemented a context-aware leading widget in `DamageReportsListScreen` that manually provides a "Back to Dashboard" action if the navigation stack is cleared.
+- **Stack Preservation**: Refactored `DamageReportHeaderScreen` to use `context.pop()` instead of `context.go()` after saving, preserving the underlying dashboard state in the history.
+- **Verification**: Added `damage_reports_navigation_test.dart` to verify navigation behavior in both root and pushed contexts. Updated existing workflow tests to align with new navigation patterns.
+
+## DamageReport Final Sync & Localization Hardening (2026-07-31) — COMPLETED
+- **Workflow Sync**: Fixed an issue where successful transitions were marked as "Failed" locally; synchronized mobile states with backend and fixed legacy `'Submitted'` status.
+- **Numbering Correction**: Verified and hardened `ReportNumber` format to `GovernorateCode-DirectorateCode-Year-Sequence` (e.g., `JEN-JEN-2026-000001` or `NBL-NAB-2026-000001`).
+- **Duplicate Prevention**: Implemented stable error code `DAMAGE_REPORT_DUPLICATE` on backend and mapped it to localized Arabic/English messages in Flutter.
+- **Sync Efficiency**: Implemented automatic `SyncQueue` pruning for `damage_item` tasks after a successful bulk `damage_report` synchronization to prevent redundant server calls.
+- **Verification**: Passed numbering segment tests (JEN-JEN, JEN-NJEN, NBL-NAB) and validated workflow sync state preservation.
+
+
+## DamageReport Authorization & Workflow Hardening (2026-07-31) — COMPLETED
+- **Bug Fix**: Resolved `400 Bad Request` in `TransitionDamageReport` caused by missing `Farm` navigation property during geographic scope validation.
+- **Architecture Alignment**: Refactored `DamageWorkflowService` and all `DamageReport` related commands to use denormalized `DirectorateId` and `GovernorateId` fields on the `DamageReport` entity itself, eliminating the dependency on `Farm` navigation for authorization.
+- **ADR Compliance**: Updated ADR-0013 to strictly mandate using denormalized fields for operational scope checks.
+- **Verification**: Updated `DamageWorkflowTests` to verify transitions succeed without loading the `Farm` entity and correctly enforce scope via denormalized fields.
+
+## DamageReport Sequence & Duplicate Hardening (2026-07-31) — COMPLETED
+- **Numbering Correction**: Refactored `DamageReportNumberService` to use a non-resetting sequence per Directorate. Format: `JEN-JEN-2026-000001`.
+- **Data Migration**: Implemented MAX-based sequence seeding to ensure continuity from existing issued report numbers.
+- **Duplicate Prevention**: Hardened `CreateDamageReport` (Backend) and `DamageReportRepository` (Mobile) to enforce uniqueness on `FarmId + DamageDate`.
+- **Offline Integrity**: Updated `BackgroundSyncService` to prevent silent merges and mark duplicate creation as conflicts.
+
+## DamageReport Two-Phase Workflow Refinement (2026-07-31) — COMPLETED
+- **Status**: ✅ **Implemented & Verified**.
+- **Lifecycle Separation**: Officially separated Header and Assessment phases.
+- **Workflow State Machine**: Implemented a comprehensive state machine (`workflowStateKey`) to guide surveyors:
+    - **Draft Header**: Local-only, awaiting sync.
+    - **Header Synced**: Official `ReportNumber` assigned, assessment enabled.
+    - **Assessment In Progress**: Items added but not all synced.
+    - **Ready For Review**: Header synced, items exist, all items synced.
+- **Identity Enforcement**:
+    - Users interact with `ReportNumber` as the business identifier.
+    - `DamageReport.Id` remains the technical foreign key for `DamageItems`.
+- **Submission Guards**: "Submit for Review" is strictly gated by header sync, item existence, and item sync completion.
+- **Validation**: Added `damage_report_two_phase_lifecycle_test.dart` and updated existing workflow tests.
+- **Architecture Verification**: Confirmed `workflowStateKey` is UI-derived only (non-persisted). Hardened backend `SubmitDamageReportCommand` to enforce ReportNumber existence and item validity. Verified relational vs. display identity separation.
+- **Sync Fix (HTTP 400)**: Resolved damage item synchronization failure by:
+    - Aligning `AddDamageItemCommand` (Backend) with full `DamageItem` entity requirements.
+    - Implementing strict GUID binding in `DamageReportSyncDto` (Flutter) to convert empty strings to `null`.
+    - Consolidating validation rules across bulk creation and single item addition.
+
+## DamageReport List Experience Standardization (2026-07-30) — COMPLETED
+- **Status**: ✅ **Standardized & Hardened**.
+- **UX**: Unified the Damage Report list with the Farmers/Farms module using the "Entity List → Cards → Actions → Child Workflow" pattern.
+- **Components**:
+    - Implemented `DamageReportCard` with full metadata visibility (Farmer, Farm, Cause, Location) and standardized action menu.
+    - Integrated `DamageReportFilter` and `filteredDamageReportsProvider` for advanced searching and regional/status filtering.
+    - Added reactive Drift streams (`watchDamageReports`) to ensure real-time UI updates across the list.
+- **Navigation**: Established "Add Damage Items" as the primary entry point for assessment items, mapping directly to the existing `DamageReportFormScreen`.
+- **Hardening**: Added `cancelDeleteDamageReport` for parity with other modules, allowing users to undo offline deletion attempts.
+- **Integrity**: Hardened `DamageReportHeaderScreen` localization to fix historical workflow tests and ensure RTL consistency.
+- **Sync**: Integrated pull-to-refresh with the `synchronize()` repository pattern.
+
+## Synchronization Hardening (2026-07-30) — COMPLETED
+- **Status**: ✅ **Hardened & Verified**.
+- **Issue**: DamageReports created offline were missing items upon server synchronization (items: []).
+- **Root Cause**:
+    1. **Stale Snapshots**: `SyncQueue` stored a JSON snapshot of the report header at the moment of creation (0 items). The sync worker used this stale data instead of the current database state.
+    2. **UI Blocking**: `DamageReportFormScreen` prevented adding items until `syncStatus == 'completed'`, effectively disabling offline assessment for new reports.
+- **Solution**:
+    1. **Late Binding**: Refactored `BackgroundSyncService` to reload the full `DamageReport` aggregate (Header + Items) from Drift immediately before sync execution.
+    2. **UI Unlocking**: Removed sync-status guards from the UI, enabling seamless offline assessment entry.
+    3. **Atomic Cleanup**: The sync engine now automatically prunes redundant `damage_item` tasks after a successful bulk report creation.
+- **Result**: Successfully verified full offline creation flow (Header + 10 items) with single-request bulk synchronization.
 
 ## Sprint 14.x — COMPLETED (New Stability Point)
 Simplified Assessment & Age-Based Valuation:

@@ -63,7 +63,7 @@ class _FarmerDetailsBody extends ConsumerWidget {
     final govAsync = ref.watch(governoratesProvider);
     final locAsync = ref.watch(localitiesProvider((farmer.governorateId, null)));
 
-    String govName = farmer.governorateId;
+    String govName = farmer.governorateId ?? '';
     govAsync.whenData((govs) {
       final gov = govs.where((g) => g.id == farmer.governorateId).firstOrNull;
       if (gov != null) {
@@ -71,7 +71,7 @@ class _FarmerDetailsBody extends ConsumerWidget {
       }
     });
 
-    String locName = farmer.localityId;
+    String locName = farmer.localityId ?? '';
     locAsync.whenData((locs) {
       final loc = locs.where((l) => l.id == farmer.localityId).firstOrNull;
       if (loc != null) {
@@ -140,7 +140,7 @@ class _FarmerDetailsBody extends ConsumerWidget {
           ),
           
           _Section(
-            title: l10n.locationSection,
+            title: l10n.personalAddressSection,
             children: [
               _InfoRow(label: l10n.governorate, value: govName),
               _InfoRow(label: l10n.village, value: locName),

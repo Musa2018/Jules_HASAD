@@ -66,7 +66,7 @@ void main() {
       ProviderScope(
         overrides: [
           authorizationServiceProvider.overrideWithValue(mockAuthService),
-          farmerProvider('f1').overrideWith((ref) => Future.value(tFarmer)),
+          farmerStreamProvider('f1').overrideWith((ref) => Stream.value(tFarmer)),
           governoratesProvider.overrideWith((ref) => []),
           directoratesProvider('g1').overrideWith((ref) => []),
           localitiesProvider(('g1', 'd1')).overrideWith((ref) => []),

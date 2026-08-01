@@ -225,6 +225,11 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<int>("ClassificationId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -243,6 +248,9 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassificationId");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.HasIndex("MeasurementUnitId");
 
@@ -738,9 +746,6 @@ namespace Hasad.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("DamageYear")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("DirectorateId")
                         .HasColumnType("uniqueidentifier");
 
@@ -749,7 +754,7 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DirectorateId", "DamageYear")
+                    b.HasIndex("DirectorateId")
                         .IsUnique();
 
                     b.ToTable("DamageReportSequences");
@@ -1008,6 +1013,9 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("DirectorateId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("FamilyNameAr")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1048,10 +1056,10 @@ namespace Hasad.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<string>("GovernorateId")
+                    b.Property<Guid?>("GovernorateId")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("GrandfatherNameAr")
                         .IsRequired()
@@ -1074,10 +1082,18 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LocalityId")
+                    b.Property<string>("LegacyGovernorateId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LegacyLocalityId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("LocalityId")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()

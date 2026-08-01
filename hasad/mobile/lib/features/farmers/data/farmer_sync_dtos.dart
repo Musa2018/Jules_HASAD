@@ -26,7 +26,10 @@ class FarmerSyncDto {
       'phoneNumber': farmer.phoneNumber,
       'familySize': farmer.familySize,
       'governorateId': farmer.governorateId,
+      'directorateId': farmer.directorateId,
       'localityId': farmer.localityId,
+      'legacyGovernorateId': farmer.legacyGovernorateId,
+      'legacyLocalityId': farmer.legacyLocalityId,
       'address': farmer.address,
     };
   }
@@ -57,7 +60,10 @@ class FarmerSyncDto {
       'phoneNumber': farmer.phoneNumber,
       'familySize': farmer.familySize,
       'governorateId': farmer.governorateId,
+      'directorateId': farmer.directorateId,
       'localityId': farmer.localityId,
+      'legacyGovernorateId': farmer.legacyGovernorateId,
+      'legacyLocalityId': farmer.legacyLocalityId,
       'address': farmer.address,
       'rowVersion': farmer.rowVersion,
     };

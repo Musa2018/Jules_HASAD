@@ -46,6 +46,9 @@ public class FarmerCommandHandlerTests
             Gender.Male,
             "0599123456",
             5,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             "GOV-1",
             "LOC-1",
             "Gaza");
@@ -75,7 +78,8 @@ public class FarmerCommandHandlerTests
             IdNumber = "123",
             FirstNameAr = "مزارع", FatherNameAr = "موجود", GrandfatherNameAr = "سابقا", FamilyNameAr = "هنا",
             FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
-            GovernorateId = "G", LocalityId = "L",
+            GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(),
+            LegacyGovernorateId = "G", LegacyLocalityId = "L",
             Gender = Gender.Male,
             FamilySize = 1,
             RowVersion = new byte[] { 1 }
@@ -83,7 +87,7 @@ public class FarmerCommandHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new CreateFarmerCommandHandler(context, _currentUserMock.Object);
-        var command = new CreateFarmerCommand(clientId, 1, "123", "اسم", "مختلف", "جدا", "هنا", "", "", "", "", new DateOnly(1990, 1, 1), Gender.Female, "059", 4, "G", "L", "Address");
+        var command = new CreateFarmerCommand(clientId, 1, "123", "اسم", "مختلف", "جدا", "هنا", "", "", "", "", new DateOnly(1990, 1, 1), Gender.Female, "059", 4, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "G", "L", "Address");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -107,7 +111,8 @@ public class FarmerCommandHandlerTests
             IdNumber = "123",
             FirstNameAr = "الاسم", FatherNameAr = "القديم", GrandfatherNameAr = "للمزارع", FamilyNameAr = "الحالي",
             FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
-            GovernorateId = "G", LocalityId = "L",
+            GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(),
+            LegacyGovernorateId = "G", LegacyLocalityId = "L",
             Gender = Gender.Male,
             FamilySize = 2,
             RowVersion = version
@@ -120,7 +125,7 @@ public class FarmerCommandHandlerTests
             farmer.Id, farmer.ClientId, 1, "123",
             "الاسم", "الجديد", "تم", "تحديثه",
             "", "", "", "",
-            new DateOnly(1980, 1, 1), Gender.Male, "059", 3, "G", "L", "New Address", Convert.ToBase64String(version));
+            new DateOnly(1980, 1, 1), Gender.Male, "059", 3, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "New Address", Convert.ToBase64String(version));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -142,7 +147,8 @@ public class FarmerCommandHandlerTests
             IdNumber = "123",
             FirstNameAr = "قديم", FatherNameAr = "قديم", GrandfatherNameAr = "قديم", FamilyNameAr = "قديم",
             FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
-            GovernorateId = "G", LocalityId = "L",
+            GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(),
+            LegacyGovernorateId = "G", LegacyLocalityId = "L",
             RowVersion = new byte[] { 1 }
         };
         context.Farmers.Add(farmer);
@@ -153,7 +159,7 @@ public class FarmerCommandHandlerTests
             farmer.Id, farmer.ClientId, 1, "123",
             "جديد", "جديد", "جديد", "جديد",
             "", "", "", "",
-            new DateOnly(1990, 1, 1), Gender.Male, "059", 5, "G", "L", "Add", Convert.ToBase64String(new byte[] { 2 }));
+            new DateOnly(1990, 1, 1), Gender.Male, "059", 5, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Add", Convert.ToBase64String(new byte[] { 2 }));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -173,7 +179,8 @@ public class FarmerCommandHandlerTests
             IdNumber = "123",
             FirstNameAr = "مزارع", FatherNameAr = "للحذف", GrandfatherNameAr = "", FamilyNameAr = "",
             FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
-            GovernorateId = "G", LocalityId = "L",
+            GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(),
+            LegacyGovernorateId = "G", LegacyLocalityId = "L",
             RowVersion = new byte[] { 1 }
         };
         context.Farmers.Add(farmer);
@@ -229,7 +236,8 @@ public class FarmerCommandHandlerTests
             IdNumber = "123",
             FirstNameAr = "الهدف", FatherNameAr = "المطلوب", GrandfatherNameAr = "هنا", FamilyNameAr = "صحيح",
             FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
-            GovernorateId = "G", LocalityId = "L",
+            GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(),
+            LegacyGovernorateId = "G", LegacyLocalityId = "L",
             RowVersion = new byte[] { 1 }
         };
         context.Farmers.Add(farmer);
@@ -260,7 +268,8 @@ public class FarmerCommandHandlerTests
                 IdNumber = i.ToString(),
                 FirstNameAr = $"مزارع {i:D2}", FatherNameAr = "تجربة", GrandfatherNameAr = "رقم", FamilyNameAr = $"{i}",
                 FirstNameEn = "", FatherNameEn = "", GrandfatherNameEn = "", FamilyNameEn = "",
-                GovernorateId = "G", LocalityId = "L",
+                GovernorateId = Guid.NewGuid(), LocalityId = Guid.NewGuid(),
+            LegacyGovernorateId = "G", LegacyLocalityId = "L",
                 RowVersion = new byte[] { (byte)i }
             });
         }

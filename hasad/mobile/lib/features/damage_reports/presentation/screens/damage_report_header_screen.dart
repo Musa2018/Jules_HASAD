@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile/core/presentation/widgets/form_save_footer.dart';
-import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
@@ -10,7 +9,6 @@ import 'package:mobile/features/damage_reports/presentation/providers/damage_cau
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/damage_reports/presentation/widgets/damage_cause_selector.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
-import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:intl/intl.dart';
@@ -80,9 +78,9 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
           final created = formState.createdReport;
           if (created != null) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Header saved. Proceeding to assessment.')),
+              const SnackBar(content: Text('Damage report header saved. Items can be added after synchronization.')),
             );
-            context.pushReplacement(AppRoutes.editDamageReport, extra: created.id);
+            context.pop();
           }
         } else if (formState.errors.isNotEmpty) {
           final l10n = AppLocalizations.of(context)!;
@@ -284,7 +282,7 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     )
                   else
-                    Text(l10n.search, style: const TextStyle(color: Colors.grey)),
+                    Text(l10n.selectCause, style: const TextStyle(color: Colors.grey)),
                 ],
               ),
             ),

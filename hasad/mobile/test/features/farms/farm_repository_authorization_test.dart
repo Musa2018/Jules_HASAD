@@ -1,10 +1,12 @@
 import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farms/data/offline_first_farm_repository.dart';
 
@@ -12,6 +14,7 @@ import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
+class MockRef extends Mock implements Ref {}
 class MockRemoteFarmRepository extends Mock implements FarmRepository {}
 class MockConnectivity extends Mock implements Connectivity {}
 class MockAuthorizationService extends Mock implements AuthorizationService {}
@@ -19,6 +22,7 @@ class MockAuthorizationService extends Mock implements AuthorizationService {}
 void main() {
   late AppDatabase db;
   late MockBackgroundSyncService mockSyncService;
+  late MockRef mockRef;
   late MockRemoteFarmRepository mockRemoteRepo;
   late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
@@ -27,10 +31,13 @@ void main() {
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockSyncService = MockBackgroundSyncService();
+    mockRef = MockRef();
+    when(() => mockRef.read(syncServiceProvider)).thenReturn(mockSyncService);
+    
     mockRemoteRepo = MockRemoteFarmRepository();
     mockConnectivity = MockConnectivity();
     mockAuthService = MockAuthorizationService();
-    repo = OfflineFirstFarmRepository(db, mockSyncService, mockRemoteRepo, mockConnectivity, mockAuthService);
+    repo = OfflineFirstFarmRepository(db, mockRef, mockRemoteRepo, mockConnectivity, mockAuthService);
   });
 
   tearDown(() async {

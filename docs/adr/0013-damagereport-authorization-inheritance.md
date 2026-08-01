@@ -18,16 +18,24 @@ To enable O(1) authorization checks in high-volume queries and list operations w
 - **Constraint**: The field is immutable regarding independent updates; it must always be synchronized with the parent farm's location at the time of report capture.
 
 ### 3. Authorization Inheritance Chain
-Security follows a strict parent-to-child inheritance model:
-- `DamageReport` inherits from `Farm`.
-- `DamageItem` inherits from `DamageReport`.
-- `DamageReportAttachment` inherits from `DamageReport`.
+Security follows a strict parent-to-child inheritance model using denormalized fields for performance and robustness:
+- `DamageReport` inherits from `Farm` (via `DirectorateId` snapshot).
+- `DamageItem` inherits from `DamageReport` (using `DamageReport.DirectorateId`).
+- `DamageReportAttachment` inherits from `DamageReport` (using `DamageReport.DirectorateId`).
 - `DamageWorkflowHistory` inherits from `DamageReport`.
 
-In the application layer, all commands affecting child entities MUST perform a join or lookup to the parent `DamageReport` to verify the user's operational scope (`DirectorateId` or `GovernorateId`).
+In the application layer, all commands affecting a `DamageReport` or its child entities MUST use the `DamageReport.DirectorateId` or `DamageReport.GovernorateId` fields for authorization. Navigation to the `Farm` entity for authorization purposes is strictly prohibited to avoid performance penalties and "Missing Include" bugs.
 
 ### 4. Decoupling from Farmer residency
 Farmer residency (`Farmer.GovernorateId`) is explicitly excluded from authorization boundaries for managed assets. An Agricultural Engineer assigned to Directorate A can manage a farm located in Directorate A even if the owner farmer resides in Directorate B.
+
+**Hardening Rule (Sprint 15.0)**: The `Farmer.DirectorateId` field is purely informational and represents the farmer's place of residence or registration. It MUST NOT be used as a source for authorization or operational scoping. All security checks must remain anchored to the physical location of the land (`Farm.DirectorateId` and its snapshot in `DamageReport.DirectorateId`).
+
+### 6. Multi-Farm Scoping Policy
+A single `Farmer` may own multiple farms across different geographic jurisdictions (Directorates/Governorates). 
+- **Farmer Profile Visibility**: A user can see a Farmer's profile if they own at least one farm within the user's assigned scope.
+- **Farm Asset Visibility**: When viewing a Farmer's profile, the list of associated farms is dynamically filtered to show only those farms that are within the user's assigned scope. Farms outside the user's scope are hidden to maintain regional isolation.
+- **Authorization Enforcement**: Backend queries `GetFarmById` and `GetFarmsByFarmer` must strictly enforce these land-based scoping rules.
 
 ### 5. Offline Compatibility
 - **Local Storage**: The Drift database schema (Version 15) is updated to include `directorateId` in the `DamageReports` table.

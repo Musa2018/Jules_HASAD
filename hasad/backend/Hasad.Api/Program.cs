@@ -22,8 +22,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -220,6 +218,10 @@ using (var scope = app.Services.CreateScope())
             {
                 Log.Information("SuperAdmin account seeded successfully.");
             }
+
+            // Seed UAT Users
+            await DbInitializer.SeedUatUsersAsync(userManager, context);
+            Log.Information("UAT Users seeded successfully.");
         }
         else
         {

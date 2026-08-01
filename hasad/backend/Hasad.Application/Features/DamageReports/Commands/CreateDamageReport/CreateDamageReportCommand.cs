@@ -96,22 +96,25 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             return Result<DamageReportDto>.Success(MapToDto(existingByClientId));
         }
 
-        // 4. Duplicate Prevention (Farm + Date) - Open existing if found
+        // 4. Duplicate Prevention (Farm + Date)
+        var normalizedDate = request.DamageDate.Date;
         var existingDuplicate = await _context.DamageReports
             .Include(r => r.Farm)
             .ThenInclude(f => f!.Farmer)
             .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.FarmId == request.FarmId &&
-                                      r.DamageDate.Date == request.DamageDate.Date,
+                                      r.DamageDate == normalizedDate,
                                  cancellationToken);
 
         if (existingDuplicate != null)
         {
-            return Result<DamageReportDto>.Success(MapToDto(existingDuplicate));
+            return Result<DamageReportDto>.Failure(
+                new[] { $"CONFLICT: A damage report already exists for Farm {farm.LocalFarmName} on {normalizedDate:yyyy-MM-dd}." },
+                "DAMAGE_REPORT_DUPLICATE");
         }
 
         // 5. Generate Official Report Number
-        var reportNumber = await _numberService.GeneratePermanentNumberAsync(farm.DirectorateId, request.DamageDate.Year, cancellationToken);
+        var reportNumber = await _numberService.GeneratePermanentNumberAsync(farm.DirectorateId, normalizedDate.Year, cancellationToken);
 
         // 6. Valuation & Costing Resolution (Authoritative Backend Calculation)
         var items = new List<DamageItem>();
@@ -168,9 +171,9 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             GovernorateId = farm.GovernorateId,
             DirectorateId = farm.DirectorateId,
             LocalityId = farm.LocalityId,
-            DamageYear = request.DamageDate.Year,
+            DamageYear = normalizedDate.Year,
 
-            DamageDate = request.DamageDate,
+            DamageDate = normalizedDate,
             DocumentationDate = DateTime.UtcNow,
             AgriculturalSectorId = request.AgriculturalSectorId,
             DamageCauseCategoryId = request.DamageCauseCategoryId,

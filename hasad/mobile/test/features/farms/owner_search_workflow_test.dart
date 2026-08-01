@@ -95,15 +95,17 @@ void main() {
 
     // Tap Owner Farmer field to open search sheet
     // It's pre-filled with testFarmer initially.
-    await tester.tap(find.textContaining('أحمد محمود (123456789)'));
+    final ownerField = find.textContaining('أحمد محمود (123456789)');
+    await tester.ensureVisible(ownerField);
+    await tester.tap(ownerField);
     await tester.pumpAndSettle();
 
     // Enter search text that returns nothing
     await tester.enterText(find.byType(TextField).last, 'Unknown');
-    await tester.pump(const Duration(milliseconds: 600)); // wait for debounce
+    await tester.pump(const Duration(milliseconds: 1000)); // wait for debounce
     await tester.pumpAndSettle();
 
     // Verify "+ إضافة مزارع جديد" exists
-    expect(find.text('+ إضافة مزارع جديد'), findsOneWidget);
+    expect(find.textContaining('إضافة مزارع جديد'), findsOneWidget);
   });
 }

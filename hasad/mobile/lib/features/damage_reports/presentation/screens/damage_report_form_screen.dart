@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/core/presentation/widgets/form_save_footer.dart';
+import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
@@ -37,15 +39,19 @@ class _DamageReportFormScreenState
       body: reportAsync.when(
         data: (report) {
           if (report == null) return Center(child: Text(l10n.noData));
+          
+          final isReady = report.isReadyForReview;
+          final canEdit = _canEdit(report);
+
           return Column(
             children: [
               Expanded(child: _buildAssessmentBody(report, l10n)),
-              if (_canEdit(report))
+              if (canEdit)
                 FormSaveFooter(
-                  label: l10n.submitForReview,
-                  onSave: report.items.isEmpty ? null : () => _confirmSubmit(report),
+                  label: isReady ? l10n.submitForReview : l10n.saveLocallyAndSync,
+                  onSave: (report.hasItems) ? (isReady ? () => _confirmSubmit(report) : () => _saveAssessmentProgress(context)) : null,
                   isLoading: ref.watch(damageReportFormProvider).isLoading,
-                  isValid: report.items.isNotEmpty,
+                  isValid: report.hasItems,
                 ),
             ],
           );
@@ -54,6 +60,15 @@ class _DamageReportFormScreenState
         error: (err, _) => Center(child: Text('Error: $err')),
       ),
     );
+  }
+
+  void _saveAssessmentProgress(BuildContext context) {
+    // Items are already saved and synced individually in this architecture.
+    // This button just provides feedback and perhaps returns to the list.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Assessment progress saved. Items will sync in the background.')),
+    );
+    context.pop(); // Go back to the list
   }
 
   bool _canEdit(DamageReport report) {
@@ -121,11 +136,11 @@ class _DamageReportFormScreenState
                     return _buildSummaryRow(l10n.agriculturalSector, sectorName);
                   },
                   loading: () => _buildSummaryRow(l10n.agriculturalSector, '...'),
-                  error: (_, __) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
+                  error: (_, _) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
                 );
               },
               loading: () => _buildSummaryRow(l10n.agriculturalSector, '...'),
-              error: (_, __) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
+              error: (_, _) => _buildSummaryRow(l10n.agriculturalSector, 'Error'),
             ),
 
             // Resolve Damage Cause from Reference Data
@@ -169,29 +184,10 @@ class _DamageReportFormScreenState
 
   Widget _buildReportNumberHeader(DamageReport report, AppLocalizations l10n) {
     final number = report.reportNumber.isNotEmpty ? report.reportNumber : 
-                   (report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber);
+                   (report.temporaryFormNumber.isNotEmpty ? report.temporaryFormNumber : report.id.substring(0, 8));
     
-    Color statusColor = Colors.grey;
-    String statusLabel = report.syncStatus;
-    
-    switch (report.syncStatus) {
-      case 'pending':
-        statusColor = Colors.orange;
-        statusLabel = l10n.pendingSync;
-        break;
-      case 'syncing':
-        statusColor = Colors.blue;
-        statusLabel = l10n.syncing;
-        break;
-      case 'completed':
-        statusColor = Colors.green;
-        statusLabel = l10n.synced;
-        break;
-      case 'failed':
-        statusColor = Colors.red;
-        statusLabel = l10n.syncError;
-        break;
-    }
+    Color statusColor = _getWorkflowColor(report);
+    String statusLabel = _getWorkflowLabel(context, report.workflowStateKey);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -245,7 +241,7 @@ class _DamageReportFormScreenState
   }
 
   Widget _buildItemsHeader(DamageReport report, bool isReadOnly, AppLocalizations l10n) {
-    final canAddItems = report.syncStatus == 'completed';
+    final canAddItems = report.isHeaderSynced;
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -361,9 +357,19 @@ class _DamageReportFormScreenState
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel')),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ref.read(damageReportFormProvider.notifier).submitReport(report.id);
+              final success = await ref
+                  .read(damageReportFormProvider.notifier)
+                  .submitReport(report.id);
+
+              if (success && context.mounted) {
+                // Fetch the farm to pass it back to the list screen
+                final farm = await ref.read(farmStreamProvider(report.farmId).future);
+                if (context.mounted) {
+                  context.go(AppRoutes.damageReports, extra: farm);
+                }
+              }
             },
             child: const Text('Submit'),
           ),
@@ -384,6 +390,41 @@ class _DamageReportFormScreenState
       default:
         return statusId;
     }
+  }
+
+  String _getWorkflowLabel(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (key) {
+      case 'status_TechReview':
+        return l10n.status_TechReview;
+      case 'status_Completed':
+        return l10n.status_Completed;
+      case 'workflowState_DraftHeader':
+        return l10n.workflowState_DraftHeader;
+      case 'workflowState_HeaderSynced':
+        return l10n.workflowState_HeaderSynced;
+      case 'workflowState_HeaderSyncFailed':
+        return l10n.workflowState_HeaderSyncFailed;
+      case 'workflowState_AssessmentInProgress':
+        return l10n.workflowState_AssessmentInProgress;
+      case 'workflowState_AssessmentPendingSync':
+        return l10n.workflowState_AssessmentPendingSync;
+      case 'workflowState_ReadyForReview':
+        return l10n.workflowState_ReadyForReview;
+      default:
+        return key;
+    }
+  }
+
+  Color _getWorkflowColor(DamageReport report) {
+    if (report.statusId == 'Submitted' ||
+        report.statusId == DamageReportStatus.techReview) {
+      return Colors.blue;
+    }
+    if (report.statusId == DamageReportStatus.completed) return Colors.green;
+    if (!report.isHeaderSynced) return Colors.orange;
+    if (report.isReadyForReview) return Colors.teal;
+    return Colors.grey[700]!;
   }
 }
 

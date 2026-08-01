@@ -8,6 +8,7 @@ import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
+import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
@@ -31,7 +32,7 @@ void main() {
         grandfatherNameAr: '', familyNameAr: '', firstNameEn: '', fatherNameEn: '',
         grandfatherNameEn: '', familyNameEn: '', birthDate: DateTime(1900),
         gender: Gender.male, phoneNumber: '', familySize: 1, governorateId: '',
-        localityId: '', address: '',
+        directorateId: '', localityId: '', address: '',
       ),
     );
   });
@@ -63,6 +64,7 @@ void main() {
       phoneNumber: '0599000000',
       familySize: 4,
       governorateId: 'gov-1',
+      directorateId: 'dir-1',
       localityId: 'loc-1',
       address: 'Test',
     );
@@ -98,6 +100,9 @@ void main() {
           farmerRepositoryProvider.overrideWithValue(mockRepo),
           governoratesProvider.overrideWith((ref) => [
             const Governorate(id: 'gov-1', nameAr: 'جنين', nameEn: 'Jenin', code: 'JN'),
+          ]),
+          directoratesProvider.overrideWith((ref, _) => [
+            const Directorate(id: 'dir-1', nameAr: 'مديرية جنين', nameEn: 'Jenin Directorate', governorateId: 'gov-1'),
           ]),
           localitiesProvider.overrideWith((ref, _) => [
             const Locality(id: 'loc-1', nameAr: 'جنين', nameEn: 'Jenin', governorateId: 'gov-1', directorateId: 'dir-1'),
@@ -156,11 +161,17 @@ void main() {
 
     await tester.enterText(find.byType(TextFormField).at(9), '0599000000'); // Mobile
 
-    // Location (Select Gov first to enable Locality)
+    // Location (Select Gov first to enable Directorate, then Locality)
     await tester.ensureVisible(find.byType(SearchableLookupField<Governorate>));
     await tester.tap(find.byType(SearchableLookupField<Governorate>));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Jenin').last);
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byType(SearchableLookupField<Directorate>));
+    await tester.tap(find.byType(SearchableLookupField<Directorate>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Jenin Directorate').last);
     await tester.pumpAndSettle();
 
     await tester.ensureVisible(find.byType(SearchableLookupField<Locality>));

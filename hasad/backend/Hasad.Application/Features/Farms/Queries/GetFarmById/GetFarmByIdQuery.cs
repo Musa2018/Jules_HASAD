@@ -11,31 +11,38 @@ public record GetFarmByIdQuery(Guid Id) : IRequest<Result<FarmDto>>;
 public class GetFarmByIdQueryHandler : IRequestHandler<GetFarmByIdQuery, Result<FarmDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
 
-    public GetFarmByIdQueryHandler(IApplicationDbContext context)
+    public GetFarmByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<FarmDto>> Handle(GetFarmByIdQuery request, CancellationToken cancellationToken)
     {
         var farm = await _context.Farms
-            .AsNoTracking()
-            .Include(f => f.Farmer)
-            .Include(f => f.OwnerFarmer)
-            .Include(f => f.OwnershipType)
-            .Include(f => f.RelationshipToOwner)
-            .Include(f => f.Governorate)
-            .Include(f => f.Directorate)
-            .Include(f => f.Locality)
-            .Include(f => f.MeasurementUnit)
-            .Include(f => f.AgriculturalSector)
-            .Include(f => f.PoliticalClassification)
             .FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken);
 
         if (farm == null)
         {
             return Result<FarmDto>.Failure(new[] { "Farm not found." });
+        }
+
+        // Authorization check (Land-based)
+        if (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor"))
+        {
+            if (_currentUser.DirectorateId.HasValue && farm.DirectorateId != _currentUser.DirectorateId.Value)
+            {
+                return Result<FarmDto>.Failure(new[] { "Access Denied: This farm is outside your assigned directorate scope." });
+            }
+        }
+        else if (_currentUser.IsInRole("Director"))
+        {
+            if (_currentUser.GovernorateId.HasValue && farm.GovernorateId != _currentUser.GovernorateId.Value)
+            {
+                return Result<FarmDto>.Failure(new[] { "Access Denied: This farm is outside your assigned governorate scope." });
+            }
         }
 
         return Result<FarmDto>.Success(new FarmDto
@@ -71,7 +78,7 @@ public class GetFarmByIdQueryHandler : IRequestHandler<GetFarmByIdQuery, Result<
             Notes = farm.Notes,
             CreatedAt = farm.CreatedAt,
             IsDeleted = farm.IsDeleted,
-            RowVersion = Convert.ToBase64String(farm.RowVersion)
+            RowVersion = farm.RowVersion != null ? Convert.ToBase64String(farm.RowVersion) : string.Empty
         });
     }
 }

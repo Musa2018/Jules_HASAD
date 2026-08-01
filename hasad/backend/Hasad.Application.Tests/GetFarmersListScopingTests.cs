@@ -31,8 +31,8 @@ public class GetFarmersListScopingTests
     {
         // Arrange
         var context = CreateContext();
-        var govA = "GOV-A";
-        var govB = "GOV-B";
+        var govA = Guid.NewGuid();
+        var govB = Guid.NewGuid();
 
         context.Farmers.AddRange(new List<Farmer>
         {
@@ -63,8 +63,8 @@ public class GetFarmersListScopingTests
         var myDirId = Guid.NewGuid();
         var otherDirId = Guid.NewGuid();
 
-        var farmer1 = new Farmer { Id = Guid.NewGuid(), FirstNameAr = "My Directorate Farmer", GovernorateId = "OtherGov" };
-        var farmer2 = new Farmer { Id = Guid.NewGuid(), FirstNameAr = "Other Directorate Farmer", GovernorateId = "OtherGov" };
+        var farmer1 = new Farmer { Id = Guid.NewGuid(), FirstNameAr = "My Directorate Farmer", GovernorateId = Guid.NewGuid() };
+        var farmer2 = new Farmer { Id = Guid.NewGuid(), FirstNameAr = "Other Directorate Farmer", GovernorateId = Guid.NewGuid() };
 
         context.Farmers.AddRange(farmer1, farmer2);
 

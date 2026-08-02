@@ -74,6 +74,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
                 Id = i.Id,
                 ClientId = i.ClientId,
                 DamageNatureId = i.DamageNatureId,
+                DamageActionId = i.DamageActionId,
                 ClassificationId = i.ClassificationId,
                 CostingSheetId = i.CostingSheetItemId,
                 CalculatedUnitPrice = i.CalculatedUnitPrice,

@@ -7,11 +7,13 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
+import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
-String _getStatusLabel(BuildContext context, String status) {
+String _getStatusLabel(BuildContext context, String? status) {
+  if (status == null || status.isEmpty) return '...';
   final l10n = AppLocalizations.of(context)!;
   switch (status) {
     case 'Draft': return l10n.status_Draft;
@@ -140,7 +142,7 @@ class _HeaderSection extends ConsumerWidget {
             label: "الإحداثيات الجغرافية",
             value: "${l10n.latitude}: ${farm.latitude!.toStringAsFixed(5)}, ${l10n.longitude}: ${farm.longitude!.toStringAsFixed(5)}",
           ),
-        _InfoRow(label: "تاريخ الضرر", value: DateFormat("yyyy-MM-dd").format(report.damageDate)),
+        _InfoRow(label: "تاريخ الضرر", value: report.damageDate != null ? DateFormat("yyyy-MM-dd").format(report.damageDate!) : '...'),
         _InfoRow(label: l10n.reportNumber, value: report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber),
         _InfoRow(label: l10n.notes, value: report.notes),
       ],
@@ -182,23 +184,43 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-class _ItemsSection extends StatelessWidget {
+class _ItemsSection extends ConsumerWidget {
   final DamageReport report;
   const _ItemsSection({required this.report});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final refDataAsync = ref.watch(referenceDataProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("الأصناف المتضررة", style: Theme.of(context).textTheme.titleLarge),
+        Text(l10n.damageReports, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
-        ...report.items.map((item) => Card(
-              child: ListTile(
-                title: Text("الصنف: ${item.classificationId}"),
-                subtitle: Text("الكمية: ${item.quantity} - الخسارة المتوقعة: ${item.estimatedLoss}"),
+        ...report.items.map((item) {
+          final classificationName = refDataAsync.maybeWhen(
+            data: (data) {
+              final match = data.damageClassifications
+                  .where((c) => c.id == item.classificationId)
+                  .firstOrNull;
+              return match != null
+                  ? (isAr ? match.nameAr : match.nameEn)
+                  : item.classificationId.toString();
+            },
+            orElse: () => item.classificationId.toString(),
+          );
+
+          return Card(
+            child: ListTile(
+              title: Text("${l10n.assessmentItem}: $classificationName"),
+              subtitle: Text(
+                "${l10n.quantity}: ${item.quantity} - ${l10n.technicalLoss}: ${item.estimatedLoss}",
               ),
-            )),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -235,8 +257,8 @@ class _HistorySection extends ConsumerWidget {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("بواسطة: ${item.changedByUserId} في ${DateFormat("yyyy-MM-dd HH:mm").format(item.changedAt)}"),
-                          if (item.comment != null) Text("تعليق: ${item.comment}", style: const TextStyle(fontStyle: FontStyle.italic)),
+                          Text("بواسطة: ${item.changedByUserId} في ${item.changedAt != null ? DateFormat("yyyy-MM-dd HH:mm").format(item.changedAt!) : '...'}"),
+                          if (item.comment != null && item.comment!.isNotEmpty) Text("تعليق: ${item.comment}", style: const TextStyle(fontStyle: FontStyle.italic)),
                           if (item.isOverride) const Text("(تجاوز إداري)", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                         ],
                       ),

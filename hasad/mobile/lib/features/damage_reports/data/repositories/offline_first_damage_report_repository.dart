@@ -193,8 +193,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       farmId: report.farmId,
       farmerId: Value(report.farmerId),
       damageYear: Value(report.damageYear),
-      damageDate: report.damageDate,
-      documentationDate: report.documentationDate,
+      damageDate: report.damageDate ?? DateTime.now(),
+      documentationDate: report.documentationDate ?? DateTime.now(),
       agriculturalSectorId: Value(report.agriculturalSectorId),
       damageCauseCategoryId: Value(report.damageCauseCategoryId),
       damageCauseId: Value(report.damageCauseId),
@@ -235,7 +235,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     report_domain.DamageReport report,
   ) async {
     // 1. Duplicate check (Local)
-    final normalizedDate = DateTime(report.damageDate.year, report.damageDate.month, report.damageDate.day);
+    final dDate = report.damageDate ?? DateTime.now();
+    final normalizedDate = DateTime(dDate.year, dDate.month, dDate.day);
     
     final existing = await (_db.select(_db.damageReports)
           ..where((t) => t.farmId.equals(report.farmId) & 
@@ -329,7 +330,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   Future<report_domain.DamageReport> updateDamageReport(
     report_domain.DamageReport report,
   ) async {
-    final normalizedDate = DateTime(report.damageDate.year, report.damageDate.month, report.damageDate.day);
+    final dDate = report.damageDate ?? DateTime.now();
+    final normalizedDate = DateTime(dDate.year, dDate.month, dDate.day);
 
     // Duplicate check on update
     final existing = await (_db.select(_db.damageReports)
@@ -482,6 +484,27 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Stream<List<domain_history.DamageWorkflowHistory>> watchReportHistory(String id) {
+    return (_db.select(_db.damageWorkflowHistories)
+          ..where((t) => t.damageReportId.equals(id))
+          ..orderBy([(t) => OrderingTerm.desc(t.changedAt)]))
+        .watch()
+        .map((histories) => histories
+            .map((h) => domain_history.DamageWorkflowHistory(
+                  id: h.id,
+                  serverId: h.serverId,
+                  damageReportId: h.damageReportId,
+                  fromStatus: h.fromStatus,
+                  toStatus: h.toStatus,
+                  changedByUserId: h.changedByUserId,
+                  changedAt: h.changedAt,
+                  comment: h.comment,
+                  isOverride: h.isOverride,
+                ))
+            .toList());
+  }
+
+  @override
   Future<item_domain.DamageItem> addDamageItem(item_domain.DamageItem item) async {
     final localId = item.id.isEmpty ? const Uuid().v4() : item.id;
     await _db
@@ -554,44 +577,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<void> synchronize() async {
-    // 1. Fetch from remote
-    try {
-      final remoteReports = await _remoteRepository.getDamageReports();
-
-      await _db.transaction(() async {
-        for (final remote in remoteReports) {
-          final local = await (_db.select(_db.damageReports)
-                ..where((t) => t.id.equals(remote.id)))
-              .getSingleOrNull();
-
-          if (local != null) {
-            final isProtected = local.syncStatus == 'pending' ||
-                local.syncStatus == 'syncing' ||
-                local.syncStatus == 'conflict' ||
-                local.isPendingDelete;
-
-            if (isProtected) continue;
-          }
-
-          // Update header
-          await _db.into(_db.damageReports).insertOnConflictUpdate(
-                _mapReportToCompanion(remote).copyWith(
-                  syncStatus: const Value('completed'),
-                ),
-              );
-
-          // Update items
-          for (final item in remote.items) {
-            await _db.into(_db.damageItems).insertOnConflictUpdate(
-                  _mapItemToCompanion(item).copyWith(
-                    syncStatus: const Value('completed'),
-                  ),
-                );
-          }
-        }
-      });
-    } catch (e) {
-      // Log or handle error
-    }
+    // 1. Refresh from remote
+    // Global headless sync is not supported by backend for performance and scoping reasons.
+    // Instead, we ensure local data is consistent.
   }
 }

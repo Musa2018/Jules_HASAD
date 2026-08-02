@@ -790,20 +790,32 @@ class BackgroundSyncService {
           ['Waiting for Damage Report ($originalReportId) to synchronize.']);
     }
 
-    if (data['action'] == 'submit') {
-      await _remoteDamageReportRepository.submitReport(resolvedReportId);
-    } else if (data['action'] == 'transition') {
-      await _remoteDamageReportRepository.transitionReport(
-        resolvedReportId,
-        data['toStatus'] as String,
-        comment: data['comment'] as String?,
-        isOverride: data['isOverride'] as bool? ?? false,
-      );
+    try {
+      if (data['action'] == 'submit') {
+        await _remoteDamageReportRepository.submitReport(resolvedReportId);
+      } else if (data['action'] == 'transition') {
+        await _remoteDamageReportRepository.transitionReport(
+          resolvedReportId,
+          data['toStatus'] as String,
+          comment: data['comment'] as String?,
+          isOverride: data['isOverride'] as bool? ?? false,
+        );
+      }
+    } on SyncException catch (e) {
+      // Handle the "Already Submitted" case to prevent infinite "invalid" state
+      final isAlreadySubmitted = e.toString().contains('Only draft or pending reports can be submitted');
+      if (isAlreadySubmitted) {
+        if (DebugLogger.enableSyncDebug) {
+          DebugLogger.log('Report $resolvedReportId already submitted/processed on server. Proceeding to refresh state.');
+        }
+      } else {
+        rethrow;
+      }
     }
 
-    // Refresh history and report state after successful transition
+    // Refresh history and report state after successful transition (or if already processed)
     if (DebugLogger.enableSyncDebug) {
-      DebugLogger.log('Workflow action successful, refreshing report and history...');
+      DebugLogger.log('Workflow action successful or already processed, refreshing report and history...');
     }
 
     final updatedReport = await _remoteDamageReportRepository.getDamageReport(
@@ -827,25 +839,36 @@ class BackgroundSyncService {
         ),
       );
 
-      // Clear old history for this report and insert fresh from server
-      await (_db.delete(_db.damageWorkflowHistories)
-            ..where((t) => t.damageReportId.equals(item.localId)))
-          .go();
-      
+      // Identity-Based Upsert for Workflow History
       for (var h in history) {
-        await _db.into(_db.damageWorkflowHistories).insert(
-              DamageWorkflowHistoriesCompanion.insert(
-                id: h.id,
-                serverId: Value(h.serverId),
-                damageReportId: item.localId,
-                fromStatus: h.fromStatus,
-                toStatus: h.toStatus,
-                changedByUserId: h.changedByUserId,
-                changedAt: h.changedAt,
-                comment: Value(h.comment),
-                isOverride: Value(h.isOverride),
-              ),
-            );
+        final serverIdValue = h.serverId;
+        if (serverIdValue == null) continue;
+
+        final existing = await (_db.select(_db.damageWorkflowHistories)
+              ..where((t) => t.serverId.equals(serverIdValue)))
+            .getSingleOrNull();
+
+        final companion = DamageWorkflowHistoriesCompanion.insert(
+          id: existing?.id ?? const Uuid().v4(),
+          serverId: Value(serverIdValue),
+          damageReportId: item.localId,
+          fromStatus: h.fromStatus,
+          toStatus: h.toStatus,
+          changedByUserId: h.changedByUserId,
+          changedAt: h.changedAt ?? DateTime.now(),
+          comment: Value(h.comment),
+          isOverride: Value(h.isOverride),
+        );
+
+        await _db.into(_db.damageWorkflowHistories).insertOnConflictUpdate(companion);
+      }
+
+      // Optional: Cleanup local records for this report that are NOT in the server response
+      final serverIds = history.map((h) => h.serverId).whereType<String>().toList();
+      if (serverIds.isNotEmpty) {
+        await (_db.delete(_db.damageWorkflowHistories)
+              ..where((t) => t.damageReportId.equals(item.localId) & t.serverId.isNotIn(serverIds)))
+            .go();
       }
     });
 
@@ -1039,7 +1062,7 @@ class BackgroundSyncService {
               permanentFormNumber: Value(remoteReport.permanentFormNumber),
               temporaryFormNumber: Value(remoteReport.temporaryFormNumber),
               damageYear: Value(remoteReport.damageYear),
-              damageDate: Value(remoteReport.damageDate),
+              damageDate: Value(remoteReport.damageDate ?? DateTime.now()),
               damageCauseCategoryId: Value(remoteReport.damageCauseCategoryId),
               damageCauseId: Value(remoteReport.damageCauseId),
               farmerId: Value(remoteReport.farmerId),

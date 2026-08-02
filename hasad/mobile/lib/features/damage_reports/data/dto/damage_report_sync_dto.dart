@@ -17,7 +17,7 @@ class DamageReportSyncDto {
       'damageYear': report.damageYear,
       'farmId': _guidOrNull(report.farmId),
       'farmerId': _guidOrNull(report.farmerId),
-      'damageDate': report.damageDate.toIso8601String(),
+      'damageDate': (report.damageDate ?? DateTime.now()).toIso8601String(),
       'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
@@ -37,7 +37,7 @@ class DamageReportSyncDto {
     }
     return {
       'id': report.serverId,
-      'damageDate': report.damageDate.toIso8601String(),
+      'damageDate': (report.damageDate ?? DateTime.now()).toIso8601String(),
       'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,

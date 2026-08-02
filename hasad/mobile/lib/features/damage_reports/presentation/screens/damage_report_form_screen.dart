@@ -118,7 +118,7 @@ class _DamageReportFormScreenState
           children: [
             Text(l10n.incidentDetails, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            _buildSummaryRow(l10n.damageDate, DateFormat.yMMMd().format(report.damageDate)),
+            _buildSummaryRow(l10n.damageDate, report.damageDate != null ? DateFormat.yMMMd().format(report.damageDate!) : '...'),
             
             // Resolve Agricultural Sector from Farm + Reference Data
             farmAsync.when(

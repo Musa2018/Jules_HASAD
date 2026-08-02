@@ -4,6 +4,7 @@ using Hasad.Application.Features.DamageReports.Models;
 using Hasad.Domain.Constants;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hasad.Application.Features.DamageReports.Queries.GetDamageReportsByFarm;
 
@@ -13,17 +14,27 @@ public class GetDamageReportsByFarmQueryHandler : IRequestHandler<GetDamageRepor
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
-
-    public GetDamageReportsByFarmQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+private readonly ILogger<GetDamageReportsByFarmQueryHandler> _logger;
+    public GetDamageReportsByFarmQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser,
+    ILogger<GetDamageReportsByFarmQueryHandler> logger)
     {
         _context = context;
         _currentUser = currentUser;
+         _logger = logger;
     }
 
     public async Task<Result<List<DamageReportDto>>> Handle(GetDamageReportsByFarmQuery request, CancellationToken cancellationToken)
     {
         var query = _context.DamageReports.AsNoTracking();
-
+_logger.LogInformation(
+     "DamageReport Farm Query: User={UserId}, Directorate={DirectorateId}, Governorate={GovernorateId}, Engineer={Engineer}, Surveyor={Surveyor}, Director={Director}",
+     _currentUser.UserId,
+     _currentUser.DirectorateId,
+     _currentUser.GovernorateId,
+     _currentUser.IsInRole(AppRoles.AgriculturalEngineer),
+     _currentUser.IsInRole(AppRoles.FieldSurveyor),
+     _currentUser.IsInRole(AppRoles.Director)
+ );
         // Authorization filtering
         if (_currentUser.IsInRole(AppRoles.AgriculturalEngineer) || _currentUser.IsInRole(AppRoles.FieldSurveyor))
         {
@@ -63,7 +74,23 @@ public class GetDamageReportsByFarmQueryHandler : IRequestHandler<GetDamageRepor
                 LocalityId = r.LocalityId,
                 StatusId = r.StatusId,
                 Notes = r.Notes,
-                RowVersion = Convert.ToBase64String(r.RowVersion)
+                RowVersion = Convert.ToBase64String(r.RowVersion),
+                Items = r.Items.Select(i => new DamageItemDto
+                {
+                    Id = i.Id,
+                    ClientId = i.ClientId,
+                    DamageNatureId = i.DamageNatureId,
+                    DamageActionId = i.DamageActionId,
+                    ClassificationId = i.ClassificationId,
+                    CostingSheetId = i.CostingSheetItemId,
+                    CalculatedUnitPrice = i.CalculatedUnitPrice,
+                    MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
+                    AffectedArea = i.AffectedArea,
+                    DamagePercentage = i.DamagePercentage,
+                    Quantity = i.Quantity,
+                    EstimatedLoss = i.EstimatedLoss,
+                    RowVersion = Convert.ToBase64String(i.RowVersion)
+                }).ToList()
             })
             .ToListAsync(cancellationToken);
 

@@ -9,16 +9,20 @@ part of 'damage_report.dart';
 _$DamageReportImpl _$$DamageReportImplFromJson(
   Map<String, dynamic> json,
 ) => _$DamageReportImpl(
-  id: json['clientId'] as String,
+  id: json['clientId'] as String? ?? '',
   serverId: json['id'] as String?,
   reportNumber: json['reportNumber'] as String? ?? '',
   permanentFormNumber: json['permanentFormNumber'] as String? ?? '',
   temporaryFormNumber: json['temporaryFormNumber'] as String? ?? '',
   damageYear: (json['damageYear'] as num?)?.toInt() ?? 0,
-  farmId: json['farmId'] as String,
+  farmId: json['farmId'] as String? ?? '',
   farmerId: json['farmerId'] as String? ?? '',
-  damageDate: DateTime.parse(json['damageDate'] as String),
-  documentationDate: DateTime.parse(json['documentationDate'] as String),
+  damageDate: json['damageDate'] == null
+      ? null
+      : DateTime.parse(json['damageDate'] as String),
+  documentationDate: json['documentationDate'] == null
+      ? null
+      : DateTime.parse(json['documentationDate'] as String),
   agriculturalSectorId: (json['agriculturalSectorId'] as num?)?.toInt() ?? 0,
   damageCauseCategoryId: (json['damageCauseCategoryId'] as num?)?.toInt() ?? 0,
   damageCauseId: (json['damageCauseId'] as num?)?.toInt() ?? 0,
@@ -28,7 +32,7 @@ _$DamageReportImpl _$$DamageReportImplFromJson(
   statusId:
       json['statusId'] as String? ??
       DamageReportStatus.pendingTechnicalVerification,
-  notes: json['notes'] as String,
+  notes: json['notes'] as String? ?? '',
   createdBy: json['createdBy'] as String? ?? '',
   rowVersion: json['rowVersion'] as String? ?? '',
   items:
@@ -55,8 +59,8 @@ Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
       'damageYear': instance.damageYear,
       'farmId': instance.farmId,
       'farmerId': instance.farmerId,
-      'damageDate': instance.damageDate.toIso8601String(),
-      'documentationDate': instance.documentationDate.toIso8601String(),
+      'damageDate': instance.damageDate?.toIso8601String(),
+      'documentationDate': instance.documentationDate?.toIso8601String(),
       'agriculturalSectorId': instance.agriculturalSectorId,
       'damageCauseCategoryId': instance.damageCauseCategoryId,
       'damageCauseId': instance.damageCauseId,

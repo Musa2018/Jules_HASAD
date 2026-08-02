@@ -371,9 +371,9 @@ class __$$DamageItemImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageItemImpl implements _DamageItem {
   const _$DamageItemImpl({
-    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'clientId') this.id = '',
     @JsonKey(name: 'id') this.serverId,
-    required this.damageReportId,
+    this.damageReportId = '',
     this.damageNatureId = 0,
     this.damageActionId = 0,
     this.classificationId = 0,
@@ -382,10 +382,10 @@ class _$DamageItemImpl implements _DamageItem {
     this.costingSheetItemId,
     this.calculatedUnitPrice = 0.0,
     this.measurementUnitSnapshot = '',
-    required this.affectedArea,
-    required this.damagePercentage,
-    required this.quantity,
-    required this.estimatedLoss,
+    this.affectedArea = 0.0,
+    this.damagePercentage = 0.0,
+    this.quantity = 0.0,
+    this.estimatedLoss = 0.0,
     this.rowVersion = '',
     this.syncStatus = 'completed',
     this.lastSyncError,
@@ -405,6 +405,7 @@ class _$DamageItemImpl implements _DamageItem {
   @JsonKey(name: 'id')
   final String? serverId;
   @override
+  @JsonKey()
   final String damageReportId;
   @override
   @JsonKey()
@@ -428,12 +429,16 @@ class _$DamageItemImpl implements _DamageItem {
   @JsonKey()
   final String measurementUnitSnapshot;
   @override
+  @JsonKey()
   final double affectedArea;
   @override
+  @JsonKey()
   final double damagePercentage;
   @override
+  @JsonKey()
   final double quantity;
   @override
+  @JsonKey()
   final double estimatedLoss;
   @override
   @JsonKey()
@@ -546,9 +551,9 @@ class _$DamageItemImpl implements _DamageItem {
 
 abstract class _DamageItem implements DamageItem {
   const factory _DamageItem({
-    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'clientId') final String id,
     @JsonKey(name: 'id') final String? serverId,
-    required final String damageReportId,
+    final String damageReportId,
     final int damageNatureId,
     final int damageActionId,
     final int classificationId,
@@ -557,10 +562,10 @@ abstract class _DamageItem implements DamageItem {
     final String? costingSheetItemId,
     final double calculatedUnitPrice,
     final String measurementUnitSnapshot,
-    required final double affectedArea,
-    required final double damagePercentage,
-    required final double quantity,
-    required final double estimatedLoss,
+    final double affectedArea,
+    final double damagePercentage,
+    final double quantity,
+    final double estimatedLoss,
     final String rowVersion,
     final String syncStatus,
     final String? lastSyncError,

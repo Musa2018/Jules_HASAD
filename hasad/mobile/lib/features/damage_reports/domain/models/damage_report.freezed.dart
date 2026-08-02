@@ -31,8 +31,8 @@ mixin _$DamageReport {
   int get damageYear => throw _privateConstructorUsedError;
   String get farmId => throw _privateConstructorUsedError;
   String get farmerId => throw _privateConstructorUsedError;
-  DateTime get damageDate => throw _privateConstructorUsedError;
-  DateTime get documentationDate => throw _privateConstructorUsedError;
+  DateTime? get damageDate => throw _privateConstructorUsedError;
+  DateTime? get documentationDate => throw _privateConstructorUsedError;
   int get agriculturalSectorId => throw _privateConstructorUsedError;
   int get damageCauseCategoryId => throw _privateConstructorUsedError;
   int get damageCauseId => throw _privateConstructorUsedError;
@@ -76,8 +76,8 @@ abstract class $DamageReportCopyWith<$Res> {
     int damageYear,
     String farmId,
     String farmerId,
-    DateTime damageDate,
-    DateTime documentationDate,
+    DateTime? damageDate,
+    DateTime? documentationDate,
     int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
@@ -120,8 +120,8 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? damageYear = null,
     Object? farmId = null,
     Object? farmerId = null,
-    Object? damageDate = null,
-    Object? documentationDate = null,
+    Object? damageDate = freezed,
+    Object? documentationDate = freezed,
     Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
@@ -173,14 +173,14 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.farmerId
                 : farmerId // ignore: cast_nullable_to_non_nullable
                       as String,
-            damageDate: null == damageDate
+            damageDate: freezed == damageDate
                 ? _value.damageDate
                 : damageDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            documentationDate: null == documentationDate
+                      as DateTime?,
+            documentationDate: freezed == documentationDate
                 ? _value.documentationDate
                 : documentationDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as DateTime?,
             agriculturalSectorId: null == agriculturalSectorId
                 ? _value.agriculturalSectorId
                 : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
@@ -269,8 +269,8 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     int damageYear,
     String farmId,
     String farmerId,
-    DateTime damageDate,
-    DateTime documentationDate,
+    DateTime? damageDate,
+    DateTime? documentationDate,
     int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
@@ -312,8 +312,8 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? damageYear = null,
     Object? farmId = null,
     Object? farmerId = null,
-    Object? damageDate = null,
-    Object? documentationDate = null,
+    Object? damageDate = freezed,
+    Object? documentationDate = freezed,
     Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
@@ -365,14 +365,14 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.farmerId
             : farmerId // ignore: cast_nullable_to_non_nullable
                   as String,
-        damageDate: null == damageDate
+        damageDate: freezed == damageDate
             ? _value.damageDate
             : damageDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        documentationDate: null == documentationDate
+                  as DateTime?,
+        documentationDate: freezed == documentationDate
             ? _value.documentationDate
             : documentationDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as DateTime?,
         agriculturalSectorId: null == agriculturalSectorId
             ? _value.agriculturalSectorId
             : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
@@ -446,16 +446,16 @@ class __$$DamageReportImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageReportImpl implements _DamageReport {
   const _$DamageReportImpl({
-    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'clientId') this.id = '',
     @JsonKey(name: 'id') this.serverId,
     this.reportNumber = '',
     this.permanentFormNumber = '',
     this.temporaryFormNumber = '',
     this.damageYear = 0,
-    required this.farmId,
+    this.farmId = '',
     this.farmerId = '',
-    required this.damageDate,
-    required this.documentationDate,
+    this.damageDate,
+    this.documentationDate,
     this.agriculturalSectorId = 0,
     this.damageCauseCategoryId = 0,
     this.damageCauseId = 0,
@@ -463,7 +463,7 @@ class _$DamageReportImpl implements _DamageReport {
     this.directorateId = '',
     this.localityId = '',
     this.statusId = DamageReportStatus.pendingTechnicalVerification,
-    required this.notes,
+    this.notes = '',
     this.createdBy = '',
     this.rowVersion = '',
     final List<DamageItem> items = const [],
@@ -497,14 +497,15 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final int damageYear;
   @override
+  @JsonKey()
   final String farmId;
   @override
   @JsonKey()
   final String farmerId;
   @override
-  final DateTime damageDate;
+  final DateTime? damageDate;
   @override
-  final DateTime documentationDate;
+  final DateTime? documentationDate;
   @override
   @JsonKey()
   final int agriculturalSectorId;
@@ -527,6 +528,7 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final String statusId;
   @override
+  @JsonKey()
   final String notes;
   @override
   @JsonKey()
@@ -663,16 +665,16 @@ class _$DamageReportImpl implements _DamageReport {
 
 abstract class _DamageReport implements DamageReport {
   const factory _DamageReport({
-    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'clientId') final String id,
     @JsonKey(name: 'id') final String? serverId,
     final String reportNumber,
     final String permanentFormNumber,
     final String temporaryFormNumber,
     final int damageYear,
-    required final String farmId,
+    final String farmId,
     final String farmerId,
-    required final DateTime damageDate,
-    required final DateTime documentationDate,
+    final DateTime? damageDate,
+    final DateTime? documentationDate,
     final int agriculturalSectorId,
     final int damageCauseCategoryId,
     final int damageCauseId,
@@ -680,7 +682,7 @@ abstract class _DamageReport implements DamageReport {
     final String directorateId,
     final String localityId,
     final String statusId,
-    required final String notes,
+    final String notes,
     final String createdBy,
     final String rowVersion,
     final List<DamageItem> items,
@@ -713,9 +715,9 @@ abstract class _DamageReport implements DamageReport {
   @override
   String get farmerId;
   @override
-  DateTime get damageDate;
+  DateTime? get damageDate;
   @override
-  DateTime get documentationDate;
+  DateTime? get documentationDate;
   @override
   int get agriculturalSectorId;
   @override

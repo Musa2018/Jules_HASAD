@@ -7,6 +7,23 @@
 - **Last Updated**: 2026-07-31
 - **Latest Commit**: `Hardened` (`HARDEN-15.1`)
 
+## DamageReport Workflow & Sync Recovery (2026-08-02) — COMPLETED
+- **Workflow Sync**: Resolved a critical issue where "Submit for Review" would get stuck in an "invalid" or "failed" state if a network interruption occurred after server success but before local state update.
+- **Idempotency**: Implemented an idempotency-aware sync handler that detects "Already Submitted" responses from the backend and successfully completes the local lifecycle instead of failing.
+- **Data Integrity**: Hardened `DamageWorkflowHistory` parsing to handle null/optional fields from the backend safely, preventing Drift transaction crashes and "type 'Null' is not a subtype of type 'String'" errors.
+- **Reactivity**: Refactored Workflow History to use a reactive `StreamProvider` (`watchReportHistory`), ensuring the UI (Details Screen) updates instantly upon background synchronization.
+- **Verification**: 
+    - Added `damage_report_submit_idempotency_test.dart` verifying the full recovery lifecycle.
+    - Updated `damage_report_json_parsing_test.dart` to cover null-safe history parsing.
+    - Successfully validated the entire lifecycle from Draft -> Sync -> Item Add -> Submit -> TechReview.
+
+## UI Refinement & Backend Integrity (2026-08-01)
+- **Missing Items Bug**: Resolved an issue where `DamageItems` were missing (empty array) in `GET /damage-reports/farm/{farmId}` and `GET /damage-reports/farmer/{farmerId}` responses.
+- **Root Cause**: Identified missing Projection (`Select`) for the `Items` collection in the MediatR Query Handlers.
+- **Fix**: Updated `GetDamageReportsByFarmQueryHandler` and `GetDamageReportsByFarmerQueryHandler` to explicitly project `Items` into `DamageItemDto`.
+- **UI Enhancement**: Updated `DamageReportDetailsScreen` to display localized classification names (e.g., "أشجار زيتون") instead of technical IDs.
+- **Verification**: Passed all 137 backend tests (including new `DamageReportQueryTests`) and all 202 mobile tests.
+
 ## Production Readiness Acceptance (2026-07-31) — COMPLETED
 - **Git Synchronization**: Successfully finalized all `DamageReport` hardening and security validation. Pushed to `origin/DamageReport`.
 - **Backend Quality**: Achieved Zero Warnings build and 100% pass rate on 134 backend tests.

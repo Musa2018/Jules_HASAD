@@ -13,22 +13,7 @@ class RemoteDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<List<DamageReport>> getDamageReports() async {
-    try {
-      final response = await _dio.get<Map<String, dynamic>>(
-        '/v1/damage-reports',
-      );
-      final envelope = response.data;
-      final data = envelope?['data'];
-      if (envelope?['succeeded'] != true || data == null) {
-        throw SyncException(_errorsFromEnvelope(envelope));
-      }
-      final items = data as List;
-      return items
-          .map((e) => DamageReport.fromJson(e as Map<String, dynamic>))
-          .toList();
-    } on DioException catch (e) {
-      throw SyncException(_errorsFromDio(e));
-    }
+    return []; // Headless global listing is not supported by backend
   }
 
   @override
@@ -187,17 +172,36 @@ class RemoteDamageReportRepository implements DamageReportRepository {
       );
       final envelope = response.data;
       final data = envelope?["data"];
+
       if (envelope?["succeeded"] != true || data == null) {
         throw SyncException(_errorsFromEnvelope(envelope));
       }
       final items = data as List;
-      return items
-          .map((e) => domain_history.DamageWorkflowHistory.fromJson(
-              e as Map<String, dynamic>))
-          .toList();
+      return items.map((e) {
+        final map = Map<String, dynamic>.from(e as Map);
+        
+        // DTO Alignment: Ensure required strings have defaults if null 
+        // to prevent parsing crash while respecting nullable comment.
+        return domain_history.DamageWorkflowHistory(
+          id: '', // Local ID assigned during persistence
+          serverId: map['id']?.toString() ?? map['serverId']?.toString(),
+          fromStatus: map['fromStatus']?.toString() ?? '',
+          toStatus: map['toStatus']?.toString() ?? '',
+          changedByUserId: map['changedByUserId']?.toString() ?? '',
+          changedAt: map['changedAt'] != null ? DateTime.parse(map['changedAt'].toString()) : null,
+          comment: map['comment']?.toString(),
+          isOverride: map['isOverride'] == true,
+        );
+      }).toList();
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
     }
+  }
+
+  @override
+  Stream<List<domain_history.DamageWorkflowHistory>> watchReportHistory(
+      String id) {
+    return Stream.fromFuture(getReportHistory(id));
   }
 
   @override
@@ -211,6 +215,7 @@ class RemoteDamageReportRepository implements DamageReportRepository {
       );
       final envelope = response.data;
       final data = envelope?['data'];
+
       if (envelope?['succeeded'] != true || data == null) {
         throw SyncException(_errorsFromEnvelope(envelope));
       }

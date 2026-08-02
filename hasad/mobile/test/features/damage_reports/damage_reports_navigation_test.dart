@@ -47,6 +47,8 @@ class MockDamageReportRepository implements DamageReportRepository {
   @override
   Future<List<DamageWorkflowHistory>> getReportHistory(String id) async => [];
   @override
+  Stream<List<DamageWorkflowHistory>> watchReportHistory(String id) => Stream.value([]);
+  @override
   Future<void> cancelDeleteDamageReport(String id) async {}
   @override
   Future<DamageReport> createDamageReportFromJson(Map<String, dynamic> json) async => throw UnimplementedError();

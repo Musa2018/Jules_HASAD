@@ -65,7 +65,9 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
                 if (displayReports.isEmpty) {
                   return RefreshIndicator(
                     onRefresh: () async {
-                      await ref.read(damageReportRepositoryProvider).synchronize();
+                      if (widget.farm != null) {
+                        await ref.read(damageReportRepositoryProvider).getDamageReportsByFarm(widget.farm!.id);
+                      }
                       ref.invalidate(damageReportsListProvider);
                     },
                     child: Stack(
@@ -87,7 +89,9 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
-                    await ref.read(damageReportRepositoryProvider).synchronize();
+                    if (widget.farm != null) {
+                      await ref.read(damageReportRepositoryProvider).getDamageReportsByFarm(widget.farm!.id);
+                    }
                     ref.invalidate(damageReportsListProvider);
                   },
                   child: ListView.builder(

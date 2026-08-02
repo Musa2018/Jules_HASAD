@@ -152,7 +152,7 @@ class DamageReportCard extends ConsumerWidget {
                       child: _InfoRow(
                         icon: Icons.calendar_today_outlined,
                         label: l10n.damageDate,
-                        value: dateFormat.format(report.damageDate),
+                        value: report.damageDate != null ? dateFormat.format(report.damageDate!) : '...',
                       ),
                     ),
                     Expanded(

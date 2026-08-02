@@ -137,8 +137,9 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
   });
 });
 
-final damageReportHistoryProvider = FutureProvider.autoDispose.family<List<DamageWorkflowHistory>, String>((ref, id) {
-  return ref.watch(damageReportRepositoryProvider).getReportHistory(id);
+final damageReportHistoryProvider = StreamProvider.autoDispose.family<List<DamageWorkflowHistory>, String>((ref, id) {
+  final repository = ref.watch(damageReportRepositoryProvider);
+  return repository.watchReportHistory(id);
 });
 
 final attachmentsByReportProvider = FutureProvider.autoDispose

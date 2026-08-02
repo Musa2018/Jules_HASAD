@@ -17,6 +17,7 @@ abstract class DamageReportRepository {
   Future<void> submitReport(String id);
   Future<void> transitionReport(String id, String toStatus, {String? comment, bool isOverride});
   Future<List<DamageWorkflowHistory>> getReportHistory(String id);
+  Stream<List<DamageWorkflowHistory>> watchReportHistory(String id);
 
   Future<DamageItem> addDamageItem(DamageItem item);
   Future<DamageItem> updateDamageItem(DamageItem item);

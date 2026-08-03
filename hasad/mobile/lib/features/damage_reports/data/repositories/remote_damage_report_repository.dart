@@ -263,6 +263,16 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Future<void> retrySync(String id) async {
+    // Remote-only repo doesn't have a queue
+  }
+
+  @override
+  Future<void> retryAllFailedSyncs() async {
+    // Remote-only repo doesn't have a queue
+  }
+
+  @override
   Future<void> synchronize() async {
     // Remote repository is always "in sync" with itself.
   }

@@ -59,6 +59,10 @@ class MockDamageReportRepository implements DamageReportRepository {
   @override
   Future<void> submitReport(String id) async {}
   @override
+  Future<void> retrySync(String id) async {}
+  @override
+  Future<void> retryAllFailedSyncs() async {}
+  @override
   Stream<List<DamageReport>> watchDamageReportsByFarm(String farmId) => Stream.value([]);
 }
 

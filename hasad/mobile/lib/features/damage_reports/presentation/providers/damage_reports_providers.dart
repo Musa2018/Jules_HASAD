@@ -263,6 +263,14 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
       state = const DamageReportFormState(errors: ['Failed to delete item.']);
     }
   }
+
+  Future<void> retryReportSync(String id) async {
+    await _repository.retrySync(id);
+  }
+
+  Future<void> retryAllFailedSyncs() async {
+    await _repository.retryAllFailedSyncs();
+  }
 }
 
 final damageReportFormProvider =

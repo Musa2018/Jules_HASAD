@@ -576,6 +576,62 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Future<void> retrySync(String id) async {
+    // 1. Reset item in sync queue
+    await (_db.update(_db.syncQueue)
+          ..where((t) => t.localId.equals(id) & t.entityType.equals('damage_report')))
+        .write(
+      const SyncQueueCompanion(
+        status: Value('pending'),
+        retryCount: Value(0),
+        lastError: Value(null),
+        lastAttemptAt: Value(null),
+      ),
+    );
+
+    // 2. Reset entity status
+    await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+      const DamageReportsCompanion(
+        syncStatus: Value('pending'),
+        lastSyncError: Value(null),
+      ),
+    );
+
+    // 3. Trigger processing
+    await _syncService.processQueue();
+  }
+
+  @override
+  Future<void> retryAllFailedSyncs() async {
+    // 1. Reset all failed/invalid items in sync queue for damage_report
+    await (_db.update(_db.syncQueue)
+          ..where((t) =>
+              t.entityType.equals('damage_report') &
+              (t.status.equals('failed') | t.status.equals('invalid'))))
+        .write(
+      const SyncQueueCompanion(
+        status: Value('pending'),
+        retryCount: Value(0),
+        lastError: Value(null),
+        lastAttemptAt: Value(null),
+      ),
+    );
+
+    // 2. Reset all damage reports with failed/invalid status
+    await (_db.update(_db.damageReports)
+          ..where((t) => t.syncStatus.equals('failed') | t.syncStatus.equals('invalid')))
+        .write(
+      const DamageReportsCompanion(
+        syncStatus: Value('pending'),
+        lastSyncError: Value(null),
+      ),
+    );
+
+    // 3. Trigger processing
+    await _syncService.processQueue();
+  }
+
+  @override
   Future<void> synchronize() async {
     // 1. Refresh from remote
     // Global headless sync is not supported by backend for performance and scoping reasons.

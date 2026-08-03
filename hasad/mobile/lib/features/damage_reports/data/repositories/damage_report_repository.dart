@@ -22,5 +22,7 @@ abstract class DamageReportRepository {
   Future<DamageItem> addDamageItem(DamageItem item);
   Future<DamageItem> updateDamageItem(DamageItem item);
   Future<void> deleteDamageItem(String id);
+  Future<void> retrySync(String id);
+  Future<void> retryAllFailedSyncs();
   Future<void> synchronize();
 }

@@ -115,14 +115,34 @@ class DamageReportCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-                if (report.lastSyncError != null && report.syncStatus == 'failed')
+                if (report.lastSyncError != null && (report.syncStatus == 'failed' || report.syncStatus == 'invalid'))
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      '${l10n.syncError}: ${report.lastSyncError}',
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${l10n.syncError}: ${report.lastSyncError}',
+                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            ref.read(damageReportFormProvider.notifier).retryReportSync(report.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.pendingSync)),
+                            );
+                          },
+                          icon: const Icon(Icons.refresh, size: 14, color: Colors.red),
+                          label: Text(l10n.retrySync, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 30),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 const Divider(height: 24),

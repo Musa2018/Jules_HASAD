@@ -211,17 +211,16 @@ class _DamageReportFormScreenState
               Text(statusLabel, style: TextStyle(fontSize: 11, color: statusColor, fontWeight: FontWeight.bold)),
             ],
           ),
-          if (report.syncStatus == 'failed' || report.syncStatus == 'conflict')
+          if (report.syncStatus == 'failed' || report.syncStatus == 'invalid' || report.syncStatus == 'conflict')
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextButton.icon(
                 icon: const Icon(Icons.refresh, size: 16),
                 label: Text(l10n.retrySync),
                 onPressed: () {
-                   // This would typically trigger a manual sync or mark for retry
-                   // For now, we rely on BackgroundSyncService background processing
+                   ref.read(damageReportFormProvider.notifier).retryReportSync(report.id);
                    ScaffoldMessenger.of(context).showSnackBar(
-                     const SnackBar(content: Text('Sync will be retried automatically when online.')),
+                     SnackBar(content: Text(l10n.pendingSync)),
                    );
                 },
               ),

@@ -4,6 +4,7 @@ using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsByFarmer;
 using Hasad.Domain.Entities;
 using Moq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Hasad.Infrastructure.Persistence;
 
@@ -12,11 +13,13 @@ namespace Hasad.Application.Tests;
 public class DamageReportQueryTests
 {
     private readonly Mock<ICurrentUserService> _currentUserMock;
+    private readonly Mock<ILogger<GetDamageReportsByFarmQueryHandler>> _farmLoggerMock;
     private readonly DbContextOptions<ApplicationDbContext> _options;
 
     public DamageReportQueryTests()
     {
         _currentUserMock = new Mock<ICurrentUserService>();
+        _farmLoggerMock = new Mock<ILogger<GetDamageReportsByFarmQueryHandler>>();
         _options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -47,7 +50,7 @@ public class DamageReportQueryTests
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
-        var handler = new GetDamageReportsByFarmQueryHandler(context, _currentUserMock.Object);
+        var handler = new GetDamageReportsByFarmQueryHandler(context, _currentUserMock.Object, _farmLoggerMock.Object);
         var query = new GetDamageReportsByFarmQuery(farmId);
 
         // Act

@@ -802,12 +802,17 @@ class BackgroundSyncService {
         );
       }
     } on SyncException catch (e) {
-      // Handle the "Already Submitted" case to prevent infinite "invalid" state
-      final isAlreadySubmitted = e.toString().contains('Only draft or pending reports can be submitted');
-      if (isAlreadySubmitted) {
+      // Idempotency: Handle cases where the action was already performed on the server.
+      final errorStr = e.toString();
+      final isAlreadySubmitted = errorStr.contains('Only draft or pending reports can be submitted');
+      final isInvalidTransition = errorStr.contains('Invalid transition');
+      
+      if (isAlreadySubmitted || isInvalidTransition) {
         if (DebugLogger.enableSyncDebug) {
-          DebugLogger.log('Report $resolvedReportId already submitted/processed on server. Proceeding to refresh state.');
+          DebugLogger.log('Workflow action rejected by server: $errorStr. Verifying current state...');
         }
+        // We will proceed to refresh the report from the server.
+        // If the server status matches our expectation, we treat it as success.
       } else {
         rethrow;
       }

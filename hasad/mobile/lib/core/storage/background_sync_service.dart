@@ -899,40 +899,54 @@ class BackgroundSyncService {
 
     // Refresh history and report state after successful transition (or if already processed)
     if (DebugLogger.enableSyncDebug) {
-      DebugLogger.log('Workflow action successful or already processed, refreshing report and history...');
+      DebugLogger.log('Workflow action successful or already processed, refreshing report and history for $originalReportId...');
     }
 
-    final updatedReport = await _remoteDamageReportRepository.getDamageReport(
-        resolvedReportId);
-    
-    await _db.transaction(() async {
-      if (DebugLogger.enableSyncDebug) {
-        DebugLogger.log('Updating local status to: ${updatedReport.statusId}');
-      }
-
-      // Update report status and metadata
-      await (_db.update(_db.damageReports)
-            ..where((t) => t.id.equals(item.localId)))
-          .write(
-        DamageReportsCompanion(
-          serverId: Value(updatedReport.serverId),
-          reportNumber: Value(updatedReport.reportNumber),
-          permanentFormNumber: Value(updatedReport.permanentFormNumber),
-          statusId: Value(updatedReport.statusId),
-          rowVersion: Value(updatedReport.rowVersion),
-          syncStatus: const Value('completed'),
-          lastSyncError: const Value(null),
-          updatedAt: Value(DateTime.now()),
-        ),
-      );
-    });
-
-    // --- PERSIST HISTORY ---
     try {
+      final updatedReport = await _remoteDamageReportRepository.getDamageReport(resolvedReportId);
+      
+      await _db.transaction(() async {
+        if (DebugLogger.enableSyncDebug) {
+          DebugLogger.log('Updating local status to: ${updatedReport.statusId} for $originalReportId');
+        }
+
+        // Update report status and metadata
+        await (_db.update(_db.damageReports)
+              ..where((t) => t.id.equals(item.localId)))
+            .write(
+          DamageReportsCompanion(
+            serverId: Value(updatedReport.serverId),
+            reportNumber: Value(updatedReport.reportNumber),
+            permanentFormNumber: Value(updatedReport.permanentFormNumber),
+            statusId: Value(updatedReport.statusId),
+            rowVersion: Value(updatedReport.rowVersion),
+            syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+      });
+
+      // --- PERSIST HISTORY ---
       final history = await _remoteDamageReportRepository.getReportHistory(resolvedReportId);
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.log('Fetched ${history.length} history items for $originalReportId');
+      }
       await _persistHistory(item.localId, history);
+
     } catch (e) {
-      DebugLogger.log('Error fetching history after workflow action: $e');
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.log('Error during post-workflow data refresh for $originalReportId: $e');
+      }
+      // If refresh fails, we still consider the workflow action successful if it reached here
+      // but we update the entity status with the error so user knows data might be stale
+      await _updateEntitySyncStatus(
+        item.entityType, 
+        item.localId, 
+        'failed', 
+        error: 'Workflow successful but failed to refresh data: $e'
+      );
+      rethrow; // Rethrow to mark the queue item as failed so it retries the refresh
     }
 
     if (DebugLogger.enableSyncDebug) {

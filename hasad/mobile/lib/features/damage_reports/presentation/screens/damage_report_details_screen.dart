@@ -59,7 +59,10 @@ class DamageReportDetailsScreen extends ConsumerWidget {
             : report.temporaryFormNumber),
       ),
       body: reportAsync.when(
-        data: (liveReport) => _buildContent(context, ref, liveReport ?? report),
+        data: (liveReport) => RefreshIndicator(
+          onRefresh: () => _onRefresh(context, ref, liveReport ?? report),
+          child: _buildContent(context, ref, liveReport ?? report),
+        ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text("Error: $e")),
       ),
@@ -68,18 +71,64 @@ class DamageReportDetailsScreen extends ConsumerWidget {
   }
 
   Widget _buildContent(BuildContext context, WidgetRef ref, DamageReport liveReport) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        if (liveReport.syncStatus == 'failed' || liveReport.syncStatus == 'conflict')
-          _SyncErrorBanner(report: liveReport),
-        _HeaderSection(report: liveReport, farm: farm),
-        const Divider(height: 32),
-        _ItemsSection(report: liveReport),
-        const Divider(height: 32),
-        _HistorySection(reportId: liveReport.id),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (liveReport.syncStatus == 'failed' || liveReport.syncStatus == 'conflict')
+                    _SyncErrorBanner(report: liveReport),
+                  _HeaderSection(report: liveReport, farm: farm),
+                  const Divider(height: 32),
+                  _ItemsSection(report: liveReport),
+                  const Divider(height: 32),
+                  _HistorySection(reportId: liveReport.id),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
+  }
+
+  Future<void> _onRefresh(BuildContext context, WidgetRef ref, DamageReport report) async {
+    debugPrint("----------------------------------------");
+    debugPrint("[Flutter UI] Pull-to-Refresh triggered for report ID: ${report.id}");
+    try {
+      final repo = ref.read(damageReportRepositoryProvider);
+
+      // 1. Fetch latest report data and history from server and update local DB
+      await repo.refreshReport(report.id);
+      debugPrint("[Flutter UI] refreshReport completed successfully");
+
+      // 2. Invalidate providers to force UI rebuild from local DB
+      ref.invalidate(damageReportStreamProvider(report.id));
+      ref.invalidate(damageReportHistoryProvider(report.id));
+      ref.invalidate(damageReportsListProvider);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("تم تحديث البيانات بنجاح")),
+        );
+      }
+
+    } catch (e, stackTrace) {
+      debugPrint("[Flutter UI ERROR] Exception during _onRefresh: $e");
+      debugPrint("[Flutter UI STACKTRACE]: $stackTrace");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("فشل التحديث: $e")),
+        );
+      }
+    }
+    debugPrint("----------------------------------------");
   }
 }
 

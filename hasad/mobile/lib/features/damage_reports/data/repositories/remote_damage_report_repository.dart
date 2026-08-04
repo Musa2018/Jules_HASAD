@@ -135,8 +135,9 @@ class RemoteDamageReportRepository implements DamageReportRepository {
       final response = await _dio.post<Map<String, dynamic>>(
         "/v1/damage-reports/$id/submit",
       );
-      if (response.data?["succeeded"] != true) {
-        throw SyncException(_errorsFromEnvelope(response.data));
+      final envelope = response.data;
+      if (envelope == null || envelope["succeeded"] != true) {
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
@@ -156,8 +157,9 @@ class RemoteDamageReportRepository implements DamageReportRepository {
           'isOverride': isOverride,
         },
       );
-      if (response.data?["succeeded"] != true) {
-        throw SyncException(_errorsFromEnvelope(response.data));
+      final envelope = response.data;
+      if (envelope == null || envelope["succeeded"] != true) {
+        throw SyncException(_errorsFromEnvelope(envelope));
       }
     } on DioException catch (e) {
       throw SyncException(_errorsFromDio(e));
@@ -168,15 +170,27 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   Future<List<domain_history.DamageWorkflowHistory>> getReportHistory(
       String id) async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>(
+      final response = await _dio.get(
         "/v1/damage-reports/$id/history",
       );
-      final envelope = response.data;
-      final data = envelope?["data"];
+      
+      final dynamic responseData = response.data;
+      final Map<String, dynamic> envelope;
+      
+      if (responseData is List) {
+        // Backend returned a raw list instead of a Result envelope
+        envelope = {'succeeded': true, 'data': responseData};
+      } else if (responseData is Map<String, dynamic>) {
+        envelope = responseData;
+      } else {
+        throw SyncException(['استجابة غير متوقعة من السيرفر']);
+      }
 
-      if (envelope?["succeeded"] != true || data == null) {
+      final data = envelope['data'];
+      if (envelope['succeeded'] != true || data == null) {
         throw SyncException(_errorsFromEnvelope(envelope));
       }
+
       final items = data as List;
       return items.map((e) {
         final map = Map<String, dynamic>.from(e as Map);
@@ -293,6 +307,11 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   @override
   Future<void> synchronize() async {
     // Remote repository is always "in sync" with itself.
+  }
+
+  @override
+  Future<void> refreshReport(String id) async {
+    await getDamageReport(id);
   }
 
   List<String> _errorsFromDio(DioException e) {

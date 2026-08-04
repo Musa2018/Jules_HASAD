@@ -112,6 +112,7 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
       rowVersion: reportRow.rowVersion,
       syncStatus: reportRow.syncStatus,
       lastSyncError: reportRow.lastSyncError,
+      updatedAt: reportRow.updatedAt,
       items: items.map((i) => DamageItem(
         id: i.id,
         serverId: i.serverId,
@@ -130,6 +131,7 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
         rowVersion: i.rowVersion,
         syncStatus: i.syncStatus,
         lastSyncError: i.lastSyncError,
+        updatedAt: i.updatedAt,
       )).toList(),
     );
   });
@@ -137,7 +139,21 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
 
 final damageReportHistoryProvider = StreamProvider.autoDispose.family<List<DamageWorkflowHistory>, String>((ref, id) {
   final repository = ref.watch(damageReportRepositoryProvider);
-  return repository.watchReportHistory(id);
+  
+  // Create a controller to combine local watch with a proactive fetch if needed
+  final stream = repository.watchReportHistory(id);
+  
+  // Proactive fetch: if the report is synced but has no history yet, try to fetch it
+  stream.first.then((histories) async {
+    if (histories.isEmpty) {
+      final report = await repository.getDamageReport(id);
+      if (report.serverId != null && report.serverId!.isNotEmpty) {
+        await repository.syncWorkflowHistory(id, report.serverId!);
+      }
+    }
+  });
+
+  return stream;
 });
 
 final attachmentsByReportProvider = FutureProvider.autoDispose

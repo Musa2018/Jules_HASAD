@@ -8,6 +8,7 @@ import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
+import 'package:mobile/core/utils/debug_logger.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
@@ -516,22 +517,28 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   // دالة لجلب وتخزين سجل الحركات محلياً من السيرفر وتحديث الواجهة تلقائياً
-  // دالة لجلب وتخزين سجل الحركات محلياً من السيرفر وتحديث الواجهة تلقائياً
-  // دالة لجلب وتخزين سجل الحركات محلياً من السيرفر وتحديث الواجهة تلقائياً
+  @override
   Future<void> syncWorkflowHistory(String localId, String serverId) async {
     try {
       final remoteHistories = await _remoteRepository.getReportHistory(serverId);
 
       await _db.transaction(() async {
         for (var h in remoteHistories) {
+          final serverIdValue = h.serverId;
+          if (serverIdValue == null) continue;
+
+          final existing = await (_db.select(_db.damageWorkflowHistories)
+                ..where((t) => t.serverId.equals(serverIdValue)))
+              .getSingleOrNull();
+
           await _db.into(_db.damageWorkflowHistories).insert(
             DamageWorkflowHistoriesCompanion.insert(
-              id: h.id.isEmpty ? const Uuid().v4() : h.id,
-              serverId: Value(h.serverId),
+              id: existing?.id ?? const Uuid().v4(),
+              serverId: Value(serverIdValue),
               damageReportId: localId,
               fromStatus: h.fromStatus,
               toStatus: h.toStatus,
-              changedByUserId: h.changedByUserId, // تمرير مباشر كـ String بدون Value()
+              changedByUserId: h.changedByUserId,
               changedAt: h.changedAt ?? DateTime.now(),
               comment: Value(h.comment),
               isOverride: Value(h.isOverride),
@@ -541,7 +548,8 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         }
       });
     } catch (e) {
-      // تسجيل الخطأ دون إيقاف المسار الرئيسي
+      DebugLogger.log('Error in syncWorkflowHistory: $e');
+      rethrow;
     }
   }
 
@@ -691,5 +699,53 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     // 1. Refresh from remote
     // Global headless sync is not supported by backend for performance and scoping reasons.
     // Instead, we ensure local data is consistent.
+  }
+
+  @override
+  Future<void> refreshReport(String id) async {
+    try {
+      final local = await (_db.select(_db.damageReports)..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (local == null) return;
+
+      final serverId = local.serverId;
+      if (serverId == null || serverId.isEmpty) return;
+
+      // 1. Fetch from remote
+      final remote = await _remoteRepository.getDamageReport(serverId);
+
+      // 2. Update local DB
+      await _db.transaction(() async {
+        // Update header
+        await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+          _mapReportToCompanion(remote).copyWith(
+            id: Value(id),
+            syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+
+        // Update items: delete local and insert remote for full sync
+        await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(id))).go();
+        for (var item in remote.items) {
+          await _db.into(_db.damageItems).insert(
+            _mapItemToCompanion(item).copyWith(
+              damageReportId: Value(id),
+              syncStatus: const Value('completed'),
+              lastSyncError: const Value(null),
+              updatedAt: Value(DateTime.now()),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        }
+      });
+
+      // 3. Sync workflow history
+      await syncWorkflowHistory(id, serverId);
+
+    } catch (e) {
+      DebugLogger.log('Error refreshing report $id: $e');
+      rethrow;
+    }
   }
 }

@@ -24,9 +24,9 @@ DamageWorkflowHistory _$DamageWorkflowHistoryFromJson(
 /// @nodoc
 mixin _$DamageWorkflowHistory {
   @JsonKey(name: 'id')
-  String get id => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError; // Local Drift ID
   @JsonKey(name: 'serverId')
-  String? get serverId => throw _privateConstructorUsedError;
+  String? get serverId => throw _privateConstructorUsedError; // Authority ID from server
   String get damageReportId => throw _privateConstructorUsedError;
   String get fromStatus => throw _privateConstructorUsedError;
   String get toStatus => throw _privateConstructorUsedError;
@@ -248,9 +248,11 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
   @override
   @JsonKey(name: 'id')
   final String id;
+  // Local Drift ID
   @override
   @JsonKey(name: 'serverId')
   final String? serverId;
+  // Authority ID from server
   @override
   @JsonKey()
   final String damageReportId;
@@ -350,10 +352,10 @@ abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
 
   @override
   @JsonKey(name: 'id')
-  String get id;
+  String get id; // Local Drift ID
   @override
   @JsonKey(name: 'serverId')
-  String? get serverId;
+  String? get serverId; // Authority ID from server
   @override
   String get damageReportId;
   @override

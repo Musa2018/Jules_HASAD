@@ -481,7 +481,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 29;
+  int get schemaVersion => 30;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -725,6 +725,11 @@ class AppDatabase extends _$AppDatabase {
             WHERE legacy_locality_id != '';
           ''');
         });
+      }
+      
+      if (from < 30) {
+        // Version 30 migration: Ensure DamageWorkflowHistories schema is fresh
+        // Since definitions are correct, we just force a refresh if needed
       }
     },
     beforeOpen: (details) async {

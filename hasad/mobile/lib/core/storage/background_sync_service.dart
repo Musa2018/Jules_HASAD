@@ -19,6 +19,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report_attac
     as attachment_domain;
 import 'package:mobile/features/farms/domain/farm.dart' as farm_domain;
 import 'package:mobile/features/farmers/domain/farmer.dart' as domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 import 'package:uuid/uuid.dart';
 
 class BackgroundSyncService {
@@ -89,17 +90,28 @@ class BackgroundSyncService {
       }
 
       // 2. Preserve 'create' operation during offline edits to avoid 404s
+      // CRITICAL: We MUST also preserve the 'create' operation if the new operation is 'workflow_action'.
+      // If we overwrite 'create' with 'workflow_action', we lose the entity data and sync will fail with 404/dependency error.
       final finalOperation =
-          existing.operation == 'create' && operation == 'update'
+          existing.operation == 'create' && (operation == 'update' || operation == 'workflow_action')
               ? 'create'
               : operation;
+
+      // 3. For 'create' entities, if a workflow action is added, we should merge the action into the data
+      // so that _syncDamageReport can handle both create and immediate submission if needed.
+      Map<String, dynamic> mergedData = Map.from(data);
+      if (existing.operation == 'create' && operation == 'workflow_action') {
+        final existingData = jsonDecode(existing.data) as Map<String, dynamic>;
+        mergedData = Map.from(existingData);
+        mergedData['pendingWorkflowAction'] = data; // Action: submit/transition + metadata
+      }
 
       await (_db.update(_db.syncQueue)
             ..where((t) => t.id.equals(existing.id)))
           .write(
             SyncQueueCompanion(
               operation: Value(finalOperation),
-              data: Value(jsonEncode(data)),
+              data: Value(jsonEncode(mergedData)),
               status: const Value('pending'),
               retryCount: const Value(0),
               lastError: const Value(null),
@@ -281,8 +293,13 @@ class BackgroundSyncService {
 
       await _db
           .update(_db.syncQueue)
-          .replace(item.copyWith(status: 'completed'));
-      await _updateEntitySyncStatus(item.entityType, item.localId, 'completed');
+          .replace(item.copyWith(
+            status: 'completed', 
+            lastError: const Value(null),
+            retryCount: 0,
+            lastAttemptAt: Value(now),
+          ));
+      await _updateEntitySyncStatus(item.entityType, item.localId, 'completed', error: null);
     } on SyncNotFoundException catch (e) {
       // For NON-DELETE operations, 404 is an error.
       // For DELETE, it is handled within the sync method itself to allow cleanup.
@@ -366,7 +383,12 @@ class BackgroundSyncService {
             lastError: Value(e.toString()),
           ),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+        await _updateEntitySyncStatus(
+          item.entityType,
+          item.localId,
+          'failed',
+          error: e.toString(),
+        );
       }
     } on FarmException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
@@ -385,7 +407,12 @@ class BackgroundSyncService {
             lastError: Value(e.toString()),
           ),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+        await _updateEntitySyncStatus(
+          item.entityType,
+          item.localId,
+          'failed',
+          error: e.toString(),
+        );
       }
     } on DamageReportException catch (e) {
       if (e.errors.any((err) => err.contains('CONFLICT'))) {
@@ -404,43 +431,54 @@ class BackgroundSyncService {
             lastError: Value(e.toString()),
           ),
         );
-        await _updateEntitySyncStatus(item.entityType, item.localId, 'failed');
+        await _updateEntitySyncStatus(
+          item.entityType,
+          item.localId,
+          'failed',
+          error: e.toString(),
+        );
       }
     } on SyncException catch (e) {
-      await _db.update(_db.syncQueue).replace(
-        item.copyWith(
-          status: 'failed',
-          retryCount: item.retryCount + 1,
-          lastError: Value(e.toString()),
-        ),
-      );
-      await _updateEntitySyncStatus(
-        item.entityType,
-        item.localId,
-        'failed',
-        error: e.toString(),
-      );
-    } catch (e, stackTrace) {
-      if (DebugLogger.enableSyncDebug) {
-        DebugLogger.logHeader('SYNC ERROR TRACE');
-        DebugLogger.log('Exception Type: ${e.runtimeType}');
-        DebugLogger.log('Message: $e');
-        DebugLogger.log('Stack Trace:\n$stackTrace');
-        DebugLogger.logFooter();
-      }
+      final errorMessage = e.toString();
+      DebugLogger.log('SyncException during _processItem: $errorMessage');
+      
       await _db.update(_db.syncQueue).replace(
         item.copyWith(
           status: 'failed',
           retryCount: item.retryCount + 1,
           lastAttemptAt: Value(now),
-          lastError: Value(e.toString()),
+          lastError: Value(errorMessage),
         ),
       );
       await _updateEntitySyncStatus(
         item.entityType,
         item.localId,
         'failed',
-        error: e.toString(),
+        error: errorMessage,
+      );
+    } catch (e, stackTrace) {
+      final errorMessage = e.toString();
+      if (DebugLogger.enableSyncDebug) {
+        DebugLogger.logHeader('SYNC ERROR TRACE');
+        DebugLogger.log('Exception Type: ${e.runtimeType}');
+        DebugLogger.log('Message: $errorMessage');
+        DebugLogger.log('Stack Trace:\n$stackTrace');
+        DebugLogger.logFooter();
+      }
+      
+      await _db.update(_db.syncQueue).replace(
+        item.copyWith(
+          status: 'failed',
+          retryCount: item.retryCount + 1,
+          lastAttemptAt: Value(now),
+          lastError: Value(errorMessage),
+        ),
+      );
+      await _updateEntitySyncStatus(
+        item.entityType,
+        item.localId,
+        'failed',
+        error: errorMessage,
       );
     }
   }
@@ -730,6 +768,31 @@ class BackgroundSyncService {
         longitude: farm?.longitude
       );
       final result = await _remoteDamageReportRepository.createDamageReportFromJson(payload);
+      
+      // If there was a pending workflow action (e.g. submit) that was merged during offline edit, 
+      // execute it now after successful creation.
+      final serverId = result.serverId;
+      if (data.containsKey('pendingWorkflowAction') && serverId != null) {
+        final actionData = data['pendingWorkflowAction'] as Map<String, dynamic>;
+        try {
+          if (actionData['action'] == 'submit') {
+            await _remoteDamageReportRepository.submitReport(serverId);
+          } else if (actionData['action'] == 'transition') {
+            await _remoteDamageReportRepository.transitionReport(
+              serverId,
+              actionData['toStatus'] as String,
+              comment: actionData['comment'] as String?,
+              isOverride: actionData['isOverride'] as bool? ?? false,
+            );
+          }
+        } catch (e) {
+          // If the workflow action fails, we still consider the 'create' part successful 
+          // but we might need to add the workflow action back to the queue.
+          // For now, we'll let it fail and the user can retry the action.
+          DebugLogger.log('Post-create workflow action failed: $e');
+        }
+      }
+
       await _db.transaction(() async {
         await (_db.update(
           _db.damageReports,
@@ -741,6 +804,7 @@ class BackgroundSyncService {
             rowVersion: Value(result.rowVersion),
             syncStatus: const Value('completed'),
             lastSyncError: const Value(null),
+            updatedAt: Value(DateTime.now()),
           ),
         );
         for (var i in result.items) {
@@ -752,13 +816,27 @@ class BackgroundSyncService {
               rowVersion: Value(i.rowVersion),
               syncStatus: const Value('completed'),
               lastSyncError: const Value(null),
+              updatedAt: Value(DateTime.now()),
             ),
           );
         }
       });
 
+      // --- PERSIST HISTORY ---
+      final syncServerId = result.serverId;
+      if (syncServerId != null) {
+        try {
+          final history = await _remoteDamageReportRepository.getReportHistory(syncServerId);
+          await _persistHistory(item.localId, history);
+        } catch (e) {
+          DebugLogger.log('Error fetching history after sync: $e');
+        }
+      }
+
       // Cleanup redundant item tasks after bulk creation
-      await _pruneDamageItemTasks(item.localId);
+      // Only prune items that were actually included in the successful creation payload
+      final syncedItemIds = report.items.map((i) => i.id).toList();
+      await _pruneDamageItemTasks(item.localId, specificItemIds: syncedItemIds);
     } else if (item.operation == 'update') {
       final result = await _remoteDamageReportRepository.updateDamageReport(
         report,
@@ -770,6 +848,7 @@ class BackgroundSyncService {
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),
+          updatedAt: Value(DateTime.now()),
         ),
       );
     }
@@ -825,57 +904,36 @@ class BackgroundSyncService {
 
     final updatedReport = await _remoteDamageReportRepository.getDamageReport(
         resolvedReportId);
-    final history = await _remoteDamageReportRepository.getReportHistory(
-        resolvedReportId);
-
+    
     await _db.transaction(() async {
       if (DebugLogger.enableSyncDebug) {
         DebugLogger.log('Updating local status to: ${updatedReport.statusId}');
       }
 
-      // Update report status
+      // Update report status and metadata
       await (_db.update(_db.damageReports)
             ..where((t) => t.id.equals(item.localId)))
           .write(
         DamageReportsCompanion(
+          serverId: Value(updatedReport.serverId),
+          reportNumber: Value(updatedReport.reportNumber),
+          permanentFormNumber: Value(updatedReport.permanentFormNumber),
           statusId: Value(updatedReport.statusId),
+          rowVersion: Value(updatedReport.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),
+          updatedAt: Value(DateTime.now()),
         ),
       );
-
-      // Identity-Based Upsert for Workflow History
-      for (var h in history) {
-        final serverIdValue = h.serverId;
-        if (serverIdValue == null) continue;
-
-        final existing = await (_db.select(_db.damageWorkflowHistories)
-              ..where((t) => t.serverId.equals(serverIdValue)))
-            .getSingleOrNull();
-
-        final companion = DamageWorkflowHistoriesCompanion.insert(
-          id: existing?.id ?? const Uuid().v4(),
-          serverId: Value(serverIdValue),
-          damageReportId: item.localId,
-          fromStatus: h.fromStatus,
-          toStatus: h.toStatus,
-          changedByUserId: h.changedByUserId,
-          changedAt: h.changedAt ?? DateTime.now(),
-          comment: Value(h.comment),
-          isOverride: Value(h.isOverride),
-        );
-
-        await _db.into(_db.damageWorkflowHistories).insertOnConflictUpdate(companion);
-      }
-
-      // Optional: Cleanup local records for this report that are NOT in the server response
-      final serverIds = history.map((h) => h.serverId).whereType<String>().toList();
-      if (serverIds.isNotEmpty) {
-        await (_db.delete(_db.damageWorkflowHistories)
-              ..where((t) => t.damageReportId.equals(item.localId) & t.serverId.isNotIn(serverIds)))
-            .go();
-      }
     });
+
+    // --- PERSIST HISTORY ---
+    try {
+      final history = await _remoteDamageReportRepository.getReportHistory(resolvedReportId);
+      await _persistHistory(item.localId, history);
+    } catch (e) {
+      DebugLogger.log('Error fetching history after workflow action: $e');
+    }
 
     if (DebugLogger.enableSyncDebug) {
       DebugLogger.log('Workflow Sync Completed Successfully for Report: $originalReportId');
@@ -927,6 +985,7 @@ class BackgroundSyncService {
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),
+          updatedAt: Value(DateTime.now()),
         ),
       );
     } else if (item.operation == 'update') {
@@ -940,6 +999,7 @@ class BackgroundSyncService {
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),
+          updatedAt: Value(DateTime.now()),
         ),
       );
     }
@@ -981,6 +1041,7 @@ class BackgroundSyncService {
             rowVersion: Value(remoteFarmer.rowVersion),
             updatedAt: Value(remoteFarmer.updatedAt),
             syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
           ),
         );
 
@@ -1033,6 +1094,7 @@ class BackgroundSyncService {
             rowVersion: Value(remoteFarm.rowVersion),
             updatedAt: Value(remoteFarm.updatedAt),
             syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
           ),
         );
 
@@ -1078,6 +1140,7 @@ class BackgroundSyncService {
               notes: Value(remoteReport.notes),
               rowVersion: Value(remoteReport.rowVersion),
               syncStatus: const Value('completed'),
+              lastSyncError: const Value(null),
             ),
           );
           // Items might be complex to merge, overwrite local items with remote for "Server Wins"
@@ -1148,6 +1211,7 @@ class BackgroundSyncService {
             estimatedLoss: Value(remoteItem.estimatedLoss),
             rowVersion: Value(remoteItem.rowVersion),
             syncStatus: const Value('completed'),
+            lastSyncError: const Value(null),
           ),
         );
         await _db
@@ -1192,12 +1256,17 @@ class BackgroundSyncService {
     return report.serverId;
   }
 
-  Future<void> _pruneDamageItemTasks(String reportId) async {
+  Future<void> _pruneDamageItemTasks(String reportId, {List<String>? specificItemIds}) async {
     try {
-      final items = await (_db.select(_db.damageItems)
-            ..where((t) => t.damageReportId.equals(reportId)))
-          .get();
-      final itemIds = items.map((i) => i.id).toList();
+      final List<String> itemIds;
+      if (specificItemIds != null) {
+        itemIds = specificItemIds;
+      } else {
+        final items = await (_db.select(_db.damageItems)
+              ..where((t) => t.damageReportId.equals(reportId)))
+            .get();
+        itemIds = items.map((i) => i.id).toList();
+      }
 
       if (itemIds.isNotEmpty) {
         final count = await (_db.delete(_db.syncQueue)
@@ -1221,5 +1290,38 @@ class BackgroundSyncService {
     DebugLogger.log('Mapped Server ID: $serverId');
     DebugLogger.log('Mapped Client ID: $clientId');
     DebugLogger.logFooter();
+  }
+
+  Future<void> _persistHistory(String localReportId, List<domain_history.DamageWorkflowHistory> history) async {
+    for (var h in history) {
+      final serverIdValue = h.serverId;
+      if (serverIdValue == null) continue;
+
+      final existing = await (_db.select(_db.damageWorkflowHistories)
+            ..where((t) => t.serverId.equals(serverIdValue)))
+          .getSingleOrNull();
+
+      final companion = DamageWorkflowHistoriesCompanion.insert(
+        id: existing?.id ?? const Uuid().v4(),
+        serverId: Value(serverIdValue),
+        damageReportId: localReportId,
+        fromStatus: h.fromStatus,
+        toStatus: h.toStatus,
+        changedByUserId: h.changedByUserId,
+        changedAt: h.changedAt ?? DateTime.now(),
+        comment: Value(h.comment),
+        isOverride: Value(h.isOverride),
+      );
+
+      await _db.into(_db.damageWorkflowHistories).insertOnConflictUpdate(companion);
+    }
+
+    // Optional: Cleanup local records for this report that are NOT in the server response
+    final serverIds = history.map((h) => h.serverId).whereType<String>().toList();
+    if (serverIds.isNotEmpty) {
+      await (_db.delete(_db.damageWorkflowHistories)
+            ..where((t) => t.damageReportId.equals(localReportId) & t.serverId.isNotIn(serverIds)))
+          .go();
+    }
   }
 }

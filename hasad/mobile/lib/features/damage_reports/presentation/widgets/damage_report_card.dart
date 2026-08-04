@@ -115,24 +115,32 @@ class DamageReportCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-                if (report.lastSyncError != null && (report.syncStatus == 'failed' || report.syncStatus == 'invalid'))
+                if (report.lastSyncError != null && (report.syncStatus == 'failed' || report.syncStatus == 'invalid' || report.syncStatus == 'conflict'))
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${l10n.syncError}: ${report.lastSyncError}',
-                          style: const TextStyle(color: Colors.red, fontSize: 12),
-                          maxLines: 2,
+                          '${report.syncStatus == 'conflict' ? (l10n.localeName == 'ar' ? "تعارض:" : "Conflict:") : l10n.syncError}: ${report.lastSyncError}',
+                          style: const TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.w500),
+                          maxLines: 4,
                           overflow: TextOverflow.ellipsis,
                         ),
                         TextButton.icon(
-                          onPressed: () {
-                            ref.read(damageReportFormProvider.notifier).retryReportSync(report.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.pendingSync)),
-                            );
+                          onPressed: () async {
+                            await ref.read(damageReportFormProvider.notifier).retryReportSync(report.id);
+                            
+                            // Invalidate providers to ensure UI reflects retry attempt/success
+                            ref.invalidate(damageReportStreamProvider(report.id));
+                            ref.invalidate(damageReportHistoryProvider(report.id));
+                            ref.invalidate(damageReportsListProvider);
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.pendingSync)),
+                              );
+                            }
                           },
                           icon: const Icon(Icons.refresh, size: 14, color: Colors.red),
                           label: Text(l10n.retrySync, style: const TextStyle(color: Colors.red, fontSize: 12)),

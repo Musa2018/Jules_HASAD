@@ -1,4 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
@@ -12,7 +11,6 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
-
 
 import 'package:mobile/features/damage_reports/data/repositories/remote_damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_filter.dart';
@@ -64,7 +62,7 @@ final filteredDamageReportsProvider = Provider.autoDispose<AsyncValue<List<Damag
 });
 
 final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
-  (ref) {
+      (ref) {
     return OfflineFirstDamageReportAttachmentRepository(
       ref.watch(databaseProvider),
       ref,
@@ -74,7 +72,7 @@ final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
 
 final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
   final db = ref.watch(databaseProvider);
-  
+
   // Use a join to watch both tables. This ensures the stream emits whenever 
   // the report header OR any of its items change.
   final query = db.select(db.damageReports).join([
@@ -83,14 +81,14 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
 
   return query.watch().asyncMap((rows) async {
     if (rows.isEmpty) return null;
-    
+
     final reportRow = rows.first.readTable(db.damageReports);
-    
+
     // Fetch items separately to ensure we get the full list correctly (Drift join returns one row per item)
     final items = await (db.select(db.damageItems)
       ..where((t) => t.damageReportId.equals(id) & t.isPendingDelete.equals(false)))
-      .get();
-    
+        .get();
+
     return DamageReport(
       id: reportRow.id,
       serverId: reportRow.serverId ?? '',
@@ -144,10 +142,10 @@ final damageReportHistoryProvider = StreamProvider.autoDispose.family<List<Damag
 
 final attachmentsByReportProvider = FutureProvider.autoDispose
     .family<List<DamageReportAttachment>, String>((ref, reportId) async {
-      return ref
-          .watch(attachmentRepositoryProvider)
-          .getAttachmentsByReport(reportId);
-    });
+  return ref
+      .watch(attachmentRepositoryProvider)
+      .getAttachmentsByReport(reportId);
+});
 
 class DamageReportFormState {
   final bool isLoading;
@@ -167,19 +165,21 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
   final DamageReportRepository _repository;
 
   DamageReportFormNotifier(this._repository)
-    : super(const DamageReportFormState());
+      : super(const DamageReportFormState());
 
   Future<void> createDamageReport(DamageReport report) async {
     state = const DamageReportFormState(isLoading: true);
     try {
       final created = await _repository.createDamageReport(report);
-      state = DamageReportFormState(success: true, createdReport: created);
+      if (mounted) state = DamageReportFormState(success: true, createdReport: created);
     } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
+      if (mounted) state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(
-        errors: ['An unexpected error occurred.'],
-      );
+      if (mounted) {
+        state = const DamageReportFormState(
+          errors: ['An unexpected error occurred.'],
+        );
+      }
     }
   }
 
@@ -187,13 +187,15 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     state = const DamageReportFormState(isLoading: true);
     try {
       final updated = await _repository.updateDamageReport(report);
-      state = DamageReportFormState(success: true, createdReport: updated);
+      if (mounted) state = DamageReportFormState(success: true, createdReport: updated);
     } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
+      if (mounted) state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(
-        errors: ['An unexpected error occurred.'],
-      );
+      if (mounted) {
+        state = const DamageReportFormState(
+          errors: ['An unexpected error occurred.'],
+        );
+      }
     }
   }
 
@@ -201,15 +203,44 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     state = const DamageReportFormState(isLoading: true);
     try {
       await _repository.submitReport(id);
-      state = const DamageReportFormState(success: true);
+      if (mounted) state = const DamageReportFormState(success: true);
       return true;
     } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
+      if (mounted) state = DamageReportFormState(errors: e.errors);
+      return false;
+    } on SyncException catch (e) {
+      if (mounted) state = DamageReportFormState(errors: [e.toString()]);
       return false;
     } catch (_) {
-      state = const DamageReportFormState(
-        errors: ['Failed to submit report.'],
-      );
+      if (mounted) {
+        state = const DamageReportFormState(
+          errors: ['Failed to submit report.'],
+        );
+      }
+      return false;
+    }
+  }
+
+  Future<bool> transitionReport(String id, String toStatus,
+      {String? comment, bool isOverride = false}) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.transitionReport(id, toStatus,
+          comment: comment, isOverride: isOverride);
+      if (mounted) state = const DamageReportFormState(success: true);
+      return true;
+    } on DamageReportException catch (e) {
+      if (mounted) state = DamageReportFormState(errors: e.errors);
+      return false;
+    } on SyncException catch (e) {
+      if (mounted) state = DamageReportFormState(errors: [e.toString()]);
+      return false;
+    } catch (_) {
+      if (mounted) {
+        state = const DamageReportFormState(
+          errors: ['Failed to transition report status.'],
+        );
+      }
       return false;
     }
   }
@@ -218,13 +249,15 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     state = const DamageReportFormState(isLoading: true);
     try {
       await _repository.deleteDamageReport(id);
-      state = const DamageReportFormState(success: true);
+      if (mounted) state = const DamageReportFormState(success: true);
     } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
+      if (mounted) state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(
-        errors: ['An unexpected error occurred.'],
-      );
+      if (mounted) {
+        state = const DamageReportFormState(
+          errors: ['An unexpected error occurred.'],
+        );
+      }
     }
   }
 
@@ -232,11 +265,11 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     state = const DamageReportFormState(isLoading: true);
     try {
       await _repository.addDamageItem(item);
-      state = const DamageReportFormState(success: true);
+      if (mounted) state = const DamageReportFormState(success: true);
     } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
+      if (mounted) state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(errors: ['Failed to add item.']);
+      if (mounted) state = const DamageReportFormState(errors: ['Failed to add item.']);
     }
   }
 
@@ -244,11 +277,11 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     state = const DamageReportFormState(isLoading: true);
     try {
       await _repository.updateDamageItem(item);
-      state = const DamageReportFormState(success: true);
+      if (mounted) state = const DamageReportFormState(success: true);
     } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
+      if (mounted) state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(errors: ['Failed to update item.']);
+      if (mounted) state = const DamageReportFormState(errors: ['Failed to update item.']);
     }
   }
 
@@ -256,29 +289,61 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     state = const DamageReportFormState(isLoading: true);
     try {
       await _repository.deleteDamageItem(id);
-      state = const DamageReportFormState(success: true);
+      if (mounted) state = const DamageReportFormState(success: true);
     } on DamageReportException catch (e) {
-      state = DamageReportFormState(errors: e.errors);
+      if (mounted) state = DamageReportFormState(errors: e.errors);
     } catch (_) {
-      state = const DamageReportFormState(errors: ['Failed to delete item.']);
+      if (mounted) state = const DamageReportFormState(errors: ['Failed to delete item.']);
     }
   }
 
-  Future<void> retryReportSync(String id) async {
-    await _repository.retrySync(id);
+  Future<bool> retryReportSync(String id) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.retrySync(id);
+      if (mounted) state = const DamageReportFormState(success: true);
+      return true;
+    } on DamageReportException catch (e) {
+      if (mounted) state = DamageReportFormState(errors: e.errors);
+      return false;
+    } on SyncException catch (e) {
+      if (mounted) state = DamageReportFormState(errors: [e.toString()]);
+      return false;
+    } catch (_) {
+      if (mounted) {
+        state = const DamageReportFormState(
+          errors: ['Failed to retry sync.'],
+        );
+      }
+      return false;
+    }
   }
 
   Future<void> retryAllFailedSyncs() async {
-    await _repository.retryAllFailedSyncs();
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _repository.retryAllFailedSyncs();
+      if (mounted) state = const DamageReportFormState(success: true);
+    } on DamageReportException catch (e) {
+      if (mounted) state = DamageReportFormState(errors: e.errors);
+    } on SyncException catch (e) {
+      if (mounted) state = DamageReportFormState(errors: [e.toString()]);
+    } catch (_) {
+      if (mounted) {
+        state = const DamageReportFormState(
+          errors: ['Failed to retry all syncs.'],
+        );
+      }
+    }
   }
 }
 
 final damageReportFormProvider =
-    StateNotifierProvider.autoDispose<
-      DamageReportFormNotifier,
-      DamageReportFormState
-    >((ref) {
-      return DamageReportFormNotifier(
-        ref.watch(damageReportRepositoryProvider),
-      );
-    });
+StateNotifierProvider.autoDispose<
+    DamageReportFormNotifier,
+    DamageReportFormState
+>((ref) {
+  return DamageReportFormNotifier(
+    ref.watch(damageReportRepositoryProvider),
+  );
+});

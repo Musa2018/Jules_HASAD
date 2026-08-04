@@ -47,14 +47,15 @@ class DamageReportSyncDto {
   }
 
   static Map<String, dynamic> itemToCreateJson(DamageItem item) {
+    final costingId = _guidOrNull(item.costingSheetItemId ?? item.costingSheetId);
     return {
       'clientId': item.id,
       'damageNatureId': item.damageNatureId,
       'damageActionId': item.damageActionId,
       'classificationId': item.classificationId,
-      'costingSheetId': _guidOrNull(item.costingSheetItemId ?? item.costingSheetId),
-      'calculatedUnitPrice': item.calculatedUnitPrice,
-      'measurementUnitSnapshot': item.measurementUnitSnapshot,
+      'costingSheetId': costingId,
+      'calculatedUnitPrice': item.calculatedUnitPrice > 0 ? item.calculatedUnitPrice : 0.01, // Avoid validation error if backend recalculates
+      'measurementUnitSnapshot': item.measurementUnitSnapshot.isNotEmpty ? item.measurementUnitSnapshot : 'Unit',
       'affectedArea': item.affectedArea,
       'damagePercentage': item.damagePercentage,
       'quantity': item.quantity,

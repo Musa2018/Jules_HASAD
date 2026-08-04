@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/data/dto/damage_report_sync_dto.dart';
@@ -205,13 +206,30 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   }
 
   @override
+  Future<void> syncWorkflowHistory(String localId, String serverId) async {
+    // Remote-only repository doesn't persist locally.
+    await getReportHistory(serverId);
+  }
+
+  @override
   Future<DamageItem> addDamageItem(DamageItem item) async {
     try {
+      final payload = DamageReportSyncDto.itemToCreateJson(item);
+      
+      // Ensure DamageReportId is present and matches the URL parameter
+      // The backend AddDamageItemCommand expects 'DamageReportId' or 'damageReportId'
+      payload['damageReportId'] = item.damageReportId;
+
+      if (kDebugMode) {
+        debugPrint('--- ADD DAMAGE ITEM PAYLOAD ---');
+        debugPrint('URL ID: ${item.damageReportId}');
+        debugPrint('Payload: $payload');
+        debugPrint('-------------------------------');
+      }
+
       final response = await _dio.post<Map<String, dynamic>>(
         '/v1/damage-reports/${item.damageReportId}/items',
-        data: DamageReportSyncDto.itemToCreateJson(item)..addAll({
-          'damageReportId': item.damageReportId,
-        }),
+        data: payload,
       );
       final envelope = response.data;
       final data = envelope?['data'];
@@ -279,24 +297,65 @@ class RemoteDamageReportRepository implements DamageReportRepository {
 
   List<String> _errorsFromDio(DioException e) {
     final body = e.response?.data;
-    if (e.response?.statusCode == 404) {
-      throw SyncNotFoundException(['NOT FOUND: The record does not exist on the server.']);
+    
+    if (kDebugMode && e.response != null) {
+      debugPrint('--- API ERROR LOG ---');
+      debugPrint('Status Code: ${e.response?.statusCode}');
+      debugPrint('Path: ${e.requestOptions.path}');
+      debugPrint('Method: ${e.requestOptions.method}');
+      debugPrint('Response Data: ${e.response?.data}');
+      
+      // Explicitly log validation errors if present
+      if (body is Map<String, dynamic> && body.containsKey('errors')) {
+        debugPrint('Validation Errors: ${body['errors']}');
+      }
+      debugPrint('---------------------');
     }
+
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
+      return ['انتهت مهلة الاتصال بالسيرفر. يرجى التأكد من جودة الإنترنت.'];
+    }
+
+    if (e.type == DioExceptionType.connectionError) {
+      return ['فشل الاتصال بالسيرفر. يرجى التأكد من أنك متصل بالإنترنت.'];
+    }
+
+    if (e.response?.statusCode == 404) {
+      throw SyncNotFoundException(['السجل غير موجود على السيرفر (404).']);
+    }
+    
+    if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {
+      final errors = _errorsFromEnvelope(body);
+      if (errors.isNotEmpty) {
+        throw SyncValidationException(errors);
+      }
+      final message = body['message'] ?? body['title'] ?? 'طلب غير صحيح (400)';
+      throw SyncValidationException([message.toString()]);
+    }
+
     if (e.response?.statusCode == 409 && body is Map<String, dynamic>) {
       final code = body['code'] as String?;
       final errors = _errorsFromEnvelope(body);
       throw SyncConflictException(
-        errors.isNotEmpty ? errors : ['CONFLICT: The record has been modified by another user.'],
+        errors.isNotEmpty ? errors : ['تنبيه: تم تعديل السجل من قبل مستخدم آخر (تعارض 409).'],
         code: code,
       );
     }
-    if (e.response?.statusCode == 400 && body is Map<String, dynamic>) {
-      throw SyncValidationException(_errorsFromEnvelope(body));
+
+    if (e.response?.statusCode == 500) {
+      return ['خطأ داخلي في السيرفر (500). يرجى المحاولة لاحقاً.'];
     }
+
     if (body is Map<String, dynamic>) {
-      return _errorsFromEnvelope(body);
+      final errors = _errorsFromEnvelope(body);
+      if (errors.isNotEmpty) return errors;
     }
-    return const [];
+
+    // Fallback: Return the underlying Dio error message if nothing else is found
+    final fallbackMessage = e.message ?? e.toString();
+    return [fallbackMessage.isNotEmpty ? fallbackMessage : 'حدث خطأ غير متوقع أثناء الاتصال.'];
   }
 
   List<String> _errorsFromEnvelope(Map<String, dynamic>? envelope) {

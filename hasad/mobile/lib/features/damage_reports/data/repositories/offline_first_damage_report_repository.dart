@@ -47,7 +47,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     List<report_domain.DamageReport> results = [];
     for (var r in reports) {
       final items = await (_db.select(_db.damageItems)
-            ..where((t) => t.damageReportId.equals(r.id)))
+        ..where((t) => t.damageReportId.equals(r.id)))
           .get();
       results.add(_mapToDomain(r, items));
     }
@@ -74,7 +74,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       List<report_domain.DamageReport> results = [];
       for (var r in reports) {
         final items = await (_db.select(_db.damageItems)
-              ..where((t) => t.damageReportId.equals(r.id)))
+          ..where((t) => t.damageReportId.equals(r.id)))
             .get();
         results.add(_mapToDomain(r, items));
       }
@@ -84,13 +84,13 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<List<report_domain.DamageReport>> getDamageReportsByFarm(
-    String farmId,
-  ) async {
+      String farmId,
+      ) async {
     final reports =
-        await (_db.select(_db.damageReports)
-              ..where((t) => t.farmId.equals(farmId) & t.isPendingDelete.equals(false))
-              ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]))
-            .get();
+    await (_db.select(_db.damageReports)
+      ..where((t) => t.farmId.equals(farmId) & t.isPendingDelete.equals(false))
+      ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]))
+        .get();
 
     List<report_domain.DamageReport> results = [];
     for (var r in reports) {
@@ -113,7 +113,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       List<report_domain.DamageReport> results = [];
       for (var r in reports) {
         final items = await (_db.select(_db.damageItems)
-              ..where((t) => t.damageReportId.equals(r.id)))
+          ..where((t) => t.damageReportId.equals(r.id)))
             .get();
         results.add(_mapToDomain(r, items));
       }
@@ -157,28 +157,30 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       rowVersion: r.rowVersion,
       syncStatus: r.syncStatus,
       lastSyncError: r.lastSyncError,
+      updatedAt: r.updatedAt,
       items: items
           .map(
             (i) => item_domain.DamageItem(
-              id: i.id,
-              serverId: i.serverId,
-              damageReportId: i.damageReportId,
-              damageNatureId: i.damageNatureId,
-              damageActionId: i.damageActionId,
-              classificationId: i.classificationId,
-              costingSheetId: i.costingSheetId,
-              costingSheetItemId: i.costingSheetItemId,
-              calculatedUnitPrice: i.calculatedUnitPrice,
-              measurementUnitSnapshot: i.measurementUnitSnapshot,
-              affectedArea: i.affectedArea,
-              damagePercentage: i.damagePercentage,
-              quantity: i.quantity,
-              estimatedLoss: i.estimatedLoss,
-              rowVersion: i.rowVersion,
-              syncStatus: i.syncStatus,
-              lastSyncError: i.lastSyncError,
-            ),
-          )
+          id: i.id,
+          serverId: i.serverId,
+          damageReportId: i.damageReportId,
+          damageNatureId: i.damageNatureId,
+          damageActionId: i.damageActionId,
+          classificationId: i.classificationId,
+          costingSheetId: i.costingSheetId,
+          costingSheetItemId: i.costingSheetItemId,
+          calculatedUnitPrice: i.calculatedUnitPrice,
+          measurementUnitSnapshot: i.measurementUnitSnapshot,
+          affectedArea: i.affectedArea,
+          damagePercentage: i.damagePercentage,
+          quantity: i.quantity,
+          estimatedLoss: i.estimatedLoss,
+          rowVersion: i.rowVersion,
+          syncStatus: i.syncStatus,
+          lastSyncError: i.lastSyncError,
+          updatedAt: i.updatedAt,
+        ),
+      )
           .toList(),
     );
   }
@@ -232,25 +234,25 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<report_domain.DamageReport> createDamageReport(
-    report_domain.DamageReport report,
-  ) async {
+      report_domain.DamageReport report,
+      ) async {
     // 1. Duplicate check (Local)
     final dDate = report.damageDate ?? DateTime.now();
     final normalizedDate = DateTime(dDate.year, dDate.month, dDate.day);
-    
+
     final existing = await (_db.select(_db.damageReports)
-          ..where((t) => t.farmId.equals(report.farmId) & 
-                         t.damageDate.equals(normalizedDate) &
-                         t.isPendingDelete.equals(false)))
+      ..where((t) => t.farmId.equals(report.farmId) &
+      t.damageDate.equals(normalizedDate) &
+      t.isPendingDelete.equals(false)))
         .getSingleOrNull();
-    
+
     if (existing != null) {
       throw DamageReportException(['duplicateReportError']);
     }
 
     // 2. Fetch Farm for denormalization snapshot
     final farm = await (_db.select(_db.farms)
-          ..where((t) => t.id.equals(report.farmId)))
+      ..where((t) => t.id.equals(report.farmId)))
         .getSingleOrNull();
 
     if (farm == null) {
@@ -279,23 +281,23 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       await _db
           .into(_db.damageReports)
           .insert(
-            _mapReportToCompanion(finalReport).copyWith(
-              id: Value(localId),
-              syncStatus: const Value('pending'),
-            ),
-          );
+        _mapReportToCompanion(finalReport).copyWith(
+          id: Value(localId),
+          syncStatus: const Value('pending'),
+        ),
+      );
 
       for (var item in report.items) {
         final itemId = item.id.isEmpty ? const Uuid().v4() : item.id;
         await _db
             .into(_db.damageItems)
             .insert(
-              _mapItemToCompanion(item).copyWith(
-                id: Value(itemId),
-                damageReportId: Value(localId),
-                syncStatus: const Value('pending'),
-              ),
-            );
+          _mapItemToCompanion(item).copyWith(
+            id: Value(itemId),
+            damageReportId: Value(localId),
+            syncStatus: const Value('pending'),
+          ),
+        );
       }
     });
 
@@ -317,7 +319,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<report_domain.DamageReport> createDamageReportFromJson(Map<String, dynamic> json) async {
-     return createDamageReport(report_domain.DamageReport.fromJson(json));
+    return createDamageReport(report_domain.DamageReport.fromJson(json));
   }
 
   String _generateTemporaryNumber() {
@@ -328,19 +330,19 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<report_domain.DamageReport> updateDamageReport(
-    report_domain.DamageReport report,
-  ) async {
+      report_domain.DamageReport report,
+      ) async {
     final dDate = report.damageDate ?? DateTime.now();
     final normalizedDate = DateTime(dDate.year, dDate.month, dDate.day);
 
     // Duplicate check on update
     final existing = await (_db.select(_db.damageReports)
-          ..where((t) => t.id.equals(report.id).not() &
-                         t.farmId.equals(report.farmId) & 
-                         t.damageDate.equals(normalizedDate) &
-                         t.isPendingDelete.equals(false)))
+      ..where((t) => t.id.equals(report.id).not() &
+      t.farmId.equals(report.farmId) &
+      t.damageDate.equals(normalizedDate) &
+      t.isPendingDelete.equals(false)))
         .getSingleOrNull();
-    
+
     if (existing != null) {
       throw DamageReportException(['duplicateReportError']);
     }
@@ -403,21 +405,28 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     );
 
     await (_db.delete(_db.syncQueue)
-          ..where((t) =>
-              t.localId.equals(id) &
-              t.entityType.equals('damage_report') &
-              t.operation.equals('delete')))
+      ..where((t) =>
+      t.localId.equals(id) &
+      t.entityType.equals('damage_report') &
+      t.operation.equals('delete')))
         .go();
   }
 
   @override
   Future<void> submitReport(String id) async {
     final report = await getDamageReport(id);
-    // Locally predict state
+    // Locally predict state and CLEAR any previous sync errors
     await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
       const DamageReportsCompanion(
         statusId: Value(DamageReportStatus.techReview),
         syncStatus: Value('pending'),
+        lastSyncError: Value(null), // Clear error on new attempt
+      ),
+    );
+
+    await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
+      DamageReportsCompanion(
+        updatedAt: Value(DateTime.now()),
       ),
     );
 
@@ -437,11 +446,13 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       {String? comment, bool isOverride = false}) async {
     final report = await getDamageReport(id);
 
-    // Locally predict state
+    // Locally predict state and CLEAR any previous sync errors
     await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
       DamageReportsCompanion(
         statusId: Value(toStatus),
         syncStatus: const Value('pending'),
+        lastSyncError: const Value(null), // Clear error on new attempt
+        updatedAt: Value(DateTime.now()),
       ),
     );
 
@@ -464,44 +475,74 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       String id) async {
     // Fetch from local DB
     final histories = await (_db.select(_db.damageWorkflowHistories)
-          ..where((t) => t.damageReportId.equals(id))
-          ..orderBy([(t) => OrderingTerm.desc(t.changedAt)]))
+      ..where((t) => t.damageReportId.equals(id))
+      ..orderBy([(t) => OrderingTerm.desc(t.changedAt)]))
         .get();
 
     return histories
         .map((h) => domain_history.DamageWorkflowHistory(
-              id: h.id,
-              serverId: h.serverId,
-              damageReportId: h.damageReportId,
-              fromStatus: h.fromStatus,
-              toStatus: h.toStatus,
-              changedByUserId: h.changedByUserId,
-              changedAt: h.changedAt,
-              comment: h.comment,
-              isOverride: h.isOverride,
-            ))
+      id: h.id,
+      serverId: h.serverId,
+      damageReportId: h.damageReportId,
+      fromStatus: h.fromStatus,
+      toStatus: h.toStatus,
+      changedByUserId: h.changedByUserId,
+      changedAt: h.changedAt,
+      comment: h.comment,
+      isOverride: h.isOverride,
+    ))
         .toList();
   }
 
   @override
   Stream<List<domain_history.DamageWorkflowHistory>> watchReportHistory(String id) {
     return (_db.select(_db.damageWorkflowHistories)
-          ..where((t) => t.damageReportId.equals(id))
-          ..orderBy([(t) => OrderingTerm.desc(t.changedAt)]))
+      ..where((t) => t.damageReportId.equals(id))
+      ..orderBy([(t) => OrderingTerm.desc(t.changedAt)]))
         .watch()
         .map((histories) => histories
-            .map((h) => domain_history.DamageWorkflowHistory(
-                  id: h.id,
-                  serverId: h.serverId,
-                  damageReportId: h.damageReportId,
-                  fromStatus: h.fromStatus,
-                  toStatus: h.toStatus,
-                  changedByUserId: h.changedByUserId,
-                  changedAt: h.changedAt,
-                  comment: h.comment,
-                  isOverride: h.isOverride,
-                ))
-            .toList());
+        .map((h) => domain_history.DamageWorkflowHistory(
+      id: h.id,
+      serverId: h.serverId,
+      damageReportId: h.damageReportId,
+      fromStatus: h.fromStatus,
+      toStatus: h.toStatus,
+      changedByUserId: h.changedByUserId,
+      changedAt: h.changedAt,
+      comment: h.comment,
+      isOverride: h.isOverride,
+    ))
+        .toList());
+  }
+
+  // دالة لجلب وتخزين سجل الحركات محلياً من السيرفر وتحديث الواجهة تلقائياً
+  // دالة لجلب وتخزين سجل الحركات محلياً من السيرفر وتحديث الواجهة تلقائياً
+  // دالة لجلب وتخزين سجل الحركات محلياً من السيرفر وتحديث الواجهة تلقائياً
+  Future<void> syncWorkflowHistory(String localId, String serverId) async {
+    try {
+      final remoteHistories = await _remoteRepository.getReportHistory(serverId);
+
+      await _db.transaction(() async {
+        for (var h in remoteHistories) {
+          await _db.into(_db.damageWorkflowHistories).insert(
+            DamageWorkflowHistoriesCompanion.insert(
+              id: h.id.isEmpty ? const Uuid().v4() : h.id,
+              serverId: Value(h.serverId),
+              damageReportId: localId,
+              fromStatus: h.fromStatus,
+              toStatus: h.toStatus,
+              changedByUserId: h.changedByUserId, // تمرير مباشر كـ String بدون Value()
+              changedAt: h.changedAt ?? DateTime.now(),
+              comment: Value(h.comment),
+              isOverride: Value(h.isOverride),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        }
+      });
+    } catch (e) {
+      // تسجيل الخطأ دون إيقاف المسار الرئيسي
+    }
   }
 
   @override
@@ -510,11 +551,11 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     await _db
         .into(_db.damageItems)
         .insert(
-          _mapItemToCompanion(item).copyWith(
-            id: Value(localId),
-            syncStatus: const Value('pending'),
-          ),
-        );
+      _mapItemToCompanion(item).copyWith(
+        id: Value(localId),
+        syncStatus: const Value('pending'),
+      ),
+    );
 
     final createdItem = item.copyWith(id: localId);
 
@@ -577,9 +618,11 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<void> retrySync(String id) async {
-    // 1. Reset item in sync queue
+    // 1. Reset ALL related items in sync queue (create, update, workflow_action)
+    // CRITICAL: We reset retryCount and lastAttemptAt to 0/null to BYPASS backoff logic
+    // and force an immediate retry in the next processQueue() call.
     await (_db.update(_db.syncQueue)
-          ..where((t) => t.localId.equals(id) & t.entityType.equals('damage_report')))
+      ..where((t) => t.localId.equals(id) & t.entityType.equals('damage_report')))
         .write(
       const SyncQueueCompanion(
         status: Value('pending'),
@@ -589,7 +632,19 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       ),
     );
 
-    // 2. Reset entity status
+    // Also reset any associated damage items if they failed
+    await (_db.update(_db.syncQueue)
+      ..where((t) => t.entityType.equals('damage_item') & t.status.isNotIn(['completed', 'syncing'])))
+        .write(
+      const SyncQueueCompanion(
+        status: Value('pending'),
+        retryCount: Value(0),
+        lastError: Value(null),
+        lastAttemptAt: Value(null),
+      ),
+    );
+
+    // 2. Reset entity status and CLEAR error
     await (_db.update(_db.damageReports)..where((t) => t.id.equals(id))).write(
       const DamageReportsCompanion(
         syncStatus: Value('pending'),
@@ -605,9 +660,9 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   Future<void> retryAllFailedSyncs() async {
     // 1. Reset all failed/invalid items in sync queue for damage_report
     await (_db.update(_db.syncQueue)
-          ..where((t) =>
-              t.entityType.equals('damage_report') &
-              (t.status.equals('failed') | t.status.equals('invalid'))))
+      ..where((t) =>
+      t.entityType.equals('damage_report') &
+      (t.status.equals('failed') | t.status.equals('invalid'))))
         .write(
       const SyncQueueCompanion(
         status: Value('pending'),
@@ -619,7 +674,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
     // 2. Reset all damage reports with failed/invalid status
     await (_db.update(_db.damageReports)
-          ..where((t) => t.syncStatus.equals('failed') | t.syncStatus.equals('invalid')))
+      ..where((t) => t.syncStatus.equals('failed') | t.syncStatus.equals('invalid')))
         .write(
       const DamageReportsCompanion(
         syncStatus: Value('pending'),

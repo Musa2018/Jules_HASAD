@@ -46,6 +46,7 @@ mixin _$DamageReport {
   List<DamageItem> get items => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
   String? get lastSyncError => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
   bool? get isDeleted => throw _privateConstructorUsedError;
   DateTime? get deletedAt => throw _privateConstructorUsedError;
   String? get deletedBy => throw _privateConstructorUsedError;
@@ -91,6 +92,7 @@ abstract class $DamageReportCopyWith<$Res> {
     List<DamageItem> items,
     String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,
@@ -135,6 +137,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? items = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? updatedAt = freezed,
     Object? isDeleted = freezed,
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
@@ -233,6 +236,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.lastSyncError
                 : lastSyncError // ignore: cast_nullable_to_non_nullable
                       as String?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             isDeleted: freezed == isDeleted
                 ? _value.isDeleted
                 : isDeleted // ignore: cast_nullable_to_non_nullable
@@ -284,6 +291,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     List<DamageItem> items,
     String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,
@@ -327,6 +335,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? items = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? updatedAt = freezed,
     Object? isDeleted = freezed,
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
@@ -425,6 +434,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.lastSyncError
             : lastSyncError // ignore: cast_nullable_to_non_nullable
                   as String?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         isDeleted: freezed == isDeleted
             ? _value.isDeleted
             : isDeleted // ignore: cast_nullable_to_non_nullable
@@ -469,6 +482,7 @@ class _$DamageReportImpl implements _DamageReport {
     final List<DamageItem> items = const [],
     this.syncStatus = 'completed',
     this.lastSyncError,
+    this.updatedAt,
     this.isDeleted,
     this.deletedAt,
     this.deletedBy,
@@ -551,6 +565,8 @@ class _$DamageReportImpl implements _DamageReport {
   @override
   final String? lastSyncError;
   @override
+  final DateTime? updatedAt;
+  @override
   final bool? isDeleted;
   @override
   final DateTime? deletedAt;
@@ -559,7 +575,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -609,6 +625,8 @@ class _$DamageReportImpl implements _DamageReport {
                 other.syncStatus == syncStatus) &&
             (identical(other.lastSyncError, lastSyncError) ||
                 other.lastSyncError == lastSyncError) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
             (identical(other.isDeleted, isDeleted) ||
                 other.isDeleted == isDeleted) &&
             (identical(other.deletedAt, deletedAt) ||
@@ -644,6 +662,7 @@ class _$DamageReportImpl implements _DamageReport {
     const DeepCollectionEquality().hash(_items),
     syncStatus,
     lastSyncError,
+    updatedAt,
     isDeleted,
     deletedAt,
     deletedBy,
@@ -688,6 +707,7 @@ abstract class _DamageReport implements DamageReport {
     final List<DamageItem> items,
     final String syncStatus,
     final String? lastSyncError,
+    final DateTime? updatedAt,
     final bool? isDeleted,
     final DateTime? deletedAt,
     final String? deletedBy,
@@ -744,6 +764,8 @@ abstract class _DamageReport implements DamageReport {
   String get syncStatus;
   @override
   String? get lastSyncError;
+  @override
+  DateTime? get updatedAt;
   @override
   bool? get isDeleted;
   @override

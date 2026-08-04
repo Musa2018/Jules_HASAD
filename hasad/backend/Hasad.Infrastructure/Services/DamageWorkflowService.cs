@@ -22,6 +22,7 @@ public class DamageWorkflowService : IDamageWorkflowService
         return (fromStatus, toStatus, userRole) switch
         {
             (DamageReportStatus.Draft, DamageReportStatus.PendingTechnicalVerification, AppRoles.AgriculturalEngineer or AppRoles.FieldSurveyor) => true,
+            (DamageReportStatus.Draft, DamageReportStatus.TechReview, AppRoles.AgriculturalEngineer or AppRoles.FieldSurveyor) => true, // direct submit
             (DamageReportStatus.PendingTechnicalVerification, DamageReportStatus.TechReview, AppRoles.AgriculturalEngineer or AppRoles.FieldSurveyor) => true,
 
             (DamageReportStatus.TechReview, DamageReportStatus.ArchiveDir, AppRoles.TechnicalReviewer) => true,

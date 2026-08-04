@@ -26,6 +26,9 @@ _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
       rowVersion: json['rowVersion'] as String? ?? '',
       syncStatus: json['syncStatus'] as String? ?? 'completed',
       lastSyncError: json['lastSyncError'] as String?,
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
       isDeleted: json['isDeleted'] as bool?,
       deletedAt: json['deletedAt'] == null
           ? null
@@ -52,6 +55,7 @@ Map<String, dynamic> _$$DamageItemImplToJson(_$DamageItemImpl instance) =>
       'rowVersion': instance.rowVersion,
       'syncStatus': instance.syncStatus,
       'lastSyncError': instance.lastSyncError,
+      'updatedAt': instance.updatedAt?.toIso8601String(),
       'isDeleted': instance.isDeleted,
       'deletedAt': instance.deletedAt?.toIso8601String(),
       'deletedBy': instance.deletedBy,

@@ -32,6 +32,7 @@ class DamageReport with _$DamageReport {
     @Default([]) List<DamageItem> items,
     @Default('completed') String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,

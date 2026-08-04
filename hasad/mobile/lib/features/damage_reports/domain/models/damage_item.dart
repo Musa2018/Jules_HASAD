@@ -25,6 +25,7 @@ class DamageItem with _$DamageItem {
     @Default('') String rowVersion,
     @Default('completed') String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,

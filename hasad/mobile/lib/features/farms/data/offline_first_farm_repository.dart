@@ -138,7 +138,39 @@ class OfflineFirstFarmRepository implements FarmRepository {
     query.orderBy([OrderingTerm.desc(_db.farms.createdAt)]);
 
     return query.watch().map((rows) {
-      return rows.map((row) => mapToDomain(row.readTable(_db.farms))).toList();
+      final List<farm_domain.Farm> allFarms = rows.map((row) => mapToDomain(row.readTable(_db.farms))).toList();
+      
+      // Deduplication Logic:
+      // Records can be duplicated if:
+      // 1. Two records have the same serverId.
+      // 2. One record's id (local GUID) is another record's serverId.
+      
+      final Map<String, farm_domain.Farm> deduplicated = {};
+      
+      for (final farm in allFarms) {
+        // Preference: Synced records (with serverId) > Local-only records
+        final key = farm.serverId ?? farm.id;
+        
+        if (deduplicated.containsKey(key)) {
+          final existing = deduplicated[key]!;
+          // Keep the one with serverId if both are present but different (unlikely but safe)
+          if (existing.serverId == null && farm.serverId != null) {
+            deduplicated[key] = farm;
+          }
+        } else {
+          // Check if this farm's serverId is already in the map as a key (id)
+          if (farm.serverId != null && deduplicated.containsKey(farm.serverId)) {
+            final existing = deduplicated[farm.serverId]!;
+            if (existing.serverId == null) {
+              deduplicated[farm.serverId!] = farm;
+            }
+          } else {
+             deduplicated[key] = farm;
+          }
+        }
+      }
+      
+      return deduplicated.values.toList();
     });
   }
 

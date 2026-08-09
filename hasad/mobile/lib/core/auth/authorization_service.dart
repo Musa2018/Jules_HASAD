@@ -37,6 +37,12 @@ class AuthorizationService {
     const allowedRoles = ['SuperAdmin', 'Administrator', 'TechnicalReviewer', 'AgriculturalEngineer'];
     return allowedRoles.any((r) => _roles.contains(r));
   }
+
+  bool canDeleteDamageReport() {
+    // Restricted to admins/super admins as per latest policy
+    const allowedRoles = ['SuperAdmin', 'Administrator'];
+    return allowedRoles.any((r) => _roles.contains(r));
+  }
 }
 
 final authorizationServiceProvider = Provider<AuthorizationService>((ref) {

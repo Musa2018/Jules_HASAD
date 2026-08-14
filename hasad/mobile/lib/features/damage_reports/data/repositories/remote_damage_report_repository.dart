@@ -203,6 +203,7 @@ class RemoteDamageReportRepository implements DamageReportRepository {
           fromStatus: map['fromStatus']?.toString() ?? '',
           toStatus: map['toStatus']?.toString() ?? '',
           changedByUserId: map['changedByUserId']?.toString() ?? '',
+          changedByUserName: map['changedByUserName']?.toString() ?? '',
           changedAt: map['changedAt'] != null ? DateTime.parse(map['changedAt'].toString()) : null,
           comment: map['comment']?.toString(),
           isOverride: map['isOverride'] == true,

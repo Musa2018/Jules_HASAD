@@ -1322,6 +1322,7 @@ class BackgroundSyncService {
         fromStatus: h.fromStatus,
         toStatus: h.toStatus,
         changedByUserId: h.changedByUserId,
+        changedByUserName: Value(h.changedByUserName),
         changedAt: h.changedAt ?? DateTime.now(),
         comment: Value(h.comment),
         isOverride: Value(h.isOverride),

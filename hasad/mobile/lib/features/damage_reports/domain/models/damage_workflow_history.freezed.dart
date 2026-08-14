@@ -31,6 +31,7 @@ mixin _$DamageWorkflowHistory {
   String get fromStatus => throw _privateConstructorUsedError;
   String get toStatus => throw _privateConstructorUsedError;
   String get changedByUserId => throw _privateConstructorUsedError;
+  String get changedByUserName => throw _privateConstructorUsedError;
   DateTime? get changedAt => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
   bool get isOverride => throw _privateConstructorUsedError;
@@ -59,6 +60,7 @@ abstract class $DamageWorkflowHistoryCopyWith<$Res> {
     String fromStatus,
     String toStatus,
     String changedByUserId,
+    String changedByUserName,
     DateTime? changedAt,
     String? comment,
     bool isOverride,
@@ -89,6 +91,7 @@ class _$DamageWorkflowHistoryCopyWithImpl<
     Object? fromStatus = null,
     Object? toStatus = null,
     Object? changedByUserId = null,
+    Object? changedByUserName = null,
     Object? changedAt = freezed,
     Object? comment = freezed,
     Object? isOverride = null,
@@ -118,6 +121,10 @@ class _$DamageWorkflowHistoryCopyWithImpl<
             changedByUserId: null == changedByUserId
                 ? _value.changedByUserId
                 : changedByUserId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            changedByUserName: null == changedByUserName
+                ? _value.changedByUserName
+                : changedByUserName // ignore: cast_nullable_to_non_nullable
                       as String,
             changedAt: freezed == changedAt
                 ? _value.changedAt
@@ -153,6 +160,7 @@ abstract class _$$DamageWorkflowHistoryImplCopyWith<$Res>
     String fromStatus,
     String toStatus,
     String changedByUserId,
+    String changedByUserName,
     DateTime? changedAt,
     String? comment,
     bool isOverride,
@@ -180,6 +188,7 @@ class __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>
     Object? fromStatus = null,
     Object? toStatus = null,
     Object? changedByUserId = null,
+    Object? changedByUserName = null,
     Object? changedAt = freezed,
     Object? comment = freezed,
     Object? isOverride = null,
@@ -210,6 +219,10 @@ class __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>
             ? _value.changedByUserId
             : changedByUserId // ignore: cast_nullable_to_non_nullable
                   as String,
+        changedByUserName: null == changedByUserName
+            ? _value.changedByUserName
+            : changedByUserName // ignore: cast_nullable_to_non_nullable
+                  as String,
         changedAt: freezed == changedAt
             ? _value.changedAt
             : changedAt // ignore: cast_nullable_to_non_nullable
@@ -237,6 +250,7 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
     this.fromStatus = '',
     this.toStatus = '',
     this.changedByUserId = '',
+    this.changedByUserName = '',
     this.changedAt,
     this.comment,
     this.isOverride = false,
@@ -266,6 +280,9 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
   @JsonKey()
   final String changedByUserId;
   @override
+  @JsonKey()
+  final String changedByUserName;
+  @override
   final DateTime? changedAt;
   @override
   final String? comment;
@@ -275,7 +292,7 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
 
   @override
   String toString() {
-    return 'DamageWorkflowHistory(id: $id, serverId: $serverId, damageReportId: $damageReportId, fromStatus: $fromStatus, toStatus: $toStatus, changedByUserId: $changedByUserId, changedAt: $changedAt, comment: $comment, isOverride: $isOverride)';
+    return 'DamageWorkflowHistory(id: $id, serverId: $serverId, damageReportId: $damageReportId, fromStatus: $fromStatus, toStatus: $toStatus, changedByUserId: $changedByUserId, changedByUserName: $changedByUserName, changedAt: $changedAt, comment: $comment, isOverride: $isOverride)';
   }
 
   @override
@@ -294,6 +311,8 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
                 other.toStatus == toStatus) &&
             (identical(other.changedByUserId, changedByUserId) ||
                 other.changedByUserId == changedByUserId) &&
+            (identical(other.changedByUserName, changedByUserName) ||
+                other.changedByUserName == changedByUserName) &&
             (identical(other.changedAt, changedAt) ||
                 other.changedAt == changedAt) &&
             (identical(other.comment, comment) || other.comment == comment) &&
@@ -311,6 +330,7 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
     fromStatus,
     toStatus,
     changedByUserId,
+    changedByUserName,
     changedAt,
     comment,
     isOverride,
@@ -342,6 +362,7 @@ abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
     final String fromStatus,
     final String toStatus,
     final String changedByUserId,
+    final String changedByUserName,
     final DateTime? changedAt,
     final String? comment,
     final bool isOverride,
@@ -364,6 +385,8 @@ abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
   String get toStatus;
   @override
   String get changedByUserId;
+  @override
+  String get changedByUserName;
   @override
   DateTime? get changedAt;
   @override

@@ -27,6 +27,7 @@ public class GetDamageReportHistoryQueryHandler : IRequestHandler<GetDamageRepor
                 FromStatus = h.FromStatus,
                 ToStatus = h.ToStatus,
                 ChangedByUserId = h.ChangedByUserId,
+                ChangedByUserName = _context.Users.Where(u => u.Id == h.ChangedByUserId).Select(u => u.FullName).FirstOrDefault() ?? h.ChangedByUserId,
                 ChangedAt = h.ChangedAt,
                 Comment = h.Comment,
                 IsOverride = h.IsOverride

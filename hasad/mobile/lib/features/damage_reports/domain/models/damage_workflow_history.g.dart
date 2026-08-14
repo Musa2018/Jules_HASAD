@@ -15,6 +15,7 @@ _$DamageWorkflowHistoryImpl _$$DamageWorkflowHistoryImplFromJson(
   fromStatus: json['fromStatus'] as String? ?? '',
   toStatus: json['toStatus'] as String? ?? '',
   changedByUserId: json['changedByUserId'] as String? ?? '',
+  changedByUserName: json['changedByUserName'] as String? ?? '',
   changedAt: json['changedAt'] == null
       ? null
       : DateTime.parse(json['changedAt'] as String),
@@ -31,6 +32,7 @@ Map<String, dynamic> _$$DamageWorkflowHistoryImplToJson(
   'fromStatus': instance.fromStatus,
   'toStatus': instance.toStatus,
   'changedByUserId': instance.changedByUserId,
+  'changedByUserName': instance.changedByUserName,
   'changedAt': instance.changedAt?.toIso8601String(),
   'comment': instance.comment,
   'isOverride': instance.isOverride,

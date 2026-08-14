@@ -13,6 +13,7 @@ class DamageWorkflowHistory with _$DamageWorkflowHistory {
     @Default('') String fromStatus,
     @Default('') String toStatus,
     @Default('') String changedByUserId,
+    @Default('') String changedByUserName,
     DateTime? changedAt,
     String? comment,
     @Default(false) bool isOverride,

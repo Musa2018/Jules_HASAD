@@ -412,7 +412,7 @@ class _HistorySection extends ConsumerWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("بواسطة: ${item.changedByUserId} في ${item.changedAt != null ? DateFormat("yyyy-MM-dd HH:mm").format(item.changedAt!) : '...'}"),
+                    Text("بواسطة: ${item.changedByUserName.isNotEmpty ? item.changedByUserName : item.changedByUserId} في ${item.changedAt != null ? DateFormat("yyyy-MM-dd HH:mm").format(item.changedAt!) : '...'}"),
                     if (item.comment != null && item.comment!.isNotEmpty) Text("تعليق: ${item.comment}", style: const TextStyle(fontStyle: FontStyle.italic)),
                     if (item.isOverride) const Text("(تجاوز إداري)", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                   ],

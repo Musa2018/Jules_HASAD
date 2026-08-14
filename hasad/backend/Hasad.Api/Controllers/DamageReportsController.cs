@@ -31,7 +31,7 @@ public class DamageReportsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,GeneralManager,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetDamageReport(Guid id)
     {
         var result = await _mediator.Send(new GetDamageReportByIdQuery(id));
@@ -39,7 +39,7 @@ public class DamageReportsController : ControllerBase
     }
 
     [HttpGet("farm/{farmId}")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,GeneralManager,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetDamageReportsByFarm(Guid farmId)
     {
         var result = await _mediator.Send(new GetDamageReportsByFarmQuery(farmId));

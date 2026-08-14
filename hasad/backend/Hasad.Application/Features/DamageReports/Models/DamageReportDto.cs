@@ -19,6 +19,7 @@ public class DamageReportDto
     public Guid DirectorateId { get; set; }
     public Guid LocalityId { get; set; }
     public string StatusId { get; set; } = string.Empty;
+    public decimal TotalDamage { get; set; }
     public string Notes { get; set; } = string.Empty;
     public string RowVersion { get; set; } = string.Empty;
     public List<DamageItemDto> Items { get; set; } = new();

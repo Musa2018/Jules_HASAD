@@ -26,6 +26,7 @@ class DamageReport with _$DamageReport {
     @Default('') String directorateId,
     @Default('') String localityId,
     @Default(DamageReportStatus.pendingTechnicalVerification) String statusId,
+    @JsonKey(name: 'totalDamage') @Default(0.0) double totalDamage,
     @Default('') String notes,
     @Default('') String createdBy,
     @Default('') String rowVersion,

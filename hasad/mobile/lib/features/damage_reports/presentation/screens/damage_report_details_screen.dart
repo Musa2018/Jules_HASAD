@@ -7,6 +7,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
+import 'package:mobile/features/farms/presentation/farms_providers.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:intl/intl.dart';
@@ -39,12 +40,12 @@ String _getStatusLabel(BuildContext context, String? status) {
 
 class DamageReportDetailsScreen extends ConsumerWidget {
   final DamageReport report;
-  final Farm farm;
+  final Farm? farm;
 
   const DamageReportDetailsScreen({
     super.key,
     required this.report,
-    required this.farm,
+    this.farm,
   });
 
   @override
@@ -232,34 +233,37 @@ class _SyncErrorBanner extends ConsumerWidget {
 
 class _HeaderSection extends ConsumerWidget {
   final DamageReport report;
-  final Farm farm;
-  const _HeaderSection({required this.report, required this.farm});
+  final Farm? farm;
+  const _HeaderSection({required this.report, this.farm});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
-    final govAsync = ref.watch(governoratesProvider);
-    final dirAsync = ref.watch(directoratesProvider(farm.governorateId));
-    final locAsync = ref.watch(localitiesProvider((farm.governorateId, farm.directorateId)));
+    final farmAsync = ref.watch(farmByServerIdStreamProvider(report.farmId));
+    final displayFarm = farm ?? farmAsync.value;
 
-    String govName = farm.governorateId;
-    String dirName = farm.directorateId;
-    String locName = farm.localityId;
+    final govAsync = ref.watch(governoratesProvider);
+    final dirAsync = ref.watch(directoratesProvider(report.governorateId));
+    final locAsync = ref.watch(localitiesProvider((report.governorateId, report.directorateId)));
+
+    String govName = report.governorateId;
+    String dirName = report.directorateId;
+    String locName = report.localityId;
 
     govAsync.whenData((list) {
-      final match = list.where((e) => e.id == farm.governorateId).firstOrNull;
+      final match = list.where((e) => e.id == report.governorateId).firstOrNull;
       if (match != null) govName = isAr ? match.nameAr : match.nameEn;
     });
 
     dirAsync.whenData((list) {
-      final match = list.where((e) => e.id == farm.directorateId).firstOrNull;
+      final match = list.where((e) => e.id == report.directorateId).firstOrNull;
       if (match != null) dirName = isAr ? match.nameAr : match.nameEn;
     });
 
     locAsync.whenData((list) {
-      final match = list.where((e) => e.id == farm.localityId).firstOrNull;
+      final match = list.where((e) => e.id == report.localityId).firstOrNull;
       if (match != null) locName = isAr ? match.nameAr : match.nameEn;
     });
 
@@ -293,15 +297,19 @@ class _HeaderSection extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 16),
-        _InfoRow(label: "المزرعة", value: farm.localFarmName),
+        _InfoRow(label: "المزرعة", value: displayFarm?.localFarmName ?? report.farmId),
         _InfoRow(label: l10n.locationSection, value: "$govName / $dirName / $locName"),
-        if (farm.latitude != null && farm.longitude != null)
+        if (displayFarm?.latitude != null && displayFarm?.longitude != null)
           _InfoRow(
             label: "الإحداثيات الجغرافية",
-            value: "${l10n.latitude}: ${farm.latitude!.toStringAsFixed(5)}, ${l10n.longitude}: ${farm.longitude!.toStringAsFixed(5)}",
+            value: "${l10n.latitude}: ${displayFarm!.latitude!.toStringAsFixed(5)}, ${l10n.longitude}: ${displayFarm!.longitude!.toStringAsFixed(5)}",
           ),
         _InfoRow(label: "تاريخ الضرر", value: report.damageDate != null ? DateFormat("yyyy-MM-dd").format(report.damageDate!) : '...'),
         _InfoRow(label: l10n.reportNumber, value: report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber),
+        _InfoRow(
+          label: "إجمالي الضرر",
+          value: "${(report.totalDamage > 0 ? report.totalDamage : report.items.fold(0.0, (sum, item) => sum + item.estimatedLoss)).toStringAsFixed(2)} €",
+        ),
         _InfoRow(label: l10n.notes, value: report.notes),
       ],
     );

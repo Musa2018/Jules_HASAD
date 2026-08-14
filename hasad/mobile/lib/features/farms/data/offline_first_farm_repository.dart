@@ -144,7 +144,14 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Stream<farm_domain.Farm?> watchFarm(String id) {
-    return (_db.select(_db.farms)..where((t) => t.id.equals(id) & t.isPendingDelete.equals(false)))
+    return (_db.select(_db.farms)..where((t) => (t.id.equals(id) | t.serverId.equals(id)) & t.isPendingDelete.equals(false)))
+        .watchSingleOrNull()
+        .map((e) => e != null ? mapToDomain(e) : null);
+  }
+
+  @override
+  Stream<farm_domain.Farm?> watchFarmByServerId(String serverId) {
+    return (_db.select(_db.farms)..where((t) => t.serverId.equals(serverId) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? mapToDomain(e) : null);
   }

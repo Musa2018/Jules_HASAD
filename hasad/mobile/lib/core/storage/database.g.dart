@@ -3416,6 +3416,18 @@ class $DamageReportsTable extends DamageReports
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _totalDamageMeta = const VerificationMeta(
+    'totalDamage',
+  );
+  @override
+  late final GeneratedColumn<double> totalDamage = GeneratedColumn<double>(
+    'total_damage',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -3530,6 +3542,7 @@ class $DamageReportsTable extends DamageReports
     directorateId,
     localityId,
     statusId,
+    totalDamage,
     notes,
     createdBy,
     rowVersion,
@@ -3696,6 +3709,15 @@ class $DamageReportsTable extends DamageReports
     } else if (isInserting) {
       context.missing(_statusIdMeta);
     }
+    if (data.containsKey('total_damage')) {
+      context.handle(
+        _totalDamageMeta,
+        totalDamage.isAcceptableOrUnknown(
+          data['total_damage']!,
+          _totalDamageMeta,
+        ),
+      );
+    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
@@ -3833,6 +3855,10 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}status_id'],
       )!,
+      totalDamage: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_damage'],
+      )!,
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -3894,6 +3920,7 @@ class DamageReportLocal extends DataClass
   final String directorateId;
   final String localityId;
   final String statusId;
+  final double totalDamage;
   final String notes;
   final String createdBy;
   final String rowVersion;
@@ -3921,6 +3948,7 @@ class DamageReportLocal extends DataClass
     required this.directorateId,
     required this.localityId,
     required this.statusId,
+    required this.totalDamage,
     required this.notes,
     required this.createdBy,
     required this.rowVersion,
@@ -3953,6 +3981,7 @@ class DamageReportLocal extends DataClass
     map['directorate_id'] = Variable<String>(directorateId);
     map['locality_id'] = Variable<String>(localityId);
     map['status_id'] = Variable<String>(statusId);
+    map['total_damage'] = Variable<double>(totalDamage);
     map['notes'] = Variable<String>(notes);
     map['created_by'] = Variable<String>(createdBy);
     map['row_version'] = Variable<String>(rowVersion);
@@ -3990,6 +4019,7 @@ class DamageReportLocal extends DataClass
       directorateId: Value(directorateId),
       localityId: Value(localityId),
       statusId: Value(statusId),
+      totalDamage: Value(totalDamage),
       notes: Value(notes),
       createdBy: Value(createdBy),
       rowVersion: Value(rowVersion),
@@ -4039,6 +4069,7 @@ class DamageReportLocal extends DataClass
       directorateId: serializer.fromJson<String>(json['directorateId']),
       localityId: serializer.fromJson<String>(json['localityId']),
       statusId: serializer.fromJson<String>(json['statusId']),
+      totalDamage: serializer.fromJson<double>(json['totalDamage']),
       notes: serializer.fromJson<String>(json['notes']),
       createdBy: serializer.fromJson<String>(json['createdBy']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
@@ -4071,6 +4102,7 @@ class DamageReportLocal extends DataClass
       'directorateId': serializer.toJson<String>(directorateId),
       'localityId': serializer.toJson<String>(localityId),
       'statusId': serializer.toJson<String>(statusId),
+      'totalDamage': serializer.toJson<double>(totalDamage),
       'notes': serializer.toJson<String>(notes),
       'createdBy': serializer.toJson<String>(createdBy),
       'rowVersion': serializer.toJson<String>(rowVersion),
@@ -4101,6 +4133,7 @@ class DamageReportLocal extends DataClass
     String? directorateId,
     String? localityId,
     String? statusId,
+    double? totalDamage,
     String? notes,
     String? createdBy,
     String? rowVersion,
@@ -4128,6 +4161,7 @@ class DamageReportLocal extends DataClass
     directorateId: directorateId ?? this.directorateId,
     localityId: localityId ?? this.localityId,
     statusId: statusId ?? this.statusId,
+    totalDamage: totalDamage ?? this.totalDamage,
     notes: notes ?? this.notes,
     createdBy: createdBy ?? this.createdBy,
     rowVersion: rowVersion ?? this.rowVersion,
@@ -4185,6 +4219,9 @@ class DamageReportLocal extends DataClass
           ? data.localityId.value
           : this.localityId,
       statusId: data.statusId.present ? data.statusId.value : this.statusId,
+      totalDamage: data.totalDamage.present
+          ? data.totalDamage.value
+          : this.totalDamage,
       notes: data.notes.present ? data.notes.value : this.notes,
       createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       rowVersion: data.rowVersion.present
@@ -4225,6 +4262,7 @@ class DamageReportLocal extends DataClass
           ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('statusId: $statusId, ')
+          ..write('totalDamage: $totalDamage, ')
           ..write('notes: $notes, ')
           ..write('createdBy: $createdBy, ')
           ..write('rowVersion: $rowVersion, ')
@@ -4257,6 +4295,7 @@ class DamageReportLocal extends DataClass
     directorateId,
     localityId,
     statusId,
+    totalDamage,
     notes,
     createdBy,
     rowVersion,
@@ -4288,6 +4327,7 @@ class DamageReportLocal extends DataClass
           other.directorateId == this.directorateId &&
           other.localityId == this.localityId &&
           other.statusId == this.statusId &&
+          other.totalDamage == this.totalDamage &&
           other.notes == this.notes &&
           other.createdBy == this.createdBy &&
           other.rowVersion == this.rowVersion &&
@@ -4317,6 +4357,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> directorateId;
   final Value<String> localityId;
   final Value<String> statusId;
+  final Value<double> totalDamage;
   final Value<String> notes;
   final Value<String> createdBy;
   final Value<String> rowVersion;
@@ -4345,6 +4386,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     this.statusId = const Value.absent(),
+    this.totalDamage = const Value.absent(),
     this.notes = const Value.absent(),
     this.createdBy = const Value.absent(),
     this.rowVersion = const Value.absent(),
@@ -4374,6 +4416,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     required String statusId,
+    this.totalDamage = const Value.absent(),
     required String notes,
     this.createdBy = const Value.absent(),
     this.rowVersion = const Value.absent(),
@@ -4408,6 +4451,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<String>? directorateId,
     Expression<String>? localityId,
     Expression<String>? statusId,
+    Expression<double>? totalDamage,
     Expression<String>? notes,
     Expression<String>? createdBy,
     Expression<String>? rowVersion,
@@ -4441,6 +4485,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (directorateId != null) 'directorate_id': directorateId,
       if (localityId != null) 'locality_id': localityId,
       if (statusId != null) 'status_id': statusId,
+      if (totalDamage != null) 'total_damage': totalDamage,
       if (notes != null) 'notes': notes,
       if (createdBy != null) 'created_by': createdBy,
       if (rowVersion != null) 'row_version': rowVersion,
@@ -4472,6 +4517,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<String>? directorateId,
     Value<String>? localityId,
     Value<String>? statusId,
+    Value<double>? totalDamage,
     Value<String>? notes,
     Value<String>? createdBy,
     Value<String>? rowVersion,
@@ -4502,6 +4548,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       directorateId: directorateId ?? this.directorateId,
       localityId: localityId ?? this.localityId,
       statusId: statusId ?? this.statusId,
+      totalDamage: totalDamage ?? this.totalDamage,
       notes: notes ?? this.notes,
       createdBy: createdBy ?? this.createdBy,
       rowVersion: rowVersion ?? this.rowVersion,
@@ -4577,6 +4624,9 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (statusId.present) {
       map['status_id'] = Variable<String>(statusId.value);
     }
+    if (totalDamage.present) {
+      map['total_damage'] = Variable<double>(totalDamage.value);
+    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
@@ -4628,6 +4678,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('statusId: $statusId, ')
+          ..write('totalDamage: $totalDamage, ')
           ..write('notes: $notes, ')
           ..write('createdBy: $createdBy, ')
           ..write('rowVersion: $rowVersion, ')
@@ -16018,6 +16069,7 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       Value<String> directorateId,
       Value<String> localityId,
       required String statusId,
+      Value<double> totalDamage,
       required String notes,
       Value<String> createdBy,
       Value<String> rowVersion,
@@ -16048,6 +16100,7 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<String> directorateId,
       Value<String> localityId,
       Value<String> statusId,
+      Value<double> totalDamage,
       Value<String> notes,
       Value<String> createdBy,
       Value<String> rowVersion,
@@ -16155,6 +16208,11 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<String> get statusId => $composableBuilder(
     column: $table.statusId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalDamage => $composableBuilder(
+    column: $table.totalDamage,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16298,6 +16356,11 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get totalDamage => $composableBuilder(
+    column: $table.totalDamage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnOrderings(column),
@@ -16428,6 +16491,11 @@ class $$DamageReportsTableAnnotationComposer
   GeneratedColumn<String> get statusId =>
       $composableBuilder(column: $table.statusId, builder: (column) => column);
 
+  GeneratedColumn<double> get totalDamage => $composableBuilder(
+    column: $table.totalDamage,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
@@ -16514,6 +16582,7 @@ class $$DamageReportsTableTableManager
                 Value<String> directorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
                 Value<String> statusId = const Value.absent(),
+                Value<double> totalDamage = const Value.absent(),
                 Value<String> notes = const Value.absent(),
                 Value<String> createdBy = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
@@ -16542,6 +16611,7 @@ class $$DamageReportsTableTableManager
                 directorateId: directorateId,
                 localityId: localityId,
                 statusId: statusId,
+                totalDamage: totalDamage,
                 notes: notes,
                 createdBy: createdBy,
                 rowVersion: rowVersion,
@@ -16572,6 +16642,7 @@ class $$DamageReportsTableTableManager
                 Value<String> directorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
                 required String statusId,
+                Value<double> totalDamage = const Value.absent(),
                 required String notes,
                 Value<String> createdBy = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
@@ -16600,6 +16671,7 @@ class $$DamageReportsTableTableManager
                 directorateId: directorateId,
                 localityId: localityId,
                 statusId: statusId,
+                totalDamage: totalDamage,
                 notes: notes,
                 createdBy: createdBy,
                 rowVersion: rowVersion,

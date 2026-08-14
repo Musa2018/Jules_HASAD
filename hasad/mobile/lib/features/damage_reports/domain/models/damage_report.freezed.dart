@@ -40,6 +40,8 @@ mixin _$DamageReport {
   String get directorateId => throw _privateConstructorUsedError;
   String get localityId => throw _privateConstructorUsedError;
   String get statusId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'totalDamage')
+  double get totalDamage => throw _privateConstructorUsedError;
   String get notes => throw _privateConstructorUsedError;
   String get createdBy => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
@@ -86,6 +88,7 @@ abstract class $DamageReportCopyWith<$Res> {
     String directorateId,
     String localityId,
     String statusId,
+    @JsonKey(name: 'totalDamage') double totalDamage,
     String notes,
     String createdBy,
     String rowVersion,
@@ -131,6 +134,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? directorateId = null,
     Object? localityId = null,
     Object? statusId = null,
+    Object? totalDamage = null,
     Object? notes = null,
     Object? createdBy = null,
     Object? rowVersion = null,
@@ -212,6 +216,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.statusId
                 : statusId // ignore: cast_nullable_to_non_nullable
                       as String,
+            totalDamage: null == totalDamage
+                ? _value.totalDamage
+                : totalDamage // ignore: cast_nullable_to_non_nullable
+                      as double,
             notes: null == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
@@ -285,6 +293,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String directorateId,
     String localityId,
     String statusId,
+    @JsonKey(name: 'totalDamage') double totalDamage,
     String notes,
     String createdBy,
     String rowVersion,
@@ -329,6 +338,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? directorateId = null,
     Object? localityId = null,
     Object? statusId = null,
+    Object? totalDamage = null,
     Object? notes = null,
     Object? createdBy = null,
     Object? rowVersion = null,
@@ -410,6 +420,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.statusId
             : statusId // ignore: cast_nullable_to_non_nullable
                   as String,
+        totalDamage: null == totalDamage
+            ? _value.totalDamage
+            : totalDamage // ignore: cast_nullable_to_non_nullable
+                  as double,
         notes: null == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
@@ -476,6 +490,7 @@ class _$DamageReportImpl implements _DamageReport {
     this.directorateId = '',
     this.localityId = '',
     this.statusId = DamageReportStatus.pendingTechnicalVerification,
+    @JsonKey(name: 'totalDamage') this.totalDamage = 0.0,
     this.notes = '',
     this.createdBy = '',
     this.rowVersion = '',
@@ -542,6 +557,9 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final String statusId;
   @override
+  @JsonKey(name: 'totalDamage')
+  final double totalDamage;
+  @override
   @JsonKey()
   final String notes;
   @override
@@ -575,7 +593,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, totalDamage: $totalDamage, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -615,6 +633,8 @@ class _$DamageReportImpl implements _DamageReport {
                 other.localityId == localityId) &&
             (identical(other.statusId, statusId) ||
                 other.statusId == statusId) &&
+            (identical(other.totalDamage, totalDamage) ||
+                other.totalDamage == totalDamage) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.createdBy, createdBy) ||
                 other.createdBy == createdBy) &&
@@ -656,6 +676,7 @@ class _$DamageReportImpl implements _DamageReport {
     directorateId,
     localityId,
     statusId,
+    totalDamage,
     notes,
     createdBy,
     rowVersion,
@@ -701,6 +722,7 @@ abstract class _DamageReport implements DamageReport {
     final String directorateId,
     final String localityId,
     final String statusId,
+    @JsonKey(name: 'totalDamage') final double totalDamage,
     final String notes,
     final String createdBy,
     final String rowVersion,
@@ -752,6 +774,9 @@ abstract class _DamageReport implements DamageReport {
   String get localityId;
   @override
   String get statusId;
+  @override
+  @JsonKey(name: 'totalDamage')
+  double get totalDamage;
   @override
   String get notes;
   @override

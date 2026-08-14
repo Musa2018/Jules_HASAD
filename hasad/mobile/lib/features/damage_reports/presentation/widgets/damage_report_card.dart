@@ -28,8 +28,8 @@ class DamageReportCard extends ConsumerWidget {
     final authService = ref.watch(authorizationServiceProvider);
 
     // Lookups
-    final farmAsync = ref.watch(farmStreamProvider(report.farmId));
-    final farmerAsync = ref.watch(farmerStreamProvider(report.farmerId));
+    final farmAsync = ref.watch(farmByServerIdStreamProvider(report.farmId));
+    final farmerAsync = ref.watch(farmerByServerIdStreamProvider(report.farmerId));
     final refDataAsync = ref.watch(referenceDataProvider);
     
     // Location lookups based on report data (snapshots)
@@ -159,7 +159,7 @@ class DamageReportCard extends ConsumerWidget {
                   label: l10n.farmerName,
                   value: farmerAsync.when(
                     data: (f) => f?.fullName ?? report.farmerId,
-                    loading: () => "...",
+                    loading: () => "جاري التحميل...",
                     error: (_, _) => report.farmerId,
                   ),
                 ),
@@ -169,7 +169,7 @@ class DamageReportCard extends ConsumerWidget {
                   label: l10n.farm,
                   value: farmAsync.when(
                     data: (f) => f?.localFarmName ?? report.farmId,
-                    loading: () => "...",
+                    loading: () => "جاري التحميل...",
                     error: (_, _) => report.farmId,
                   ),
                 ),
@@ -193,6 +193,12 @@ class DamageReportCard extends ConsumerWidget {
                   icon: Icons.report_problem_outlined,
                   label: l10n.damageCause,
                   value: causeText,
+                ),
+                const SizedBox(height: 8),
+                _InfoRow(
+                  icon: Icons.payments_outlined,
+                  label: "إجمالي الضرر",
+                  value: "${(report.totalDamage > 0 ? report.totalDamage : report.items.fold(0.0, (sum, item) => sum + item.estimatedLoss)).toStringAsFixed(2)} €",
                 ),
                 const SizedBox(height: 8),
                 _InfoRow(

@@ -32,6 +32,7 @@ _$DamageReportImpl _$$DamageReportImplFromJson(
   statusId:
       json['statusId'] as String? ??
       DamageReportStatus.pendingTechnicalVerification,
+  totalDamage: (json['totalDamage'] as num?)?.toDouble() ?? 0.0,
   notes: json['notes'] as String? ?? '',
   createdBy: json['createdBy'] as String? ?? '',
   rowVersion: json['rowVersion'] as String? ?? '',
@@ -71,6 +72,7 @@ Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
       'directorateId': instance.directorateId,
       'localityId': instance.localityId,
       'statusId': instance.statusId,
+      'totalDamage': instance.totalDamage,
       'notes': instance.notes,
       'createdBy': instance.createdBy,
       'rowVersion': instance.rowVersion,

@@ -34,6 +34,8 @@ public class DamageReport : ISoftDelete
 
     public string StatusId { get; set; } = "PendingTechnicalVerification";
 
+    public decimal TotalDamage { get; set; }
+
     public string Notes { get; set; } = string.Empty;
 
     public string CreatedBy { get; set; } = string.Empty;

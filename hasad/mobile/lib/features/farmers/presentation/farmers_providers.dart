@@ -48,6 +48,11 @@ final farmerStreamProvider =
       return ref.watch(farmerRepositoryProvider).watchFarmer(id);
     });
 
+final farmerByServerIdStreamProvider =
+    StreamProvider.autoDispose.family<Farmer?, String>((ref, serverId) {
+      return ref.watch(farmerRepositoryProvider).watchFarmerByServerId(serverId);
+    });
+
 class FarmerFormState {
   final bool isLoading;
   final List<String> errors;

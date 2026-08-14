@@ -55,7 +55,7 @@ public class AddDamageItemCommandHandler : IRequestHandler<AddDamageItemCommand,
         }
 
         var report = await _context.DamageReports
-            .AsNoTracking()
+            .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.Id == request.DamageReportId, cancellationToken);
 
         if (report == null)
@@ -118,6 +118,10 @@ public class AddDamageItemCommandHandler : IRequestHandler<AddDamageItemCommand,
         };
 
         _context.DamageItems.Add(item);
+
+        // Update TotalDamage on Report
+        report.TotalDamage = report.Items.Sum(i => i.EstimatedLoss) + backendCalculatedLoss;
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result<DamageItemDto>.Success(MapToDto(item));

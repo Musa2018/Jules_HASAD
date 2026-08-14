@@ -27,7 +27,7 @@ public class AssistancesController : ControllerBase
     }
 
     [HttpGet("report/{reportId}")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,GeneralManager,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetByReportId(Guid reportId)
     {
         var result = await _mediator.Send(new GetAssistanceByReportIdQuery(reportId));

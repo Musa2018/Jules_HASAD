@@ -47,6 +47,7 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
     {
         var item = await _context.DamageItems
             .Include(i => i.DamageReport)
+            .ThenInclude(r => r!.Items)
             .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
 
         if (item == null)
@@ -110,6 +111,12 @@ public class UpdateDamageItemCommandHandler : IRequestHandler<UpdateDamageItemCo
         item.Quantity = request.Quantity;
         item.EstimatedLoss = backendCalculatedLoss; // Authority loss
         item.UpdatedAt = DateTime.UtcNow;
+
+        // Update TotalDamage on Report
+        if (item.DamageReport != null)
+        {
+            item.DamageReport.TotalDamage = item.DamageReport.Items.Sum(i => i.EstimatedLoss);
+        }
 
         try
         {

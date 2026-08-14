@@ -179,6 +179,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
             DamageCauseCategoryId = request.DamageCauseCategoryId,
             DamageCauseId = request.DamageCauseId,
             StatusId = DamageReportStatus.PendingTechnicalVerification,
+            TotalDamage = items.Sum(i => i.EstimatedLoss),
             Notes = request.Notes,
             CreatedBy = _currentUser.UserId ?? "System",
             CreatedAt = DateTime.UtcNow,
@@ -213,6 +214,7 @@ public class CreateDamageReportCommandHandler : IRequestHandler<CreateDamageRepo
         DirectorateId = report.DirectorateId,
         LocalityId = report.LocalityId,
         StatusId = report.StatusId,
+        TotalDamage = report.TotalDamage,
         Notes = report.Notes,
         RowVersion = Convert.ToBase64String(report.RowVersion),
         Items = report.Items.Select(i => new DamageItemDto

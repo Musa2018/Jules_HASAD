@@ -62,6 +62,7 @@ public class GetDamageReportsByFarmerQueryHandler : IRequestHandler<GetDamageRep
                 DirectorateId = r.DirectorateId,
                 LocalityId = r.LocalityId,
                 StatusId = r.StatusId,
+                TotalDamage = r.TotalDamage,
                 Notes = r.Notes,
                 RowVersion = Convert.ToBase64String(r.RowVersion),
                 Items = r.Items.Select(i => new DamageItemDto

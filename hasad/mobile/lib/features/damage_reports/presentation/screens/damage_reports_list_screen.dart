@@ -69,7 +69,7 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
             child: reportsAsync.when(
               data: (reports) {
                 final displayReports = widget.farm != null
-                    ? reports.where((r) => r.farmId == widget.farm!.id).toList()
+                    ? reports.where((r) => r.farmId == widget.farm!.id || (widget.farm!.serverId != null && r.farmId == widget.farm!.serverId)).toList()
                     : reports;
 
                 if (displayReports.isEmpty) {

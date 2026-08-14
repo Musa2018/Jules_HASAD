@@ -6,6 +6,7 @@ import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
+import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farms/presentation/farms_providers.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
@@ -244,6 +245,8 @@ class _HeaderSection extends ConsumerWidget {
     final farmAsync = ref.watch(farmByServerIdStreamProvider(report.farmId));
     final displayFarm = farm ?? farmAsync.value;
 
+    final farmerAsync = ref.watch(farmerByServerIdStreamProvider(report.farmerId));
+
     final govAsync = ref.watch(governoratesProvider);
     final dirAsync = ref.watch(directoratesProvider(report.governorateId));
     final locAsync = ref.watch(localitiesProvider((report.governorateId, report.directorateId)));
@@ -297,6 +300,7 @@ class _HeaderSection extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 16),
+        _InfoRow(label: l10n.farmerName, value: farmerAsync.value?.fullName ?? report.farmerId),
         _InfoRow(label: "المزرعة", value: displayFarm?.localFarmName ?? report.farmId),
         _InfoRow(label: l10n.locationSection, value: "$govName / $dirName / $locName"),
         if (displayFarm?.latitude != null && displayFarm?.longitude != null)

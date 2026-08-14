@@ -11,11 +11,7 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
-class MockRef extends Mock implements Ref {}
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockConnectivity extends Mock implements Connectivity {}
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;

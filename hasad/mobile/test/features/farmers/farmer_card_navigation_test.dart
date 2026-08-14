@@ -15,8 +15,7 @@ import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_card.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
-class MockAuthorizationService extends Mock implements AuthorizationService {}
-class MockLocationRepository extends Mock implements LocationRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockAuthorizationService mockAuthService;

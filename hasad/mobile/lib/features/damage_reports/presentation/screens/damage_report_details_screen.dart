@@ -306,7 +306,7 @@ class _HeaderSection extends ConsumerWidget {
         if (displayFarm?.latitude != null && displayFarm?.longitude != null)
           _InfoRow(
             label: "الإحداثيات الجغرافية",
-            value: "${l10n.latitude}: ${displayFarm!.latitude!.toStringAsFixed(5)}, ${l10n.longitude}: ${displayFarm!.longitude!.toStringAsFixed(5)}",
+            value: "${l10n.latitude}: ${displayFarm.latitude.toStringAsFixed(5)}, ${l10n.longitude}: ${displayFarm.longitude.toStringAsFixed(5)}",
           ),
         _InfoRow(label: "تاريخ الضرر", value: report.damageDate != null ? DateFormat("yyyy-MM-dd").format(report.damageDate!) : '...'),
         _InfoRow(label: l10n.reportNumber, value: report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber),

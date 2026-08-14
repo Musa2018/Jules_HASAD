@@ -16,11 +16,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report_statu
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockFarmRepository extends Mock implements FarmRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockDamageReportAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
-class MockConnectivity extends Mock implements Connectivity {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;

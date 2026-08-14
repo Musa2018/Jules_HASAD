@@ -23,9 +23,7 @@ import 'package:mobile/l10n/app_localizations.dart';
 
 import '../auth/fakes.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockLocationRepository extends Mock implements LocationRepository {}
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../helpers/mocks.dart';
 
 void main() {
   late MockFarmerRepository mockFarmerRepo;

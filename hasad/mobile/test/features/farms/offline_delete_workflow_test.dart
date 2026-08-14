@@ -17,21 +17,14 @@ import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farms/data/offline_first_farm_repository.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockFarmRepository extends Mock implements FarmRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
-class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
-class MockConnectivity extends Mock implements Connectivity {}
-class MockRef extends Mock implements Ref {}
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
   late MockFarmerRepository mockFarmerRepo;
   late MockFarmRepository mockFarmRepo;
   late MockDamageReportRepository mockDamageRepo;
-  late MockAttachmentRepository mockAttachmentRepo;
+  late MockDamageReportAttachmentRepository mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
   late MockRef mockRef;
@@ -42,7 +35,7 @@ void main() {
     mockFarmerRepo = MockFarmerRepository();
     mockFarmRepo = MockFarmRepository();
     mockDamageRepo = MockDamageReportRepository();
-    mockAttachmentRepo = MockAttachmentRepository();
+    mockAttachmentRepo = MockDamageReportAttachmentRepository();
     mockConnectivity = MockConnectivity();
     mockAuthService = MockAuthorizationService();
     mockRef = MockRef();

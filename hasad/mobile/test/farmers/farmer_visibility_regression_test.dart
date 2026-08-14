@@ -12,10 +12,7 @@ import 'package:drift/native.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:drift/drift.dart';
 
-class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
-class MockRef extends Mock implements Ref {}
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockConnectivity extends Mock implements Connectivity {}
+import '../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;

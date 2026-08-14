@@ -7,7 +7,7 @@ import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/domain/reference_data.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockRemoteReferenceDataRepository extends Mock implements RemoteReferenceDataRepository {}
+import '../helpers/mocks.dart';
 
 void main() {
   late db_local.AppDatabase db;

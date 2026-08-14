@@ -16,9 +16,7 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockGoRouter extends Mock implements GoRouter {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockReferenceDataRepository mockRefRepo;

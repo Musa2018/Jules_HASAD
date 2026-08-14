@@ -543,6 +543,7 @@ class AppDatabase extends _$AppDatabase {
         // 3. Enforce NOT NULL by recreating the table via Drift's alterTable
         // This handles the SQLite limitation of not being able to ADD NOT NULL columns to existing data
         // and ensures future integrity without fake defaults.
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 16) {
@@ -620,16 +621,21 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 18) {
         // Sprint 14.2.2: DamageReport Entity Principle - Removing redundant fields
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 19) {
         // Sprint 14.2.3: Damage Assessment Reference Data Foundation
         // Refactor DamageCategories to be sector-based
+        // ignore: experimental_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageCategories));
       }
       if (from < 20) {
         // Sprint 14.2.3 Correction: Add Damage Action
         await m.createTable(damageActions);
+        // ignore: experimental_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageItems));
       }
       if (from < 21) {
@@ -668,6 +674,7 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 24) {
         // Phase 2 Cleanup: Remove Settlement and Company names
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 25) {
@@ -681,10 +688,12 @@ class AppDatabase extends _$AppDatabase {
         } catch (_) {}
         
         // Attempt to clean DamageReports
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 26) {
         // FINAL CLEANUP: Force recreate DamageReports without coordinates
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 28) {

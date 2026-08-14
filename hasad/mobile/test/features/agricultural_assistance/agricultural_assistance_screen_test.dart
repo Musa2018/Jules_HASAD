@@ -16,14 +16,7 @@ import 'package:mobile/features/auth/data/auth_repository.dart';
 import 'package:mobile/core/storage/secure_storage_service.dart';
 import 'package:mobile/core/network/token_refresher.dart';
 
-class MockAgriculturalAssistanceRepository extends Mock
-    implements AgriculturalAssistanceRepository {}
-
-class MockAuthRepository extends Mock implements AuthRepository {}
-
-class MockSecureStorageService extends Mock implements SecureStorageService {}
-
-class MockTokenRefresher extends Mock implements TokenRefresher {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockAgriculturalAssistanceRepository repository;

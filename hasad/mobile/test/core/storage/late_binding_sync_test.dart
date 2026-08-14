@@ -15,19 +15,14 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
-class MockFarmerRepo extends Mock implements FarmerRepository {}
-class MockFarmRepo extends Mock implements FarmRepository {}
-class MockReportRepo extends Mock implements DamageReportRepository {}
-class MockAttachmentRepo extends Mock implements DamageReportAttachmentRepository {}
-class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
-class MockConnectivity extends Mock implements Connectivity {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
-  late MockFarmerRepo farmerRepo;
-  late MockFarmRepo farmRepo;
-  late MockReportRepo reportRepo;
-  late MockAttachmentRepo attachmentRepo;
+  late MockFarmerRepository farmerRepo;
+  late MockFarmRepository farmRepo;
+  late MockDamageReportRepository reportRepo;
+  late MockDamageReportAttachmentRepository attachmentRepo;
   late MockConnectivity connectivity;
   late BackgroundSyncService syncService;
 
@@ -53,10 +48,10 @@ void main() {
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
-    farmerRepo = MockFarmerRepo();
-    farmRepo = MockFarmRepo();
-    reportRepo = MockReportRepo();
-    attachmentRepo = MockAttachmentRepo();
+    farmerRepo = MockFarmerRepository();
+    farmRepo = MockFarmRepository();
+    reportRepo = MockDamageReportRepository();
+    attachmentRepo = MockDamageReportAttachmentRepository();
     connectivity = MockConnectivity();
 
     syncService = BackgroundSyncService(

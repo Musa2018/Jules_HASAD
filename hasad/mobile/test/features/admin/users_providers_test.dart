@@ -13,17 +13,7 @@ import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart' as loc;
 import 'package:mocktail/mocktail.dart';
 
-class MockUsersRepository extends Mock implements UsersRepository {}
-
-class MockAuthRepository extends Mock implements AuthRepository {}
-
-class MockSecureStorageService extends Mock implements SecureStorageService {}
-
-class MockTokenRefresher extends Mock implements TokenRefresher {}
-
-class MockDio extends Mock implements Dio {}
-
-class MockLocationRepository extends Mock implements LocationRepository {}
+import '../../helpers/mocks.dart';
 
 class FakeAuthNotifier extends AuthNotifier {
   FakeAuthNotifier({required AuthStatus status, AuthSession? session})

@@ -15,13 +15,7 @@ import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockUsersRepository extends Mock implements UsersRepository {}
-
-class MockAuthRepository extends Mock implements AuthRepository {}
-
-class MockSecureStorageService extends Mock implements SecureStorageService {}
-
-class MockTokenRefresher extends Mock implements TokenRefresher {}
+import '../../helpers/mocks.dart';
 
 class FakeAuthNotifier extends AuthNotifier {
   FakeAuthNotifier()

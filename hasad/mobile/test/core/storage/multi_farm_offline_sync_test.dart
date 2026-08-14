@@ -14,11 +14,7 @@ import 'package:mobile/features/damage_reports/data/repositories/damage_report_a
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:convert';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockFarmRepository extends Mock implements FarmRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
-class MockConnectivity extends Mock implements Connectivity {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
@@ -26,7 +22,7 @@ void main() {
   late MockFarmerRepository mockFarmerRepo;
   late MockFarmRepository mockFarmRepo;
   late MockDamageReportRepository mockDamageRepo;
-  late MockAttachmentRepository mockAttachmentRepo;
+  late MockDamageReportAttachmentRepository mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
 
   setUp(() {
@@ -34,7 +30,7 @@ void main() {
     mockFarmerRepo = MockFarmerRepository();
     mockFarmRepo = MockFarmRepository();
     mockDamageRepo = MockDamageReportRepository();
-    mockAttachmentRepo = MockAttachmentRepository();
+    mockAttachmentRepo = MockDamageReportAttachmentRepository();
     mockConnectivity = MockConnectivity();
 
     syncService = BackgroundSyncService(

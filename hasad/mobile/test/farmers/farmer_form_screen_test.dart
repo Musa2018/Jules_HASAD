@@ -16,8 +16,7 @@ import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockLocationRepository extends Mock implements LocationRepository {}
+import '../helpers/mocks.dart';
 
 void main() {
   late MockFarmerRepository mockFarmerRepo;

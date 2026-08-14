@@ -8,7 +8,7 @@ import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart' as domain;
 import 'package:mobile/features/farms/domain/reference_data.dart';
 
-class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
+import '../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;

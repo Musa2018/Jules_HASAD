@@ -14,7 +14,7 @@ import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   setUpAll(() {

@@ -6,7 +6,7 @@ import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockReferenceDataRepository mockRepo;

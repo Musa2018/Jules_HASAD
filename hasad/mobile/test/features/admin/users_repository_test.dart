@@ -6,7 +6,7 @@ import 'package:mobile/features/admin/data/users_repository.dart';
 import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockLocationRepository extends Mock implements LocationRepository {}
+import '../../helpers/mocks.dart';
 
 class _FixedAdapter implements HttpClientAdapter {
   final Map<String, dynamic> body;

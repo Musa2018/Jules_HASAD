@@ -17,7 +17,7 @@ import 'package:mobile/core/presentation/widgets/searchable_lookup_field.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
+import '../helpers/mocks.dart';
 
 void main() {
   late MockFarmerRepository mockRepo;

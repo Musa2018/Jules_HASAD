@@ -16,8 +16,7 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-class MockFarmRepository extends Mock implements FarmRepository {}
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../helpers/mocks.dart';
 
 void main() {
   late MockFarmRepository mockRepo;

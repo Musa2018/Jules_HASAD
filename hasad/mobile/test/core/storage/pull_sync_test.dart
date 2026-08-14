@@ -10,8 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farms/presentation/farms_providers.dart';
 
-class MockFarmerRepo extends Mock implements FarmerRepository {}
-class MockFarmRepo extends Mock implements FarmRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;

@@ -22,10 +22,7 @@ import 'package:mobile/core/network/token_refresher.dart';
 
 import 'package:mobile/core/config/app_config.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockAuthRepository extends Mock implements AuthRepository {}
-class MockSecureStorageService extends Mock implements SecureStorageService {}
-class MockTokenRefresher extends Mock implements TokenRefresher {}
+import '../helpers/mocks.dart';
 
 class MockAuthNotifier extends AuthNotifier {
   MockAuthNotifier(AuthState initialState) 

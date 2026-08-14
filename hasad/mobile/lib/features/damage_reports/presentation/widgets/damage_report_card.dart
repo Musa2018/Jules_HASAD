@@ -339,10 +339,37 @@ class _StatusBadge extends StatelessWidget {
         color = Colors.grey;
         break;
       case 'TechReview':
-      case 'MinTechReview':
       case 'Submitted':
         label = l10n.status_TechReview;
         color = Colors.blue;
+        break;
+      case 'ArchiveDir':
+        label = l10n.status_ArchiveDir;
+        color = Colors.orange;
+        break;
+      case 'DirManager':
+        label = l10n.status_DirManager;
+        color = Colors.teal;
+        break;
+      case 'MinTechReview':
+        label = l10n.status_MinTechReview;
+        color = Colors.indigo;
+        break;
+      case 'LegalReview':
+        label = l10n.status_LegalReview;
+        color = Colors.brown;
+        break;
+      case 'ProcReview':
+        label = l10n.status_ProcReview;
+        color = Colors.blueGrey;
+        break;
+      case 'MinArchive':
+        label = l10n.status_MinArchive;
+        color = Colors.deepPurple;
+        break;
+      case 'GenManager':
+        label = l10n.status_GenManager;
+        color = Colors.amber[800]!;
         break;
       case 'Completed':
       case 'Approved':

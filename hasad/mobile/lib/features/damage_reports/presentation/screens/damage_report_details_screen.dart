@@ -487,19 +487,94 @@ class _WorkflowActionBar extends ConsumerWidget {
           onPressed: isBusy ? null : () => _handleTransition(context, ref, 'TechReview', needsComment: true),
         ));
       }
-    } else if (status == 'DirManager') {
+    } else if (status == DamageReportStatus.dirManager) {
       if (auth.hasRole("DirectorateManager") || auth.hasRole("Director") || auth.hasRole("Supervisor")) {
         actions.add(_ActionButton(
           label: "اعتماد المديرية",
           icon: Icons.approval,
           color: isBusy ? Colors.grey : Colors.green,
-          onPressed: isBusy ? null : () => _handleTransition(context, ref, 'MinTechReview'),
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minTechReview),
         ));
         actions.add(_ActionButton(
           label: "إرجاع للأرشفة",
           icon: Icons.assignment_return,
           color: isBusy ? Colors.grey : Colors.orange,
-          onPressed: isBusy ? null : () => _handleTransition(context, ref, 'ArchiveDir', needsComment: true),
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.archiveDir, needsComment: true),
+        ));
+      }
+    } else if (status == DamageReportStatus.minTechReview) {
+      if (auth.hasRole("MinistryTechReviewer")) {
+        actions.add(_ActionButton(
+          label: "تحويل للقانونية",
+          icon: Icons.gavel,
+          color: isBusy ? Colors.grey : Colors.green,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.legalReview),
+        ));
+        actions.add(_ActionButton(
+          label: "إرجاع للمديرية",
+          icon: Icons.assignment_return,
+          color: isBusy ? Colors.grey : Colors.orange,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.dirManager, needsComment: true),
+        ));
+      }
+    } else if (status == DamageReportStatus.legalReview) {
+      if (auth.hasRole("LegalReviewer")) {
+        actions.add(_ActionButton(
+          label: "تحويل للإجرائية",
+          icon: Icons.next_plan,
+          color: isBusy ? Colors.grey : Colors.green,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.procReview),
+        ));
+        actions.add(_ActionButton(
+          label: "إرجاع للوزارة",
+          icon: Icons.assignment_return,
+          color: isBusy ? Colors.grey : Colors.orange,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minTechReview, needsComment: true),
+        ));
+      }
+    } else if (status == DamageReportStatus.procReview) {
+      if (auth.hasRole("ProceduralReviewer")) {
+        actions.add(_ActionButton(
+          label: "تحويل للأرشيف",
+          icon: Icons.archive,
+          color: isBusy ? Colors.grey : Colors.green,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minArchive),
+        ));
+        actions.add(_ActionButton(
+          label: "إرجاع للقانونية",
+          icon: Icons.assignment_return,
+          color: isBusy ? Colors.grey : Colors.orange,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.legalReview, needsComment: true),
+        ));
+      }
+    } else if (status == DamageReportStatus.minArchive) {
+      if (auth.hasRole("ChiefArchiveOfficer")) {
+        actions.add(_ActionButton(
+          label: "تحويل للمدير العام",
+          icon: Icons.person_add,
+          color: isBusy ? Colors.grey : Colors.green,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.genManager),
+        ));
+        actions.add(_ActionButton(
+          label: "إرجاع للإجرائية",
+          icon: Icons.assignment_return,
+          color: isBusy ? Colors.grey : Colors.orange,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.procReview, needsComment: true),
+        ));
+      }
+    } else if (status == DamageReportStatus.genManager) {
+      if (auth.hasRole("GeneralManager")) {
+        actions.add(_ActionButton(
+          label: "اعتماد نهائي",
+          icon: Icons.verified,
+          color: isBusy ? Colors.grey : Colors.green,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.completed),
+        ));
+        actions.add(_ActionButton(
+          label: "إرجاع للأرشيف",
+          icon: Icons.assignment_return,
+          color: isBusy ? Colors.grey : Colors.orange,
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minArchive, needsComment: true),
         ));
       }
     }

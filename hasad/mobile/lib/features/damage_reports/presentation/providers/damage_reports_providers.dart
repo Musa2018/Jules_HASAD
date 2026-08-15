@@ -25,6 +25,7 @@ final damageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
     ref,
     ref.watch(authProvider).session,
     ref.watch(remoteDamageReportRepositoryProvider),
+    ref.watch(connectivityProvider),
   );
 });
 

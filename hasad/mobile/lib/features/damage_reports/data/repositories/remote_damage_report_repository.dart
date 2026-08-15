@@ -13,8 +13,34 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   RemoteDamageReportRepository(this._dio);
 
   @override
-  Future<List<DamageReport>> getDamageReports() async {
-    return []; // Headless global listing is not supported by backend
+  Future<List<DamageReport>> getDamageReports({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  }) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/damage-reports',
+        queryParameters: {
+          'pageNumber': pageNumber,
+          'pageSize': pageSize,
+          'searchText': searchText,
+          'updatedSince': updatedSince?.toIso8601String(),
+        },
+      );
+      final envelope = response.data;
+      final data = envelope?['data'];
+      if (envelope?['succeeded'] != true || data == null) {
+        throw SyncException(_errorsFromEnvelope(envelope));
+      }
+      final items = data['items'] as List;
+      return items
+          .map((e) => DamageReport.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw SyncException(_errorsFromDio(e));
+    }
   }
 
   @override

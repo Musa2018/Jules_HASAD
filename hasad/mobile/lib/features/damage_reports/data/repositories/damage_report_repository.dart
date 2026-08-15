@@ -3,7 +3,12 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 
 abstract class DamageReportRepository {
-  Future<List<DamageReport>> getDamageReports();
+  Future<List<DamageReport>> getDamageReports({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  });
   Stream<List<DamageReport>> watchDamageReports();
   Future<List<DamageReport>> getDamageReportsByFarm(String farmId);
   Stream<List<DamageReport>> watchDamageReportsByFarm(String farmId);

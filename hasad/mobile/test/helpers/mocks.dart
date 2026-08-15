@@ -26,7 +26,23 @@ class MockFarmRepository extends Mock implements FarmRepository {}
 
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
+class MockDamageReportRepository extends Mock implements DamageReportRepository {
+  @override
+  Future<List<DamageReport>> getDamageReports({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  }) => super.noSuchMethod(
+        Invocation.method(#getDamageReports, [], {
+          #pageNumber: pageNumber,
+          #pageSize: pageSize,
+          #searchText: searchText,
+          #updatedSince: updatedSince,
+        }),
+        returnValue: Future.value(<DamageReport>[]),
+      );
+}
 
 class MockDamageReportAttachmentRepository extends Mock
     implements DamageReportAttachmentRepository {}

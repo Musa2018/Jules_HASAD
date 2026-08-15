@@ -1,6 +1,6 @@
-// ignore_for_file: deprecated_member_use_from_same_package
 import 'dart:math';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,15 +22,28 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   final Ref _ref;
   final AuthSession? _session;
   final DamageReportRepository _remoteRepository;
+  final Connectivity _connectivity;
 
-  OfflineFirstDamageReportRepository(this._db, this._ref, this._session, this._remoteRepository);
+  OfflineFirstDamageReportRepository(this._db, this._ref, this._session, this._remoteRepository, this._connectivity);
 
   BackgroundSyncService get _syncService => _ref.read(syncServiceProvider);
 
   @override
-  Future<List<report_domain.DamageReport>> getDamageReports() async {
+  Future<List<report_domain.DamageReport>> getDamageReports({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  }) async {
     final query = _db.select(_db.damageReports)
       ..where((t) => t.isPendingDelete.equals(false));
+
+    if (searchText != null && searchText.isNotEmpty) {
+      final search = '%$searchText%';
+      query.where((t) => t.reportNumber.like(search) | 
+                         t.permanentFormNumber.like(search) | 
+                         t.temporaryFormNumber.like(search));
+    }
 
     // Regional scoping based on session
     if (_session != null) {
@@ -701,9 +714,67 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
 
   @override
   Future<void> synchronize({DateTime? updatedSince}) async {
-    // 1. Refresh from remote
-    // Global headless sync is not supported by backend for performance and scoping reasons.
-    // Instead, we ensure local data is consistent.
+    final connectivity = await _connectivity.checkConnectivity();
+    if (connectivity.contains(ConnectivityResult.none)) return;
+
+    int page = 1;
+    bool hasMore = true;
+
+    while (hasMore) {
+      final remoteItems = await _remoteRepository.getDamageReports(
+        pageNumber: page,
+        pageSize: 50,
+        updatedSince: updatedSince,
+      );
+
+      if (remoteItems.isEmpty) break;
+
+      await _db.transaction(() async {
+        for (final remote in remoteItems) {
+          // PROTECTION: Skip if local record has unsynced changes
+          // We search by serverId to find matching local records
+          final local = await (_db.select(_db.damageReports)
+            ..where((t) => t.serverId.equals(remote.serverId ?? ''))).getSingleOrNull();
+
+          if (local != null && local.syncStatus != 'completed') {
+            continue; // Skip records with pending/failed local changes
+          }
+
+          final localId = local?.id ?? remote.id;
+
+          // 1. Upsert header
+          await _db.into(_db.damageReports).insert(
+            _mapReportToCompanion(remote).copyWith(
+              id: Value(localId),
+              syncStatus: const Value('completed'),
+              lastSyncError: const Value(null),
+              updatedAt: Value(DateTime.now()),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+
+          // 2. Full Sync Items: Clear and replace
+          await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(localId))).go();
+          for (var item in remote.items) {
+            await _db.into(_db.damageItems).insert(
+              _mapItemToCompanion(item).copyWith(
+                damageReportId: Value(localId),
+                syncStatus: const Value('completed'),
+                lastSyncError: const Value(null),
+                updatedAt: Value(DateTime.now()),
+              ),
+              mode: InsertMode.insertOrReplace,
+            );
+          }
+        }
+      });
+
+      if (remoteItems.length < 50) {
+        hasMore = false;
+      } else {
+        page++;
+      }
+    }
   }
 
   @override

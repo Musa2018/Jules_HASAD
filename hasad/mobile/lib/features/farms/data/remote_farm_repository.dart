@@ -52,6 +52,11 @@ class RemoteFarmRepository implements FarmRepository {
   }
 
   @override
+  Stream<Farm?> watchFarmByServerId(String serverId) {
+    throw UnimplementedError('Remote repository does not support watching.');
+  }
+
+  @override
   Stream<List<Farm>> watchFarms({
     FarmFilter filter = const FarmFilter(),
     AuthSession? session,

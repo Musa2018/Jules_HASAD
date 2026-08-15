@@ -33,7 +33,11 @@ Log.Information("Connecting to database: {ConnectionString}", connectionString);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(connectionString,
-        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+        o =>
+        {
+            o.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+            o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        });
 });
 
 builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());

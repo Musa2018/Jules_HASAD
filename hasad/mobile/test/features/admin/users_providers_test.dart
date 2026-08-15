@@ -1,29 +1,14 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/core/network/token_refresher.dart';
-import 'package:mobile/core/storage/secure_storage_service.dart';
-import 'package:mobile/features/admin/data/users_repository.dart';
-import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/admin/presentation/users_providers.dart' as admin;
-import 'package:mobile/features/auth/data/auth_repository.dart';
+import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
-import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart' as loc;
+import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockUsersRepository extends Mock implements UsersRepository {}
-
-class MockAuthRepository extends Mock implements AuthRepository {}
-
-class MockSecureStorageService extends Mock implements SecureStorageService {}
-
-class MockTokenRefresher extends Mock implements TokenRefresher {}
-
-class MockDio extends Mock implements Dio {}
-
-class MockLocationRepository extends Mock implements LocationRepository {}
+import '../../helpers/mocks.dart';
 
 class FakeAuthNotifier extends AuthNotifier {
   FakeAuthNotifier({required AuthStatus status, AuthSession? session})

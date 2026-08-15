@@ -4,11 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farms/data/offline_first_reference_data_repository.dart';
-import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart' as domain;
 import 'package:mobile/features/farms/domain/reference_data.dart';
 
-class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
+import '../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;

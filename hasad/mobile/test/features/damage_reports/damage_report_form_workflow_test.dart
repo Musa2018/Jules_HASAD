@@ -3,12 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_report_header_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/damage_report_form_screen.dart';
-import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/domain/reference_data.dart';
@@ -16,9 +14,7 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockGoRouter extends Mock implements GoRouter {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockReferenceDataRepository mockRefRepo;

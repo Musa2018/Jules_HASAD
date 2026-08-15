@@ -2,36 +2,22 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mobile/core/auth/authorization_service.dart';
-import 'package:mobile/core/exceptions/sync_exceptions.dart';
-import 'package:mobile/core/storage/background_sync_service.dart';
-import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
+import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
-import 'package:mobile/features/farms/data/farm_repository.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/features/farms/data/offline_first_farm_repository.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockFarmRepository extends Mock implements FarmRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
-class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
-class MockConnectivity extends Mock implements Connectivity {}
-class MockRef extends Mock implements Ref {}
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
   late MockFarmerRepository mockFarmerRepo;
   late MockFarmRepository mockFarmRepo;
   late MockDamageReportRepository mockDamageRepo;
-  late MockAttachmentRepository mockAttachmentRepo;
+  late MockDamageReportAttachmentRepository mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
   late MockRef mockRef;
@@ -42,7 +28,7 @@ void main() {
     mockFarmerRepo = MockFarmerRepository();
     mockFarmRepo = MockFarmRepository();
     mockDamageRepo = MockDamageReportRepository();
-    mockAttachmentRepo = MockAttachmentRepository();
+    mockAttachmentRepo = MockDamageReportAttachmentRepository();
     mockConnectivity = MockConnectivity();
     mockAuthService = MockAuthorizationService();
     mockRef = MockRef();

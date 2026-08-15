@@ -394,6 +394,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReport>(entity =>
         {
             entity.HasKey(e => e.Id);
+
+            // Soft Delete & Geographic Alignment (Resolves EF Core Global Filter Warning)
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.ReportNumber).HasMaxLength(100);
             entity.Property(e => e.PermanentFormNumber).HasMaxLength(50);
             entity.Property(e => e.TemporaryFormNumber).HasMaxLength(50);
@@ -432,6 +436,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageItem>(entity =>
         {
             entity.HasKey(e => e.Id);
+
+            // Soft Delete
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.CalculatedUnitPrice).HasPrecision(18, 2);
             entity.Property(e => e.MeasurementUnitSnapshot).IsRequired().HasMaxLength(50);
             entity.Property(e => e.AffectedArea).HasPrecision(18, 2);

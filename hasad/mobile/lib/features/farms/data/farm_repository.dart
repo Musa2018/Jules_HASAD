@@ -6,6 +6,7 @@ abstract class FarmRepository {
   Future<List<Farm>> getFarmsByFarmer(String farmerId);
   Future<Farm> getFarm(String id);
   Stream<Farm?> watchFarm(String id);
+  Stream<Farm?> watchFarmByServerId(String serverId);
   Stream<List<Farm>> watchFarms({FarmFilter filter = const FarmFilter(), AuthSession? session});
   Future<Farm> createFarm(Farm farm, {AuthSession? session});
   Future<Farm> updateFarm(Farm farm, {AuthSession? session});

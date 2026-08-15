@@ -46,10 +46,16 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
         _logger.LogInformation("SubmitDamageReport: Found Report {ReportId} with StatusId: {StatusId}, Items: {ItemCount}",
             report.Id, report.StatusId, report.Items.Count);
 
+        if (report.StatusId == DamageReportStatus.TechReview)
+        {
+            _logger.LogInformation("SubmitDamageReport: Report {ReportId} is already in TechReview. Returning success for idempotency.", report.Id);
+            return Result<Guid>.Success(report.Id);
+        }
+
         if (report.StatusId != DamageReportStatus.Draft && report.StatusId != DamageReportStatus.PendingTechnicalVerification)
         {
             _logger.LogWarning("SubmitDamageReport: Invalid initial status {StatusId}", report.StatusId);
-            return Result<Guid>.Failure(new[] { "Only draft or pending reports can be submitted." });
+            return Result<Guid>.Failure(new[] { $"Only draft or pending reports can be submitted. Current status: {report.StatusId}" });
         }
 
         if (!report.Items.Any())

@@ -25,7 +25,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,Director")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,Director,GeneralManager,TechnicalReviewer,ArchiveOfficer,Supervisor,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetFarms([FromQuery] GetFarmsListQuery query)
     {
         var result = await _mediator.Send(query);
@@ -33,7 +33,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,GeneralManager,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetFarm(Guid id)
     {
         var result = await _mediator.Send(new GetFarmByIdQuery(id));
@@ -41,7 +41,7 @@ public class FarmsController : ControllerBase
     }
 
     [HttpGet("farmer/{farmerId}")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,GeneralManager,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetFarmsByFarmer(Guid farmerId)
     {
         var result = await _mediator.Send(new GetFarmsByFarmerQuery(farmerId));

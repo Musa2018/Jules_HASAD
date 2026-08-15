@@ -180,7 +180,7 @@ class FarmCard extends ConsumerWidget {
                   children: [
                     if (!farm.isPendingDelete) ...[
                       TextButton.icon(
-                        onPressed: () => context.push(AppRoutes.addDamageReport, extra: farm),
+                        onPressed: () => context.push(AppRoutes.damageReports, extra: farm),
                         icon: const Icon(Icons.report_problem_outlined, size: 18),
                         label: Text(l10n.damageReports),
                       ),

@@ -52,6 +52,13 @@ public class DeleteDamageItemCommandHandler : IRequestHandler<DeleteDamageItemCo
         }
 
         _context.DamageItems.Remove(item);
+
+        // Update TotalDamage on Report
+        if (item.DamageReport != null)
+        {
+            item.DamageReport.TotalDamage -= item.EstimatedLoss;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);

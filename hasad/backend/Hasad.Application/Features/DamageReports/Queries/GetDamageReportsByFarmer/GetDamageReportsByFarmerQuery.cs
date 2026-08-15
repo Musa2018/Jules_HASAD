@@ -62,8 +62,25 @@ public class GetDamageReportsByFarmerQueryHandler : IRequestHandler<GetDamageRep
                 DirectorateId = r.DirectorateId,
                 LocalityId = r.LocalityId,
                 StatusId = r.StatusId,
+                TotalDamage = r.TotalDamage,
                 Notes = r.Notes,
-                RowVersion = Convert.ToBase64String(r.RowVersion)
+                RowVersion = Convert.ToBase64String(r.RowVersion),
+                Items = r.Items.Select(i => new DamageItemDto
+                {
+                    Id = i.Id,
+                    ClientId = i.ClientId,
+                    DamageNatureId = i.DamageNatureId,
+                    DamageActionId = i.DamageActionId,
+                    ClassificationId = i.ClassificationId,
+                    CostingSheetId = i.CostingSheetItemId,
+                    CalculatedUnitPrice = i.CalculatedUnitPrice,
+                    MeasurementUnitSnapshot = i.MeasurementUnitSnapshot,
+                    AffectedArea = i.AffectedArea,
+                    DamagePercentage = i.DamagePercentage,
+                    Quantity = i.Quantity,
+                    EstimatedLoss = i.EstimatedLoss,
+                    RowVersion = Convert.ToBase64String(i.RowVersion)
+                }).ToList()
             })
             .ToListAsync(cancellationToken);
 

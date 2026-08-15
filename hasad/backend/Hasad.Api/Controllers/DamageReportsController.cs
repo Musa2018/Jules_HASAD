@@ -11,6 +11,7 @@ using Hasad.Application.Features.DamageReports.Commands.UploadAttachment;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportById;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportHistory;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsByFarm;
+using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsList;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +31,20 @@ public class DamageReportsController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpGet]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,GeneralManager,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
+    public async Task<IActionResult> GetDamageReports(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? searchText = null,
+        [FromQuery] DateTime? updatedSince = null)
+    {
+        var result = await _mediator.Send(new GetDamageReportsListQuery(pageNumber, pageSize, searchText, updatedSince));
+        return Ok(result);
+    }
+
     [HttpGet("{id}")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,GeneralManager,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetDamageReport(Guid id)
     {
         var result = await _mediator.Send(new GetDamageReportByIdQuery(id));
@@ -39,7 +52,7 @@ public class DamageReportsController : ControllerBase
     }
 
     [HttpGet("farm/{farmId}")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ReadOnly,TechnicalReviewer,ArchiveOfficer,Director,Supervisor,GeneralManager,LegalReviewer,ProceduralReviewer,MinistryTechReviewer,ChiefArchiveOfficer,DirectorateManager")]
     public async Task<IActionResult> GetDamageReportsByFarm(Guid farmId)
     {
         var result = await _mediator.Send(new GetDamageReportsByFarmQuery(farmId));

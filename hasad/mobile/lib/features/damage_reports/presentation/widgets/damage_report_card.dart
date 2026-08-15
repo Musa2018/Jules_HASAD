@@ -28,8 +28,8 @@ class DamageReportCard extends ConsumerWidget {
     final authService = ref.watch(authorizationServiceProvider);
 
     // Lookups
-    final farmAsync = ref.watch(farmStreamProvider(report.farmId));
-    final farmerAsync = ref.watch(farmerStreamProvider(report.farmerId));
+    final farmAsync = ref.watch(farmByServerIdStreamProvider(report.farmId));
+    final farmerAsync = ref.watch(farmerByServerIdStreamProvider(report.farmerId));
     final refDataAsync = ref.watch(referenceDataProvider);
     
     // Location lookups based on report data (snapshots)
@@ -115,14 +115,42 @@ class DamageReportCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-                if (report.lastSyncError != null && report.syncStatus == 'failed')
+                if (report.lastSyncError != null && (report.syncStatus == 'failed' || report.syncStatus == 'invalid' || report.syncStatus == 'conflict'))
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      '${l10n.syncError}: ${report.lastSyncError}',
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${report.syncStatus == 'conflict' ? (l10n.localeName == 'ar' ? "تعارض:" : "Conflict:") : l10n.syncError}: ${report.lastSyncError}',
+                          style: const TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.w500),
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        TextButton.icon(
+                          onPressed: () async {
+                            await ref.read(damageReportFormProvider.notifier).retryReportSync(report.id);
+                            
+                            // Invalidate providers to ensure UI reflects retry attempt/success
+                            ref.invalidate(damageReportStreamProvider(report.id));
+                            ref.invalidate(damageReportHistoryProvider(report.id));
+                            ref.invalidate(damageReportsListProvider);
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.pendingSync)),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.refresh, size: 14, color: Colors.red),
+                          label: Text(l10n.retrySync, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 30),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 const Divider(height: 24),
@@ -131,7 +159,7 @@ class DamageReportCard extends ConsumerWidget {
                   label: l10n.farmerName,
                   value: farmerAsync.when(
                     data: (f) => f?.fullName ?? report.farmerId,
-                    loading: () => "...",
+                    loading: () => "جاري التحميل...",
                     error: (_, _) => report.farmerId,
                   ),
                 ),
@@ -141,7 +169,7 @@ class DamageReportCard extends ConsumerWidget {
                   label: l10n.farm,
                   value: farmAsync.when(
                     data: (f) => f?.localFarmName ?? report.farmId,
-                    loading: () => "...",
+                    loading: () => "جاري التحميل...",
                     error: (_, _) => report.farmId,
                   ),
                 ),
@@ -152,7 +180,7 @@ class DamageReportCard extends ConsumerWidget {
                       child: _InfoRow(
                         icon: Icons.calendar_today_outlined,
                         label: l10n.damageDate,
-                        value: dateFormat.format(report.damageDate),
+                        value: report.damageDate != null ? dateFormat.format(report.damageDate!) : '...',
                       ),
                     ),
                     Expanded(
@@ -165,6 +193,12 @@ class DamageReportCard extends ConsumerWidget {
                   icon: Icons.report_problem_outlined,
                   label: l10n.damageCause,
                   value: causeText,
+                ),
+                const SizedBox(height: 8),
+                _InfoRow(
+                  icon: Icons.payments_outlined,
+                  label: "إجمالي الضرر",
+                  value: "${(report.totalDamage > 0 ? report.totalDamage : report.items.fold(0.0, (sum, item) => sum + item.estimatedLoss)).toStringAsFixed(2)} €",
                 ),
                 const SizedBox(height: 8),
                 _InfoRow(
@@ -311,10 +345,37 @@ class _StatusBadge extends StatelessWidget {
         color = Colors.grey;
         break;
       case 'TechReview':
-      case 'MinTechReview':
       case 'Submitted':
         label = l10n.status_TechReview;
         color = Colors.blue;
+        break;
+      case 'ArchiveDir':
+        label = l10n.status_ArchiveDir;
+        color = Colors.orange;
+        break;
+      case 'DirManager':
+        label = l10n.status_DirManager;
+        color = Colors.teal;
+        break;
+      case 'MinTechReview':
+        label = l10n.status_MinTechReview;
+        color = Colors.indigo;
+        break;
+      case 'LegalReview':
+        label = l10n.status_LegalReview;
+        color = Colors.brown;
+        break;
+      case 'ProcReview':
+        label = l10n.status_ProcReview;
+        color = Colors.blueGrey;
+        break;
+      case 'MinArchive':
+        label = l10n.status_MinArchive;
+        color = Colors.deepPurple;
+        break;
+      case 'GenManager':
+        label = l10n.status_GenManager;
+        color = Colors.amber[800]!;
         break;
       case 'Completed':
       case 'Approved':

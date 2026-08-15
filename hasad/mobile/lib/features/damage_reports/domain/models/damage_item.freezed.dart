@@ -41,6 +41,7 @@ mixin _$DamageItem {
   String get rowVersion => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
   String? get lastSyncError => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
   bool? get isDeleted => throw _privateConstructorUsedError;
   DateTime? get deletedAt => throw _privateConstructorUsedError;
   String? get deletedBy => throw _privateConstructorUsedError;
@@ -81,6 +82,7 @@ abstract class $DamageItemCopyWith<$Res> {
     String rowVersion,
     String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,
@@ -119,6 +121,7 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
     Object? rowVersion = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? updatedAt = freezed,
     Object? isDeleted = freezed,
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
@@ -193,6 +196,10 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
                 ? _value.lastSyncError
                 : lastSyncError // ignore: cast_nullable_to_non_nullable
                       as String?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             isDeleted: freezed == isDeleted
                 ? _value.isDeleted
                 : isDeleted // ignore: cast_nullable_to_non_nullable
@@ -239,6 +246,7 @@ abstract class _$$DamageItemImplCopyWith<$Res>
     String rowVersion,
     String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,
@@ -276,6 +284,7 @@ class __$$DamageItemImplCopyWithImpl<$Res>
     Object? rowVersion = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? updatedAt = freezed,
     Object? isDeleted = freezed,
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
@@ -350,6 +359,10 @@ class __$$DamageItemImplCopyWithImpl<$Res>
             ? _value.lastSyncError
             : lastSyncError // ignore: cast_nullable_to_non_nullable
                   as String?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         isDeleted: freezed == isDeleted
             ? _value.isDeleted
             : isDeleted // ignore: cast_nullable_to_non_nullable
@@ -371,9 +384,9 @@ class __$$DamageItemImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageItemImpl implements _DamageItem {
   const _$DamageItemImpl({
-    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'clientId') this.id = '',
     @JsonKey(name: 'id') this.serverId,
-    required this.damageReportId,
+    this.damageReportId = '',
     this.damageNatureId = 0,
     this.damageActionId = 0,
     this.classificationId = 0,
@@ -382,13 +395,14 @@ class _$DamageItemImpl implements _DamageItem {
     this.costingSheetItemId,
     this.calculatedUnitPrice = 0.0,
     this.measurementUnitSnapshot = '',
-    required this.affectedArea,
-    required this.damagePercentage,
-    required this.quantity,
-    required this.estimatedLoss,
+    this.affectedArea = 0.0,
+    this.damagePercentage = 0.0,
+    this.quantity = 0.0,
+    this.estimatedLoss = 0.0,
     this.rowVersion = '',
     this.syncStatus = 'completed',
     this.lastSyncError,
+    this.updatedAt,
     this.isDeleted,
     this.deletedAt,
     this.deletedBy,
@@ -405,6 +419,7 @@ class _$DamageItemImpl implements _DamageItem {
   @JsonKey(name: 'id')
   final String? serverId;
   @override
+  @JsonKey()
   final String damageReportId;
   @override
   @JsonKey()
@@ -428,12 +443,16 @@ class _$DamageItemImpl implements _DamageItem {
   @JsonKey()
   final String measurementUnitSnapshot;
   @override
+  @JsonKey()
   final double affectedArea;
   @override
+  @JsonKey()
   final double damagePercentage;
   @override
+  @JsonKey()
   final double quantity;
   @override
+  @JsonKey()
   final double estimatedLoss;
   @override
   @JsonKey()
@@ -444,6 +463,8 @@ class _$DamageItemImpl implements _DamageItem {
   @override
   final String? lastSyncError;
   @override
+  final DateTime? updatedAt;
+  @override
   final bool? isDeleted;
   @override
   final DateTime? deletedAt;
@@ -452,7 +473,7 @@ class _$DamageItemImpl implements _DamageItem {
 
   @override
   String toString() {
-    return 'DamageItem(id: $id, serverId: $serverId, damageReportId: $damageReportId, damageNatureId: $damageNatureId, damageActionId: $damageActionId, classificationId: $classificationId, costingSheetId: $costingSheetId, costingSheetItemId: $costingSheetItemId, calculatedUnitPrice: $calculatedUnitPrice, measurementUnitSnapshot: $measurementUnitSnapshot, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageItem(id: $id, serverId: $serverId, damageReportId: $damageReportId, damageNatureId: $damageNatureId, damageActionId: $damageActionId, classificationId: $classificationId, costingSheetId: $costingSheetId, costingSheetItemId: $costingSheetItemId, calculatedUnitPrice: $calculatedUnitPrice, measurementUnitSnapshot: $measurementUnitSnapshot, affectedArea: $affectedArea, damagePercentage: $damagePercentage, quantity: $quantity, estimatedLoss: $estimatedLoss, rowVersion: $rowVersion, syncStatus: $syncStatus, lastSyncError: $lastSyncError, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -496,6 +517,8 @@ class _$DamageItemImpl implements _DamageItem {
                 other.syncStatus == syncStatus) &&
             (identical(other.lastSyncError, lastSyncError) ||
                 other.lastSyncError == lastSyncError) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
             (identical(other.isDeleted, isDeleted) ||
                 other.isDeleted == isDeleted) &&
             (identical(other.deletedAt, deletedAt) ||
@@ -525,6 +548,7 @@ class _$DamageItemImpl implements _DamageItem {
     rowVersion,
     syncStatus,
     lastSyncError,
+    updatedAt,
     isDeleted,
     deletedAt,
     deletedBy,
@@ -546,9 +570,9 @@ class _$DamageItemImpl implements _DamageItem {
 
 abstract class _DamageItem implements DamageItem {
   const factory _DamageItem({
-    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'clientId') final String id,
     @JsonKey(name: 'id') final String? serverId,
-    required final String damageReportId,
+    final String damageReportId,
     final int damageNatureId,
     final int damageActionId,
     final int classificationId,
@@ -557,13 +581,14 @@ abstract class _DamageItem implements DamageItem {
     final String? costingSheetItemId,
     final double calculatedUnitPrice,
     final String measurementUnitSnapshot,
-    required final double affectedArea,
-    required final double damagePercentage,
-    required final double quantity,
-    required final double estimatedLoss,
+    final double affectedArea,
+    final double damagePercentage,
+    final double quantity,
+    final double estimatedLoss,
     final String rowVersion,
     final String syncStatus,
     final String? lastSyncError,
+    final DateTime? updatedAt,
     final bool? isDeleted,
     final DateTime? deletedAt,
     final String? deletedBy,
@@ -609,6 +634,8 @@ abstract class _DamageItem implements DamageItem {
   String get syncStatus;
   @override
   String? get lastSyncError;
+  @override
+  DateTime? get updatedAt;
   @override
   bool? get isDeleted;
   @override

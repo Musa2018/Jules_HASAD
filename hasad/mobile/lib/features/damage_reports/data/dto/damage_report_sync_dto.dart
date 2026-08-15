@@ -17,7 +17,7 @@ class DamageReportSyncDto {
       'damageYear': report.damageYear,
       'farmId': _guidOrNull(report.farmId),
       'farmerId': _guidOrNull(report.farmerId),
-      'damageDate': report.damageDate.toIso8601String(),
+      'damageDate': (report.damageDate ?? DateTime.now()).toIso8601String(),
       'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
@@ -37,7 +37,7 @@ class DamageReportSyncDto {
     }
     return {
       'id': report.serverId,
-      'damageDate': report.damageDate.toIso8601String(),
+      'damageDate': (report.damageDate ?? DateTime.now()).toIso8601String(),
       'agriculturalSectorId': report.agriculturalSectorId,
       'damageCauseCategoryId': report.damageCauseCategoryId,
       'damageCauseId': report.damageCauseId,
@@ -47,14 +47,15 @@ class DamageReportSyncDto {
   }
 
   static Map<String, dynamic> itemToCreateJson(DamageItem item) {
+    final costingId = _guidOrNull(item.costingSheetItemId ?? item.costingSheetId);
     return {
       'clientId': item.id,
       'damageNatureId': item.damageNatureId,
       'damageActionId': item.damageActionId,
       'classificationId': item.classificationId,
-      'costingSheetId': _guidOrNull(item.costingSheetItemId ?? item.costingSheetId),
-      'calculatedUnitPrice': item.calculatedUnitPrice,
-      'measurementUnitSnapshot': item.measurementUnitSnapshot,
+      'costingSheetId': costingId,
+      'calculatedUnitPrice': item.calculatedUnitPrice > 0 ? item.calculatedUnitPrice : 0.01, // Avoid validation error if backend recalculates
+      'measurementUnitSnapshot': item.measurementUnitSnapshot.isNotEmpty ? item.measurementUnitSnapshot : 'Unit',
       'affectedArea': item.affectedArea,
       'damagePercentage': item.damagePercentage,
       'quantity': item.quantity,

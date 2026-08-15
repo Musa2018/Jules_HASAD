@@ -7,15 +7,13 @@ import 'package:mobile/core/auth/authorization_service.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
-import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:drift/native.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/widgets/farmer_card.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
-class MockAuthorizationService extends Mock implements AuthorizationService {}
-class MockLocationRepository extends Mock implements LocationRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockAuthorizationService mockAuthService;

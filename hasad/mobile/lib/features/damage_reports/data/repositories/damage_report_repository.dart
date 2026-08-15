@@ -3,7 +3,12 @@ import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 
 abstract class DamageReportRepository {
-  Future<List<DamageReport>> getDamageReports();
+  Future<List<DamageReport>> getDamageReports({
+    int pageNumber = 1,
+    int pageSize = 10,
+    String? searchText,
+    DateTime? updatedSince,
+  });
   Stream<List<DamageReport>> watchDamageReports();
   Future<List<DamageReport>> getDamageReportsByFarm(String farmId);
   Stream<List<DamageReport>> watchDamageReportsByFarm(String farmId);
@@ -17,9 +22,14 @@ abstract class DamageReportRepository {
   Future<void> submitReport(String id);
   Future<void> transitionReport(String id, String toStatus, {String? comment, bool isOverride});
   Future<List<DamageWorkflowHistory>> getReportHistory(String id);
+  Stream<List<DamageWorkflowHistory>> watchReportHistory(String id);
+  Future<void> syncWorkflowHistory(String localId, String serverId);
 
   Future<DamageItem> addDamageItem(DamageItem item);
   Future<DamageItem> updateDamageItem(DamageItem item);
   Future<void> deleteDamageItem(String id);
-  Future<void> synchronize();
+  Future<void> retrySync(String id);
+  Future<void> retryAllFailedSyncs();
+  Future<void> synchronize({DateTime? updatedSince});
+  Future<void> refreshReport(String id);
 }

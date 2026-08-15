@@ -76,6 +76,11 @@ class RemoteFarmerRepository implements FarmerRepository {
   }
 
   @override
+  Stream<domain.Farmer?> watchFarmerByServerId(String serverId) {
+    throw UnimplementedError('Remote repository does not support watching.');
+  }
+
+  @override
   Stream<List<domain.Farmer>> watchFarmers({
     FarmerFilter filter = const FarmerFilter(),
   }) {

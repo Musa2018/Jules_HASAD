@@ -3416,6 +3416,18 @@ class $DamageReportsTable extends DamageReports
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _totalDamageMeta = const VerificationMeta(
+    'totalDamage',
+  );
+  @override
+  late final GeneratedColumn<double> totalDamage = GeneratedColumn<double>(
+    'total_damage',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -3530,6 +3542,7 @@ class $DamageReportsTable extends DamageReports
     directorateId,
     localityId,
     statusId,
+    totalDamage,
     notes,
     createdBy,
     rowVersion,
@@ -3696,6 +3709,15 @@ class $DamageReportsTable extends DamageReports
     } else if (isInserting) {
       context.missing(_statusIdMeta);
     }
+    if (data.containsKey('total_damage')) {
+      context.handle(
+        _totalDamageMeta,
+        totalDamage.isAcceptableOrUnknown(
+          data['total_damage']!,
+          _totalDamageMeta,
+        ),
+      );
+    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
@@ -3833,6 +3855,10 @@ class $DamageReportsTable extends DamageReports
         DriftSqlType.string,
         data['${effectivePrefix}status_id'],
       )!,
+      totalDamage: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_damage'],
+      )!,
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -3894,6 +3920,7 @@ class DamageReportLocal extends DataClass
   final String directorateId;
   final String localityId;
   final String statusId;
+  final double totalDamage;
   final String notes;
   final String createdBy;
   final String rowVersion;
@@ -3921,6 +3948,7 @@ class DamageReportLocal extends DataClass
     required this.directorateId,
     required this.localityId,
     required this.statusId,
+    required this.totalDamage,
     required this.notes,
     required this.createdBy,
     required this.rowVersion,
@@ -3953,6 +3981,7 @@ class DamageReportLocal extends DataClass
     map['directorate_id'] = Variable<String>(directorateId);
     map['locality_id'] = Variable<String>(localityId);
     map['status_id'] = Variable<String>(statusId);
+    map['total_damage'] = Variable<double>(totalDamage);
     map['notes'] = Variable<String>(notes);
     map['created_by'] = Variable<String>(createdBy);
     map['row_version'] = Variable<String>(rowVersion);
@@ -3990,6 +4019,7 @@ class DamageReportLocal extends DataClass
       directorateId: Value(directorateId),
       localityId: Value(localityId),
       statusId: Value(statusId),
+      totalDamage: Value(totalDamage),
       notes: Value(notes),
       createdBy: Value(createdBy),
       rowVersion: Value(rowVersion),
@@ -4039,6 +4069,7 @@ class DamageReportLocal extends DataClass
       directorateId: serializer.fromJson<String>(json['directorateId']),
       localityId: serializer.fromJson<String>(json['localityId']),
       statusId: serializer.fromJson<String>(json['statusId']),
+      totalDamage: serializer.fromJson<double>(json['totalDamage']),
       notes: serializer.fromJson<String>(json['notes']),
       createdBy: serializer.fromJson<String>(json['createdBy']),
       rowVersion: serializer.fromJson<String>(json['rowVersion']),
@@ -4071,6 +4102,7 @@ class DamageReportLocal extends DataClass
       'directorateId': serializer.toJson<String>(directorateId),
       'localityId': serializer.toJson<String>(localityId),
       'statusId': serializer.toJson<String>(statusId),
+      'totalDamage': serializer.toJson<double>(totalDamage),
       'notes': serializer.toJson<String>(notes),
       'createdBy': serializer.toJson<String>(createdBy),
       'rowVersion': serializer.toJson<String>(rowVersion),
@@ -4101,6 +4133,7 @@ class DamageReportLocal extends DataClass
     String? directorateId,
     String? localityId,
     String? statusId,
+    double? totalDamage,
     String? notes,
     String? createdBy,
     String? rowVersion,
@@ -4128,6 +4161,7 @@ class DamageReportLocal extends DataClass
     directorateId: directorateId ?? this.directorateId,
     localityId: localityId ?? this.localityId,
     statusId: statusId ?? this.statusId,
+    totalDamage: totalDamage ?? this.totalDamage,
     notes: notes ?? this.notes,
     createdBy: createdBy ?? this.createdBy,
     rowVersion: rowVersion ?? this.rowVersion,
@@ -4185,6 +4219,9 @@ class DamageReportLocal extends DataClass
           ? data.localityId.value
           : this.localityId,
       statusId: data.statusId.present ? data.statusId.value : this.statusId,
+      totalDamage: data.totalDamage.present
+          ? data.totalDamage.value
+          : this.totalDamage,
       notes: data.notes.present ? data.notes.value : this.notes,
       createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       rowVersion: data.rowVersion.present
@@ -4225,6 +4262,7 @@ class DamageReportLocal extends DataClass
           ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('statusId: $statusId, ')
+          ..write('totalDamage: $totalDamage, ')
           ..write('notes: $notes, ')
           ..write('createdBy: $createdBy, ')
           ..write('rowVersion: $rowVersion, ')
@@ -4257,6 +4295,7 @@ class DamageReportLocal extends DataClass
     directorateId,
     localityId,
     statusId,
+    totalDamage,
     notes,
     createdBy,
     rowVersion,
@@ -4288,6 +4327,7 @@ class DamageReportLocal extends DataClass
           other.directorateId == this.directorateId &&
           other.localityId == this.localityId &&
           other.statusId == this.statusId &&
+          other.totalDamage == this.totalDamage &&
           other.notes == this.notes &&
           other.createdBy == this.createdBy &&
           other.rowVersion == this.rowVersion &&
@@ -4317,6 +4357,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
   final Value<String> directorateId;
   final Value<String> localityId;
   final Value<String> statusId;
+  final Value<double> totalDamage;
   final Value<String> notes;
   final Value<String> createdBy;
   final Value<String> rowVersion;
@@ -4345,6 +4386,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     this.statusId = const Value.absent(),
+    this.totalDamage = const Value.absent(),
     this.notes = const Value.absent(),
     this.createdBy = const Value.absent(),
     this.rowVersion = const Value.absent(),
@@ -4374,6 +4416,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     required String statusId,
+    this.totalDamage = const Value.absent(),
     required String notes,
     this.createdBy = const Value.absent(),
     this.rowVersion = const Value.absent(),
@@ -4408,6 +4451,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Expression<String>? directorateId,
     Expression<String>? localityId,
     Expression<String>? statusId,
+    Expression<double>? totalDamage,
     Expression<String>? notes,
     Expression<String>? createdBy,
     Expression<String>? rowVersion,
@@ -4441,6 +4485,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       if (directorateId != null) 'directorate_id': directorateId,
       if (localityId != null) 'locality_id': localityId,
       if (statusId != null) 'status_id': statusId,
+      if (totalDamage != null) 'total_damage': totalDamage,
       if (notes != null) 'notes': notes,
       if (createdBy != null) 'created_by': createdBy,
       if (rowVersion != null) 'row_version': rowVersion,
@@ -4472,6 +4517,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     Value<String>? directorateId,
     Value<String>? localityId,
     Value<String>? statusId,
+    Value<double>? totalDamage,
     Value<String>? notes,
     Value<String>? createdBy,
     Value<String>? rowVersion,
@@ -4502,6 +4548,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
       directorateId: directorateId ?? this.directorateId,
       localityId: localityId ?? this.localityId,
       statusId: statusId ?? this.statusId,
+      totalDamage: totalDamage ?? this.totalDamage,
       notes: notes ?? this.notes,
       createdBy: createdBy ?? this.createdBy,
       rowVersion: rowVersion ?? this.rowVersion,
@@ -4577,6 +4624,9 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
     if (statusId.present) {
       map['status_id'] = Variable<String>(statusId.value);
     }
+    if (totalDamage.present) {
+      map['total_damage'] = Variable<double>(totalDamage.value);
+    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
@@ -4628,6 +4678,7 @@ class DamageReportsCompanion extends UpdateCompanion<DamageReportLocal> {
           ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('statusId: $statusId, ')
+          ..write('totalDamage: $totalDamage, ')
           ..write('notes: $notes, ')
           ..write('createdBy: $createdBy, ')
           ..write('rowVersion: $rowVersion, ')
@@ -13639,6 +13690,20 @@ class $DamageWorkflowHistoriesTable extends DamageWorkflowHistories
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _changedByUserNameMeta = const VerificationMeta(
+    'changedByUserName',
+  );
+  @override
+  late final GeneratedColumn<String> changedByUserName =
+      GeneratedColumn<String>(
+        'changed_by_user_name',
+        aliasedName,
+        false,
+        additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 200),
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      );
   static const VerificationMeta _changedAtMeta = const VerificationMeta(
     'changedAt',
   );
@@ -13685,6 +13750,7 @@ class $DamageWorkflowHistoriesTable extends DamageWorkflowHistories
     fromStatus,
     toStatus,
     changedByUserId,
+    changedByUserName,
     changedAt,
     comment,
     isOverride,
@@ -13750,6 +13816,15 @@ class $DamageWorkflowHistoriesTable extends DamageWorkflowHistories
     } else if (isInserting) {
       context.missing(_changedByUserIdMeta);
     }
+    if (data.containsKey('changed_by_user_name')) {
+      context.handle(
+        _changedByUserNameMeta,
+        changedByUserName.isAcceptableOrUnknown(
+          data['changed_by_user_name']!,
+          _changedByUserNameMeta,
+        ),
+      );
+    }
     if (data.containsKey('changed_at')) {
       context.handle(
         _changedAtMeta,
@@ -13806,6 +13881,10 @@ class $DamageWorkflowHistoriesTable extends DamageWorkflowHistories
         DriftSqlType.string,
         data['${effectivePrefix}changed_by_user_id'],
       )!,
+      changedByUserName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_by_user_name'],
+      )!,
       changedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}changed_at'],
@@ -13835,6 +13914,7 @@ class DamageWorkflowHistoryLocal extends DataClass
   final String fromStatus;
   final String toStatus;
   final String changedByUserId;
+  final String changedByUserName;
   final DateTime changedAt;
   final String? comment;
   final bool isOverride;
@@ -13845,6 +13925,7 @@ class DamageWorkflowHistoryLocal extends DataClass
     required this.fromStatus,
     required this.toStatus,
     required this.changedByUserId,
+    required this.changedByUserName,
     required this.changedAt,
     this.comment,
     required this.isOverride,
@@ -13860,6 +13941,7 @@ class DamageWorkflowHistoryLocal extends DataClass
     map['from_status'] = Variable<String>(fromStatus);
     map['to_status'] = Variable<String>(toStatus);
     map['changed_by_user_id'] = Variable<String>(changedByUserId);
+    map['changed_by_user_name'] = Variable<String>(changedByUserName);
     map['changed_at'] = Variable<DateTime>(changedAt);
     if (!nullToAbsent || comment != null) {
       map['comment'] = Variable<String>(comment);
@@ -13878,6 +13960,7 @@ class DamageWorkflowHistoryLocal extends DataClass
       fromStatus: Value(fromStatus),
       toStatus: Value(toStatus),
       changedByUserId: Value(changedByUserId),
+      changedByUserName: Value(changedByUserName),
       changedAt: Value(changedAt),
       comment: comment == null && nullToAbsent
           ? const Value.absent()
@@ -13898,6 +13981,7 @@ class DamageWorkflowHistoryLocal extends DataClass
       fromStatus: serializer.fromJson<String>(json['fromStatus']),
       toStatus: serializer.fromJson<String>(json['toStatus']),
       changedByUserId: serializer.fromJson<String>(json['changedByUserId']),
+      changedByUserName: serializer.fromJson<String>(json['changedByUserName']),
       changedAt: serializer.fromJson<DateTime>(json['changedAt']),
       comment: serializer.fromJson<String?>(json['comment']),
       isOverride: serializer.fromJson<bool>(json['isOverride']),
@@ -13913,6 +13997,7 @@ class DamageWorkflowHistoryLocal extends DataClass
       'fromStatus': serializer.toJson<String>(fromStatus),
       'toStatus': serializer.toJson<String>(toStatus),
       'changedByUserId': serializer.toJson<String>(changedByUserId),
+      'changedByUserName': serializer.toJson<String>(changedByUserName),
       'changedAt': serializer.toJson<DateTime>(changedAt),
       'comment': serializer.toJson<String?>(comment),
       'isOverride': serializer.toJson<bool>(isOverride),
@@ -13926,6 +14011,7 @@ class DamageWorkflowHistoryLocal extends DataClass
     String? fromStatus,
     String? toStatus,
     String? changedByUserId,
+    String? changedByUserName,
     DateTime? changedAt,
     Value<String?> comment = const Value.absent(),
     bool? isOverride,
@@ -13936,6 +14022,7 @@ class DamageWorkflowHistoryLocal extends DataClass
     fromStatus: fromStatus ?? this.fromStatus,
     toStatus: toStatus ?? this.toStatus,
     changedByUserId: changedByUserId ?? this.changedByUserId,
+    changedByUserName: changedByUserName ?? this.changedByUserName,
     changedAt: changedAt ?? this.changedAt,
     comment: comment.present ? comment.value : this.comment,
     isOverride: isOverride ?? this.isOverride,
@@ -13956,6 +14043,9 @@ class DamageWorkflowHistoryLocal extends DataClass
       changedByUserId: data.changedByUserId.present
           ? data.changedByUserId.value
           : this.changedByUserId,
+      changedByUserName: data.changedByUserName.present
+          ? data.changedByUserName.value
+          : this.changedByUserName,
       changedAt: data.changedAt.present ? data.changedAt.value : this.changedAt,
       comment: data.comment.present ? data.comment.value : this.comment,
       isOverride: data.isOverride.present
@@ -13973,6 +14063,7 @@ class DamageWorkflowHistoryLocal extends DataClass
           ..write('fromStatus: $fromStatus, ')
           ..write('toStatus: $toStatus, ')
           ..write('changedByUserId: $changedByUserId, ')
+          ..write('changedByUserName: $changedByUserName, ')
           ..write('changedAt: $changedAt, ')
           ..write('comment: $comment, ')
           ..write('isOverride: $isOverride')
@@ -13988,6 +14079,7 @@ class DamageWorkflowHistoryLocal extends DataClass
     fromStatus,
     toStatus,
     changedByUserId,
+    changedByUserName,
     changedAt,
     comment,
     isOverride,
@@ -14002,6 +14094,7 @@ class DamageWorkflowHistoryLocal extends DataClass
           other.fromStatus == this.fromStatus &&
           other.toStatus == this.toStatus &&
           other.changedByUserId == this.changedByUserId &&
+          other.changedByUserName == this.changedByUserName &&
           other.changedAt == this.changedAt &&
           other.comment == this.comment &&
           other.isOverride == this.isOverride);
@@ -14015,6 +14108,7 @@ class DamageWorkflowHistoriesCompanion
   final Value<String> fromStatus;
   final Value<String> toStatus;
   final Value<String> changedByUserId;
+  final Value<String> changedByUserName;
   final Value<DateTime> changedAt;
   final Value<String?> comment;
   final Value<bool> isOverride;
@@ -14026,6 +14120,7 @@ class DamageWorkflowHistoriesCompanion
     this.fromStatus = const Value.absent(),
     this.toStatus = const Value.absent(),
     this.changedByUserId = const Value.absent(),
+    this.changedByUserName = const Value.absent(),
     this.changedAt = const Value.absent(),
     this.comment = const Value.absent(),
     this.isOverride = const Value.absent(),
@@ -14038,6 +14133,7 @@ class DamageWorkflowHistoriesCompanion
     required String fromStatus,
     required String toStatus,
     required String changedByUserId,
+    this.changedByUserName = const Value.absent(),
     required DateTime changedAt,
     this.comment = const Value.absent(),
     this.isOverride = const Value.absent(),
@@ -14055,6 +14151,7 @@ class DamageWorkflowHistoriesCompanion
     Expression<String>? fromStatus,
     Expression<String>? toStatus,
     Expression<String>? changedByUserId,
+    Expression<String>? changedByUserName,
     Expression<DateTime>? changedAt,
     Expression<String>? comment,
     Expression<bool>? isOverride,
@@ -14067,6 +14164,7 @@ class DamageWorkflowHistoriesCompanion
       if (fromStatus != null) 'from_status': fromStatus,
       if (toStatus != null) 'to_status': toStatus,
       if (changedByUserId != null) 'changed_by_user_id': changedByUserId,
+      if (changedByUserName != null) 'changed_by_user_name': changedByUserName,
       if (changedAt != null) 'changed_at': changedAt,
       if (comment != null) 'comment': comment,
       if (isOverride != null) 'is_override': isOverride,
@@ -14081,6 +14179,7 @@ class DamageWorkflowHistoriesCompanion
     Value<String>? fromStatus,
     Value<String>? toStatus,
     Value<String>? changedByUserId,
+    Value<String>? changedByUserName,
     Value<DateTime>? changedAt,
     Value<String?>? comment,
     Value<bool>? isOverride,
@@ -14093,6 +14192,7 @@ class DamageWorkflowHistoriesCompanion
       fromStatus: fromStatus ?? this.fromStatus,
       toStatus: toStatus ?? this.toStatus,
       changedByUserId: changedByUserId ?? this.changedByUserId,
+      changedByUserName: changedByUserName ?? this.changedByUserName,
       changedAt: changedAt ?? this.changedAt,
       comment: comment ?? this.comment,
       isOverride: isOverride ?? this.isOverride,
@@ -14121,6 +14221,9 @@ class DamageWorkflowHistoriesCompanion
     if (changedByUserId.present) {
       map['changed_by_user_id'] = Variable<String>(changedByUserId.value);
     }
+    if (changedByUserName.present) {
+      map['changed_by_user_name'] = Variable<String>(changedByUserName.value);
+    }
     if (changedAt.present) {
       map['changed_at'] = Variable<DateTime>(changedAt.value);
     }
@@ -14145,6 +14248,7 @@ class DamageWorkflowHistoriesCompanion
           ..write('fromStatus: $fromStatus, ')
           ..write('toStatus: $toStatus, ')
           ..write('changedByUserId: $changedByUserId, ')
+          ..write('changedByUserName: $changedByUserName, ')
           ..write('changedAt: $changedAt, ')
           ..write('comment: $comment, ')
           ..write('isOverride: $isOverride, ')
@@ -15965,6 +16069,7 @@ typedef $$DamageReportsTableCreateCompanionBuilder =
       Value<String> directorateId,
       Value<String> localityId,
       required String statusId,
+      Value<double> totalDamage,
       required String notes,
       Value<String> createdBy,
       Value<String> rowVersion,
@@ -15995,6 +16100,7 @@ typedef $$DamageReportsTableUpdateCompanionBuilder =
       Value<String> directorateId,
       Value<String> localityId,
       Value<String> statusId,
+      Value<double> totalDamage,
       Value<String> notes,
       Value<String> createdBy,
       Value<String> rowVersion,
@@ -16102,6 +16208,11 @@ class $$DamageReportsTableFilterComposer
 
   ColumnFilters<String> get statusId => $composableBuilder(
     column: $table.statusId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalDamage => $composableBuilder(
+    column: $table.totalDamage,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -16245,6 +16356,11 @@ class $$DamageReportsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get totalDamage => $composableBuilder(
+    column: $table.totalDamage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnOrderings(column),
@@ -16375,6 +16491,11 @@ class $$DamageReportsTableAnnotationComposer
   GeneratedColumn<String> get statusId =>
       $composableBuilder(column: $table.statusId, builder: (column) => column);
 
+  GeneratedColumn<double> get totalDamage => $composableBuilder(
+    column: $table.totalDamage,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
@@ -16461,6 +16582,7 @@ class $$DamageReportsTableTableManager
                 Value<String> directorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
                 Value<String> statusId = const Value.absent(),
+                Value<double> totalDamage = const Value.absent(),
                 Value<String> notes = const Value.absent(),
                 Value<String> createdBy = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
@@ -16489,6 +16611,7 @@ class $$DamageReportsTableTableManager
                 directorateId: directorateId,
                 localityId: localityId,
                 statusId: statusId,
+                totalDamage: totalDamage,
                 notes: notes,
                 createdBy: createdBy,
                 rowVersion: rowVersion,
@@ -16519,6 +16642,7 @@ class $$DamageReportsTableTableManager
                 Value<String> directorateId = const Value.absent(),
                 Value<String> localityId = const Value.absent(),
                 required String statusId,
+                Value<double> totalDamage = const Value.absent(),
                 required String notes,
                 Value<String> createdBy = const Value.absent(),
                 Value<String> rowVersion = const Value.absent(),
@@ -16547,6 +16671,7 @@ class $$DamageReportsTableTableManager
                 directorateId: directorateId,
                 localityId: localityId,
                 statusId: statusId,
+                totalDamage: totalDamage,
                 notes: notes,
                 createdBy: createdBy,
                 rowVersion: rowVersion,
@@ -21629,6 +21754,7 @@ typedef $$DamageWorkflowHistoriesTableCreateCompanionBuilder =
       required String fromStatus,
       required String toStatus,
       required String changedByUserId,
+      Value<String> changedByUserName,
       required DateTime changedAt,
       Value<String?> comment,
       Value<bool> isOverride,
@@ -21642,6 +21768,7 @@ typedef $$DamageWorkflowHistoriesTableUpdateCompanionBuilder =
       Value<String> fromStatus,
       Value<String> toStatus,
       Value<String> changedByUserId,
+      Value<String> changedByUserName,
       Value<DateTime> changedAt,
       Value<String?> comment,
       Value<bool> isOverride,
@@ -21684,6 +21811,11 @@ class $$DamageWorkflowHistoriesTableFilterComposer
 
   ColumnFilters<String> get changedByUserId => $composableBuilder(
     column: $table.changedByUserId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get changedByUserName => $composableBuilder(
+    column: $table.changedByUserName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21742,6 +21874,11 @@ class $$DamageWorkflowHistoriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get changedByUserName => $composableBuilder(
+    column: $table.changedByUserName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get changedAt => $composableBuilder(
     column: $table.changedAt,
     builder: (column) => ColumnOrderings(column),
@@ -21788,6 +21925,11 @@ class $$DamageWorkflowHistoriesTableAnnotationComposer
 
   GeneratedColumn<String> get changedByUserId => $composableBuilder(
     column: $table.changedByUserId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get changedByUserName => $composableBuilder(
+    column: $table.changedByUserName,
     builder: (column) => column,
   );
 
@@ -21855,6 +21997,7 @@ class $$DamageWorkflowHistoriesTableTableManager
                 Value<String> fromStatus = const Value.absent(),
                 Value<String> toStatus = const Value.absent(),
                 Value<String> changedByUserId = const Value.absent(),
+                Value<String> changedByUserName = const Value.absent(),
                 Value<DateTime> changedAt = const Value.absent(),
                 Value<String?> comment = const Value.absent(),
                 Value<bool> isOverride = const Value.absent(),
@@ -21866,6 +22009,7 @@ class $$DamageWorkflowHistoriesTableTableManager
                 fromStatus: fromStatus,
                 toStatus: toStatus,
                 changedByUserId: changedByUserId,
+                changedByUserName: changedByUserName,
                 changedAt: changedAt,
                 comment: comment,
                 isOverride: isOverride,
@@ -21879,6 +22023,7 @@ class $$DamageWorkflowHistoriesTableTableManager
                 required String fromStatus,
                 required String toStatus,
                 required String changedByUserId,
+                Value<String> changedByUserName = const Value.absent(),
                 required DateTime changedAt,
                 Value<String?> comment = const Value.absent(),
                 Value<bool> isOverride = const Value.absent(),
@@ -21890,6 +22035,7 @@ class $$DamageWorkflowHistoriesTableTableManager
                 fromStatus: fromStatus,
                 toStatus: toStatus,
                 changedByUserId: changedByUserId,
+                changedByUserName: changedByUserName,
                 changedAt: changedAt,
                 comment: comment,
                 isOverride: isOverride,

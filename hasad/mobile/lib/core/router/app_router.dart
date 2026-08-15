@@ -253,7 +253,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final extra = state.extra as Map<String, dynamic>;
           return DamageReportDetailsScreen(
             report: extra['report'] as DamageReport,
-            farm: extra['farm'] as Farm,
+            farm: extra['farm'] as Farm?,
           );
         },
       ),

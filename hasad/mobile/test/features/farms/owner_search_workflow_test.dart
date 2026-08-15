@@ -3,7 +3,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/config/app_config.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart';
@@ -14,7 +13,7 @@ import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   setUpAll(() {

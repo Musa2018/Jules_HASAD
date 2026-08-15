@@ -5,30 +5,19 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
-import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/database.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
-import 'package:mobile/features/farms/data/farm_repository.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockFarmRepository extends Mock implements FarmRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockReportRepo extends Mock implements DamageReportRepository {}
-class MockAttachmentRepo extends Mock implements DamageReportAttachmentRepository {}
-class MockPullSyncCoordinator extends Mock implements PullSyncCoordinator {}
-class MockConnectivity extends Mock implements Connectivity {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
   late MockFarmerRepository mockFarmerRepo;
   late MockFarmRepository mockFarmRepo;
-  late MockReportRepo mockDamageRepo;
-  late MockAttachmentRepo mockAttachmentRepo;
+  late MockDamageReportRepository mockDamageRepo;
+  late MockDamageReportAttachmentRepository mockAttachmentRepo;
   late MockConnectivity mockConnectivity;
   late BackgroundSyncService syncService;
 
@@ -36,8 +25,8 @@ void main() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
     mockFarmerRepo = MockFarmerRepository();
     mockFarmRepo = MockFarmRepository();
-    mockDamageRepo = MockReportRepo();
-    mockAttachmentRepo = MockAttachmentRepo();
+    mockDamageRepo = MockDamageReportRepository();
+    mockAttachmentRepo = MockDamageReportAttachmentRepository();
     mockConnectivity = MockConnectivity();
 
     when(() => mockConnectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);

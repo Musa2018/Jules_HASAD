@@ -13,7 +13,7 @@ import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../helpers/mocks.dart';
 
 void main() {
   late MockAuthorizationService mockAuthService;

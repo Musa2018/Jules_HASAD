@@ -38,6 +38,12 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
             return Result<Guid>.Failure(new[] { "Damage report not found." });
         }
 
+        if (report.StatusId == request.ToStatus)
+        {
+            // Idempotency: Already in target status
+            return Result<Guid>.Success(report.Id);
+        }
+
         string fromStatus = report.StatusId;
 
         // 1. Check for Override
@@ -60,9 +66,8 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
             // 2. Standard Transition (using centralized CanTransition logic)
             if (!_workflowService.CanTransition(report, request.ToStatus, request.Comment))
             {
-                // Detailed reason would be better, but for now we follow the Boolean contract.
-                // We can assume failure is due to state machine, scope, or missing comment.
-                return Result<Guid>.Failure(new[] { $"Invalid transition to {request.ToStatus}. Please check your role, geographic scope, and ensures comments are provided for returns." });
+                // Detailed reasoning would be better for debugging
+                return Result<Guid>.Failure(new[] { $"Invalid transition from {report.StatusId} to {request.ToStatus}. Please check your role, geographic scope, and ensure comments are provided for returns." });
             }
 
             await _workflowService.TransitionAsync(report, request.ToStatus, request.Comment);

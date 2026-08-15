@@ -182,7 +182,7 @@ public class DamageReportCommandHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new GetDamageReportsByFarmQueryHandler(context, _currentUserMock.Object);
+        var handler = new GetDamageReportsByFarmQueryHandler(context, _currentUserMock.Object, new Mock<ILogger<GetDamageReportsByFarmQueryHandler>>().Object);
         var query = new GetDamageReportsByFarmQuery(farmId);
 
         var result = await handler.Handle(query, CancellationToken.None);

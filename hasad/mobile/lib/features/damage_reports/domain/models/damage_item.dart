@@ -7,9 +7,9 @@ part 'damage_item.g.dart';
 @freezed
 class DamageItem with _$DamageItem {
   const factory DamageItem({
-    @JsonKey(name: 'clientId') required String id, // ClientId
+    @JsonKey(name: 'clientId') @Default('') String id, // ClientId
     @JsonKey(name: 'id') String? serverId,
-    required String damageReportId,
+    @Default('') String damageReportId,
     @Default(0) int damageNatureId,
     @Default(0) int damageActionId,
     @Default(0) int classificationId,
@@ -18,13 +18,14 @@ class DamageItem with _$DamageItem {
     String? costingSheetItemId,
     @Default(0.0) double calculatedUnitPrice,
     @Default('') String measurementUnitSnapshot,
-    required double affectedArea,
-    required double damagePercentage,
-    required double quantity,
-    required double estimatedLoss,
+    @Default(0.0) double affectedArea,
+    @Default(0.0) double damagePercentage,
+    @Default(0.0) double quantity,
+    @Default(0.0) double estimatedLoss,
     @Default('') String rowVersion,
     @Default('completed') String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,

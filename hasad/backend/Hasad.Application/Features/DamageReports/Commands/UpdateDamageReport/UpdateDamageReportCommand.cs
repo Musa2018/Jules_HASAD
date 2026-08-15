@@ -122,6 +122,7 @@ public class UpdateDamageReportCommandHandler : IRequestHandler<UpdateDamageRepo
             DirectorateId = report.DirectorateId,
             LocalityId = report.LocalityId,
             StatusId = report.StatusId,
+            TotalDamage = report.TotalDamage,
             Notes = report.Notes,
             RowVersion = Convert.ToBase64String(report.RowVersion),
             Items = report.Items.Select(i => new DamageItemDto

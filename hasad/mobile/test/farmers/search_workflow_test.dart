@@ -1,28 +1,21 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:drift/drift.dart' hide isNull, isNotNull;
-import 'package:drift/native.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mobile/core/auth/authorization_service.dart';
-import 'package:mobile/core/storage/background_sync_service.dart';
+import 'package:drift/native.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
+import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:drift/drift.dart';
 
-class MockSyncService extends Mock implements BackgroundSyncService {}
-class MockRef extends Mock implements Ref {}
-class MockRemoteRepository extends Mock implements FarmerRepository {}
-class MockConnectivity extends Mock implements Connectivity {}
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
-  late MockSyncService mockSyncService;
+  late MockBackgroundSyncService mockSyncService;
   late MockRef mockRef;
-  late MockRemoteRepository mockRemoteRepository;
+  late MockFarmerRepository mockRemoteRepository;
   late MockConnectivity mockConnectivity;
   late MockAuthorizationService mockAuthService;
   late OfflineFirstFarmerRepository repository;
@@ -50,8 +43,8 @@ void main() {
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
-    mockSyncService = MockSyncService();
-    mockRemoteRepository = MockRemoteRepository();
+    mockSyncService = MockBackgroundSyncService();
+    mockRemoteRepository = MockFarmerRepository();
     mockConnectivity = MockConnectivity();
     mockAuthService = MockAuthorizationService();
     

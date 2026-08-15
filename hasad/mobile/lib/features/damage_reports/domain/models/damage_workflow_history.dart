@@ -7,13 +7,14 @@ part 'damage_workflow_history.g.dart';
 @freezed
 class DamageWorkflowHistory with _$DamageWorkflowHistory {
   const factory DamageWorkflowHistory({
-    @JsonKey(name: 'id') required String id,
-    @JsonKey(name: 'serverId') String? serverId,
-    required String damageReportId,
-    required String fromStatus,
-    required String toStatus,
-    required String changedByUserId,
-    required DateTime changedAt,
+    @JsonKey(name: 'id') @Default('') String id, // Local Drift ID
+    @JsonKey(name: 'serverId') String? serverId, // Authority ID from server
+    @Default('') String damageReportId,
+    @Default('') String fromStatus,
+    @Default('') String toStatus,
+    @Default('') String changedByUserId,
+    @Default('') String changedByUserName,
+    DateTime? changedAt,
     String? comment,
     @Default(false) bool isOverride,
   }) = _DamageWorkflowHistory;

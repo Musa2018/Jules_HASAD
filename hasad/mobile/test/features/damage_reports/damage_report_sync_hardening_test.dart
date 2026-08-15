@@ -5,10 +5,6 @@ import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farms/data/farm_repository.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
@@ -16,11 +12,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report_statu
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 
-class MockFarmerRepository extends Mock implements FarmerRepository {}
-class MockFarmRepository extends Mock implements FarmRepository {}
-class MockDamageReportRepository extends Mock implements DamageReportRepository {}
-class MockDamageReportAttachmentRepository extends Mock implements DamageReportAttachmentRepository {}
-class MockConnectivity extends Mock implements Connectivity {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;

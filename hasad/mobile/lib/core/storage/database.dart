@@ -215,6 +215,7 @@ class DamageReports extends Table {
   TextColumn get localityId => text().withDefault(const Constant(''))();
 
   TextColumn get statusId => text().withLength(max: 50)();
+  RealColumn get totalDamage => real().withDefault(const Constant(0.0))();
   TextColumn get notes => text()();
 
   TextColumn get createdBy => text().withDefault(const Constant(''))();
@@ -294,6 +295,7 @@ class DamageWorkflowHistories extends Table {
   TextColumn get toStatus => text().withLength(max: 50)();
 
   TextColumn get changedByUserId => text().withLength(max: 100)();
+  TextColumn get changedByUserName => text().withLength(max: 200).withDefault(const Constant(''))();
   DateTimeColumn get changedAt => dateTime()();
 
   TextColumn get comment => text().nullable().withLength(max: 500)();
@@ -481,7 +483,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 29;
+  int get schemaVersion => 33;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -732,6 +734,28 @@ class AppDatabase extends _$AppDatabase {
             WHERE legacy_locality_id != '';
           ''');
         });
+      }
+      
+      if (from < 30) {
+        // Version 30 migration: Ensure DamageWorkflowHistories schema is fresh
+        // Since definitions are correct, we just force a refresh if needed
+      }
+
+      if (from < 31) {
+        // Version 31: Clear workflow histories to force a fresh fetch from server
+        await customStatement('DELETE FROM damage_workflow_histories');
+      }
+
+      if (from < 32) {
+        // Version 32: Add changedByUserName to DamageWorkflowHistories
+        await m.addColumn(damageWorkflowHistories, damageWorkflowHistories.changedByUserName);
+        // Clear workflow histories to force a fresh fetch from server with names
+        await customStatement('DELETE FROM damage_workflow_histories');
+      }
+
+      if (from < 33) {
+        // Version 33: Add totalDamage to DamageReports
+        await m.addColumn(damageReports, damageReports.totalDamage);
       }
     },
     beforeOpen: (details) async {

@@ -1,12 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/classification_wizard_provider.dart';
-import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockReferenceDataRepository mockRepo;

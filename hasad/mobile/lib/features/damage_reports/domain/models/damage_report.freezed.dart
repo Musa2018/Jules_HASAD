@@ -31,8 +31,8 @@ mixin _$DamageReport {
   int get damageYear => throw _privateConstructorUsedError;
   String get farmId => throw _privateConstructorUsedError;
   String get farmerId => throw _privateConstructorUsedError;
-  DateTime get damageDate => throw _privateConstructorUsedError;
-  DateTime get documentationDate => throw _privateConstructorUsedError;
+  DateTime? get damageDate => throw _privateConstructorUsedError;
+  DateTime? get documentationDate => throw _privateConstructorUsedError;
   int get agriculturalSectorId => throw _privateConstructorUsedError;
   int get damageCauseCategoryId => throw _privateConstructorUsedError;
   int get damageCauseId => throw _privateConstructorUsedError;
@@ -40,12 +40,15 @@ mixin _$DamageReport {
   String get directorateId => throw _privateConstructorUsedError;
   String get localityId => throw _privateConstructorUsedError;
   String get statusId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'totalDamage')
+  double get totalDamage => throw _privateConstructorUsedError;
   String get notes => throw _privateConstructorUsedError;
   String get createdBy => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
   List<DamageItem> get items => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
   String? get lastSyncError => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
   bool? get isDeleted => throw _privateConstructorUsedError;
   DateTime? get deletedAt => throw _privateConstructorUsedError;
   String? get deletedBy => throw _privateConstructorUsedError;
@@ -76,8 +79,8 @@ abstract class $DamageReportCopyWith<$Res> {
     int damageYear,
     String farmId,
     String farmerId,
-    DateTime damageDate,
-    DateTime documentationDate,
+    DateTime? damageDate,
+    DateTime? documentationDate,
     int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
@@ -85,12 +88,14 @@ abstract class $DamageReportCopyWith<$Res> {
     String directorateId,
     String localityId,
     String statusId,
+    @JsonKey(name: 'totalDamage') double totalDamage,
     String notes,
     String createdBy,
     String rowVersion,
     List<DamageItem> items,
     String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,
@@ -120,8 +125,8 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? damageYear = null,
     Object? farmId = null,
     Object? farmerId = null,
-    Object? damageDate = null,
-    Object? documentationDate = null,
+    Object? damageDate = freezed,
+    Object? documentationDate = freezed,
     Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
@@ -129,12 +134,14 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? directorateId = null,
     Object? localityId = null,
     Object? statusId = null,
+    Object? totalDamage = null,
     Object? notes = null,
     Object? createdBy = null,
     Object? rowVersion = null,
     Object? items = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? updatedAt = freezed,
     Object? isDeleted = freezed,
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
@@ -173,14 +180,14 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.farmerId
                 : farmerId // ignore: cast_nullable_to_non_nullable
                       as String,
-            damageDate: null == damageDate
+            damageDate: freezed == damageDate
                 ? _value.damageDate
                 : damageDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            documentationDate: null == documentationDate
+                      as DateTime?,
+            documentationDate: freezed == documentationDate
                 ? _value.documentationDate
                 : documentationDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as DateTime?,
             agriculturalSectorId: null == agriculturalSectorId
                 ? _value.agriculturalSectorId
                 : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
@@ -209,6 +216,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.statusId
                 : statusId // ignore: cast_nullable_to_non_nullable
                       as String,
+            totalDamage: null == totalDamage
+                ? _value.totalDamage
+                : totalDamage // ignore: cast_nullable_to_non_nullable
+                      as double,
             notes: null == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
@@ -233,6 +244,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.lastSyncError
                 : lastSyncError // ignore: cast_nullable_to_non_nullable
                       as String?,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             isDeleted: freezed == isDeleted
                 ? _value.isDeleted
                 : isDeleted // ignore: cast_nullable_to_non_nullable
@@ -269,8 +284,8 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     int damageYear,
     String farmId,
     String farmerId,
-    DateTime damageDate,
-    DateTime documentationDate,
+    DateTime? damageDate,
+    DateTime? documentationDate,
     int agriculturalSectorId,
     int damageCauseCategoryId,
     int damageCauseId,
@@ -278,12 +293,14 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String directorateId,
     String localityId,
     String statusId,
+    @JsonKey(name: 'totalDamage') double totalDamage,
     String notes,
     String createdBy,
     String rowVersion,
     List<DamageItem> items,
     String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,
@@ -312,8 +329,8 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? damageYear = null,
     Object? farmId = null,
     Object? farmerId = null,
-    Object? damageDate = null,
-    Object? documentationDate = null,
+    Object? damageDate = freezed,
+    Object? documentationDate = freezed,
     Object? agriculturalSectorId = null,
     Object? damageCauseCategoryId = null,
     Object? damageCauseId = null,
@@ -321,12 +338,14 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? directorateId = null,
     Object? localityId = null,
     Object? statusId = null,
+    Object? totalDamage = null,
     Object? notes = null,
     Object? createdBy = null,
     Object? rowVersion = null,
     Object? items = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
+    Object? updatedAt = freezed,
     Object? isDeleted = freezed,
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
@@ -365,14 +384,14 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.farmerId
             : farmerId // ignore: cast_nullable_to_non_nullable
                   as String,
-        damageDate: null == damageDate
+        damageDate: freezed == damageDate
             ? _value.damageDate
             : damageDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        documentationDate: null == documentationDate
+                  as DateTime?,
+        documentationDate: freezed == documentationDate
             ? _value.documentationDate
             : documentationDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as DateTime?,
         agriculturalSectorId: null == agriculturalSectorId
             ? _value.agriculturalSectorId
             : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
@@ -401,6 +420,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.statusId
             : statusId // ignore: cast_nullable_to_non_nullable
                   as String,
+        totalDamage: null == totalDamage
+            ? _value.totalDamage
+            : totalDamage // ignore: cast_nullable_to_non_nullable
+                  as double,
         notes: null == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
@@ -425,6 +448,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value.lastSyncError
             : lastSyncError // ignore: cast_nullable_to_non_nullable
                   as String?,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         isDeleted: freezed == isDeleted
             ? _value.isDeleted
             : isDeleted // ignore: cast_nullable_to_non_nullable
@@ -446,16 +473,16 @@ class __$$DamageReportImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageReportImpl implements _DamageReport {
   const _$DamageReportImpl({
-    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'clientId') this.id = '',
     @JsonKey(name: 'id') this.serverId,
     this.reportNumber = '',
     this.permanentFormNumber = '',
     this.temporaryFormNumber = '',
     this.damageYear = 0,
-    required this.farmId,
+    this.farmId = '',
     this.farmerId = '',
-    required this.damageDate,
-    required this.documentationDate,
+    this.damageDate,
+    this.documentationDate,
     this.agriculturalSectorId = 0,
     this.damageCauseCategoryId = 0,
     this.damageCauseId = 0,
@@ -463,12 +490,14 @@ class _$DamageReportImpl implements _DamageReport {
     this.directorateId = '',
     this.localityId = '',
     this.statusId = DamageReportStatus.pendingTechnicalVerification,
-    required this.notes,
+    @JsonKey(name: 'totalDamage') this.totalDamage = 0.0,
+    this.notes = '',
     this.createdBy = '',
     this.rowVersion = '',
     final List<DamageItem> items = const [],
     this.syncStatus = 'completed',
     this.lastSyncError,
+    this.updatedAt,
     this.isDeleted,
     this.deletedAt,
     this.deletedBy,
@@ -497,14 +526,15 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final int damageYear;
   @override
+  @JsonKey()
   final String farmId;
   @override
   @JsonKey()
   final String farmerId;
   @override
-  final DateTime damageDate;
+  final DateTime? damageDate;
   @override
-  final DateTime documentationDate;
+  final DateTime? documentationDate;
   @override
   @JsonKey()
   final int agriculturalSectorId;
@@ -527,6 +557,10 @@ class _$DamageReportImpl implements _DamageReport {
   @JsonKey()
   final String statusId;
   @override
+  @JsonKey(name: 'totalDamage')
+  final double totalDamage;
+  @override
+  @JsonKey()
   final String notes;
   @override
   @JsonKey()
@@ -549,6 +583,8 @@ class _$DamageReportImpl implements _DamageReport {
   @override
   final String? lastSyncError;
   @override
+  final DateTime? updatedAt;
+  @override
   final bool? isDeleted;
   @override
   final DateTime? deletedAt;
@@ -557,7 +593,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, totalDamage: $totalDamage, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -597,6 +633,8 @@ class _$DamageReportImpl implements _DamageReport {
                 other.localityId == localityId) &&
             (identical(other.statusId, statusId) ||
                 other.statusId == statusId) &&
+            (identical(other.totalDamage, totalDamage) ||
+                other.totalDamage == totalDamage) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.createdBy, createdBy) ||
                 other.createdBy == createdBy) &&
@@ -607,6 +645,8 @@ class _$DamageReportImpl implements _DamageReport {
                 other.syncStatus == syncStatus) &&
             (identical(other.lastSyncError, lastSyncError) ||
                 other.lastSyncError == lastSyncError) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
             (identical(other.isDeleted, isDeleted) ||
                 other.isDeleted == isDeleted) &&
             (identical(other.deletedAt, deletedAt) ||
@@ -636,12 +676,14 @@ class _$DamageReportImpl implements _DamageReport {
     directorateId,
     localityId,
     statusId,
+    totalDamage,
     notes,
     createdBy,
     rowVersion,
     const DeepCollectionEquality().hash(_items),
     syncStatus,
     lastSyncError,
+    updatedAt,
     isDeleted,
     deletedAt,
     deletedBy,
@@ -663,16 +705,16 @@ class _$DamageReportImpl implements _DamageReport {
 
 abstract class _DamageReport implements DamageReport {
   const factory _DamageReport({
-    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'clientId') final String id,
     @JsonKey(name: 'id') final String? serverId,
     final String reportNumber,
     final String permanentFormNumber,
     final String temporaryFormNumber,
     final int damageYear,
-    required final String farmId,
+    final String farmId,
     final String farmerId,
-    required final DateTime damageDate,
-    required final DateTime documentationDate,
+    final DateTime? damageDate,
+    final DateTime? documentationDate,
     final int agriculturalSectorId,
     final int damageCauseCategoryId,
     final int damageCauseId,
@@ -680,12 +722,14 @@ abstract class _DamageReport implements DamageReport {
     final String directorateId,
     final String localityId,
     final String statusId,
-    required final String notes,
+    @JsonKey(name: 'totalDamage') final double totalDamage,
+    final String notes,
     final String createdBy,
     final String rowVersion,
     final List<DamageItem> items,
     final String syncStatus,
     final String? lastSyncError,
+    final DateTime? updatedAt,
     final bool? isDeleted,
     final DateTime? deletedAt,
     final String? deletedBy,
@@ -713,9 +757,9 @@ abstract class _DamageReport implements DamageReport {
   @override
   String get farmerId;
   @override
-  DateTime get damageDate;
+  DateTime? get damageDate;
   @override
-  DateTime get documentationDate;
+  DateTime? get documentationDate;
   @override
   int get agriculturalSectorId;
   @override
@@ -731,6 +775,9 @@ abstract class _DamageReport implements DamageReport {
   @override
   String get statusId;
   @override
+  @JsonKey(name: 'totalDamage')
+  double get totalDamage;
+  @override
   String get notes;
   @override
   String get createdBy;
@@ -742,6 +789,8 @@ abstract class _DamageReport implements DamageReport {
   String get syncStatus;
   @override
   String? get lastSyncError;
+  @override
+  DateTime? get updatedAt;
   @override
   bool? get isDeleted;
   @override

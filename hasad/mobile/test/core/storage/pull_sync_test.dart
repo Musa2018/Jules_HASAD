@@ -4,26 +4,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/pull_sync_coordinator.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farms/presentation/farms_providers.dart';
 
-class MockFarmerRepo extends Mock implements FarmerRepository {}
-class MockFarmRepo extends Mock implements FarmRepository {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
-  late MockFarmerRepo mockFarmerRepo;
-  late MockFarmRepo mockFarmRepo;
+  late MockFarmerRepository mockFarmerRepo;
+  late MockFarmRepository mockFarmRepo;
   late PullSyncCoordinator coordinator;
   late ProviderContainer container;
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
-    mockFarmerRepo = MockFarmerRepo();
-    mockFarmRepo = MockFarmRepo();
+    mockFarmerRepo = MockFarmerRepository();
+    mockFarmRepo = MockFarmRepository();
     
     container = ProviderContainer(
       overrides: [

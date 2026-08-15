@@ -24,14 +24,15 @@ DamageWorkflowHistory _$DamageWorkflowHistoryFromJson(
 /// @nodoc
 mixin _$DamageWorkflowHistory {
   @JsonKey(name: 'id')
-  String get id => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError; // Local Drift ID
   @JsonKey(name: 'serverId')
-  String? get serverId => throw _privateConstructorUsedError;
+  String? get serverId => throw _privateConstructorUsedError; // Authority ID from server
   String get damageReportId => throw _privateConstructorUsedError;
   String get fromStatus => throw _privateConstructorUsedError;
   String get toStatus => throw _privateConstructorUsedError;
   String get changedByUserId => throw _privateConstructorUsedError;
-  DateTime get changedAt => throw _privateConstructorUsedError;
+  String get changedByUserName => throw _privateConstructorUsedError;
+  DateTime? get changedAt => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
   bool get isOverride => throw _privateConstructorUsedError;
 
@@ -59,7 +60,8 @@ abstract class $DamageWorkflowHistoryCopyWith<$Res> {
     String fromStatus,
     String toStatus,
     String changedByUserId,
-    DateTime changedAt,
+    String changedByUserName,
+    DateTime? changedAt,
     String? comment,
     bool isOverride,
   });
@@ -89,7 +91,8 @@ class _$DamageWorkflowHistoryCopyWithImpl<
     Object? fromStatus = null,
     Object? toStatus = null,
     Object? changedByUserId = null,
-    Object? changedAt = null,
+    Object? changedByUserName = null,
+    Object? changedAt = freezed,
     Object? comment = freezed,
     Object? isOverride = null,
   }) {
@@ -119,10 +122,14 @@ class _$DamageWorkflowHistoryCopyWithImpl<
                 ? _value.changedByUserId
                 : changedByUserId // ignore: cast_nullable_to_non_nullable
                       as String,
-            changedAt: null == changedAt
+            changedByUserName: null == changedByUserName
+                ? _value.changedByUserName
+                : changedByUserName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            changedAt: freezed == changedAt
                 ? _value.changedAt
                 : changedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as DateTime?,
             comment: freezed == comment
                 ? _value.comment
                 : comment // ignore: cast_nullable_to_non_nullable
@@ -153,7 +160,8 @@ abstract class _$$DamageWorkflowHistoryImplCopyWith<$Res>
     String fromStatus,
     String toStatus,
     String changedByUserId,
-    DateTime changedAt,
+    String changedByUserName,
+    DateTime? changedAt,
     String? comment,
     bool isOverride,
   });
@@ -180,7 +188,8 @@ class __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>
     Object? fromStatus = null,
     Object? toStatus = null,
     Object? changedByUserId = null,
-    Object? changedAt = null,
+    Object? changedByUserName = null,
+    Object? changedAt = freezed,
     Object? comment = freezed,
     Object? isOverride = null,
   }) {
@@ -210,10 +219,14 @@ class __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>
             ? _value.changedByUserId
             : changedByUserId // ignore: cast_nullable_to_non_nullable
                   as String,
-        changedAt: null == changedAt
+        changedByUserName: null == changedByUserName
+            ? _value.changedByUserName
+            : changedByUserName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        changedAt: freezed == changedAt
             ? _value.changedAt
             : changedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as DateTime?,
         comment: freezed == comment
             ? _value.comment
             : comment // ignore: cast_nullable_to_non_nullable
@@ -231,13 +244,14 @@ class __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
   const _$DamageWorkflowHistoryImpl({
-    @JsonKey(name: 'id') required this.id,
+    @JsonKey(name: 'id') this.id = '',
     @JsonKey(name: 'serverId') this.serverId,
-    required this.damageReportId,
-    required this.fromStatus,
-    required this.toStatus,
-    required this.changedByUserId,
-    required this.changedAt,
+    this.damageReportId = '',
+    this.fromStatus = '',
+    this.toStatus = '',
+    this.changedByUserId = '',
+    this.changedByUserName = '',
+    this.changedAt,
     this.comment,
     this.isOverride = false,
   });
@@ -248,19 +262,28 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
   @override
   @JsonKey(name: 'id')
   final String id;
+  // Local Drift ID
   @override
   @JsonKey(name: 'serverId')
   final String? serverId;
+  // Authority ID from server
   @override
+  @JsonKey()
   final String damageReportId;
   @override
+  @JsonKey()
   final String fromStatus;
   @override
+  @JsonKey()
   final String toStatus;
   @override
+  @JsonKey()
   final String changedByUserId;
   @override
-  final DateTime changedAt;
+  @JsonKey()
+  final String changedByUserName;
+  @override
+  final DateTime? changedAt;
   @override
   final String? comment;
   @override
@@ -269,7 +292,7 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
 
   @override
   String toString() {
-    return 'DamageWorkflowHistory(id: $id, serverId: $serverId, damageReportId: $damageReportId, fromStatus: $fromStatus, toStatus: $toStatus, changedByUserId: $changedByUserId, changedAt: $changedAt, comment: $comment, isOverride: $isOverride)';
+    return 'DamageWorkflowHistory(id: $id, serverId: $serverId, damageReportId: $damageReportId, fromStatus: $fromStatus, toStatus: $toStatus, changedByUserId: $changedByUserId, changedByUserName: $changedByUserName, changedAt: $changedAt, comment: $comment, isOverride: $isOverride)';
   }
 
   @override
@@ -288,6 +311,8 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
                 other.toStatus == toStatus) &&
             (identical(other.changedByUserId, changedByUserId) ||
                 other.changedByUserId == changedByUserId) &&
+            (identical(other.changedByUserName, changedByUserName) ||
+                other.changedByUserName == changedByUserName) &&
             (identical(other.changedAt, changedAt) ||
                 other.changedAt == changedAt) &&
             (identical(other.comment, comment) || other.comment == comment) &&
@@ -305,6 +330,7 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
     fromStatus,
     toStatus,
     changedByUserId,
+    changedByUserName,
     changedAt,
     comment,
     isOverride,
@@ -330,13 +356,14 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
 
 abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
   const factory _DamageWorkflowHistory({
-    @JsonKey(name: 'id') required final String id,
+    @JsonKey(name: 'id') final String id,
     @JsonKey(name: 'serverId') final String? serverId,
-    required final String damageReportId,
-    required final String fromStatus,
-    required final String toStatus,
-    required final String changedByUserId,
-    required final DateTime changedAt,
+    final String damageReportId,
+    final String fromStatus,
+    final String toStatus,
+    final String changedByUserId,
+    final String changedByUserName,
+    final DateTime? changedAt,
     final String? comment,
     final bool isOverride,
   }) = _$DamageWorkflowHistoryImpl;
@@ -346,10 +373,10 @@ abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
 
   @override
   @JsonKey(name: 'id')
-  String get id;
+  String get id; // Local Drift ID
   @override
   @JsonKey(name: 'serverId')
-  String? get serverId;
+  String? get serverId; // Authority ID from server
   @override
   String get damageReportId;
   @override
@@ -359,7 +386,9 @@ abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
   @override
   String get changedByUserId;
   @override
-  DateTime get changedAt;
+  String get changedByUserName;
+  @override
+  DateTime? get changedAt;
   @override
   String? get comment;
   @override

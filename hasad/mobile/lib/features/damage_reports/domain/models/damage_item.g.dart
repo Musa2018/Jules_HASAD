@@ -8,9 +8,9 @@ part of 'damage_item.dart';
 
 _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
     _$DamageItemImpl(
-      id: json['clientId'] as String,
+      id: json['clientId'] as String? ?? '',
       serverId: json['id'] as String?,
-      damageReportId: json['damageReportId'] as String,
+      damageReportId: json['damageReportId'] as String? ?? '',
       damageNatureId: (json['damageNatureId'] as num?)?.toInt() ?? 0,
       damageActionId: (json['damageActionId'] as num?)?.toInt() ?? 0,
       classificationId: (json['classificationId'] as num?)?.toInt() ?? 0,
@@ -19,13 +19,16 @@ _$DamageItemImpl _$$DamageItemImplFromJson(Map<String, dynamic> json) =>
       calculatedUnitPrice:
           (json['calculatedUnitPrice'] as num?)?.toDouble() ?? 0.0,
       measurementUnitSnapshot: json['measurementUnitSnapshot'] as String? ?? '',
-      affectedArea: (json['affectedArea'] as num).toDouble(),
-      damagePercentage: (json['damagePercentage'] as num).toDouble(),
-      quantity: (json['quantity'] as num).toDouble(),
-      estimatedLoss: (json['estimatedLoss'] as num).toDouble(),
+      affectedArea: (json['affectedArea'] as num?)?.toDouble() ?? 0.0,
+      damagePercentage: (json['damagePercentage'] as num?)?.toDouble() ?? 0.0,
+      quantity: (json['quantity'] as num?)?.toDouble() ?? 0.0,
+      estimatedLoss: (json['estimatedLoss'] as num?)?.toDouble() ?? 0.0,
       rowVersion: json['rowVersion'] as String? ?? '',
       syncStatus: json['syncStatus'] as String? ?? 'completed',
       lastSyncError: json['lastSyncError'] as String?,
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
       isDeleted: json['isDeleted'] as bool?,
       deletedAt: json['deletedAt'] == null
           ? null
@@ -52,6 +55,7 @@ Map<String, dynamic> _$$DamageItemImplToJson(_$DamageItemImpl instance) =>
       'rowVersion': instance.rowVersion,
       'syncStatus': instance.syncStatus,
       'lastSyncError': instance.lastSyncError,
+      'updatedAt': instance.updatedAt?.toIso8601String(),
       'isDeleted': instance.isDeleted,
       'deletedAt': instance.deletedAt?.toIso8601String(),
       'deletedBy': instance.deletedBy,

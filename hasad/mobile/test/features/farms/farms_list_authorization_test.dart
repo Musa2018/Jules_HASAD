@@ -12,7 +12,7 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
-class MockAuthorizationService extends Mock implements AuthorizationService {}
+import '../../helpers/mocks.dart';
 
 void main() {
   late MockAuthorizationService mockAuthService;

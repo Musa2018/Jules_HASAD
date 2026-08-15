@@ -67,6 +67,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
             DirectorateId = report.DirectorateId,
             LocalityId = report.LocalityId,
             StatusId = report.StatusId,
+            TotalDamage = report.TotalDamage,
             Notes = report.Notes,
             RowVersion = Convert.ToBase64String(report.RowVersion),
             Items = report.Items.Select(i => new DamageItemDto
@@ -74,6 +75,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
                 Id = i.Id,
                 ClientId = i.ClientId,
                 DamageNatureId = i.DamageNatureId,
+                DamageActionId = i.DamageActionId,
                 ClassificationId = i.ClassificationId,
                 CostingSheetId = i.CostingSheetItemId,
                 CalculatedUnitPrice = i.CalculatedUnitPrice,

@@ -9,16 +9,16 @@ part 'damage_report.g.dart';
 @freezed
 class DamageReport with _$DamageReport {
   const factory DamageReport({
-    @JsonKey(name: 'clientId') required String id, // ClientId
+    @JsonKey(name: 'clientId') @Default('') String id, // ClientId
     @JsonKey(name: 'id') String? serverId,
     @Default('') String reportNumber,
     @Default('') String permanentFormNumber,
     @Default('') String temporaryFormNumber,
     @Default(0) int damageYear,
-    required String farmId,
+    @Default('') String farmId,
     @Default('') String farmerId,
-    required DateTime damageDate,
-    required DateTime documentationDate,
+    DateTime? damageDate,
+    DateTime? documentationDate,
     @Default(0) int agriculturalSectorId,
     @Default(0) int damageCauseCategoryId,
     @Default(0) int damageCauseId,
@@ -26,12 +26,14 @@ class DamageReport with _$DamageReport {
     @Default('') String directorateId,
     @Default('') String localityId,
     @Default(DamageReportStatus.pendingTechnicalVerification) String statusId,
-    required String notes,
+    @JsonKey(name: 'totalDamage') @Default(0.0) double totalDamage,
+    @Default('') String notes,
     @Default('') String createdBy,
     @Default('') String rowVersion,
     @Default([]) List<DamageItem> items,
     @Default('completed') String syncStatus,
     String? lastSyncError,
+    DateTime? updatedAt,
     bool? isDeleted,
     DateTime? deletedAt,
     String? deletedBy,

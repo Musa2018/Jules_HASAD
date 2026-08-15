@@ -47,6 +47,16 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
             : l10n.damageReportsForms),
         actions: [
           IconButton(
+            tooltip: l10n.retrySync,
+            icon: const Icon(Icons.sync),
+            onPressed: () {
+               ref.read(damageReportFormProvider.notifier).retryAllFailedSyncs();
+               ScaffoldMessenger.of(context).showSnackBar(
+                 SnackBar(content: Text(l10n.pendingSync)),
+               );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.invalidate(damageReportsListProvider),
           ),
@@ -68,7 +78,9 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
                 if (displayReports.isEmpty) {
                   return RefreshIndicator(
                     onRefresh: () async {
-                      await ref.read(damageReportRepositoryProvider).synchronize();
+                      if (widget.farm != null) {
+                        await ref.read(damageReportRepositoryProvider).getDamageReportsByFarm(widget.farm!.id);
+                      }
                       ref.invalidate(damageReportsListProvider);
                     },
                     child: Stack(
@@ -90,7 +102,9 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
-                    await ref.read(damageReportRepositoryProvider).synchronize();
+                    if (widget.farm != null) {
+                      await ref.read(damageReportRepositoryProvider).getDamageReportsByFarm(widget.farm!.id);
+                    }
                     ref.invalidate(damageReportsListProvider);
                   },
                   child: ListView.builder(

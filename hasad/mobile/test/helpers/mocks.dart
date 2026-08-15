@@ -7,6 +7,7 @@ import 'package:mobile/features/auth/data/auth_repository.dart';
 import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:mobile/features/farms/data/reference_data_repository.dart';
 import 'package:mobile/features/farms/data/remote_reference_data_repository.dart';
+import 'package:mobile/features/farms/data/offline_first_reference_data_repository.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/admin/data/users_repository.dart';
 import 'package:mobile/features/agricultural_assistance/data/agricultural_assistance_repository.dart';
@@ -55,5 +56,7 @@ class MockBackgroundSyncService extends Mock implements BackgroundSyncService {}
 class MockReferenceDataRepository extends Mock implements ReferenceDataRepository {}
 
 class MockRemoteReferenceDataRepository extends Mock implements RemoteReferenceDataRepository {}
+
+class MockOfflineFirstReferenceDataRepository extends Mock implements OfflineFirstReferenceDataRepository {}
 
 class MockGoRouter extends Mock implements GoRouter {}

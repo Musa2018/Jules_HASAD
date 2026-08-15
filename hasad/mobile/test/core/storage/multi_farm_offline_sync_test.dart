@@ -7,10 +7,6 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farms/data/farm_repository.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_repository.dart';
-import 'package:mobile/features/damage_reports/data/repositories/damage_report_attachment_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:convert';
 

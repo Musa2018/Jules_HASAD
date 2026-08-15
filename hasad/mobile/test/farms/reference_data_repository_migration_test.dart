@@ -2,7 +2,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/storage/database.dart' as db_local;
 import 'package:mobile/features/farms/data/offline_first_reference_data_repository.dart';
-import 'package:mobile/features/farms/data/remote_reference_data_repository.dart';
+import 'package:mobile/features/farms/data/offline_first_reference_data_repository.dart';
 import 'package:mobile/features/farms/domain/lookup_entities.dart';
 import 'package:mobile/features/farms/domain/reference_data.dart';
 import 'package:mocktail/mocktail.dart';

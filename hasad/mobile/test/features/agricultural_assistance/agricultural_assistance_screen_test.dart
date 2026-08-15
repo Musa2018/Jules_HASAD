@@ -10,11 +10,7 @@ import 'package:mobile/features/agricultural_assistance/presentation/agricultura
 import 'package:mobile/features/agricultural_assistance/presentation/agricultural_assistance_screen.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mobile/features/agricultural_assistance/data/agricultural_assistance_repository.dart';
-
-import 'package:mobile/features/auth/data/auth_repository.dart';
-import 'package:mobile/core/storage/secure_storage_service.dart';
-import 'package:mobile/core/network/token_refresher.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../helpers/mocks.dart';
 

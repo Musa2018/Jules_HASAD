@@ -270,6 +270,9 @@ class _HeaderSection extends ConsumerWidget {
       if (match != null) locName = isAr ? match.nameAr : match.nameEn;
     });
 
+    final lat = displayFarm?.latitude;
+    final lon = displayFarm?.longitude;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -303,8 +306,6 @@ class _HeaderSection extends ConsumerWidget {
         _InfoRow(label: l10n.farmerName, value: farmerAsync.value?.fullName ?? report.farmerId),
         _InfoRow(label: "المزرعة", value: displayFarm?.localFarmName ?? report.farmId),
         _InfoRow(label: l10n.locationSection, value: "$govName / $dirName / $locName"),
-        final lat = displayFarm?.latitude;
-        final lon = displayFarm?.longitude;
         if (lat != null && lon != null)
           _InfoRow(
             label: "الإحداثيات الجغرافية",

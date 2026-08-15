@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
@@ -16,9 +15,7 @@ import 'package:mobile/l10n/app_localizations.dart';
 
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
-import 'package:mobile/features/auth/data/auth_repository.dart';
-import 'package:mobile/core/storage/secure_storage_service.dart';
-import 'package:mobile/core/network/token_refresher.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 
 import 'package:mobile/core/config/app_config.dart';
 

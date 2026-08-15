@@ -15,6 +15,7 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report_attac
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
+import 'package:mobile/features/farmers/domain/gender.dart';
 import '../../helpers/mocks.dart';
 
 void main() {

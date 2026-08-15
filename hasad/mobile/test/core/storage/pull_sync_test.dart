@@ -14,15 +14,15 @@ import '../../helpers/mocks.dart';
 
 void main() {
   late AppDatabase db;
-  late MockFarmerRepo mockFarmerRepo;
-  late MockFarmRepo mockFarmRepo;
+  late MockFarmerRepository mockFarmerRepo;
+  late MockFarmRepository mockFarmRepo;
   late PullSyncCoordinator coordinator;
   late ProviderContainer container;
 
   setUp(() {
     db = AppDatabase.withExecutor(NativeDatabase.memory());
-    mockFarmerRepo = MockFarmerRepo();
-    mockFarmRepo = MockFarmRepo();
+    mockFarmerRepo = MockFarmerRepository();
+    mockFarmRepo = MockFarmRepository();
     
     container = ProviderContainer(
       overrides: [

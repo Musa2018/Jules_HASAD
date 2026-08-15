@@ -8,7 +8,7 @@ import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:drift/native.dart';
 import 'package:mobile/features/farms/domain/farm_filter.dart';
-import 'package:mobile/features/farms/data/farm_repository.dart';
+import 'package:mobile/features/farms/domain/farm_filter.dart';
 import 'package:mobile/features/farms/presentation/farms_list_screen.dart';
 import 'package:mobile/features/farms/presentation/farms_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';

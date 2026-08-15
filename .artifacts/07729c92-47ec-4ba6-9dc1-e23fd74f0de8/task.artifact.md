@@ -1,0 +1,21 @@
+# مهام إضافة حقل إجمالي الضرر
+
+- [x] **Backend: تحديث الكيانات والـ DTOs**
+    - [x] إضافة `TotalDamage` لـ `DamageReport.cs`
+    - [x] إضافة `TotalDamage` لـ `DamageReportDto.cs`
+    - [x] تحديث تهيئة الحقل في `ApplicationDbContext.cs`
+- [x] **Backend: تحديث منطق العمل (Command Handlers)**
+    - [x] تحديث `CreateDamageReportCommandHandler.cs`
+    - [x] تحديث `AddDamageItemCommandHandler.cs`
+    - [x] تحديث `UpdateDamageItemCommandHandler.cs`
+    - [x] تحديث `DeleteDamageItemCommandHandler.cs`
+- [x] **Mobile: تحديث قاعدة البيانات والنماذج**
+    - [x] تحديث `database.dart` (الحقل، الإصدار، والهجرة)
+    - [x] تحديث `damage_report.dart`
+    - [x] تحديث `damage_report_sync_dto.dart` (تم التحقق - يستخدم الـ domain model)
+    - [x] تحديث `background_sync_service.dart` لمعالجة البيانات القادمة من السيرفر
+- [x] **Mobile: تحديث واجهة المستخدم**
+    - [x] تحديث `damage_report_details_screen.dart` للعرض
+- [x] **التحقق والاختبار**
+    - [x] التأكد من دقة الحسابات في السيرفر
+    - [x] التأكد من نجاح عملية الهجرة في الموبايل

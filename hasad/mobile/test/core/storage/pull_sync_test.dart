@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/pull_sync_coordinator.dart';
-import 'package:mobile/features/farmers/data/farmer_repository.dart';
-import 'package:mobile/features/farms/data/farm_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
 import 'package:mobile/features/farms/presentation/farms_providers.dart';

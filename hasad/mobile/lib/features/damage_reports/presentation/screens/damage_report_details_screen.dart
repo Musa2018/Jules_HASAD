@@ -279,14 +279,17 @@ class _HeaderSection extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "${l10n.status}: ${_getStatusLabel(context, report.statusId)}",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: _getStatusColor(report.statusId),
+            Expanded(
+              child: Text(
+                "${l10n.status}: ${_getStatusLabel(context, report.statusId)}",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: _getStatusColor(report.statusId),
+                ),
               ),
             ),
-            if (report.syncStatus != "completed")
+            if (report.syncStatus != "completed") ...[
+              const SizedBox(width: 8),
               Chip(
                 label: Text(
                   report.syncStatus == 'pending' 
@@ -300,6 +303,7 @@ class _HeaderSection extends ConsumerWidget {
                     ? const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2)) 
                     : null,
               ),
+            ],
           ],
         ),
         const SizedBox(height: 16),

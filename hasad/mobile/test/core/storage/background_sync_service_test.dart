@@ -80,11 +80,12 @@ void main() {
         governorateId: '',
         directorateId: '',
         localityId: '',
-        settlementName: '',
-        companyName: '',
+        basin: '',
+        parcel: '',
         area: 0.0,
-        measurementUnitId: 1,
-        isOperational: true,
+        areaUnitId: 1,
+        agriculturalSectorId: 1,
+        politicalClassificationId: 1,
       ),
     );
     registerFallbackValue(
@@ -94,13 +95,13 @@ void main() {
         reportNumber: '',
         permanentFormNumber: '',
         temporaryFormNumber: '',
-        damageYear: '2026',
+        damageYear: 2026,
         farmId: '',
         farmerId: '',
         governorateId: '',
         directorateId: '',
         localityId: '',
-        damageNatureId: 1,
+        agriculturalSectorId: 1,
         damageDate: DateTime.now(),
         statusId: 'Draft',
         syncStatus: 'pending',
@@ -159,7 +160,26 @@ void main() {
         rowVersion: '',
       );
 
-      await db.into(db.farmers).insert(farmer.toCompanion(false));
+      await db.into(db.farmers).insert(FarmersCompanion.insert(
+        id: farmer.id,
+        idTypeId: farmer.idTypeId,
+        idNumber: farmer.idNumber,
+        firstNameAr: farmer.firstNameAr,
+        fatherNameAr: farmer.fatherNameAr,
+        grandfatherNameAr: farmer.grandfatherNameAr,
+        familyNameAr: farmer.familyNameAr,
+        firstNameEn: farmer.firstNameEn,
+        fatherNameEn: farmer.fatherNameEn,
+        grandfatherNameEn: farmer.grandfatherNameEn,
+        familyNameEn: farmer.familyNameEn,
+        birthDate: farmer.birthDate,
+        gender: farmer.gender.index,
+        phoneNumber: farmer.phoneNumber,
+        familySize: farmer.familySize,
+        address: farmer.address,
+        syncStatus: const Value('pending'),
+      ));
+
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
             localId: 'local-1',
             entityType: 'farmer',
@@ -196,12 +216,31 @@ void main() {
         governorateId: 'gov-1',
         directorateId: 'dir-1',
         localityId: 'loc-1',
+        basin: 'b1',
+        parcel: 'p1',
         area: 10.5,
-        measurementUnitId: 1,
-        isOperational: true,
+        areaUnitId: 1,
+        agriculturalSectorId: 1,
+        politicalClassificationId: 1,
       );
 
-      await db.into(db.farms).insert(farm.toCompanion(false));
+      await db.into(db.farms).insert(FarmsCompanion.insert(
+        id: farm.id,
+        farmerId: farm.farmerId,
+        localFarmName: farm.localFarmName,
+        ownershipTypeId: farm.ownershipTypeId,
+        governorateId: farm.governorateId,
+        directorateId: farm.directorateId,
+        localityId: farm.localityId,
+        basin: farm.basin,
+        parcel: farm.parcel,
+        area: farm.area,
+        areaUnitId: farm.areaUnitId,
+        agriculturalSectorId: farm.agriculturalSectorId,
+        politicalClassificationId: farm.politicalClassificationId,
+        syncStatus: const Value('pending'),
+      ));
+
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
             localId: 'local-f1',
             entityType: 'farm',
@@ -233,20 +272,33 @@ void main() {
         reportNumber: 'R001',
         permanentFormNumber: '',
         temporaryFormNumber: 'T001',
-        damageYear: '2026',
+        damageYear: 2026,
         farmId: 'farm-1',
         farmerId: 'farmer-1',
         governorateId: 'gov-1',
         directorateId: 'dir-1',
         localityId: 'loc-1',
-        damageNatureId: 1,
+        agriculturalSectorId: 1,
         damageDate: DateTime.now(),
         statusId: 'Draft',
         syncStatus: 'pending',
         items: [],
       );
 
-      await db.into(db.damageReports).insert(report.toCompanion(false));
+      await db.into(db.damageReports).insert(DamageReportsCompanion.insert(
+        id: const Value('local-r1'),
+        farmId: report.farmId,
+        farmerId: report.farmerId,
+        damageYear: report.damageYear,
+        governorateId: report.governorateId,
+        directorateId: report.directorateId,
+        localityId: report.localityId,
+        agriculturalSectorId: report.agriculturalSectorId,
+        damageDate: Value(report.damageDate),
+        statusId: const Value('Draft'),
+        syncStatus: const Value('pending'),
+      ));
+
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
             localId: 'local-r1',
             entityType: 'damage_report',
@@ -279,7 +331,13 @@ void main() {
         syncStatus: 'pending',
       );
 
-      await db.into(db.damageReportAttachments).insert(attachment.toCompanion(false));
+      await db.into(db.damageReportAttachments).insert(DamageReportAttachmentsCompanion.insert(
+        id: attachment.id,
+        damageReportId: attachment.reportId,
+        localPath: attachment.localPath,
+        syncStatus: const Value('pending'),
+      ));
+
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
             localId: 'local-a1',
             entityType: 'attachment',
@@ -327,7 +385,26 @@ void main() {
         rowVersion: '',
       );
 
-      await db.into(db.farmers).insert(farmer.toCompanion(false));
+      await db.into(db.farmers).insert(FarmersCompanion.insert(
+        id: farmer.id,
+        idTypeId: farmer.idTypeId,
+        idNumber: farmer.idNumber,
+        firstNameAr: farmer.firstNameAr,
+        fatherNameAr: farmer.fatherNameAr,
+        grandfatherNameAr: farmer.grandfatherNameAr,
+        familyNameAr: farmer.familyNameAr,
+        firstNameEn: farmer.firstNameEn,
+        fatherNameEn: farmer.fatherNameEn,
+        grandfatherNameEn: farmer.grandfatherNameEn,
+        familyNameEn: farmer.familyNameEn,
+        birthDate: farmer.birthDate,
+        gender: farmer.gender.index,
+        phoneNumber: farmer.phoneNumber,
+        familySize: farmer.familySize,
+        address: farmer.address,
+        syncStatus: const Value('pending'),
+      ));
+
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
             localId: 'local-c1',
             entityType: 'farmer',
@@ -376,7 +453,26 @@ void main() {
         rowVersion: '',
       );
 
-      await db.into(db.farmers).insert(farmer.toCompanion(false));
+      await db.into(db.farmers).insert(FarmersCompanion.insert(
+        id: farmer.id,
+        idTypeId: farmer.idTypeId,
+        idNumber: farmer.idNumber,
+        firstNameAr: farmer.firstNameAr,
+        fatherNameAr: farmer.fatherNameAr,
+        grandfatherNameAr: farmer.grandfatherNameAr,
+        familyNameAr: farmer.familyNameAr,
+        firstNameEn: farmer.firstNameEn,
+        fatherNameEn: farmer.fatherNameEn,
+        grandfatherNameEn: farmer.grandfatherNameEn,
+        familyNameEn: farmer.familyNameEn,
+        birthDate: farmer.birthDate,
+        gender: farmer.gender.index,
+        phoneNumber: farmer.phoneNumber,
+        familySize: farmer.familySize,
+        address: farmer.address,
+        syncStatus: const Value('pending'),
+      ));
+
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
             localId: 'local-i1',
             entityType: 'farmer',
@@ -427,12 +523,12 @@ void main() {
       
       when(() => mockFarmerRepo.createFarmer(any())).thenAnswer((_) async {
         sequence.add('farmer');
-        return domain.Farmer(id: 'f1', serverId: 'sf1', idNumber: '', firstNameAr: '', fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '', firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '', birthDate: DateTime(2000), gender: domain.Gender.male, phoneNumber: '', familySize: 1, governorateId: '', localityId: '', address: '', rowVersion: '', idTypeId: 1);
+        return Farmer(id: 'f1', serverId: 'sf1', idNumber: '', firstNameAr: '', fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '', firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '', birthDate: DateTime(2000), gender: Gender.male, phoneNumber: '', familySize: 1, governorateId: '', localityId: '', address: '', rowVersion: '', idTypeId: 1);
       });
 
       when(() => mockFarmRepo.createFarm(any())).thenAnswer((_) async {
         sequence.add('farm');
-        return farm_domain.Farm(id: 'farm1', serverId: 'sfarm1', farmerId: 'sf1', localFarmName: '', ownershipTypeId: 1, governorateId: '', directorateId: '', localityId: '', settlementName: '', companyName: '', area: 1.0, measurementUnitId: 1, isOperational: true);
+        return const Farm(id: 'farm1', serverId: 'sfarm1', farmerId: 'sf1', localFarmName: '', ownershipTypeId: 1, governorateId: '', directorateId: '', localityId: '', basin: '', parcel: '', area: 1.0, areaUnitId: 1, agriculturalSectorId: 1, politicalClassificationId: 1);
       });
 
       await syncService.processQueue();

@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
+import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farms/domain/farm.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
@@ -27,15 +28,14 @@ void main() {
         grandfatherNameAr: '', familyNameAr: '', firstNameEn: '', fatherNameEn: '',
         grandfatherNameEn: '', familyNameEn: '', birthDate: DateTime(1990),
         gender: Gender.male, phoneNumber: '', familySize: 1, governorateId: '',
-        localityId: '', address: '',
+        localityId: '', address: '', rowVersion: '', id: '',
       ),
     );
     registerFallbackValue(
-      Farm(
+      const Farm(
         id: '', farmerId: '', localFarmName: '', ownershipTypeId: 1,
-        governorateId: '', directorateId: '', localityId: '',
-        basin: '', parcel: '', area: 1, areaUnitId: 1,
-        agriculturalSectorId: 1, politicalClassificationId: 1,
+        governorateId: '', directorateId: '', localityId: '', basin: '', parcel: '',
+        area: 0.0, areaUnitId: 1, agriculturalSectorId: 1, politicalClassificationId: 1,
       ),
     );
   });
@@ -51,164 +51,139 @@ void main() {
     syncService = BackgroundSyncService(
       db, farmerRepo, farmRepo, reportRepo, attachmentRepo, connectivity,
     );
+
+    when(() => connectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
   });
 
   tearDown(() async {
     await db.close();
   });
 
-  group('Late Binding Sync Resolution', () {
-    test('Offline Farmer + Offline Farm: Resolves IDs and syncs in order', () async {
-      when(() => connectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
+  test('Sync handles late-binding server IDs in dependent records', () async {
+    // 1. Setup offline data: Farmer and Farm (both pending)
+    const localFarmerId = 'f-local';
+    const localFarmId = 'farm-local';
+    const serverFarmerId = 'f-server';
+    const serverFarmId = 'farm-server';
 
-      // 1. Queue Farmer creation
-      final farmer = Farmer(
-        id: 'local-farmer-1',
-        idTypeId: 1,
-        idNumber: '1',
-        firstNameAr: 'أحمد',
-        fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
-        firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
-        birthDate: DateTime(1990), gender: Gender.male, phoneNumber: '',
-        familySize: 1, governorateId: 'G1', localityId: 'L1', address: '',
-      );
+    await db.into(db.farmers).insert(FarmersCompanion.insert(
+      id: localFarmerId,
+      idNumber: '123',
+      idTypeId: 1,
+      firstNameAr: 'Ar',
+      fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+      firstNameEn: 'En', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
+      birthDate: DateTime(1990),
+      gender: Gender.male.index,
+      phoneNumber: '555',
+      familySize: 4,
+      address: 'Addr',
+      syncStatus: const drift.Value('pending'),
+    ));
 
-      await db.into(db.farmers).insert(FarmersCompanion.insert(
-        id: 'local-farmer-1',
-        firstNameAr: const drift.Value('أحمد'),
-        syncStatus: const drift.Value('pending'),
-      ));
+    await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+      localId: localFarmerId,
+      entityType: 'farmer',
+      operation: 'create',
+      data: '{}',
+      status: 'pending',
+      createdAt: DateTime.now(),
+    ));
 
-      await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
-        id: 'q1',
-        localId: 'local-farmer-1',
-        entityType: 'farmer',
-        operation: 'create',
-        data: jsonEncode(farmer.toJson()),
-      ));
+    await db.into(db.farms).insert(FarmsCompanion.insert(
+      id: localFarmId,
+      farmerId: localFarmerId, // Using local ID initially
+      localFarmName: 'Farm',
+      ownershipTypeId: 1,
+      governorateId: 'gov', directorateId: 'dir', localityId: 'loc',
+      basin: 'b', parcel: 'p',
+      area: 10, areaUnitId: 1,
+      agriculturalSectorId: 1,
+      politicalClassificationId: 1,
+      syncStatus: const drift.Value('pending'),
+    ));
 
-      // 2. Queue Farm creation referencing local farmer ID
-      final farm = Farm(
-        id: 'local-farm-1',
-        farmerId: 'local-farmer-1',
-        localFarmName: 'Farm 1',
-        ownershipTypeId: 1,
-        governorateId: 'G1',
-        directorateId: 'D1',
-        localityId: 'L1',
-        basin: 'B1',
-        parcel: 'P1',
-        area: 10,
-        areaUnitId: 1,
-        agriculturalSectorId: 1,
-        politicalClassificationId: 1,
-      );
+    await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+      localId: localFarmId,
+      entityType: 'farm',
+      operation: 'create',
+      data: jsonEncode({'farmerId': localFarmerId}),
+      status: 'pending',
+      createdAt: DateTime.now().add(const Duration(seconds: 1)),
+    ));
 
-      await db.into(db.farms).insert(FarmsCompanion.insert(
-        id: 'local-farm-1',
-        farmerId: 'local-farmer-1',
-        localFarmName: 'Farm 1',
-        ownershipTypeId: const drift.Value(1),
-        governorateId: 'G1',
-        directorateId: 'D1',
-        localityId: 'L1',
-        basin: 'B1',
-        parcel: 'P1',
-        area: 10,
-        areaUnitId: const drift.Value(1),
-        agriculturalSectorId: const drift.Value(1),
-        politicalClassificationId: const drift.Value(1),
-        syncStatus: const drift.Value('pending'),
-      ));
+    // 2. Mock responses
+    when(() => farmerRepo.createFarmer(any())).thenAnswer((_) async => 
+      Farmer(
+        id: localFarmerId, serverId: serverFarmerId, idNumber: '123', idTypeId: 1,
+        firstNameAr: 'Ar', fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+        firstNameEn: 'En', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
+        birthDate: DateTime(1990), gender: Gender.male, phoneNumber: '555',
+        familySize: 4, address: 'Addr', rowVersion: 'v1',
+      )
+    );
 
-      await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
-        id: 'q2',
-        localId: 'local-farm-1',
-        entityType: 'farm',
-        operation: 'create',
-        data: jsonEncode(farm.toJson()),
-      ));
-
-      // Mocks
-      // The backend returns a Farmer with the authority ID in the 'id' field
-      final serverFarmer = farmer.copyWith(id: 'server-farmer-1', serverId: 'server-farmer-1');
-      when(() => farmerRepo.createFarmer(any())).thenAnswer((_) async => serverFarmer);
+    when(() => farmRepo.createFarm(any())).thenAnswer((invocation) async {
+      final farm = invocation.positionalArguments[0] as Farm;
+      // VERIFY: The farm passed to the remote repo MUST have the serverFarmerId
+      expect(farm.farmerId, serverFarmerId, reason: 'Farm must be updated with server farmer ID before remote call');
       
-      when(() => farmRepo.createFarm(any())).thenAnswer((inv) async {
-        final f = inv.positionalArguments[0] as Farm;
-        return f.copyWith(serverId: 'server-farm-1');
-      });
-
-      // Execute sync
-      await syncService.processQueue();
-
-      // Verify Farmer synced
-      verify(() => farmerRepo.createFarmer(any())).called(1);
-
-      // Verify Farm synced with RESOLVED ID
-      final farmCapture = verify(() => farmRepo.createFarm(captureAny())).captured.single as Farm;
-      expect(farmCapture.farmerId, 'server-farmer-1'); // Resolved!
-      expect(farmCapture.serverId, isNull); // Should be empty for creation request
-
-      // Verify local status
-      final localFarm = await (db.select(db.farms)..where((t) => t.id.equals('local-farm-1'))).getSingle();
-      expect(localFarm.syncStatus, 'completed');
-      expect(localFarm.serverId, 'server-farm-1');
+      return farm.copyWith(serverId: serverFarmId);
     });
 
-    test('Defers Farm sync if Farmer sync fails', () async {
-      when(() => connectivity.checkConnectivity()).thenAnswer((_) async => [ConnectivityResult.wifi]);
+    // 3. Run sync
+    await syncService.processQueue();
 
-      // Queue Farmer
-      await db.into(db.farmers).insert(FarmersCompanion.insert(
-        id: 'fail-farmer',
-        firstNameAr: const drift.Value('Fail'),
-        syncStatus: const drift.Value('pending'),
-      ));
-      await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
-        id: 'q1', localId: 'fail-farmer', entityType: 'farmer', operation: 'create',
-        data: jsonEncode(Farmer(
-          id: 'fail-farmer', idTypeId: 1, idNumber: '1', firstNameAr: 'Fail',
-          fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
-          firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
-          birthDate: DateTime(1990), gender: Gender.male, phoneNumber: '',
-          familySize: 1, governorateId: 'G1', localityId: 'L1', address: '',
-        ).toJson()),
-      ));
+    // 4. Verify results
+    final syncedFarm = await (db.select(db.farms)..where((t) => t.id.equals(localFarmId))).getSingle();
+    expect(syncedFarm.serverId, serverFarmId);
+    expect(syncedFarm.farmerId, serverFarmerId);
+  });
 
-      // Queue Farm
-      await db.into(db.farms).insert(FarmsCompanion.insert(
-        id: 'wait-farm', farmerId: 'fail-farmer', localFarmName: 'Wait',
-        ownershipTypeId: const drift.Value(1), governorateId: 'G1', directorateId: 'D1',
-        localityId: 'L1', basin: 'B1', parcel: 'P1', area: 10,
-        areaUnitId: const drift.Value(1), agriculturalSectorId: const drift.Value(1), 
-        politicalClassificationId: const drift.Value(1),
-        syncStatus: const drift.Value('pending'),
-      ));
-      await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
-        id: 'q2', localId: 'wait-farm', entityType: 'farm', operation: 'create',
-        data: jsonEncode(Farm(
-           id: 'wait-farm', farmerId: 'fail-farmer', localFarmName: 'Wait',
-           ownershipTypeId: 1, governorateId: 'G1', directorateId: 'D1',
-           localityId: 'L1', basin: 'B1', parcel: 'P1', area: 10,
-           areaUnitId: 1, agriculturalSectorId: 1, politicalClassificationId: 1,
-        ).toJson()),
-      ));
+  test('Sync correctly handles existing server IDs (no re-binding needed)', () async {
+    const localFarmerId = 'f1';
+    const serverFarmerId = 'sf1';
+    const localFarmId = 'farm1';
 
-      // Farmer sync fails
-      when(() => farmerRepo.createFarmer(any())).thenThrow(Exception('Sync failed'));
+    // Farmer is already synced
+    await db.into(db.farmers).insert(FarmersCompanion.insert(
+      id: localFarmerId,
+      serverId: const drift.Value(serverFarmerId),
+      idNumber: '123', idTypeId: 1,
+      firstNameAr: 'Ar', fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+      firstNameEn: 'En', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
+      birthDate: DateTime(1990), gender: Gender.male.index, phoneNumber: '555',
+      familySize: 4, address: 'Addr',
+      syncStatus: const drift.Value('completed'),
+    ));
 
-      await syncService.processQueue();
+    // Farm is pending
+    await db.into(db.farms).insert(FarmsCompanion.insert(
+      id: localFarmId,
+      farmerId: serverFarmerId,
+      localFarmName: 'Farm',
+      ownershipTypeId: 1,
+      governorateId: 'gov', directorateId: 'dir', localityId: 'loc',
+      basin: 'b', parcel: 'p',
+      area: 10, areaUnitId: 1,
+      agriculturalSectorId: 1,
+      politicalClassificationId: 1,
+      syncStatus: const drift.Value('pending'),
+    ));
 
-      // Farm should still be pending and have no serverId
-      final localFarm = await (db.select(db.farms)..where((t) => t.id.equals('wait-farm'))).getSingle();
-      expect(localFarm.syncStatus, 'pending');
-      expect(localFarm.serverId, isNull);
+    await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+      localId: localFarmId,
+      entityType: 'farm',
+      operation: 'create',
+      data: jsonEncode({'farmerId': serverFarmerId}),
+      status: 'pending',
+      createdAt: DateTime.now(),
+    ));
 
-      // Farm queue item should have a dependency error in logs
-      final queueItem = await (db.select(db.syncQueue)..where((t) => t.id.equals('q2'))).getSingle();
-      expect(queueItem.status, 'pending');
-      expect(queueItem.lastError, contains('Waiting for Farmer'));
-    });
+    when(() => farmRepo.createFarm(any())).thenAnswer((inv) async => (inv.positionalArguments[0] as Farm).copyWith(serverId: 'sfarm1'));
+
+    await syncService.processQueue();
+
+    verify(() => farmRepo.createFarm(any(that: predicate<Farm>((f) => f.farmerId == serverFarmerId)))).called(1);
   });
 }

@@ -306,7 +306,7 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<void> synchronize() async {
+  Future<void> synchronize({DateTime? updatedSince}) async {
     // Remote repository is always "in sync" with itself.
   }
 

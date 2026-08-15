@@ -25,6 +25,6 @@ abstract class DamageReportRepository {
   Future<void> deleteDamageItem(String id);
   Future<void> retrySync(String id);
   Future<void> retryAllFailedSyncs();
-  Future<void> synchronize();
+  Future<void> synchronize({DateTime? updatedSince});
   Future<void> refreshReport(String id);
 }

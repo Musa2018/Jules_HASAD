@@ -4,7 +4,6 @@ import 'package:mobile/core/config/app_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/presentation/farmer_form_screen.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';

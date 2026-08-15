@@ -700,7 +700,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   }
 
   @override
-  Future<void> synchronize() async {
+  Future<void> synchronize({DateTime? updatedSince}) async {
     // 1. Refresh from remote
     // Global headless sync is not supported by backend for performance and scoping reasons.
     // Instead, we ensure local data is consistent.

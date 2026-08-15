@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/native.dart';
 import 'package:mobile/core/storage/database.dart';

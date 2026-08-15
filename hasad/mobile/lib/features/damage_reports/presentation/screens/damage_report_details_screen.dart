@@ -303,10 +303,12 @@ class _HeaderSection extends ConsumerWidget {
         _InfoRow(label: l10n.farmerName, value: farmerAsync.value?.fullName ?? report.farmerId),
         _InfoRow(label: "المزرعة", value: displayFarm?.localFarmName ?? report.farmId),
         _InfoRow(label: l10n.locationSection, value: "$govName / $dirName / $locName"),
-        if (displayFarm?.latitude != null && displayFarm?.longitude != null)
+        final lat = displayFarm?.latitude;
+        final lon = displayFarm?.longitude;
+        if (lat != null && lon != null)
           _InfoRow(
             label: "الإحداثيات الجغرافية",
-            value: "${l10n.latitude}: ${displayFarm.latitude.toStringAsFixed(5)}, ${l10n.longitude}: ${displayFarm.longitude.toStringAsFixed(5)}",
+            value: "${l10n.latitude}: ${lat.toStringAsFixed(5)}, ${l10n.longitude}: ${lon.toStringAsFixed(5)}",
           ),
         _InfoRow(label: "تاريخ الضرر", value: report.damageDate != null ? DateFormat("yyyy-MM-dd").format(report.damageDate!) : '...'),
         _InfoRow(label: l10n.reportNumber, value: report.permanentFormNumber.isNotEmpty ? report.permanentFormNumber : report.temporaryFormNumber),

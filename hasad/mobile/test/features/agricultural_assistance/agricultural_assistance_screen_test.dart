@@ -8,6 +8,7 @@ import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/agricultural_assistance/domain/agricultural_assistance.dart';
 import 'package:mobile/features/agricultural_assistance/presentation/agricultural_assistance_providers.dart';
 import 'package:mobile/features/agricultural_assistance/presentation/agricultural_assistance_screen.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/mocks.dart';

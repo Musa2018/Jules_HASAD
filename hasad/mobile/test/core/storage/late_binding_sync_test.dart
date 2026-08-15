@@ -28,7 +28,7 @@ void main() {
         grandfatherNameAr: '', familyNameAr: '', firstNameEn: '', fatherNameEn: '',
         grandfatherNameEn: '', familyNameEn: '', birthDate: DateTime(1990),
         gender: Gender.male, phoneNumber: '', familySize: 1, governorateId: '',
-        localityId: '', address: '', rowVersion: '', id: '',
+        localityId: '', address: '', rowVersion: '',
       ),
     );
     registerFallbackValue(
@@ -68,16 +68,16 @@ void main() {
 
     await db.into(db.farmers).insert(FarmersCompanion.insert(
       id: localFarmerId,
-      idNumber: '123',
-      idTypeId: 1,
-      firstNameAr: 'Ar',
-      fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
-      firstNameEn: 'En', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
-      birthDate: DateTime(1990),
-      gender: Gender.male.index,
-      phoneNumber: '555',
-      familySize: 4,
-      address: 'Addr',
+      idNumber: const drift.Value('123'),
+      idTypeId: const drift.Value(1),
+      firstNameAr: const drift.Value('Ar'),
+      fatherNameAr: const drift.Value(''), grandfatherNameAr: const drift.Value(''), familyNameAr: const drift.Value(''),
+      firstNameEn: const drift.Value('En'), fatherNameEn: const drift.Value(''), grandfatherNameEn: const drift.Value(''), familyNameEn: const drift.Value(''),
+      birthDate: drift.Value(DateTime(1990)),
+      gender: drift.Value(Gender.male.index),
+      phoneNumber: const drift.Value('555'),
+      familySize: const drift.Value(4),
+      address: const drift.Value('Addr'),
       syncStatus: const drift.Value('pending'),
     ));
 
@@ -94,12 +94,12 @@ void main() {
       id: localFarmId,
       farmerId: localFarmerId, // Using local ID initially
       localFarmName: 'Farm',
-      ownershipTypeId: 1,
+      ownershipTypeId: const drift.Value(1),
       governorateId: 'gov', directorateId: 'dir', localityId: 'loc',
       basin: 'b', parcel: 'p',
-      area: 10, areaUnitId: 1,
-      agriculturalSectorId: 1,
-      politicalClassificationId: 1,
+      area: 10, areaUnitId: const drift.Value(1),
+      agriculturalSectorId: const drift.Value(1),
+      politicalClassificationId: const drift.Value(1),
       syncStatus: const drift.Value('pending'),
     ));
 
@@ -148,12 +148,12 @@ void main() {
     // Farmer is already synced
     await db.into(db.farmers).insert(FarmersCompanion.insert(
       id: localFarmerId,
-      serverId: const drift.Value(serverFarmerId),
-      idNumber: '123', idTypeId: 1,
-      firstNameAr: 'Ar', fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
-      firstNameEn: 'En', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '',
-      birthDate: DateTime(1990), gender: Gender.male.index, phoneNumber: '555',
-      familySize: 4, address: 'Addr',
+      serverId: drift.Value(serverFarmerId),
+      idNumber: const drift.Value('123'), idTypeId: const drift.Value(1),
+      firstNameAr: const drift.Value('Ar'), fatherNameAr: const drift.Value(''), grandfatherNameAr: const drift.Value(''), familyNameAr: const drift.Value(''),
+      firstNameEn: const drift.Value('En'), fatherNameEn: const drift.Value(''), grandfatherNameEn: const drift.Value(''), familyNameEn: const drift.Value(''),
+      birthDate: drift.Value(DateTime(1990)), gender: drift.Value(Gender.male.index), phoneNumber: const drift.Value('555'),
+      familySize: const drift.Value(4), address: const drift.Value('Addr'),
       syncStatus: const drift.Value('completed'),
     ));
 
@@ -162,12 +162,12 @@ void main() {
       id: localFarmId,
       farmerId: serverFarmerId,
       localFarmName: 'Farm',
-      ownershipTypeId: 1,
+      ownershipTypeId: const drift.Value(1),
       governorateId: 'gov', directorateId: 'dir', localityId: 'loc',
       basin: 'b', parcel: 'p',
-      area: 10, areaUnitId: 1,
-      agriculturalSectorId: 1,
-      politicalClassificationId: 1,
+      area: 10, areaUnitId: const drift.Value(1),
+      agriculturalSectorId: const drift.Value(1),
+      politicalClassificationId: const drift.Value(1),
       syncStatus: const drift.Value('pending'),
     ));
 

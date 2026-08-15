@@ -7,6 +7,8 @@ import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 import 'package:drift/native.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:drift/drift.dart';
+import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
 
 import '../helpers/mocks.dart';
 

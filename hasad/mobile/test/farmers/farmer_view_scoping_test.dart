@@ -6,6 +6,7 @@ import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
+import 'package:mobile/features/farmers/data/farmer_repository.dart';
 
 import '../helpers/mocks.dart';
 

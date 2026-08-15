@@ -9,6 +9,7 @@ import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 
 import '../helpers/mocks.dart';
 

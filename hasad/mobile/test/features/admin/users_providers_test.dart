@@ -5,6 +5,7 @@ import 'package:mobile/features/admin/domain/role.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart' as loc;
+import 'package:mobile/features/location/data/location_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/mocks.dart';

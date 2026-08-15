@@ -12,6 +12,7 @@ import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:mobile/features/farms/domain/reference_data.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mobile/l10n/app_localizations.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
 
 import 'package:mobile/features/auth/domain/auth_session.dart';
 

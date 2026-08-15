@@ -111,7 +111,7 @@ void main() {
     registerFallbackValue(
       const DamageReportAttachment(
         id: '',
-        reportId: '',
+        damageReportId: '',
         localPath: '',
         syncStatus: 'pending',
       ),
@@ -162,21 +162,21 @@ void main() {
 
       await db.into(db.farmers).insert(FarmersCompanion.insert(
         id: farmer.id,
-        idTypeId: farmer.idTypeId,
-        idNumber: farmer.idNumber,
-        firstNameAr: farmer.firstNameAr,
-        fatherNameAr: farmer.fatherNameAr,
-        grandfatherNameAr: farmer.grandfatherNameAr,
-        familyNameAr: farmer.familyNameAr,
-        firstNameEn: farmer.firstNameEn,
-        fatherNameEn: farmer.fatherNameEn,
-        grandfatherNameEn: farmer.grandfatherNameEn,
-        familyNameEn: farmer.familyNameEn,
-        birthDate: farmer.birthDate,
-        gender: farmer.gender.index,
-        phoneNumber: farmer.phoneNumber,
-        familySize: farmer.familySize,
-        address: farmer.address,
+        idTypeId: Value(farmer.idTypeId),
+        idNumber: Value(farmer.idNumber),
+        firstNameAr: Value(farmer.firstNameAr),
+        fatherNameAr: Value(farmer.fatherNameAr),
+        grandfatherNameAr: Value(farmer.grandfatherNameAr),
+        familyNameAr: Value(farmer.familyNameAr),
+        firstNameEn: Value(farmer.firstNameEn),
+        fatherNameEn: Value(farmer.fatherNameEn),
+        grandfatherNameEn: Value(farmer.grandfatherNameEn),
+        familyNameEn: Value(farmer.familyNameEn),
+        birthDate: Value(farmer.birthDate),
+        gender: Value(farmer.gender.index),
+        phoneNumber: Value(farmer.phoneNumber),
+        familySize: Value(farmer.familySize),
+        address: Value(farmer.address),
         syncStatus: const Value('pending'),
       ));
 
@@ -228,16 +228,16 @@ void main() {
         id: farm.id,
         farmerId: farm.farmerId,
         localFarmName: farm.localFarmName,
-        ownershipTypeId: farm.ownershipTypeId,
+        ownershipTypeId: Value(farm.ownershipTypeId),
         governorateId: farm.governorateId,
         directorateId: farm.directorateId,
         localityId: farm.localityId,
         basin: farm.basin,
         parcel: farm.parcel,
         area: farm.area,
-        areaUnitId: farm.areaUnitId,
-        agriculturalSectorId: farm.agriculturalSectorId,
-        politicalClassificationId: farm.politicalClassificationId,
+        areaUnitId: Value(farm.areaUnitId),
+        agriculturalSectorId: Value(farm.agriculturalSectorId),
+        politicalClassificationId: Value(farm.politicalClassificationId),
         syncStatus: const Value('pending'),
       ));
 
@@ -286,16 +286,18 @@ void main() {
       );
 
       await db.into(db.damageReports).insert(DamageReportsCompanion.insert(
-        id: const Value('local-r1'),
+        id: 'local-r1',
         farmId: report.farmId,
-        farmerId: report.farmerId,
-        damageYear: report.damageYear,
-        governorateId: report.governorateId,
-        directorateId: report.directorateId,
-        localityId: report.localityId,
-        agriculturalSectorId: report.agriculturalSectorId,
-        damageDate: Value(report.damageDate),
-        statusId: const Value('Draft'),
+        farmerId: Value(report.farmerId),
+        damageYear: Value(report.damageYear),
+        governorateId: Value(report.governorateId),
+        directorateId: Value(report.directorateId),
+        localityId: Value(report.localityId),
+        agriculturalSectorId: Value(report.agriculturalSectorId),
+        damageDate: report.damageDate ?? DateTime.now(),
+        documentationDate: report.documentationDate ?? DateTime.now(),
+        notes: report.notes,
+        statusId: 'Draft',
         syncStatus: const Value('pending'),
       ));
 
@@ -326,14 +328,14 @@ void main() {
 
       const attachment = DamageReportAttachment(
         id: 'local-a1',
-        reportId: 'report-1',
+        damageReportId: 'report-1',
         localPath: '/path/to/file.jpg',
         syncStatus: 'pending',
       );
 
       await db.into(db.damageReportAttachments).insert(DamageReportAttachmentsCompanion.insert(
         id: attachment.id,
-        damageReportId: attachment.reportId,
+        damageReportId: attachment.damageReportId,
         localPath: attachment.localPath,
         syncStatus: const Value('pending'),
       ));
@@ -387,21 +389,21 @@ void main() {
 
       await db.into(db.farmers).insert(FarmersCompanion.insert(
         id: farmer.id,
-        idTypeId: farmer.idTypeId,
-        idNumber: farmer.idNumber,
-        firstNameAr: farmer.firstNameAr,
-        fatherNameAr: farmer.fatherNameAr,
-        grandfatherNameAr: farmer.grandfatherNameAr,
-        familyNameAr: farmer.familyNameAr,
-        firstNameEn: farmer.firstNameEn,
-        fatherNameEn: farmer.fatherNameEn,
-        grandfatherNameEn: farmer.grandfatherNameEn,
-        familyNameEn: farmer.familyNameEn,
-        birthDate: farmer.birthDate,
-        gender: farmer.gender.index,
-        phoneNumber: farmer.phoneNumber,
-        familySize: farmer.familySize,
-        address: farmer.address,
+        idTypeId: Value(farmer.idTypeId),
+        idNumber: Value(farmer.idNumber),
+        firstNameAr: Value(farmer.firstNameAr),
+        fatherNameAr: Value(farmer.fatherNameAr),
+        grandfatherNameAr: Value(farmer.grandfatherNameAr),
+        familyNameAr: Value(farmer.familyNameAr),
+        firstNameEn: Value(farmer.firstNameEn),
+        fatherNameEn: Value(farmer.fatherNameEn),
+        grandfatherNameEn: Value(farmer.grandfatherNameEn),
+        familyNameEn: Value(farmer.familyNameEn),
+        birthDate: Value(farmer.birthDate),
+        gender: Value(farmer.gender.index),
+        phoneNumber: Value(farmer.phoneNumber),
+        familySize: Value(farmer.familySize),
+        address: Value(farmer.address),
         syncStatus: const Value('pending'),
       ));
 
@@ -415,7 +417,7 @@ void main() {
           ));
 
       when(() => mockFarmerRepo.createFarmer(any()))
-          .thenThrow(ConflictException('Already exists', serverData: {'id': 'existing-1'}));
+          .thenThrow(SyncConflictException(['Already exists'], code: 'CONFLICT'));
 
       await syncService.processQueue();
 
@@ -455,21 +457,21 @@ void main() {
 
       await db.into(db.farmers).insert(FarmersCompanion.insert(
         id: farmer.id,
-        idTypeId: farmer.idTypeId,
-        idNumber: farmer.idNumber,
-        firstNameAr: farmer.firstNameAr,
-        fatherNameAr: farmer.fatherNameAr,
-        grandfatherNameAr: farmer.grandfatherNameAr,
-        familyNameAr: farmer.familyNameAr,
-        firstNameEn: farmer.firstNameEn,
-        fatherNameEn: farmer.fatherNameEn,
-        grandfatherNameEn: farmer.grandfatherNameEn,
-        familyNameEn: farmer.familyNameEn,
-        birthDate: farmer.birthDate,
-        gender: farmer.gender.index,
-        phoneNumber: farmer.phoneNumber,
-        familySize: farmer.familySize,
-        address: farmer.address,
+        idTypeId: Value(farmer.idTypeId),
+        idNumber: Value(farmer.idNumber),
+        firstNameAr: Value(farmer.firstNameAr),
+        fatherNameAr: Value(farmer.fatherNameAr),
+        grandfatherNameAr: Value(farmer.grandfatherNameAr),
+        familyNameAr: Value(farmer.familyNameAr),
+        firstNameEn: Value(farmer.firstNameEn),
+        fatherNameEn: Value(farmer.fatherNameEn),
+        grandfatherNameEn: Value(farmer.grandfatherNameEn),
+        familyNameEn: Value(farmer.familyNameEn),
+        birthDate: Value(farmer.birthDate),
+        gender: Value(farmer.gender.index),
+        phoneNumber: Value(farmer.phoneNumber),
+        familySize: Value(farmer.familySize),
+        address: Value(farmer.address),
         syncStatus: const Value('pending'),
       ));
 
@@ -483,7 +485,7 @@ void main() {
           ));
 
       when(() => mockFarmerRepo.createFarmer(any()))
-          .thenThrow(PermanentSyncException('Validation failed'));
+          .thenThrow(SyncValidationException(['Validation failed']));
 
       await syncService.processQueue();
 

@@ -7,6 +7,8 @@ import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/farmer_exceptions.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
+import 'package:mobile/features/farmers/data/farmer_repository.dart';
+import 'package:mobile/core/exceptions/sync_exceptions.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 

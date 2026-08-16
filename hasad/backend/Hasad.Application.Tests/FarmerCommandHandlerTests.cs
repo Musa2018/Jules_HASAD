@@ -48,7 +48,6 @@ public class FarmerCommandHandlerTests
             5,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            Guid.NewGuid(),
             "GOV-1",
             "LOC-1",
             "Gaza");
@@ -87,7 +86,7 @@ public class FarmerCommandHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new CreateFarmerCommandHandler(context, _currentUserMock.Object);
-        var command = new CreateFarmerCommand(clientId, 1, "123", "اسم", "مختلف", "جدا", "هنا", "", "", "", "", new DateOnly(1990, 1, 1), Gender.Female, "059", 4, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "G", "L", "Address");
+        var command = new CreateFarmerCommand(clientId, 1, "123", "اسم", "مختلف", "جدا", "هنا", "", "", "", "", new DateOnly(1990, 1, 1), Gender.Female, "059", 4, Guid.NewGuid(), Guid.NewGuid(), "G", "L", "Address");
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -125,7 +124,7 @@ public class FarmerCommandHandlerTests
             farmer.Id, farmer.ClientId, 1, "123",
             "الاسم", "الجديد", "تم", "تحديثه",
             "", "", "", "",
-            new DateOnly(1980, 1, 1), Gender.Male, "059", 3, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "New Address", Convert.ToBase64String(version));
+            new DateOnly(1980, 1, 1), Gender.Male, "059", 3, Guid.NewGuid(), Guid.NewGuid(), "New Address", Convert.ToBase64String(version));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -159,7 +158,7 @@ public class FarmerCommandHandlerTests
             farmer.Id, farmer.ClientId, 1, "123",
             "جديد", "جديد", "جديد", "جديد",
             "", "", "", "",
-            new DateOnly(1990, 1, 1), Gender.Male, "059", 5, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Add", Convert.ToBase64String(new byte[] { 2 }));
+            new DateOnly(1990, 1, 1), Gender.Male, "059", 5, Guid.NewGuid(), Guid.NewGuid(), "Add", Convert.ToBase64String(new byte[] { 2 }));
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -276,14 +275,15 @@ public class FarmerCommandHandlerTests
         await context.SaveChangesAsync();
 
         var handler = new GetFarmersListQueryHandler(context, _currentUserMock.Object);
-        var query = new GetFarmersListQuery(PageNumber: 1, PageSize: 10);
+        // نرسل معلمة بحث لكي نتجاوز قيد الـ 10 الخاص بلوحة المعلومات (Dashboard)
+        var query = new GetFarmersListQuery(PageNumber: 1, PageSize: 20, Name: "مزارع");
 
         var result = await handler.Handle(query, CancellationToken.None);
 
         Assert.True(result.Succeeded);
-        Assert.Equal(10, result.Data!.Items.Count);
+        Assert.Equal(15, result.Data!.Items.Count);
         Assert.Equal(15, result.Data!.TotalCount);
-        Assert.Equal(2, result.Data!.TotalPages);
+        Assert.Equal(1, result.Data!.TotalPages);
         Assert.NotEmpty(result.Data!.Items[0].RowVersion);
     }
 

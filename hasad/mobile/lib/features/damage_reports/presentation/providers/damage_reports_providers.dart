@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:drift/drift.dart';
 import 'package:mobile/core/exceptions/sync_exceptions.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
@@ -14,6 +15,9 @@ import 'package:mobile/features/damage_reports/domain/models/damage_workflow_his
 
 import 'package:mobile/features/damage_reports/data/repositories/remote_damage_report_repository.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_filter.dart';
+import 'package:mobile/features/damage_reports/domain/models/audit_log_entry.dart';
+
+part 'damage_reports_providers.g.dart';
 
 final remoteDamageReportRepositoryProvider = Provider<DamageReportRepository>((ref) {
   return RemoteDamageReportRepository(ref.watch(apiDioProvider));
@@ -364,3 +368,7 @@ StateNotifierProvider.autoDispose<
     ref.watch(damageReportRepositoryProvider),
   );
 });
+@riverpod
+Future<List<AuditLogEntry>> damageReportAuditLog(DamageReportAuditLogRef ref, String reportId) {
+  return ref.watch(damageReportRepositoryProvider).getIntegratedAuditLog(reportId);
+}

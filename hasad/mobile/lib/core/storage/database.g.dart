@@ -216,17 +216,6 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _directorateIdMeta = const VerificationMeta(
-    'directorateId',
-  );
-  @override
-  late final GeneratedColumn<String> directorateId = GeneratedColumn<String>(
-    'directorate_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _localityIdMeta = const VerificationMeta(
     'localityId',
   );
@@ -415,7 +404,6 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
     phoneNumber,
     familySize,
     governorateId,
-    directorateId,
     localityId,
     legacyGovernorateId,
     legacyLocalityId,
@@ -571,15 +559,6 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         governorateId.isAcceptableOrUnknown(
           data['governorate_id']!,
           _governorateIdMeta,
-        ),
-      );
-    }
-    if (data.containsKey('directorate_id')) {
-      context.handle(
-        _directorateIdMeta,
-        directorateId.isAcceptableOrUnknown(
-          data['directorate_id']!,
-          _directorateIdMeta,
         ),
       );
     }
@@ -756,10 +735,6 @@ class $FarmersTable extends Farmers with TableInfo<$FarmersTable, FarmerLocal> {
         DriftSqlType.string,
         data['${effectivePrefix}governorate_id'],
       ),
-      directorateId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}directorate_id'],
-      ),
       localityId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}locality_id'],
@@ -843,7 +818,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
   final String phoneNumber;
   final int familySize;
   final String? governorateId;
-  final String? directorateId;
   final String? localityId;
   final String legacyGovernorateId;
   final String legacyLocalityId;
@@ -876,7 +850,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     required this.phoneNumber,
     required this.familySize,
     this.governorateId,
-    this.directorateId,
     this.localityId,
     required this.legacyGovernorateId,
     required this.legacyLocalityId,
@@ -917,9 +890,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     map['family_size'] = Variable<int>(familySize);
     if (!nullToAbsent || governorateId != null) {
       map['governorate_id'] = Variable<String>(governorateId);
-    }
-    if (!nullToAbsent || directorateId != null) {
-      map['directorate_id'] = Variable<String>(directorateId);
     }
     if (!nullToAbsent || localityId != null) {
       map['locality_id'] = Variable<String>(localityId);
@@ -973,9 +943,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       governorateId: governorateId == null && nullToAbsent
           ? const Value.absent()
           : Value(governorateId),
-      directorateId: directorateId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(directorateId),
       localityId: localityId == null && nullToAbsent
           ? const Value.absent()
           : Value(localityId),
@@ -1026,7 +993,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       phoneNumber: serializer.fromJson<String>(json['phoneNumber']),
       familySize: serializer.fromJson<int>(json['familySize']),
       governorateId: serializer.fromJson<String?>(json['governorateId']),
-      directorateId: serializer.fromJson<String?>(json['directorateId']),
       localityId: serializer.fromJson<String?>(json['localityId']),
       legacyGovernorateId: serializer.fromJson<String>(
         json['legacyGovernorateId'],
@@ -1066,7 +1032,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       'phoneNumber': serializer.toJson<String>(phoneNumber),
       'familySize': serializer.toJson<int>(familySize),
       'governorateId': serializer.toJson<String?>(governorateId),
-      'directorateId': serializer.toJson<String?>(directorateId),
       'localityId': serializer.toJson<String?>(localityId),
       'legacyGovernorateId': serializer.toJson<String>(legacyGovernorateId),
       'legacyLocalityId': serializer.toJson<String>(legacyLocalityId),
@@ -1102,7 +1067,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     String? phoneNumber,
     int? familySize,
     Value<String?> governorateId = const Value.absent(),
-    Value<String?> directorateId = const Value.absent(),
     Value<String?> localityId = const Value.absent(),
     String? legacyGovernorateId,
     String? legacyLocalityId,
@@ -1137,9 +1101,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     governorateId: governorateId.present
         ? governorateId.value
         : this.governorateId,
-    directorateId: directorateId.present
-        ? directorateId.value
-        : this.directorateId,
     localityId: localityId.present ? localityId.value : this.localityId,
     legacyGovernorateId: legacyGovernorateId ?? this.legacyGovernorateId,
     legacyLocalityId: legacyLocalityId ?? this.legacyLocalityId,
@@ -1198,9 +1159,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
       governorateId: data.governorateId.present
           ? data.governorateId.value
           : this.governorateId,
-      directorateId: data.directorateId.present
-          ? data.directorateId.value
-          : this.directorateId,
       localityId: data.localityId.present
           ? data.localityId.value
           : this.localityId,
@@ -1254,7 +1212,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           ..write('phoneNumber: $phoneNumber, ')
           ..write('familySize: $familySize, ')
           ..write('governorateId: $governorateId, ')
-          ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('legacyGovernorateId: $legacyGovernorateId, ')
           ..write('legacyLocalityId: $legacyLocalityId, ')
@@ -1292,7 +1249,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
     phoneNumber,
     familySize,
     governorateId,
-    directorateId,
     localityId,
     legacyGovernorateId,
     legacyLocalityId,
@@ -1329,7 +1285,6 @@ class FarmerLocal extends DataClass implements Insertable<FarmerLocal> {
           other.phoneNumber == this.phoneNumber &&
           other.familySize == this.familySize &&
           other.governorateId == this.governorateId &&
-          other.directorateId == this.directorateId &&
           other.localityId == this.localityId &&
           other.legacyGovernorateId == this.legacyGovernorateId &&
           other.legacyLocalityId == this.legacyLocalityId &&
@@ -1364,7 +1319,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
   final Value<String> phoneNumber;
   final Value<int> familySize;
   final Value<String?> governorateId;
-  final Value<String?> directorateId;
   final Value<String?> localityId;
   final Value<String> legacyGovernorateId;
   final Value<String> legacyLocalityId;
@@ -1398,7 +1352,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.phoneNumber = const Value.absent(),
     this.familySize = const Value.absent(),
     this.governorateId = const Value.absent(),
-    this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     this.legacyGovernorateId = const Value.absent(),
     this.legacyLocalityId = const Value.absent(),
@@ -1433,7 +1386,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     this.phoneNumber = const Value.absent(),
     this.familySize = const Value.absent(),
     this.governorateId = const Value.absent(),
-    this.directorateId = const Value.absent(),
     this.localityId = const Value.absent(),
     this.legacyGovernorateId = const Value.absent(),
     this.legacyLocalityId = const Value.absent(),
@@ -1468,7 +1420,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Expression<String>? phoneNumber,
     Expression<int>? familySize,
     Expression<String>? governorateId,
-    Expression<String>? directorateId,
     Expression<String>? localityId,
     Expression<String>? legacyGovernorateId,
     Expression<String>? legacyLocalityId,
@@ -1503,7 +1454,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       if (phoneNumber != null) 'phone_number': phoneNumber,
       if (familySize != null) 'family_size': familySize,
       if (governorateId != null) 'governorate_id': governorateId,
-      if (directorateId != null) 'directorate_id': directorateId,
       if (localityId != null) 'locality_id': localityId,
       if (legacyGovernorateId != null)
         'legacy_governorate_id': legacyGovernorateId,
@@ -1541,7 +1491,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     Value<String>? phoneNumber,
     Value<int>? familySize,
     Value<String?>? governorateId,
-    Value<String?>? directorateId,
     Value<String?>? localityId,
     Value<String>? legacyGovernorateId,
     Value<String>? legacyLocalityId,
@@ -1576,7 +1525,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       familySize: familySize ?? this.familySize,
       governorateId: governorateId ?? this.governorateId,
-      directorateId: directorateId ?? this.directorateId,
       localityId: localityId ?? this.localityId,
       legacyGovernorateId: legacyGovernorateId ?? this.legacyGovernorateId,
       legacyLocalityId: legacyLocalityId ?? this.legacyLocalityId,
@@ -1649,9 +1597,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
     if (governorateId.present) {
       map['governorate_id'] = Variable<String>(governorateId.value);
     }
-    if (directorateId.present) {
-      map['directorate_id'] = Variable<String>(directorateId.value);
-    }
     if (localityId.present) {
       map['locality_id'] = Variable<String>(localityId.value);
     }
@@ -1722,7 +1667,6 @@ class FarmersCompanion extends UpdateCompanion<FarmerLocal> {
           ..write('phoneNumber: $phoneNumber, ')
           ..write('familySize: $familySize, ')
           ..write('governorateId: $governorateId, ')
-          ..write('directorateId: $directorateId, ')
           ..write('localityId: $localityId, ')
           ..write('legacyGovernorateId: $legacyGovernorateId, ')
           ..write('legacyLocalityId: $legacyLocalityId, ')
@@ -5897,6 +5841,41 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _documentNameMeta = const VerificationMeta(
+    'documentName',
+  );
+  @override
+  late final GeneratedColumn<String> documentName = GeneratedColumn<String>(
+    'document_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _documentDateMeta = const VerificationMeta(
+    'documentDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> documentDate = GeneratedColumn<DateTime>(
+    'document_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _documentTypeIdMeta = const VerificationMeta(
+    'documentTypeId',
+  );
+  @override
+  late final GeneratedColumn<int> documentTypeId = GeneratedColumn<int>(
+    'document_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _localPathMeta = const VerificationMeta(
     'localPath',
   );
@@ -5997,6 +5976,9 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
     id,
     serverId,
     damageReportId,
+    documentName,
+    documentDate,
+    documentTypeId,
     localPath,
     remotePath,
     uploadStatus,
@@ -6039,6 +6021,33 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
       );
     } else if (isInserting) {
       context.missing(_damageReportIdMeta);
+    }
+    if (data.containsKey('document_name')) {
+      context.handle(
+        _documentNameMeta,
+        documentName.isAcceptableOrUnknown(
+          data['document_name']!,
+          _documentNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('document_date')) {
+      context.handle(
+        _documentDateMeta,
+        documentDate.isAcceptableOrUnknown(
+          data['document_date']!,
+          _documentDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('document_type_id')) {
+      context.handle(
+        _documentTypeIdMeta,
+        documentTypeId.isAcceptableOrUnknown(
+          data['document_type_id']!,
+          _documentTypeIdMeta,
+        ),
+      );
     }
     if (data.containsKey('local_path')) {
       context.handle(
@@ -6123,6 +6132,18 @@ class $DamageReportAttachmentsTable extends DamageReportAttachments
         DriftSqlType.string,
         data['${effectivePrefix}damage_report_id'],
       )!,
+      documentName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_name'],
+      )!,
+      documentDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}document_date'],
+      ),
+      documentTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}document_type_id'],
+      )!,
       localPath: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}local_path'],
@@ -6169,6 +6190,9 @@ class DamageReportAttachmentLocal extends DataClass
   final String id;
   final String? serverId;
   final String damageReportId;
+  final String documentName;
+  final DateTime? documentDate;
+  final int documentTypeId;
   final String localPath;
   final String? remotePath;
   final String uploadStatus;
@@ -6181,6 +6205,9 @@ class DamageReportAttachmentLocal extends DataClass
     required this.id,
     this.serverId,
     required this.damageReportId,
+    required this.documentName,
+    this.documentDate,
+    required this.documentTypeId,
     required this.localPath,
     this.remotePath,
     required this.uploadStatus,
@@ -6198,6 +6225,11 @@ class DamageReportAttachmentLocal extends DataClass
       map['server_id'] = Variable<String>(serverId);
     }
     map['damage_report_id'] = Variable<String>(damageReportId);
+    map['document_name'] = Variable<String>(documentName);
+    if (!nullToAbsent || documentDate != null) {
+      map['document_date'] = Variable<DateTime>(documentDate);
+    }
+    map['document_type_id'] = Variable<int>(documentTypeId);
     map['local_path'] = Variable<String>(localPath);
     if (!nullToAbsent || remotePath != null) {
       map['remote_path'] = Variable<String>(remotePath);
@@ -6222,6 +6254,11 @@ class DamageReportAttachmentLocal extends DataClass
           ? const Value.absent()
           : Value(serverId),
       damageReportId: Value(damageReportId),
+      documentName: Value(documentName),
+      documentDate: documentDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentDate),
+      documentTypeId: Value(documentTypeId),
       localPath: Value(localPath),
       remotePath: remotePath == null && nullToAbsent
           ? const Value.absent()
@@ -6248,6 +6285,9 @@ class DamageReportAttachmentLocal extends DataClass
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       damageReportId: serializer.fromJson<String>(json['damageReportId']),
+      documentName: serializer.fromJson<String>(json['documentName']),
+      documentDate: serializer.fromJson<DateTime?>(json['documentDate']),
+      documentTypeId: serializer.fromJson<int>(json['documentTypeId']),
       localPath: serializer.fromJson<String>(json['localPath']),
       remotePath: serializer.fromJson<String?>(json['remotePath']),
       uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
@@ -6265,6 +6305,9 @@ class DamageReportAttachmentLocal extends DataClass
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
       'damageReportId': serializer.toJson<String>(damageReportId),
+      'documentName': serializer.toJson<String>(documentName),
+      'documentDate': serializer.toJson<DateTime?>(documentDate),
+      'documentTypeId': serializer.toJson<int>(documentTypeId),
       'localPath': serializer.toJson<String>(localPath),
       'remotePath': serializer.toJson<String?>(remotePath),
       'uploadStatus': serializer.toJson<String>(uploadStatus),
@@ -6280,6 +6323,9 @@ class DamageReportAttachmentLocal extends DataClass
     String? id,
     Value<String?> serverId = const Value.absent(),
     String? damageReportId,
+    String? documentName,
+    Value<DateTime?> documentDate = const Value.absent(),
+    int? documentTypeId,
     String? localPath,
     Value<String?> remotePath = const Value.absent(),
     String? uploadStatus,
@@ -6292,6 +6338,9 @@ class DamageReportAttachmentLocal extends DataClass
     id: id ?? this.id,
     serverId: serverId.present ? serverId.value : this.serverId,
     damageReportId: damageReportId ?? this.damageReportId,
+    documentName: documentName ?? this.documentName,
+    documentDate: documentDate.present ? documentDate.value : this.documentDate,
+    documentTypeId: documentTypeId ?? this.documentTypeId,
     localPath: localPath ?? this.localPath,
     remotePath: remotePath.present ? remotePath.value : this.remotePath,
     uploadStatus: uploadStatus ?? this.uploadStatus,
@@ -6312,6 +6361,15 @@ class DamageReportAttachmentLocal extends DataClass
       damageReportId: data.damageReportId.present
           ? data.damageReportId.value
           : this.damageReportId,
+      documentName: data.documentName.present
+          ? data.documentName.value
+          : this.documentName,
+      documentDate: data.documentDate.present
+          ? data.documentDate.value
+          : this.documentDate,
+      documentTypeId: data.documentTypeId.present
+          ? data.documentTypeId.value
+          : this.documentTypeId,
       localPath: data.localPath.present ? data.localPath.value : this.localPath,
       remotePath: data.remotePath.present
           ? data.remotePath.value
@@ -6339,6 +6397,9 @@ class DamageReportAttachmentLocal extends DataClass
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
           ..write('damageReportId: $damageReportId, ')
+          ..write('documentName: $documentName, ')
+          ..write('documentDate: $documentDate, ')
+          ..write('documentTypeId: $documentTypeId, ')
           ..write('localPath: $localPath, ')
           ..write('remotePath: $remotePath, ')
           ..write('uploadStatus: $uploadStatus, ')
@@ -6356,6 +6417,9 @@ class DamageReportAttachmentLocal extends DataClass
     id,
     serverId,
     damageReportId,
+    documentName,
+    documentDate,
+    documentTypeId,
     localPath,
     remotePath,
     uploadStatus,
@@ -6372,6 +6436,9 @@ class DamageReportAttachmentLocal extends DataClass
           other.id == this.id &&
           other.serverId == this.serverId &&
           other.damageReportId == this.damageReportId &&
+          other.documentName == this.documentName &&
+          other.documentDate == this.documentDate &&
+          other.documentTypeId == this.documentTypeId &&
           other.localPath == this.localPath &&
           other.remotePath == this.remotePath &&
           other.uploadStatus == this.uploadStatus &&
@@ -6387,6 +6454,9 @@ class DamageReportAttachmentsCompanion
   final Value<String> id;
   final Value<String?> serverId;
   final Value<String> damageReportId;
+  final Value<String> documentName;
+  final Value<DateTime?> documentDate;
+  final Value<int> documentTypeId;
   final Value<String> localPath;
   final Value<String?> remotePath;
   final Value<String> uploadStatus;
@@ -6400,6 +6470,9 @@ class DamageReportAttachmentsCompanion
     this.id = const Value.absent(),
     this.serverId = const Value.absent(),
     this.damageReportId = const Value.absent(),
+    this.documentName = const Value.absent(),
+    this.documentDate = const Value.absent(),
+    this.documentTypeId = const Value.absent(),
     this.localPath = const Value.absent(),
     this.remotePath = const Value.absent(),
     this.uploadStatus = const Value.absent(),
@@ -6414,6 +6487,9 @@ class DamageReportAttachmentsCompanion
     required String id,
     this.serverId = const Value.absent(),
     required String damageReportId,
+    this.documentName = const Value.absent(),
+    this.documentDate = const Value.absent(),
+    this.documentTypeId = const Value.absent(),
     required String localPath,
     this.remotePath = const Value.absent(),
     this.uploadStatus = const Value.absent(),
@@ -6430,6 +6506,9 @@ class DamageReportAttachmentsCompanion
     Expression<String>? id,
     Expression<String>? serverId,
     Expression<String>? damageReportId,
+    Expression<String>? documentName,
+    Expression<DateTime>? documentDate,
+    Expression<int>? documentTypeId,
     Expression<String>? localPath,
     Expression<String>? remotePath,
     Expression<String>? uploadStatus,
@@ -6444,6 +6523,9 @@ class DamageReportAttachmentsCompanion
       if (id != null) 'id': id,
       if (serverId != null) 'server_id': serverId,
       if (damageReportId != null) 'damage_report_id': damageReportId,
+      if (documentName != null) 'document_name': documentName,
+      if (documentDate != null) 'document_date': documentDate,
+      if (documentTypeId != null) 'document_type_id': documentTypeId,
       if (localPath != null) 'local_path': localPath,
       if (remotePath != null) 'remote_path': remotePath,
       if (uploadStatus != null) 'upload_status': uploadStatus,
@@ -6460,6 +6542,9 @@ class DamageReportAttachmentsCompanion
     Value<String>? id,
     Value<String?>? serverId,
     Value<String>? damageReportId,
+    Value<String>? documentName,
+    Value<DateTime?>? documentDate,
+    Value<int>? documentTypeId,
     Value<String>? localPath,
     Value<String?>? remotePath,
     Value<String>? uploadStatus,
@@ -6474,6 +6559,9 @@ class DamageReportAttachmentsCompanion
       id: id ?? this.id,
       serverId: serverId ?? this.serverId,
       damageReportId: damageReportId ?? this.damageReportId,
+      documentName: documentName ?? this.documentName,
+      documentDate: documentDate ?? this.documentDate,
+      documentTypeId: documentTypeId ?? this.documentTypeId,
       localPath: localPath ?? this.localPath,
       remotePath: remotePath ?? this.remotePath,
       uploadStatus: uploadStatus ?? this.uploadStatus,
@@ -6497,6 +6585,15 @@ class DamageReportAttachmentsCompanion
     }
     if (damageReportId.present) {
       map['damage_report_id'] = Variable<String>(damageReportId.value);
+    }
+    if (documentName.present) {
+      map['document_name'] = Variable<String>(documentName.value);
+    }
+    if (documentDate.present) {
+      map['document_date'] = Variable<DateTime>(documentDate.value);
+    }
+    if (documentTypeId.present) {
+      map['document_type_id'] = Variable<int>(documentTypeId.value);
     }
     if (localPath.present) {
       map['local_path'] = Variable<String>(localPath.value);
@@ -6534,6 +6631,9 @@ class DamageReportAttachmentsCompanion
           ..write('id: $id, ')
           ..write('serverId: $serverId, ')
           ..write('damageReportId: $damageReportId, ')
+          ..write('documentName: $documentName, ')
+          ..write('documentDate: $documentDate, ')
+          ..write('documentTypeId: $documentTypeId, ')
           ..write('localPath: $localPath, ')
           ..write('remotePath: $remotePath, ')
           ..write('uploadStatus: $uploadStatus, ')
@@ -14696,7 +14796,6 @@ typedef $$FarmersTableCreateCompanionBuilder =
       Value<String> phoneNumber,
       Value<int> familySize,
       Value<String?> governorateId,
-      Value<String?> directorateId,
       Value<String?> localityId,
       Value<String> legacyGovernorateId,
       Value<String> legacyLocalityId,
@@ -14732,7 +14831,6 @@ typedef $$FarmersTableUpdateCompanionBuilder =
       Value<String> phoneNumber,
       Value<int> familySize,
       Value<String?> governorateId,
-      Value<String?> directorateId,
       Value<String?> localityId,
       Value<String> legacyGovernorateId,
       Value<String> legacyLocalityId,
@@ -14841,11 +14939,6 @@ class $$FarmersTableFilterComposer
 
   ColumnFilters<String> get governorateId => $composableBuilder(
     column: $table.governorateId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get directorateId => $composableBuilder(
-    column: $table.directorateId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15014,11 +15107,6 @@ class $$FarmersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get directorateId => $composableBuilder(
-    column: $table.directorateId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get localityId => $composableBuilder(
     column: $table.localityId,
     builder: (column) => ColumnOrderings(column),
@@ -15172,11 +15260,6 @@ class $$FarmersTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get directorateId => $composableBuilder(
-    column: $table.directorateId,
-    builder: (column) => column,
-  );
-
   GeneratedColumn<String> get localityId => $composableBuilder(
     column: $table.localityId,
     builder: (column) => column,
@@ -15284,7 +15367,6 @@ class $$FarmersTableTableManager
                 Value<String> phoneNumber = const Value.absent(),
                 Value<int> familySize = const Value.absent(),
                 Value<String?> governorateId = const Value.absent(),
-                Value<String?> directorateId = const Value.absent(),
                 Value<String?> localityId = const Value.absent(),
                 Value<String> legacyGovernorateId = const Value.absent(),
                 Value<String> legacyLocalityId = const Value.absent(),
@@ -15318,7 +15400,6 @@ class $$FarmersTableTableManager
                 phoneNumber: phoneNumber,
                 familySize: familySize,
                 governorateId: governorateId,
-                directorateId: directorateId,
                 localityId: localityId,
                 legacyGovernorateId: legacyGovernorateId,
                 legacyLocalityId: legacyLocalityId,
@@ -15354,7 +15435,6 @@ class $$FarmersTableTableManager
                 Value<String> phoneNumber = const Value.absent(),
                 Value<int> familySize = const Value.absent(),
                 Value<String?> governorateId = const Value.absent(),
-                Value<String?> directorateId = const Value.absent(),
                 Value<String?> localityId = const Value.absent(),
                 Value<String> legacyGovernorateId = const Value.absent(),
                 Value<String> legacyLocalityId = const Value.absent(),
@@ -15388,7 +15468,6 @@ class $$FarmersTableTableManager
                 phoneNumber: phoneNumber,
                 familySize: familySize,
                 governorateId: governorateId,
-                directorateId: directorateId,
                 localityId: localityId,
                 legacyGovernorateId: legacyGovernorateId,
                 legacyLocalityId: legacyLocalityId,
@@ -17227,6 +17306,9 @@ typedef $$DamageReportAttachmentsTableCreateCompanionBuilder =
       required String id,
       Value<String?> serverId,
       required String damageReportId,
+      Value<String> documentName,
+      Value<DateTime?> documentDate,
+      Value<int> documentTypeId,
       required String localPath,
       Value<String?> remotePath,
       Value<String> uploadStatus,
@@ -17242,6 +17324,9 @@ typedef $$DamageReportAttachmentsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String?> serverId,
       Value<String> damageReportId,
+      Value<String> documentName,
+      Value<DateTime?> documentDate,
+      Value<int> documentTypeId,
       Value<String> localPath,
       Value<String?> remotePath,
       Value<String> uploadStatus,
@@ -17274,6 +17359,21 @@ class $$DamageReportAttachmentsTableFilterComposer
 
   ColumnFilters<String> get damageReportId => $composableBuilder(
     column: $table.damageReportId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentName => $composableBuilder(
+    column: $table.documentName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get documentDate => $composableBuilder(
+    column: $table.documentDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get documentTypeId => $composableBuilder(
+    column: $table.documentTypeId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17342,6 +17442,21 @@ class $$DamageReportAttachmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get documentName => $composableBuilder(
+    column: $table.documentName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get documentDate => $composableBuilder(
+    column: $table.documentDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get documentTypeId => $composableBuilder(
+    column: $table.documentTypeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get localPath => $composableBuilder(
     column: $table.localPath,
     builder: (column) => ColumnOrderings(column),
@@ -17400,6 +17515,21 @@ class $$DamageReportAttachmentsTableAnnotationComposer
 
   GeneratedColumn<String> get damageReportId => $composableBuilder(
     column: $table.damageReportId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get documentName => $composableBuilder(
+    column: $table.documentName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get documentDate => $composableBuilder(
+    column: $table.documentDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get documentTypeId => $composableBuilder(
+    column: $table.documentTypeId,
     builder: (column) => column,
   );
 
@@ -17487,6 +17617,9 @@ class $$DamageReportAttachmentsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
                 Value<String> damageReportId = const Value.absent(),
+                Value<String> documentName = const Value.absent(),
+                Value<DateTime?> documentDate = const Value.absent(),
+                Value<int> documentTypeId = const Value.absent(),
                 Value<String> localPath = const Value.absent(),
                 Value<String?> remotePath = const Value.absent(),
                 Value<String> uploadStatus = const Value.absent(),
@@ -17500,6 +17633,9 @@ class $$DamageReportAttachmentsTableTableManager
                 id: id,
                 serverId: serverId,
                 damageReportId: damageReportId,
+                documentName: documentName,
+                documentDate: documentDate,
+                documentTypeId: documentTypeId,
                 localPath: localPath,
                 remotePath: remotePath,
                 uploadStatus: uploadStatus,
@@ -17515,6 +17651,9 @@ class $$DamageReportAttachmentsTableTableManager
                 required String id,
                 Value<String?> serverId = const Value.absent(),
                 required String damageReportId,
+                Value<String> documentName = const Value.absent(),
+                Value<DateTime?> documentDate = const Value.absent(),
+                Value<int> documentTypeId = const Value.absent(),
                 required String localPath,
                 Value<String?> remotePath = const Value.absent(),
                 Value<String> uploadStatus = const Value.absent(),
@@ -17528,6 +17667,9 @@ class $$DamageReportAttachmentsTableTableManager
                 id: id,
                 serverId: serverId,
                 damageReportId: damageReportId,
+                documentName: documentName,
+                documentDate: documentDate,
+                documentTypeId: documentTypeId,
                 localPath: localPath,
                 remotePath: remotePath,
                 uploadStatus: uploadStatus,

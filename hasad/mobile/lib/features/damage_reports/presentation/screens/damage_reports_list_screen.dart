@@ -11,6 +11,8 @@ import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
+import 'package:mobile/core/auth/authorization_service.dart';
+import 'package:mobile/core/storage/pull_sync_service.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 class DamageReportsListScreen extends ConsumerStatefulWidget {
@@ -70,17 +72,15 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
               data: (reports) {
                 final displayReports = widget.farm != null
                     ? reports.where((r) => 
-                        r.farmId == widget.farm!.id || 
-                        (widget.farm!.serverId != null && r.farmId == widget.farm!.serverId)
+                        r.farmId.toLowerCase() == widget.farm!.id.toLowerCase() || 
+                        (widget.farm!.serverId != null && r.farmId.toLowerCase() == widget.farm!.serverId!.toLowerCase())
                       ).toList()
                     : reports;
 
                 if (displayReports.isEmpty) {
                   return RefreshIndicator(
                     onRefresh: () async {
-                      if (widget.farm != null) {
-                        await ref.read(damageReportRepositoryProvider).getDamageReportsByFarm(widget.farm!.id);
-                      }
+                      await ref.read(pullSyncServiceProvider).syncAll(force: true);
                       ref.invalidate(damageReportsListProvider);
                     },
                     child: Stack(
@@ -102,9 +102,7 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
-                    if (widget.farm != null) {
-                      await ref.read(damageReportRepositoryProvider).getDamageReportsByFarm(widget.farm!.id);
-                    }
+                    await ref.read(pullSyncServiceProvider).syncAll(force: true);
                     ref.invalidate(damageReportsListProvider);
                   },
                   child: ListView.builder(
@@ -135,7 +133,7 @@ class _DamageReportsListScreenState extends ConsumerState<DamageReportsListScree
           ),
         ],
       ),
-      floatingActionButton: widget.farm != null
+      floatingActionButton: (widget.farm != null && ref.watch(authorizationServiceProvider).canCreateDamageReport())
           ? FloatingActionButton.extended(
               onPressed: () => context.push(AppRoutes.addDamageReport, extra: widget.farm),
               icon: const Icon(Icons.add),

@@ -30,6 +30,8 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
   late DateTime _damageDate;
   late DateTime _documentationDate;
   late TextEditingController _notesController;
+  late TextEditingController _damageDateController;
+  late TextEditingController _docDateController;
 
   @override
   void initState() {
@@ -38,16 +40,59 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
     _damageDate = DateTime.now();
     _documentationDate = DateTime.now();
     _notesController = TextEditingController();
+    _damageDateController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(_damageDate));
+    _docDateController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(_documentationDate));
   }
 
   @override
   void dispose() {
     _notesController.dispose();
+    _damageDateController.dispose();
+    _docDateController.dispose();
     super.dispose();
+  }
+
+  void _updateDamageDate(DateTime date) {
+    setState(() {
+      _damageDate = date;
+      _damageDateController.text = DateFormat('yyyy-MM-dd').format(date);
+    });
+  }
+
+  void _updateDocDate(DateTime date) {
+    setState(() {
+      _documentationDate = date;
+      _docDateController.text = DateFormat('yyyy-MM-dd').format(date);
+    });
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Parse dates from controllers in case they were edited manually
+    DateTime? dDate = DateTime.tryParse(_damageDateController.text);
+    DateTime? docDate = DateTime.tryParse(_docDateController.text);
+
+    if (dDate == null || docDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid date format. Use YYYY-MM-DD.')),
+      );
+      return;
+    }
+
+    if (docDate.isBefore(dDate)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تاريخ التوثيق لا يمكن أن يكون قبل تاريخ الضرر.')),
+      );
+      return;
+    }
+    
+    if (dDate.isAfter(DateTime.now()) || docDate.isAfter(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('لا يمكن اختيار تاريخ في المستقبل.')),
+      );
+      return;
+    }
 
     final causeState = ref.read(damageCauseWizardProvider);
     if (causeState.selectedCause == null) {
@@ -124,8 +169,9 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
                   children: [
                     _buildFarmInfo(),
                     const Divider(height: 32),
-                    _buildDateTile(l10n.damageDate, _damageDate, (picked) => setState(() => _damageDate = picked)),
-                    _buildReadOnlyField(l10n.documentationDate, DateFormat.yMMMd().format(_documentationDate)),
+                    _buildDateField(l10n.damageDate, _damageDateController, _updateDamageDate),
+                    const SizedBox(height: 16),
+                    _buildDateField(l10n.documentationDate, _docDateController, _updateDocDate),
                     const SizedBox(height: 16),
                     _buildSectorDisplay(l10n),
                     const SizedBox(height: 16),
@@ -208,20 +254,32 @@ class _DamageReportHeaderScreenState extends ConsumerState<DamageReportHeaderScr
     );
   }
 
-  Widget _buildDateTile(String label, DateTime date, Function(DateTime) onPicked) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(label),
-      subtitle: Text(DateFormat.yMMMd().format(date)),
-      trailing: const Icon(Icons.calendar_today),
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: date,
-          firstDate: DateTime(2000),
-          lastDate: DateTime.now(),
-        );
-        if (picked != null) onPicked(picked);
+  Widget _buildDateField(String label, TextEditingController controller, Function(DateTime) onPicked) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.calendar_today),
+          onPressed: () async {
+            DateTime initial = DateTime.tryParse(controller.text) ?? DateTime.now();
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: initial,
+              firstDate: DateTime(2000),
+              lastDate: DateTime.now(),
+            );
+            if (picked != null) onPicked(picked);
+          },
+        ),
+        hintText: 'YYYY-MM-DD',
+      ),
+      keyboardType: TextInputType.datetime,
+      validator: (v) {
+        if (v == null || v.isEmpty) return 'هذا الحقل مطلوب';
+        if (DateTime.tryParse(v) == null) return 'تنسيق التاريخ غير صحيح (YYYY-MM-DD)';
+        return null;
       },
     );
   }

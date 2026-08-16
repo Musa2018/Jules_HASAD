@@ -181,12 +181,13 @@ void main() {
       ));
 
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q1',
             localId: 'local-1',
             entityType: 'farmer',
             operation: 'create',
             data: jsonEncode(farmer.toJson()),
-            status: 'pending',
-            createdAt: DateTime.now(),
+            status: const Value('pending'),
+            createdAt: Value(DateTime.now()),
           ));
 
       when(() => mockFarmerRepo.createFarmer(any()))
@@ -242,12 +243,13 @@ void main() {
       ));
 
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q-f1',
             localId: 'local-f1',
             entityType: 'farm',
             operation: 'create',
             data: jsonEncode(farm.toJson()),
-            status: 'pending',
-            createdAt: DateTime.now(),
+            status: const Value('pending'),
+            createdAt: Value(DateTime.now()),
           ));
 
       when(() => mockFarmRepo.createFarm(any()))
@@ -302,15 +304,16 @@ void main() {
       ));
 
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q-r1',
             localId: 'local-r1',
             entityType: 'damage_report',
             operation: 'create',
             data: jsonEncode(report.toJson()),
-            status: 'pending',
-            createdAt: DateTime.now(),
+            status: const Value('pending'),
+            createdAt: Value(DateTime.now()),
           ));
 
-      when(() => mockDamageRepo.createDamageReport(any()))
+      when(() => mockDamageRepo.createDamageReportFromJson(any()))
           .thenAnswer((_) async => report.copyWith(serverId: 'server-r1'));
 
       await syncService.processQueue();
@@ -341,12 +344,13 @@ void main() {
       ));
 
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q-a1',
             localId: 'local-a1',
             entityType: 'attachment',
-            operation: 'create',
+            operation: 'upload',
             data: jsonEncode(attachment.toJson()),
-            status: 'pending',
-            createdAt: DateTime.now(),
+            status: const Value('pending'),
+            createdAt: Value(DateTime.now()),
           ));
 
       when(() => mockAttachmentRepo.uploadAttachment(any()))
@@ -408,12 +412,13 @@ void main() {
       ));
 
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q-c1',
             localId: 'local-c1',
             entityType: 'farmer',
             operation: 'create',
             data: jsonEncode(farmer.toJson()),
-            status: 'pending',
-            createdAt: DateTime.now(),
+            status: const Value('pending'),
+            createdAt: Value(DateTime.now()),
           ));
 
       when(() => mockFarmerRepo.createFarmer(any()))
@@ -476,12 +481,13 @@ void main() {
       ));
 
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q-i1',
             localId: 'local-i1',
             entityType: 'farmer',
             operation: 'create',
             data: jsonEncode(farmer.toJson()),
-            status: 'pending',
-            createdAt: DateTime.now(),
+            status: const Value('pending'),
+            createdAt: Value(DateTime.now()),
           ));
 
       when(() => mockFarmerRepo.createFarmer(any()))
@@ -503,22 +509,31 @@ void main() {
       
       // Task 1: Create Farmer
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q-f1-seq',
             localId: 'f1',
             entityType: 'farmer',
             operation: 'create',
-            data: '{}',
-            status: 'pending',
-            createdAt: now.subtract(const Duration(minutes: 5)),
+            data: jsonEncode(Farmer(
+              id: 'f1', idTypeId: 1, idNumber: '1', firstNameAr: '', fatherNameAr: '', grandfatherNameAr: '', familyNameAr: '',
+              firstNameEn: '', fatherNameEn: '', grandfatherNameEn: '', familyNameEn: '', birthDate: DateTime(2000),
+              gender: Gender.male, phoneNumber: '', familySize: 1, governorateId: '', localityId: '', address: '',
+            ).toJson()),
+            status: const Value('pending'),
+            createdAt: Value(now.subtract(const Duration(minutes: 5))),
           ));
       
       // Task 2: Create Farm (depends on Farmer)
       await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+            id: 'q-farm1-seq',
             localId: 'farm1',
             entityType: 'farm',
             operation: 'create',
-            data: '{}',
-            status: 'pending',
-            createdAt: now,
+            data: jsonEncode(const Farm(
+              id: 'farm1', farmerId: 'f1', localFarmName: '', ownershipTypeId: 1, governorateId: '', directorateId: '',
+              localityId: '', basin: '', parcel: '', area: 1.0, areaUnitId: 1, agriculturalSectorId: 1, politicalClassificationId: 1,
+            ).toJson()),
+            status: const Value('pending'),
+            createdAt: Value(now),
           ));
 
       final sequence = [];

@@ -33,6 +33,7 @@ public class DamageReport : ISoftDelete
     public DamageCause? DamageCause { get; set; }
 
     public string StatusId { get; set; } = "PendingTechnicalVerification";
+    public WorkflowStatus? Status { get; set; }
 
     public decimal TotalDamage { get; set; }
 

@@ -42,7 +42,6 @@ void main() {
         phoneNumber: '',
         familySize: 1,
         governorateId: '',
-        directorateId: '',
         localityId: '',
         address: '',
       ),
@@ -116,20 +115,6 @@ void main() {
 
     expect(find.text('Gov 1'), findsOneWidget);
 
-    // Select Directorate
-    final dirField = find.ancestor(
-      of: find.text('Directorate'),
-      matching: find.byType(InkWell),
-    ).first;
-    await tester.ensureVisible(dirField);
-    await tester.tap(dirField);
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.text('Dir 1'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Dir 1'), findsOneWidget);
-
     // Verify Locality is now available
     final locField = find.ancestor(
       of: find.text('Locality/Village'),
@@ -163,7 +148,6 @@ void main() {
       phoneNumber: '059',
       familySize: 4,
       governorateId: 'g1',
-      directorateId: 'd1',
       localityId: 'l1',
       address: 'Addr',
       rowVersion: 'v1',

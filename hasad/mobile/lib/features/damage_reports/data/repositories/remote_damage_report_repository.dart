@@ -6,6 +6,7 @@ import 'package:mobile/features/damage_reports/data/dto/damage_report_sync_dto.d
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
+import 'package:mobile/features/damage_reports/domain/models/audit_log_entry.dart';
 
 class RemoteDamageReportRepository implements DamageReportRepository {
   final Dio _dio;
@@ -339,6 +340,26 @@ class RemoteDamageReportRepository implements DamageReportRepository {
   @override
   Future<void> refreshReport(String id) async {
     await getDamageReport(id);
+  }
+
+  @override
+  Future<List<AuditLogEntry>> getIntegratedAuditLog(String id) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '/v1/damage-reports/$id/audit-log',
+      );
+      final envelope = response.data;
+      final data = envelope?['data'];
+      if (envelope?['succeeded'] != true || data == null) {
+        throw SyncException(_errorsFromEnvelope(envelope));
+      }
+      final items = data as List;
+      return items
+          .map((e) => AuditLogEntry.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw SyncException(_errorsFromDio(e));
+    }
   }
 
   List<String> _errorsFromDio(DioException e) {

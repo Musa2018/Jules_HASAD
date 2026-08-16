@@ -32,7 +32,6 @@ class Farmers extends Table {
 
   // Geographic Alignment (Sprint 15.0 Hardening)
   TextColumn get governorateId => text().nullable()(); // Guid
-  TextColumn get directorateId => text().nullable()(); // Guid
   TextColumn get localityId => text().nullable()(); // Guid
 
   // Legacy Geographic Fields (Auditing Only)
@@ -268,6 +267,10 @@ class DamageReportAttachments extends Table {
   TextColumn get serverId => text().nullable()();
   TextColumn get damageReportId => text()();
 
+  TextColumn get documentName => text().withDefault(const Constant(''))();
+  DateTimeColumn get documentDate => dateTime().nullable()();
+  IntColumn get documentTypeId => integer().withDefault(const Constant(0))();
+
   TextColumn get localPath => text()();
   TextColumn get remotePath => text().nullable()();
 
@@ -483,7 +486,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 33;
+  int get schemaVersion => 35;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -707,7 +710,7 @@ class AppDatabase extends _$AppDatabase {
 
           // 2. Add new Guid columns
           await m.addColumn(farmers, farmers.governorateId);
-          await m.addColumn(farmers, farmers.directorateId);
+          await customStatement('ALTER TABLE farmers ADD COLUMN directorate_id TEXT;');
           await m.addColumn(farmers, farmers.localityId);
 
           // 3. Backfill from local geographic tables if available
@@ -756,6 +759,18 @@ class AppDatabase extends _$AppDatabase {
       if (from < 33) {
         // Version 33: Add totalDamage to DamageReports
         await m.addColumn(damageReports, damageReports.totalDamage);
+      }
+      if (from < 34) {
+        // Version 34: Global Farmer Redesign (Remove directorateId from Farmers)
+        // Note: Drift's TableMigration handles the complex SQLite alter table process
+        // ignore: deprecated_member_use
+        await m.alterTable(TableMigration(farmers));
+      }
+      if (from < 35) {
+        // Version 35: Attachment Metadata
+        await m.addColumn(damageReportAttachments, damageReportAttachments.documentName);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.documentDate);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.documentTypeId);
       }
     },
     beforeOpen: (details) async {

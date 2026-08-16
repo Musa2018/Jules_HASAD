@@ -10,6 +10,9 @@ class DamageReportAttachment with _$DamageReportAttachment {
     @JsonKey(name: 'clientId') required String id, // ClientId
     @JsonKey(name: 'id') String? serverId,
     required String damageReportId,
+    @Default('') String documentName,
+    DateTime? documentDate,
+    @Default(0) int documentTypeId,
     required String localPath,
     String? remotePath,
     @Default('pending') String uploadStatus,

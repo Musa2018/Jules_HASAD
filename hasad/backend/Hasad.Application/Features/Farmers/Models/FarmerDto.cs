@@ -15,7 +15,6 @@ public class FarmerDto
     public string RowVersion { get; set; } = string.Empty;
 
     public Guid? GovernorateId { get; set; }
-    public Guid? DirectorateId { get; set; }
     public Guid? LocalityId { get; set; }
 
     public string LegacyGovernorateId { get; set; } = string.Empty;

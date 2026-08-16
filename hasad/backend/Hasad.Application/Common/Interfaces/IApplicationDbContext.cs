@@ -23,6 +23,8 @@ public interface IApplicationDbContext
     DbSet<DamageItem> DamageItems { get; }
     DbSet<DamageReportAttachment> DamageReportAttachments { get; }
     DbSet<DamageWorkflowHistory> DamageWorkflowHistories { get; }
+    DbSet<WorkflowStatus> WorkflowStatuses { get; }
+    DbSet<WorkflowTransition> WorkflowTransitions { get; }
 
     DbSet<DamageNature> DamageNatures { get; }
     DbSet<DamageAction> DamageActions { get; }

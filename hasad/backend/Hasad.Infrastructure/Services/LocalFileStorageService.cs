@@ -21,6 +21,11 @@ public class LocalFileStorageService : IFileStorageService
 
     public async Task<string> SaveAsync(Stream fileStream, string fileName, string contentType, CancellationToken cancellationToken)
     {
+        return await SaveFileAsync(fileStream, fileName, cancellationToken);
+    }
+
+    public async Task<string> SaveFileAsync(Stream fileStream, string fileName, CancellationToken cancellationToken)
+    {
         var relativePath = Path.Combine(DateTime.UtcNow.ToString("yyyyMMdd"), fileName);
         var fullPath = Path.Combine(_storagePath, relativePath);
 
@@ -34,6 +39,15 @@ public class LocalFileStorageService : IFileStorageService
         await fileStream.CopyToAsync(output, cancellationToken);
 
         return relativePath.Replace("\\", "/");
+    }
+
+    public Task<Stream?> GetFileStreamAsync(string remotePath, CancellationToken cancellationToken)
+    {
+        var fullPath = Path.Combine(_storagePath, remotePath);
+        if (!File.Exists(fullPath)) return Task.FromResult<Stream?>(null);
+
+        Stream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read);
+        return Task.FromResult<Stream?>(stream);
     }
 
     public Task DeleteAsync(string remotePath, CancellationToken cancellationToken)

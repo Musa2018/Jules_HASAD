@@ -51,7 +51,6 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
   Gender _gender = Gender.unspecified;
   int _idTypeId = 1;
   String? _selectedGovernorateId;
-  String? _selectedDirectorateId;
   String? _selectedLocalityId;
 
   bool _isFormValid = true;
@@ -80,7 +79,6 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     _gender = f?.gender ?? Gender.unspecified;
     _idTypeId = f?.idTypeId ?? 1;
     _selectedGovernorateId = f?.governorateId;
-    _selectedDirectorateId = f?.directorateId;
     _selectedLocalityId = f?.localityId;
   }
 
@@ -152,7 +150,6 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
       phoneNumber: _phoneController.text.trim(),
       familySize: int.tryParse(_familySizeController.text) ?? 1,
       governorateId: _selectedGovernorateId,
-      directorateId: _selectedDirectorateId,
       localityId: _selectedLocalityId,
       legacyGovernorateId: widget.farmer?.legacyGovernorateId ?? '',
       legacyLocalityId: widget.farmer?.legacyLocalityId ?? '',
@@ -194,12 +191,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
     final state = ref.watch(farmerFormProvider);
     final govsAsync = ref.watch(governoratesProvider);
     
-    final dirsAsync = _selectedGovernorateId != null
-        ? ref.watch(directoratesProvider(_selectedGovernorateId!))
-        : const AsyncValue<List<Directorate>>.data([]);
-
-    final locsAsync = _selectedDirectorateId != null
-        ? ref.watch(localitiesProvider((_selectedGovernorateId, _selectedDirectorateId)))
+    final locsAsync = _selectedGovernorateId != null
+        ? ref.watch(localitiesProvider((_selectedGovernorateId, null)))
         : const AsyncValue<List<Locality>>.data([]);
 
     return Scaffold(
@@ -407,7 +400,6 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                       value: govs.where((g) => g.id == _selectedGovernorateId).firstOrNull,
                       onChanged: (v) => setState(() {
                         _selectedGovernorateId = v?.id;
-                        _selectedDirectorateId = null;
                         _selectedLocalityId = null;
                       }),
                       validator: (v) => v == null ? l10n.requiredField : null,
@@ -418,29 +410,8 @@ class _FarmerFormScreenState extends ConsumerState<FarmerFormScreen> {
                   const SizedBox(height: 16),
                   _selectedGovernorateId == null
                       ? InputDecorator(
-                          decoration: InputDecoration(labelText: l10n.directorate),
-                          child: Text(l10n.governorate),
-                        )
-                      : dirsAsync.when(
-                          data: (dirs) => SearchableLookupField<Directorate>(
-                            label: l10n.directorate,
-                            items: dirs,
-                            itemLabel: (d) => Localizations.localeOf(context).languageCode == 'ar' ? d.nameAr : d.nameEn,
-                            value: dirs.where((d) => d.id == _selectedDirectorateId).firstOrNull,
-                            onChanged: (v) => setState(() {
-                              _selectedDirectorateId = v?.id;
-                              _selectedLocalityId = null;
-                            }),
-                            validator: (v) => v == null ? l10n.requiredField : null,
-                          ),
-                          loading: () => const LinearProgressIndicator(),
-                          error: (e, _) => Text(e.toString()),
-                        ),
-                  const SizedBox(height: 16),
-                  _selectedDirectorateId == null
-                      ? InputDecorator(
                           decoration: InputDecoration(labelText: l10n.village),
-                          child: Text(l10n.directorate),
+                          child: Text(l10n.governorate),
                         )
                       : locsAsync.when(
                           data: (locs) => SearchableLookupField<Locality>(

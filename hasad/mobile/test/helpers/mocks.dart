@@ -19,7 +19,7 @@ import 'package:mobile/core/storage/pull_sync_coordinator.dart';
 import 'package:mobile/core/storage/background_sync_service.dart';
 import 'package:mobile/core/storage/secure_storage_service.dart';
 import 'package:mobile/core/network/token_refresher.dart';
-import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
+// import 'package:mobile/features/damage_reports/domain/models/damage_report.dart'; // Removed as it was unused and causing issues
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -27,23 +27,7 @@ class MockFarmRepository extends Mock implements FarmRepository {}
 
 class MockFarmerRepository extends Mock implements FarmerRepository {}
 
-class MockDamageReportRepository extends Mock implements DamageReportRepository {
-  @override
-  Future<List<DamageReport>> getDamageReports({
-    int pageNumber = 1,
-    int pageSize = 10,
-    String? searchText,
-    DateTime? updatedSince,
-  }) => super.noSuchMethod(
-        Invocation.method(#getDamageReports, [], {
-          #pageNumber: pageNumber,
-          #pageSize: pageSize,
-          #searchText: searchText,
-          #updatedSince: updatedSince,
-        }),
-        returnValue: Future.value(<DamageReport>[]),
-      );
-}
+class MockDamageReportRepository extends Mock implements DamageReportRepository {}
 
 class MockDamageReportAttachmentRepository extends Mock
     implements DamageReportAttachmentRepository {}

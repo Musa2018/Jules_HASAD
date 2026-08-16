@@ -4,7 +4,7 @@ namespace Hasad.Application.Common.Interfaces;
 
 public interface IDamageWorkflowService
 {
-    bool IsTransitionValid(string fromStatus, string toStatus, string userRole);
-    bool CanTransition(DamageReport report, string targetStatus, string? comment);
+    Task<bool> IsTransitionValidAsync(string fromStatus, string toStatus, string userRole);
+    Task<bool> CanTransitionAsync(DamageReport report, string targetStatus, string? comment);
     Task TransitionAsync(DamageReport report, string toStatus, string? comment = null, bool isOverride = false);
 }

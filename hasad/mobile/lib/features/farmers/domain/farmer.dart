@@ -25,7 +25,6 @@ class Farmer with _$Farmer {
     required String phoneNumber,
     required int familySize,
     String? governorateId,
-    String? directorateId,
     String? localityId,
     @Default('') String legacyGovernorateId,
     @Default('') String legacyLocalityId,

@@ -12,6 +12,11 @@ _$DamageReportAttachmentImpl _$$DamageReportAttachmentImplFromJson(
   id: json['clientId'] as String,
   serverId: json['id'] as String?,
   damageReportId: json['damageReportId'] as String,
+  documentName: json['documentName'] as String? ?? '',
+  documentDate: json['documentDate'] == null
+      ? null
+      : DateTime.parse(json['documentDate'] as String),
+  documentTypeId: (json['documentTypeId'] as num?)?.toInt() ?? 0,
   localPath: json['localPath'] as String,
   remotePath: json['remotePath'] as String?,
   uploadStatus: json['uploadStatus'] as String? ?? 'pending',
@@ -25,6 +30,9 @@ Map<String, dynamic> _$$DamageReportAttachmentImplToJson(
   'clientId': instance.id,
   'id': instance.serverId,
   'damageReportId': instance.damageReportId,
+  'documentName': instance.documentName,
+  'documentDate': instance.documentDate?.toIso8601String(),
+  'documentTypeId': instance.documentTypeId,
   'localPath': instance.localPath,
   'remotePath': instance.remotePath,
   'uploadStatus': instance.uploadStatus,

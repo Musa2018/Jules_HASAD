@@ -7,7 +7,7 @@ import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/data/farmer_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 
 import '../helpers/mocks.dart';
 

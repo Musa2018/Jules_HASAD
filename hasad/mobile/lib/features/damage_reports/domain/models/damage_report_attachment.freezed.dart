@@ -28,6 +28,9 @@ mixin _$DamageReportAttachment {
   @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
   String get damageReportId => throw _privateConstructorUsedError;
+  String get documentName => throw _privateConstructorUsedError;
+  DateTime? get documentDate => throw _privateConstructorUsedError;
+  int get documentTypeId => throw _privateConstructorUsedError;
   String get localPath => throw _privateConstructorUsedError;
   String? get remotePath => throw _privateConstructorUsedError;
   String get uploadStatus => throw _privateConstructorUsedError;
@@ -55,6 +58,9 @@ abstract class $DamageReportAttachmentCopyWith<$Res> {
     @JsonKey(name: 'clientId') String id,
     @JsonKey(name: 'id') String? serverId,
     String damageReportId,
+    String documentName,
+    DateTime? documentDate,
+    int documentTypeId,
     String localPath,
     String? remotePath,
     String uploadStatus,
@@ -84,6 +90,9 @@ class _$DamageReportAttachmentCopyWithImpl<
     Object? id = null,
     Object? serverId = freezed,
     Object? damageReportId = null,
+    Object? documentName = null,
+    Object? documentDate = freezed,
+    Object? documentTypeId = null,
     Object? localPath = null,
     Object? remotePath = freezed,
     Object? uploadStatus = null,
@@ -104,6 +113,18 @@ class _$DamageReportAttachmentCopyWithImpl<
                 ? _value.damageReportId
                 : damageReportId // ignore: cast_nullable_to_non_nullable
                       as String,
+            documentName: null == documentName
+                ? _value.documentName
+                : documentName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            documentDate: freezed == documentDate
+                ? _value.documentDate
+                : documentDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            documentTypeId: null == documentTypeId
+                ? _value.documentTypeId
+                : documentTypeId // ignore: cast_nullable_to_non_nullable
+                      as int,
             localPath: null == localPath
                 ? _value.localPath
                 : localPath // ignore: cast_nullable_to_non_nullable
@@ -143,6 +164,9 @@ abstract class _$$DamageReportAttachmentImplCopyWith<$Res>
     @JsonKey(name: 'clientId') String id,
     @JsonKey(name: 'id') String? serverId,
     String damageReportId,
+    String documentName,
+    DateTime? documentDate,
+    int documentTypeId,
     String localPath,
     String? remotePath,
     String uploadStatus,
@@ -169,6 +193,9 @@ class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
     Object? id = null,
     Object? serverId = freezed,
     Object? damageReportId = null,
+    Object? documentName = null,
+    Object? documentDate = freezed,
+    Object? documentTypeId = null,
     Object? localPath = null,
     Object? remotePath = freezed,
     Object? uploadStatus = null,
@@ -189,6 +216,18 @@ class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
             ? _value.damageReportId
             : damageReportId // ignore: cast_nullable_to_non_nullable
                   as String,
+        documentName: null == documentName
+            ? _value.documentName
+            : documentName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        documentDate: freezed == documentDate
+            ? _value.documentDate
+            : documentDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        documentTypeId: null == documentTypeId
+            ? _value.documentTypeId
+            : documentTypeId // ignore: cast_nullable_to_non_nullable
+                  as int,
         localPath: null == localPath
             ? _value.localPath
             : localPath // ignore: cast_nullable_to_non_nullable
@@ -221,6 +260,9 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
     @JsonKey(name: 'clientId') required this.id,
     @JsonKey(name: 'id') this.serverId,
     required this.damageReportId,
+    this.documentName = '',
+    this.documentDate,
+    this.documentTypeId = 0,
     required this.localPath,
     this.remotePath,
     this.uploadStatus = 'pending',
@@ -241,6 +283,14 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   @override
   final String damageReportId;
   @override
+  @JsonKey()
+  final String documentName;
+  @override
+  final DateTime? documentDate;
+  @override
+  @JsonKey()
+  final int documentTypeId;
+  @override
   final String localPath;
   @override
   final String? remotePath;
@@ -255,7 +305,7 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
 
   @override
   String toString() {
-    return 'DamageReportAttachment(id: $id, serverId: $serverId, damageReportId: $damageReportId, localPath: $localPath, remotePath: $remotePath, uploadStatus: $uploadStatus, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
+    return 'DamageReportAttachment(id: $id, serverId: $serverId, damageReportId: $damageReportId, documentName: $documentName, documentDate: $documentDate, documentTypeId: $documentTypeId, localPath: $localPath, remotePath: $remotePath, uploadStatus: $uploadStatus, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
   }
 
   @override
@@ -268,6 +318,12 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
                 other.serverId == serverId) &&
             (identical(other.damageReportId, damageReportId) ||
                 other.damageReportId == damageReportId) &&
+            (identical(other.documentName, documentName) ||
+                other.documentName == documentName) &&
+            (identical(other.documentDate, documentDate) ||
+                other.documentDate == documentDate) &&
+            (identical(other.documentTypeId, documentTypeId) ||
+                other.documentTypeId == documentTypeId) &&
             (identical(other.localPath, localPath) ||
                 other.localPath == localPath) &&
             (identical(other.remotePath, remotePath) ||
@@ -287,6 +343,9 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
     id,
     serverId,
     damageReportId,
+    documentName,
+    documentDate,
+    documentTypeId,
     localPath,
     remotePath,
     uploadStatus,
@@ -317,6 +376,9 @@ abstract class _DamageReportAttachment implements DamageReportAttachment {
     @JsonKey(name: 'clientId') required final String id,
     @JsonKey(name: 'id') final String? serverId,
     required final String damageReportId,
+    final String documentName,
+    final DateTime? documentDate,
+    final int documentTypeId,
     required final String localPath,
     final String? remotePath,
     final String uploadStatus,
@@ -335,6 +397,12 @@ abstract class _DamageReportAttachment implements DamageReportAttachment {
   String? get serverId;
   @override
   String get damageReportId;
+  @override
+  String get documentName;
+  @override
+  DateTime? get documentDate;
+  @override
+  int get documentTypeId;
   @override
   String get localPath;
   @override

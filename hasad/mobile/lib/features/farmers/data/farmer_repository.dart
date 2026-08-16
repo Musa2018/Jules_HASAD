@@ -211,14 +211,14 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Future<farmer_domain.Farmer> getFarmer(String id) async {
-    final e = await (_db.select(_db.farmers)..where((t) => t.id.equals(id) | t.serverId.equals(id))).getSingle();
+    final e = await (_db.select(_db.farmers)..where((t) => t.id.lower().equals(id.toLowerCase()) | t.serverId.lower().equals(id.toLowerCase()))).getSingle();
     return _mapToDomain(e);
   }
 
   @override
   Stream<farmer_domain.Farmer?> watchFarmer(String id) {
     return (_db.select(_db.farmers)..where((t) => Expression.and([
-        t.id.equals(id) | t.serverId.equals(id),
+        t.id.lower().equals(id.toLowerCase()) | t.serverId.lower().equals(id.toLowerCase()),
         t.isPendingDelete.equals(false)
     ])))
         .watchSingleOrNull()
@@ -227,7 +227,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
   @override
   Stream<farmer_domain.Farmer?> watchFarmerByServerId(String serverId) {
-    return (_db.select(_db.farmers)..where((t) => t.serverId.equals(serverId) & t.isPendingDelete.equals(false)))
+    return (_db.select(_db.farmers)..where((t) => t.serverId.lower().equals(serverId.toLowerCase()) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? _mapToDomain(e) : null);
   }
@@ -264,7 +264,7 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
 
     // 2. Apply Operational Scoping (Filter by Farm's Directorate)
     if (filter.isOperational && isEngineerOrSurveyor && session.directorateId != null) {
-      predicates.add(farms.directorateId.equals(session.directorateId!));
+      predicates.add(farms.directorateId.lower().equals(session.directorateId!.toLowerCase()));
     }
 
     if (filter.searchText.isNotEmpty) {
@@ -333,7 +333,6 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       phoneNumber: e.phoneNumber,
       familySize: e.familySize,
       governorateId: e.governorateId,
-      directorateId: e.directorateId,
       localityId: e.localityId,
       legacyGovernorateId: e.legacyGovernorateId,
       legacyLocalityId: e.legacyLocalityId,
@@ -366,7 +365,6 @@ class OfflineFirstFarmerRepository implements FarmerRepository {
       phoneNumber: Value(farmer.phoneNumber),
       familySize: Value(farmer.familySize),
       governorateId: Value(farmer.governorateId),
-      directorateId: Value(farmer.directorateId),
       localityId: Value(farmer.localityId),
       legacyGovernorateId: Value(farmer.legacyGovernorateId),
       legacyLocalityId: Value(farmer.legacyLocalityId),

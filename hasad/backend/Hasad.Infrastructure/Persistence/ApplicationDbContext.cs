@@ -97,6 +97,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Workflow history for damage reports.</summary>
     public DbSet<DamageWorkflowHistory> DamageWorkflowHistories => Set<DamageWorkflowHistory>();
 
+    public DbSet<WorkflowStatus> WorkflowStatuses => Set<WorkflowStatus>();
+    public DbSet<WorkflowTransition> WorkflowTransitions => Set<WorkflowTransition>();
+
     public DbSet<DamageReportSequence> DamageReportSequences => Set<DamageReportSequence>();
 
     public DbSet<DamageNature> DamageNatures => Set<DamageNature>();
@@ -239,7 +242,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
                     // Geographic Alignment (Sprint 15.0 Hardening)
                     entity.Property(f => f.GovernorateId);
-                    entity.Property(f => f.DirectorateId);
                     entity.Property(f => f.LocalityId);
 
                     entity.Property(f => f.LegacyGovernorateId).HasMaxLength(50);
@@ -410,6 +412,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasIndex(e => e.DirectorateId);
             entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
 
+            entity.Property(e => e.TotalDamage).HasPrecision(18, 2);
             entity.Property(e => e.CreatedBy).HasMaxLength(100);
 
             entity.HasOne(e => e.Farm)
@@ -430,6 +433,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasOne(e => e.DamageCause)
                 .WithMany()
                 .HasForeignKey(e => e.DamageCauseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Status)
+                .WithMany()
+                .HasForeignKey(e => e.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -587,6 +595,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReportAttachment>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.FileName).IsRequired().HasMaxLength(250);
             entity.Property(e => e.OriginalFileName).IsRequired().HasMaxLength(250);
             entity.Property(e => e.FileType).IsRequired().HasMaxLength(100);
@@ -606,6 +616,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageWorkflowHistory>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.FromStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ToStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ChangedByUserId).IsRequired().HasMaxLength(100);
@@ -615,6 +627,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany()
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.FromWorkflowStatus)
+                .WithMany()
+                .HasForeignKey(e => e.FromStatus)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.ToWorkflowStatus)
+                .WithMany()
+                .HasForeignKey(e => e.ToStatus)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageReportSequence>(entity =>
@@ -631,6 +653,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<Assistance>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.CalculatedAmount).HasPrecision(18, 2);
             entity.Property(e => e.ApprovedAmount).HasPrecision(18, 2);
             entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
@@ -660,6 +684,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<AssistanceAuditLog>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.PreviousStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.NewStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ChangedBy).IsRequired().HasMaxLength(100);
@@ -668,6 +694,30 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(c => c.AuditLogs)
                 .HasForeignKey(e => e.AssistanceId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<WorkflowStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasMaxLength(50);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<WorkflowTransition>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(e => e.FromStatus)
+                .WithMany()
+                .HasForeignKey(e => e.FromStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.ToStatus)
+                .WithMany()
+                .HasForeignKey(e => e.ToStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.AllowedRole).IsRequired().HasMaxLength(100);
         });
     }
 }

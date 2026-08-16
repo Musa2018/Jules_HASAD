@@ -86,6 +86,15 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("DamageReportId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Remarks")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -136,6 +145,15 @@ namespace Hasad.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("NewStatus")
                         .IsRequired()
@@ -632,6 +650,10 @@ namespace Hasad.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<decimal>("TotalDamage")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -653,6 +675,8 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.HasIndex("ReportNumber")
                         .IsUnique();
+
+                    b.HasIndex("StatusId");
 
                     b.HasIndex("FarmId", "DamageDate")
                         .IsUnique()
@@ -679,6 +703,22 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("DamageReportId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DocumentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DocumentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DocumentTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -691,6 +731,9 @@ namespace Hasad.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<double?>("Latitude")
                         .HasColumnType("float");
@@ -809,10 +852,19 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<Guid>("DamageReportId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FromStatus")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsOverride")
                         .HasColumnType("bit");
@@ -825,6 +877,10 @@ namespace Hasad.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DamageReportId");
+
+                    b.HasIndex("FromStatus");
+
+                    b.HasIndex("ToStatus");
 
                     b.ToTable("DamageWorkflowHistories");
                 });
@@ -1013,9 +1069,6 @@ namespace Hasad.Infrastructure.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("DirectorateId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("FamilyNameAr")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1057,8 +1110,6 @@ namespace Hasad.Infrastructure.Migrations
                         .HasDefaultValue(0);
 
                     b.Property<Guid?>("GovernorateId")
-                        .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("GrandfatherNameAr")
@@ -1084,15 +1135,15 @@ namespace Hasad.Infrastructure.Migrations
 
                     b.Property<string>("LegacyGovernorateId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("LegacyLocalityId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid?>("LocalityId")
-                        .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PhoneNumber")
@@ -1556,6 +1607,64 @@ namespace Hasad.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Hasad.Domain.Entities.WorkflowStatus", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkflowStatuses");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.WorkflowTransition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AllowedRole")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FromStatusId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsReturn")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ToStatusId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromStatusId");
+
+                    b.HasIndex("ToStatusId");
+
+                    b.ToTable("WorkflowTransitions");
+                });
+
             modelBuilder.Entity("Hasad.Domain.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -1946,6 +2055,12 @@ namespace Hasad.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Hasad.Domain.Entities.WorkflowStatus", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("AgriculturalSector");
 
                     b.Navigation("DamageCause");
@@ -1953,6 +2068,8 @@ namespace Hasad.Infrastructure.Migrations
                     b.Navigation("DamageCauseCategory");
 
                     b.Navigation("Farm");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.DamageReportAttachment", b =>
@@ -1996,7 +2113,23 @@ namespace Hasad.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Hasad.Domain.Entities.WorkflowStatus", "FromWorkflowStatus")
+                        .WithMany()
+                        .HasForeignKey("FromStatus")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.WorkflowStatus", "ToWorkflowStatus")
+                        .WithMany()
+                        .HasForeignKey("ToStatus")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("DamageReport");
+
+                    b.Navigation("FromWorkflowStatus");
+
+                    b.Navigation("ToWorkflowStatus");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Entities.Directorate", b =>
@@ -2119,6 +2252,25 @@ namespace Hasad.Infrastructure.Migrations
                     b.Navigation("Directorate");
 
                     b.Navigation("Governorate");
+                });
+
+            modelBuilder.Entity("Hasad.Domain.Entities.WorkflowTransition", b =>
+                {
+                    b.HasOne("Hasad.Domain.Entities.WorkflowStatus", "FromStatus")
+                        .WithMany()
+                        .HasForeignKey("FromStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hasad.Domain.Entities.WorkflowStatus", "ToStatus")
+                        .WithMany()
+                        .HasForeignKey("ToStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromStatus");
+
+                    b.Navigation("ToStatus");
                 });
 
             modelBuilder.Entity("Hasad.Domain.Identity.ApplicationUser", b =>

@@ -10,30 +10,34 @@ class PullSyncService {
 
   PullSyncService(this._ref);
 
-  Future<void> syncAll() async {
+  Future<void> syncAll({bool force = false}) async {
     final coordinator = _ref.read(pullSyncCoordinatorProvider);
     
     // 1. Reference Data (Smallest and foundational)
     await coordinator.synchronizeEntity(
       'referencedata', 
-      ({DateTime? updatedSince}) => _ref.read(referenceDataRepositoryProvider).synchronize(updatedSince: updatedSince)
+      ({DateTime? updatedSince}) => _ref.read(referenceDataRepositoryProvider).synchronize(updatedSince: updatedSince),
+      force: force
     );
 
     // 2. Farmers
     await coordinator.synchronizeEntity(
       'farmer', 
-      ({DateTime? updatedSince}) => _ref.read(farmerRepositoryProvider).synchronize(updatedSince: updatedSince)
+      ({DateTime? updatedSince}) => _ref.read(farmerRepositoryProvider).synchronize(updatedSince: updatedSince),
+      force: force
     );
 
     // 3. Farms
     await coordinator.synchronizeEntity(
       'farm', 
-      ({DateTime? updatedSince}) => _ref.read(farmRepositoryProvider).synchronize(updatedSince: updatedSince)
+      ({DateTime? updatedSince}) => _ref.read(farmRepositoryProvider).synchronize(updatedSince: updatedSince),
+      force: force
     );
     // 4. DamageReport
     await coordinator.synchronizeEntity(
       'damageReport',
-      ({DateTime? updatedSince}) => _ref.read(damageReportRepositoryProvider).synchronize(updatedSince: updatedSince)
+      ({DateTime? updatedSince}) => _ref.read(damageReportRepositoryProvider).synchronize(updatedSince: updatedSince),
+      force: force
     );
   }
 }

@@ -12,7 +12,16 @@ class DamageReportStatus {
   static const String completed = 'Completed';
 
   static const List<String> all = [
-    draft, pendingTechnicalVerification, techReview, archiveDir, dirManager, minTechReview,
-    legalReview, procReview, minArchive, genManager, completed
+    draft,
+    pendingTechnicalVerification,
+    techReview,
+    archiveDir,
+    dirManager,
+    minTechReview,
+    legalReview,
+    minArchive,
+    procReview,
+    genManager,
+    completed
   ];
 }

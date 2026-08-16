@@ -12,6 +12,8 @@ using Hasad.Application.Features.DamageReports.Queries.GetDamageReportById;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportHistory;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsByFarm;
 using Hasad.Application.Features.DamageReports.Queries.GetDamageReportsList;
+using Hasad.Application.Features.DamageReports.Queries.GetIntegratedAuditLog;
+using Hasad.Application.Features.DamageReports.Queries.GetDamageReportZip;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -121,6 +123,24 @@ public class DamageReportsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id}/audit-log")]
+    [Authorize(Roles = "SuperAdmin,Administrator,ProceduralReviewer,GeneralManager,AgriculturalEngineer,FieldSurveyor")]
+    public async Task<IActionResult> GetIntegratedAuditLog(Guid id)
+    {
+        var result = await _mediator.Send(new GetIntegratedAuditLogQuery(id));
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpGet("{id}/export-zip")]
+    [Authorize(Roles = "SuperAdmin,Administrator,ChiefArchiveOfficer,GeneralManager")]
+    public async Task<IActionResult> ExportZip(Guid id)
+    {
+        var result = await _mediator.Send(new GetDamageReportZipQuery(id));
+        if (!result.Succeeded) return BadRequest(result);
+
+        return File(result.Data!.Content, "application/zip", result.Data!.FileName);
+    }
+
     // Damage Items endpoints
 
     [HttpPost("{id}/items")]
@@ -158,8 +178,14 @@ public class DamageReportsController : ControllerBase
     }
 
     [HttpPost("{id}/attachments")]
-    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor")]
-    public async Task<IActionResult> UploadAttachment(Guid id, [FromForm] IFormFile file, [FromForm] Guid clientId)
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ArchiveOfficer")]
+    public async Task<IActionResult> UploadAttachment(
+        Guid id,
+        [FromForm] IFormFile file,
+        [FromForm] Guid clientId,
+        [FromForm] string documentName,
+        [FromForm] DateTime documentDate,
+        [FromForm] int documentTypeId)
     {
         if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
 
@@ -169,9 +195,12 @@ public class DamageReportsController : ControllerBase
             clientId,
             stream,
             file.FileName,
+            documentName,
+            documentDate,
+            documentTypeId,
             file.ContentType,
             file.Length,
-            null, // Could get from form if needed
+            null,
             null,
             null
         );

@@ -56,8 +56,7 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Future<farm_domain.Farm> getFarm(String id) async {
-    final e = await (_db.select(_db.farms)..where((t) => t.id.equals(id)))
-        .getSingle();
+    final e = await (_db.select(_db.farms)..where((t) => t.id.lower().equals(id.toLowerCase()) | t.serverId.lower().equals(id.toLowerCase()))).getSingle();
     return mapToDomain(e);
   }
 
@@ -90,11 +89,11 @@ class OfflineFirstFarmRepository implements FarmRepository {
       final roles = session.roles;
       if (roles.contains('AgriculturalEngineer') || roles.contains('FieldSurveyor')) {
         if (session.directorateId != null) {
-          predicates.add(_db.farms.directorateId.equals(session.directorateId!));
+          predicates.add(_db.farms.directorateId.lower().equals(session.directorateId!.toLowerCase()));
         }
       } else if (roles.contains('Director')) {
         if (session.governorateId != null) {
-          predicates.add(_db.farms.governorateId.equals(session.governorateId!));
+          predicates.add(_db.farms.governorateId.lower().equals(session.governorateId!.toLowerCase()));
         }
       }
     }
@@ -176,14 +175,14 @@ class OfflineFirstFarmRepository implements FarmRepository {
 
   @override
   Stream<farm_domain.Farm?> watchFarm(String id) {
-    return (_db.select(_db.farms)..where((t) => (t.id.equals(id) | t.serverId.equals(id)) & t.isPendingDelete.equals(false)))
+    return (_db.select(_db.farms)..where((t) => (t.id.lower().equals(id.toLowerCase()) | t.serverId.lower().equals(id.toLowerCase())) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? mapToDomain(e) : null);
   }
 
   @override
   Stream<farm_domain.Farm?> watchFarmByServerId(String serverId) {
-    return (_db.select(_db.farms)..where((t) => t.serverId.equals(serverId) & t.isPendingDelete.equals(false)))
+    return (_db.select(_db.farms)..where((t) => t.serverId.lower().equals(serverId.toLowerCase()) & t.isPendingDelete.equals(false)))
         .watchSingleOrNull()
         .map((e) => e != null ? mapToDomain(e) : null);
   }

@@ -1,6 +1,8 @@
+using Hasad.Domain.Common;
+
 namespace Hasad.Domain.Entities;
 
-public class Assistance
+public class Assistance : ISoftDelete
 {
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }
@@ -20,6 +22,10 @@ public class Assistance
 
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
 
     public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 

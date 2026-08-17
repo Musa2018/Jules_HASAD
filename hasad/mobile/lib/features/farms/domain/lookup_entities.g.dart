@@ -102,6 +102,22 @@ Map<String, dynamic> _$$RelationshipToOwnerImplToJson(
   'nameEn': instance.nameEn,
 };
 
+_$DocumentTypeImpl _$$DocumentTypeImplFromJson(Map<String, dynamic> json) =>
+    _$DocumentTypeImpl(
+      id: (json['id'] as num).toInt(),
+      nameAr: json['nameAr'] as String? ?? '',
+      nameEn: json['nameEn'] as String? ?? '',
+      isActive: json['isActive'] as bool? ?? true,
+    );
+
+Map<String, dynamic> _$$DocumentTypeImplToJson(_$DocumentTypeImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'nameAr': instance.nameAr,
+      'nameEn': instance.nameEn,
+      'isActive': instance.isActive,
+    };
+
 _$DamageNatureImpl _$$DamageNatureImplFromJson(Map<String, dynamic> json) =>
     _$DamageNatureImpl(
       id: (json['id'] as num).toInt(),

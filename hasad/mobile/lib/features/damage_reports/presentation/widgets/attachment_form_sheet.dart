@@ -4,21 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
+import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 
-class AttachmentFormSheet extends StatefulWidget {
+class AttachmentFormSheet extends ConsumerStatefulWidget {
   final String reportId;
 
   const AttachmentFormSheet({super.key, required this.reportId});
 
   @override
-  State<AttachmentFormSheet> createState() => _AttachmentFormSheetState();
+  ConsumerState<AttachmentFormSheet> createState() => _AttachmentFormSheetState();
 }
 
-class _AttachmentFormSheetState extends State<AttachmentFormSheet> {
+class _AttachmentFormSheetState extends ConsumerState<AttachmentFormSheet> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _dateController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
-  int _selectedTypeId = 1; // Default: Site Photo
+  int? _selectedTypeId;
   File? _selectedFile;
   final ImagePicker _picker = ImagePicker();
 
@@ -81,16 +82,24 @@ class _AttachmentFormSheetState extends State<AttachmentFormSheet> {
                 },
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<int>(
-                value: _selectedTypeId,
-                decoration: const InputDecoration(labelText: "نوع الوثيقة", border: OutlineInputBorder()),
-                items: const [
-                  DropdownMenuItem(value: 1, child: Text("صورة الموقع")),
-                  DropdownMenuItem(value: 2, child: Text("صورة الهوية")),
-                  DropdownMenuItem(value: 3, child: Text("أوراق الملكية")),
-                  DropdownMenuItem(value: 0, child: Text("أخرى")),
-                ],
-                onChanged: (v) => setState(() => _selectedTypeId = v ?? 0),
+              ref.watch(documentTypesProvider).when(
+                data: (types) {
+                   if (_selectedTypeId == null && types.isNotEmpty) {
+                     Future.microtask(() => setState(() => _selectedTypeId = types.first.id));
+                   }
+                   return DropdownButtonFormField<int>(
+                    initialValue: _selectedTypeId,
+                    decoration: const InputDecoration(labelText: "نوع الوثيقة", border: OutlineInputBorder()),
+                    items: types.map((t) => DropdownMenuItem(
+                      value: t.id,
+                      child: Text(Localizations.localeOf(context).languageCode == 'ar' ? t.nameAr : t.nameEn),
+                    )).toList(),
+                    onChanged: (v) => setState(() => _selectedTypeId = v),
+                    validator: (v) => v == null ? "هذا الحقل مطلوب" : null,
+                  );
+                },
+                loading: () => const LinearProgressIndicator(),
+                error: (e, _) => Text("خطأ في تحميل الأنواع: $e"),
               ),
               const SizedBox(height: 16),
               if (_selectedFile != null)
@@ -127,7 +136,7 @@ class _AttachmentFormSheetState extends State<AttachmentFormSheet> {
                       damageReportId: widget.reportId,
                       documentName: _nameController.text.trim(),
                       documentDate: DateTime.tryParse(_dateController.text),
-                      documentTypeId: _selectedTypeId,
+                      documentTypeId: _selectedTypeId ?? 0,
                       localPath: _selectedFile!.path,
                     );
                     Navigator.pop(context, attachment);

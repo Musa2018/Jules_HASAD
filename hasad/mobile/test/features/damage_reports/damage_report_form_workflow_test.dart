@@ -91,6 +91,7 @@ void main() {
       ownershipTypes: [], agriculturalSectors: [const AgriculturalSector(id: 1, nameAr: 'S1', nameEn: 'S1')], 
       politicalClassifications: [],
       areaUnits: [], measurementUnits: [], relationshipToOwners: [],
+      documentTypes: [],
       damageNatures: [], damageActions: [], damageCategories: [], damageSubCategories: [], damageClassifications: [],
       damageCauseCategories: [], damageCauses: []
     );
@@ -121,6 +122,7 @@ void main() {
       ownershipTypes: [], agriculturalSectors: [const AgriculturalSector(id: 1, nameAr: 'NatureAr', nameEn: 'NatureEn')], 
       politicalClassifications: [],
       areaUnits: [], measurementUnits: [], relationshipToOwners: [],
+      documentTypes: [],
       damageNatures: natures, damageActions: [], damageCategories: [], damageSubCategories: [], damageClassifications: [],
       damageCauseCategories: categories, damageCauses: causes
     );

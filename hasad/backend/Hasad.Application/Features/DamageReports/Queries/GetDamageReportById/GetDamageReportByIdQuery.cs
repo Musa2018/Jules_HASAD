@@ -13,11 +13,13 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly IFileStorageService _fileStorage;
 
-    public GetDamageReportByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+    public GetDamageReportByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser, IFileStorageService fileStorage)
     {
         _context = context;
         _currentUser = currentUser;
+        _fileStorage = fileStorage;
     }
 
     public async Task<Result<DamageReportDto>> Handle(GetDamageReportByIdQuery request, CancellationToken cancellationToken)
@@ -25,6 +27,7 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
         var report = await _context.DamageReports
             .AsNoTracking()
             .Include(r => r.Items)
+            .Include(r => r.Attachments)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
         if (report == null)
@@ -85,6 +88,19 @@ public class GetDamageReportByIdQueryHandler : IRequestHandler<GetDamageReportBy
                 Quantity = i.Quantity,
                 EstimatedLoss = i.EstimatedLoss,
                 RowVersion = Convert.ToBase64String(i.RowVersion)
+            }).ToList(),
+            Attachments = report.Attachments.Select(a => new AttachmentDto
+            {
+                Id = a.Id,
+                ClientId = a.ClientId,
+                DocumentName = a.DocumentName,
+                DocumentDate = a.DocumentDate,
+                DocumentTypeId = a.DocumentTypeId,
+                RemoteUrl = _fileStorage.GetUrl(a.RemotePath),
+                FileType = a.FileType,
+                FileSize = a.FileSize,
+                UploadStatus = a.UploadStatus,
+                RowVersion = Convert.ToBase64String(a.RowVersion)
             }).ToList()
         });
     }

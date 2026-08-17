@@ -78,6 +78,19 @@ class RelationshipToOwner with _$RelationshipToOwner {
 }
 
 @freezed
+class DocumentType with _$DocumentType {
+  const factory DocumentType({
+    required int id,
+    @Default('') String nameAr,
+    @Default('') String nameEn,
+    @Default(true) bool isActive,
+  }) = _DocumentType;
+
+  factory DocumentType.fromJson(Map<String, dynamic> json) =>
+      _$DocumentTypeFromJson(json);
+}
+
+@freezed
 class DamageNature with _$DamageNature {
   const factory DamageNature({
     required int id,

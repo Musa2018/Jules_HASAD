@@ -97,6 +97,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Workflow history for damage reports.</summary>
     public DbSet<DamageWorkflowHistory> DamageWorkflowHistories => Set<DamageWorkflowHistory>();
 
+    public DbSet<DocumentType> DocumentTypes => Set<DocumentType>();
     public DbSet<WorkflowStatus> WorkflowStatuses => Set<WorkflowStatus>();
     public DbSet<WorkflowTransition> WorkflowTransitions => Set<WorkflowTransition>();
 
@@ -611,6 +612,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(r => r.Attachments)
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.DocumentType)
+                .WithMany()
+                .HasForeignKey(e => e.DocumentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageWorkflowHistory>(entity =>
@@ -694,6 +700,25 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(c => c.AuditLogs)
                 .HasForeignKey(e => e.AssistanceId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DocumentType>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+
+            entity.HasData(
+                new DocumentType { Id = 1, NameAr = "صورة الموقع", NameEn = "Site Photo" },
+                new DocumentType { Id = 2, NameAr = "صورة الهوية", NameEn = "ID Photo" },
+                new DocumentType { Id = 3, NameAr = "وثيقة ملكية", NameEn = "Ownership Document" },
+                new DocumentType { Id = 4, NameAr = "استمارة حصر الأضرار", NameEn = "Damage Assessment Form" },
+                new DocumentType { Id = 5, NameAr = "قرار وزاري", NameEn = "Ministerial Decision" },
+                new DocumentType { Id = 6, NameAr = "قرار مدير عام", NameEn = "Director General Decision" },
+                new DocumentType { Id = 7, NameAr = "قرار داخلي", NameEn = "Internal Decision" },
+                new DocumentType { Id = 8, NameAr = "شهادة ضرر", NameEn = "Damage Certificate" },
+                new DocumentType { Id = 9, NameAr = "أخرى", NameEn = "Other" }
+            );
         });
 
         builder.Entity<WorkflowStatus>(entity =>

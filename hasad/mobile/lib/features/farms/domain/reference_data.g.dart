@@ -27,6 +27,9 @@ _$ReferenceDataImpl _$$ReferenceDataImplFromJson(
   relationshipToOwners: (json['relationshipToOwners'] as List<dynamic>)
       .map((e) => RelationshipToOwner.fromJson(e as Map<String, dynamic>))
       .toList(),
+  documentTypes: (json['documentTypes'] as List<dynamic>)
+      .map((e) => DocumentType.fromJson(e as Map<String, dynamic>))
+      .toList(),
   damageNatures: (json['damageNatures'] as List<dynamic>)
       .map((e) => DamageNature.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -78,6 +81,7 @@ Map<String, dynamic> _$$ReferenceDataImplToJson(_$ReferenceDataImpl instance) =>
       'areaUnits': instance.areaUnits,
       'measurementUnits': instance.measurementUnits,
       'relationshipToOwners': instance.relationshipToOwners,
+      'documentTypes': instance.documentTypes,
       'damageNatures': instance.damageNatures,
       'damageActions': instance.damageActions,
       'damageCategories': instance.damageCategories,

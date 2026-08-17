@@ -13,6 +13,7 @@ import 'package:mobile/features/damage_reports/data/repositories/damage_report_r
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as report_domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart' as attachment_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
 import 'package:mobile/features/damage_reports/domain/models/audit_log_entry.dart';
@@ -63,9 +64,12 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     List<report_domain.DamageReport> results = [];
     for (var r in reports) {
       final items = await (_db.select(_db.damageItems)
-        ..where((t) => t.damageReportId.equals(r.id)))
+        ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
           .get();
-      results.add(_mapToDomain(r, items));
+      final attachments = await (_db.select(_db.damageReportAttachments)
+        ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
+          .get();
+      results.add(_mapToDomain(r, items, attachments));
     }
     return results;
   }
@@ -91,9 +95,12 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       List<report_domain.DamageReport> results = [];
       for (var r in reports) {
         final items = await (_db.select(_db.damageItems)
-          ..where((t) => t.damageReportId.equals(r.id)))
+          ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
             .get();
-        results.add(_mapToDomain(r, items));
+        final attachments = await (_db.select(_db.damageReportAttachments)
+          ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
+            .get();
+        results.add(_mapToDomain(r, items, attachments));
       }
       return results;
     });
@@ -114,8 +121,11 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       final items = await (_db.select(
         _db.damageItems,
       )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
+      final attachments = await (_db.select(
+        _db.damageReportAttachments,
+      )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
 
-      results.add(_mapToDomain(r, items));
+      results.add(_mapToDomain(r, items, attachments));
     }
     return results;
   }
@@ -132,7 +142,10 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         final items = await (_db.select(_db.damageItems)
           ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
             .get();
-        results.add(_mapToDomain(r, items));
+        final attachments = await (_db.select(_db.damageReportAttachments)
+          ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
+            .get();
+        results.add(_mapToDomain(r, items, attachments));
       }
       return results;
     });
@@ -146,11 +159,14 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     final items = await (_db.select(
       _db.damageItems,
     )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
+    final attachments = await (_db.select(
+      _db.damageReportAttachments,
+    )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
 
-    return _mapToDomain(r, items);
+    return _mapToDomain(r, items, attachments);
   }
 
-  report_domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items) {
+  report_domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items, List<DamageReportAttachmentLocal> attachments) {
     return report_domain.DamageReport(
       id: r.id,
       serverId: r.serverId ?? '',
@@ -200,6 +216,19 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         ),
       )
           .toList(),
+      attachments: attachments.map((a) => attachment_domain.DamageReportAttachment(
+        id: a.id,
+        serverId: a.serverId,
+        damageReportId: a.damageReportId,
+        documentName: a.documentName,
+        documentDate: a.documentDate,
+        documentTypeId: a.documentTypeId,
+        localPath: a.localPath,
+        remotePath: a.remotePath,
+        uploadStatus: a.uploadStatus,
+        syncStatus: a.syncStatus,
+        lastSyncError: a.lastSyncError,
+      )).toList(),
     );
   }
 
@@ -248,6 +277,22 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       estimatedLoss: item.estimatedLoss,
       rowVersion: Value(item.rowVersion),
       lastSyncError: Value(item.lastSyncError),
+    );
+  }
+
+  DamageReportAttachmentsCompanion _mapAttachmentToCompanion(attachment_domain.DamageReportAttachment attachment) {
+    return DamageReportAttachmentsCompanion.insert(
+      id: attachment.id,
+      serverId: Value(attachment.serverId),
+      damageReportId: attachment.damageReportId,
+      documentName: Value(attachment.documentName),
+      documentDate: Value(attachment.documentDate),
+      documentTypeId: Value(attachment.documentTypeId),
+      localPath: attachment.localPath,
+      remotePath: Value(attachment.remotePath),
+      uploadStatus: Value(attachment.uploadStatus),
+      syncStatus: Value(attachment.syncStatus),
+      lastSyncError: Value(attachment.lastSyncError),
     );
   }
 
@@ -757,7 +802,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
           );
 
           // 2. Full Sync Items: Clear and replace
-          await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(localId))).go();
+          await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.lower().equals(localId.toLowerCase()))).go();
           for (var item in remote.items) {
             await _db.into(_db.damageItems).insert(
               _mapItemToCompanion(item).copyWith(
@@ -765,6 +810,20 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
                 syncStatus: const Value('completed'),
                 lastSyncError: const Value(null),
                 updatedAt: Value(DateTime.now()),
+              ),
+              mode: InsertMode.insertOrReplace,
+            );
+          }
+
+          // 3. Full Sync Attachments: Clear and replace
+          await (_db.delete(_db.damageReportAttachments)..where((t) => t.damageReportId.lower().equals(localId.toLowerCase()))).go();
+          for (var attachment in remote.attachments) {
+            await _db.into(_db.damageReportAttachments).insert(
+              _mapAttachmentToCompanion(attachment).copyWith(
+                id: Value(attachment.id), // Use server provided GUID if available or generate new one
+                damageReportId: Value(localId),
+                syncStatus: const Value('completed'),
+                uploadStatus: const Value('completed'),
               ),
               mode: InsertMode.insertOrReplace,
             );
@@ -805,7 +864,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         );
 
         // Update items: delete local and insert remote for full sync
-        await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(id))).go();
+        await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.lower().equals(id.toLowerCase()))).go();
         for (var item in remote.items) {
           await _db.into(_db.damageItems).insert(
             _mapItemToCompanion(item).copyWith(
@@ -813,6 +872,20 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
               syncStatus: const Value('completed'),
               lastSyncError: const Value(null),
               updatedAt: Value(DateTime.now()),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        }
+
+        // Update attachments: delete local and insert remote for full sync
+        await (_db.delete(_db.damageReportAttachments)..where((t) => t.damageReportId.lower().equals(id.toLowerCase()))).go();
+        for (var attachment in remote.attachments) {
+          await _db.into(_db.damageReportAttachments).insert(
+            _mapAttachmentToCompanion(attachment).copyWith(
+              id: Value(attachment.id),
+              damageReportId: Value(id),
+              syncStatus: const Value('completed'),
+              uploadStatus: const Value('completed'),
             ),
             mode: InsertMode.insertOrReplace,
           );
@@ -839,7 +912,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         AuditLogEntry(
           eventType: 'Report',
           description: 'تم إنشاء التقرير محلياً (قيد المزامنة)',
-          performedBy: local.createdBy ?? 'Me',
+          performedBy: local.createdBy,
           eventDate: local.damageDate,
         )
       ];

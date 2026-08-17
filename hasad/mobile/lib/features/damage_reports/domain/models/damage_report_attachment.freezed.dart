@@ -32,6 +32,7 @@ mixin _$DamageReportAttachment {
   DateTime? get documentDate => throw _privateConstructorUsedError;
   int get documentTypeId => throw _privateConstructorUsedError;
   String get localPath => throw _privateConstructorUsedError;
+  @JsonKey(name: 'remoteUrl')
   String? get remotePath => throw _privateConstructorUsedError;
   String get uploadStatus => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
@@ -62,7 +63,7 @@ abstract class $DamageReportAttachmentCopyWith<$Res> {
     DateTime? documentDate,
     int documentTypeId,
     String localPath,
-    String? remotePath,
+    @JsonKey(name: 'remoteUrl') String? remotePath,
     String uploadStatus,
     String syncStatus,
     String? lastSyncError,
@@ -168,7 +169,7 @@ abstract class _$$DamageReportAttachmentImplCopyWith<$Res>
     DateTime? documentDate,
     int documentTypeId,
     String localPath,
-    String? remotePath,
+    @JsonKey(name: 'remoteUrl') String? remotePath,
     String uploadStatus,
     String syncStatus,
     String? lastSyncError,
@@ -257,14 +258,14 @@ class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   const _$DamageReportAttachmentImpl({
-    @JsonKey(name: 'clientId') required this.id,
+    @JsonKey(name: 'clientId') this.id = '',
     @JsonKey(name: 'id') this.serverId,
-    required this.damageReportId,
+    this.damageReportId = '',
     this.documentName = '',
     this.documentDate,
     this.documentTypeId = 0,
-    required this.localPath,
-    this.remotePath,
+    this.localPath = '',
+    @JsonKey(name: 'remoteUrl') this.remotePath,
     this.uploadStatus = 'pending',
     this.syncStatus = 'pending',
     this.lastSyncError,
@@ -281,6 +282,7 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   @JsonKey(name: 'id')
   final String? serverId;
   @override
+  @JsonKey()
   final String damageReportId;
   @override
   @JsonKey()
@@ -291,8 +293,10 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   @JsonKey()
   final int documentTypeId;
   @override
+  @JsonKey()
   final String localPath;
   @override
+  @JsonKey(name: 'remoteUrl')
   final String? remotePath;
   @override
   @JsonKey()
@@ -373,14 +377,14 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
 
 abstract class _DamageReportAttachment implements DamageReportAttachment {
   const factory _DamageReportAttachment({
-    @JsonKey(name: 'clientId') required final String id,
+    @JsonKey(name: 'clientId') final String id,
     @JsonKey(name: 'id') final String? serverId,
-    required final String damageReportId,
+    final String damageReportId,
     final String documentName,
     final DateTime? documentDate,
     final int documentTypeId,
-    required final String localPath,
-    final String? remotePath,
+    final String localPath,
+    @JsonKey(name: 'remoteUrl') final String? remotePath,
     final String uploadStatus,
     final String syncStatus,
     final String? lastSyncError,
@@ -406,6 +410,7 @@ abstract class _DamageReportAttachment implements DamageReportAttachment {
   @override
   String get localPath;
   @override
+  @JsonKey(name: 'remoteUrl')
   String? get remotePath;
   @override
   String get uploadStatus;

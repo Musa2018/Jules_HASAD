@@ -1,6 +1,6 @@
 namespace Hasad.Domain.Enums;
 
-public enum DocumentType
+public enum DocumentTypeEnum
 {
     Other = 0,
     SitePhoto = 1,

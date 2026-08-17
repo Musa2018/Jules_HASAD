@@ -8,8 +8,9 @@ public class AttachmentDto
     public string DocumentName { get; set; } = string.Empty;
     public DateTime DocumentDate { get; set; }
     public int DocumentTypeId { get; set; }
+    public string RemoteUrl { get; set; } = string.Empty;
     public string FileType { get; set; } = string.Empty;
     public long FileSize { get; set; }
-    public string RemoteUrl { get; set; } = string.Empty;
     public string UploadStatus { get; set; } = string.Empty;
+    public string RowVersion { get; set; } = string.Empty;
 }

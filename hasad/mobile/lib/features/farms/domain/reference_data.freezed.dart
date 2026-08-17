@@ -30,6 +30,8 @@ mixin _$ReferenceData {
   List<MeasurementUnit> get measurementUnits =>
       throw _privateConstructorUsedError;
   List<RelationshipToOwner> get relationshipToOwners =>
+      throw _privateConstructorUsedError;
+  List<DocumentType> get documentTypes =>
       throw _privateConstructorUsedError; // Damage Hierarchy
   List<DamageNature> get damageNatures => throw _privateConstructorUsedError;
   List<DamageAction> get damageActions => throw _privateConstructorUsedError;
@@ -76,6 +78,7 @@ abstract class $ReferenceDataCopyWith<$Res> {
     List<AreaUnit> areaUnits,
     List<MeasurementUnit> measurementUnits,
     List<RelationshipToOwner> relationshipToOwners,
+    List<DocumentType> documentTypes,
     List<DamageNature> damageNatures,
     List<DamageAction> damageActions,
     List<DamageCategory> damageCategories,
@@ -111,6 +114,7 @@ class _$ReferenceDataCopyWithImpl<$Res, $Val extends ReferenceData>
     Object? areaUnits = null,
     Object? measurementUnits = null,
     Object? relationshipToOwners = null,
+    Object? documentTypes = null,
     Object? damageNatures = null,
     Object? damageActions = null,
     Object? damageCategories = null,
@@ -149,6 +153,10 @@ class _$ReferenceDataCopyWithImpl<$Res, $Val extends ReferenceData>
                 ? _value.relationshipToOwners
                 : relationshipToOwners // ignore: cast_nullable_to_non_nullable
                       as List<RelationshipToOwner>,
+            documentTypes: null == documentTypes
+                ? _value.documentTypes
+                : documentTypes // ignore: cast_nullable_to_non_nullable
+                      as List<DocumentType>,
             damageNatures: null == damageNatures
                 ? _value.damageNatures
                 : damageNatures // ignore: cast_nullable_to_non_nullable
@@ -215,6 +223,7 @@ abstract class _$$ReferenceDataImplCopyWith<$Res>
     List<AreaUnit> areaUnits,
     List<MeasurementUnit> measurementUnits,
     List<RelationshipToOwner> relationshipToOwners,
+    List<DocumentType> documentTypes,
     List<DamageNature> damageNatures,
     List<DamageAction> damageActions,
     List<DamageCategory> damageCategories,
@@ -249,6 +258,7 @@ class __$$ReferenceDataImplCopyWithImpl<$Res>
     Object? areaUnits = null,
     Object? measurementUnits = null,
     Object? relationshipToOwners = null,
+    Object? documentTypes = null,
     Object? damageNatures = null,
     Object? damageActions = null,
     Object? damageCategories = null,
@@ -287,6 +297,10 @@ class __$$ReferenceDataImplCopyWithImpl<$Res>
             ? _value._relationshipToOwners
             : relationshipToOwners // ignore: cast_nullable_to_non_nullable
                   as List<RelationshipToOwner>,
+        documentTypes: null == documentTypes
+            ? _value._documentTypes
+            : documentTypes // ignore: cast_nullable_to_non_nullable
+                  as List<DocumentType>,
         damageNatures: null == damageNatures
             ? _value._damageNatures
             : damageNatures // ignore: cast_nullable_to_non_nullable
@@ -346,6 +360,7 @@ class _$ReferenceDataImpl implements _ReferenceData {
     required final List<AreaUnit> areaUnits,
     required final List<MeasurementUnit> measurementUnits,
     required final List<RelationshipToOwner> relationshipToOwners,
+    required final List<DocumentType> documentTypes,
     required final List<DamageNature> damageNatures,
     required final List<DamageAction> damageActions,
     required final List<DamageCategory> damageCategories,
@@ -364,6 +379,7 @@ class _$ReferenceDataImpl implements _ReferenceData {
        _areaUnits = areaUnits,
        _measurementUnits = measurementUnits,
        _relationshipToOwners = relationshipToOwners,
+       _documentTypes = documentTypes,
        _damageNatures = damageNatures,
        _damageActions = damageActions,
        _damageCategories = damageCategories,
@@ -429,6 +445,14 @@ class _$ReferenceDataImpl implements _ReferenceData {
       return _relationshipToOwners;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_relationshipToOwners);
+  }
+
+  final List<DocumentType> _documentTypes;
+  @override
+  List<DocumentType> get documentTypes {
+    if (_documentTypes is EqualUnmodifiableListView) return _documentTypes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_documentTypes);
   }
 
   // Damage Hierarchy
@@ -539,7 +563,7 @@ class _$ReferenceDataImpl implements _ReferenceData {
 
   @override
   String toString() {
-    return 'ReferenceData(ownershipTypes: $ownershipTypes, agriculturalSectors: $agriculturalSectors, politicalClassifications: $politicalClassifications, areaUnits: $areaUnits, measurementUnits: $measurementUnits, relationshipToOwners: $relationshipToOwners, damageNatures: $damageNatures, damageActions: $damageActions, damageCategories: $damageCategories, damageSubCategories: $damageSubCategories, damageClassifications: $damageClassifications, damageCauseCategories: $damageCauseCategories, damageCauses: $damageCauses, costingSheetCatalogs: $costingSheetCatalogs, costingSheetVersions: $costingSheetVersions, costingSheetItems: $costingSheetItems, legacyCostingSheets: $legacyCostingSheets)';
+    return 'ReferenceData(ownershipTypes: $ownershipTypes, agriculturalSectors: $agriculturalSectors, politicalClassifications: $politicalClassifications, areaUnits: $areaUnits, measurementUnits: $measurementUnits, relationshipToOwners: $relationshipToOwners, documentTypes: $documentTypes, damageNatures: $damageNatures, damageActions: $damageActions, damageCategories: $damageCategories, damageSubCategories: $damageSubCategories, damageClassifications: $damageClassifications, damageCauseCategories: $damageCauseCategories, damageCauses: $damageCauses, costingSheetCatalogs: $costingSheetCatalogs, costingSheetVersions: $costingSheetVersions, costingSheetItems: $costingSheetItems, legacyCostingSheets: $legacyCostingSheets)';
   }
 
   @override
@@ -570,6 +594,10 @@ class _$ReferenceDataImpl implements _ReferenceData {
             const DeepCollectionEquality().equals(
               other._relationshipToOwners,
               _relationshipToOwners,
+            ) &&
+            const DeepCollectionEquality().equals(
+              other._documentTypes,
+              _documentTypes,
             ) &&
             const DeepCollectionEquality().equals(
               other._damageNatures,
@@ -627,6 +655,7 @@ class _$ReferenceDataImpl implements _ReferenceData {
     const DeepCollectionEquality().hash(_areaUnits),
     const DeepCollectionEquality().hash(_measurementUnits),
     const DeepCollectionEquality().hash(_relationshipToOwners),
+    const DeepCollectionEquality().hash(_documentTypes),
     const DeepCollectionEquality().hash(_damageNatures),
     const DeepCollectionEquality().hash(_damageActions),
     const DeepCollectionEquality().hash(_damageCategories),
@@ -662,6 +691,7 @@ abstract class _ReferenceData implements ReferenceData {
     required final List<AreaUnit> areaUnits,
     required final List<MeasurementUnit> measurementUnits,
     required final List<RelationshipToOwner> relationshipToOwners,
+    required final List<DocumentType> documentTypes,
     required final List<DamageNature> damageNatures,
     required final List<DamageAction> damageActions,
     required final List<DamageCategory> damageCategories,
@@ -690,7 +720,9 @@ abstract class _ReferenceData implements ReferenceData {
   @override
   List<MeasurementUnit> get measurementUnits;
   @override
-  List<RelationshipToOwner> get relationshipToOwners; // Damage Hierarchy
+  List<RelationshipToOwner> get relationshipToOwners;
+  @override
+  List<DocumentType> get documentTypes; // Damage Hierarchy
   @override
   List<DamageNature> get damageNatures;
   @override

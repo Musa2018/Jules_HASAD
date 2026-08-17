@@ -1223,6 +1223,223 @@ abstract class _RelationshipToOwner implements RelationshipToOwner {
       throw _privateConstructorUsedError;
 }
 
+DocumentType _$DocumentTypeFromJson(Map<String, dynamic> json) {
+  return _DocumentType.fromJson(json);
+}
+
+/// @nodoc
+mixin _$DocumentType {
+  int get id => throw _privateConstructorUsedError;
+  String get nameAr => throw _privateConstructorUsedError;
+  String get nameEn => throw _privateConstructorUsedError;
+  bool get isActive => throw _privateConstructorUsedError;
+
+  /// Serializes this DocumentType to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of DocumentType
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $DocumentTypeCopyWith<DocumentType> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $DocumentTypeCopyWith<$Res> {
+  factory $DocumentTypeCopyWith(
+    DocumentType value,
+    $Res Function(DocumentType) then,
+  ) = _$DocumentTypeCopyWithImpl<$Res, DocumentType>;
+  @useResult
+  $Res call({int id, String nameAr, String nameEn, bool isActive});
+}
+
+/// @nodoc
+class _$DocumentTypeCopyWithImpl<$Res, $Val extends DocumentType>
+    implements $DocumentTypeCopyWith<$Res> {
+  _$DocumentTypeCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of DocumentType
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+    Object? isActive = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            nameAr: null == nameAr
+                ? _value.nameAr
+                : nameAr // ignore: cast_nullable_to_non_nullable
+                      as String,
+            nameEn: null == nameEn
+                ? _value.nameEn
+                : nameEn // ignore: cast_nullable_to_non_nullable
+                      as String,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$DocumentTypeImplCopyWith<$Res>
+    implements $DocumentTypeCopyWith<$Res> {
+  factory _$$DocumentTypeImplCopyWith(
+    _$DocumentTypeImpl value,
+    $Res Function(_$DocumentTypeImpl) then,
+  ) = __$$DocumentTypeImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, String nameAr, String nameEn, bool isActive});
+}
+
+/// @nodoc
+class __$$DocumentTypeImplCopyWithImpl<$Res>
+    extends _$DocumentTypeCopyWithImpl<$Res, _$DocumentTypeImpl>
+    implements _$$DocumentTypeImplCopyWith<$Res> {
+  __$$DocumentTypeImplCopyWithImpl(
+    _$DocumentTypeImpl _value,
+    $Res Function(_$DocumentTypeImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DocumentType
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? nameAr = null,
+    Object? nameEn = null,
+    Object? isActive = null,
+  }) {
+    return _then(
+      _$DocumentTypeImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        nameAr: null == nameAr
+            ? _value.nameAr
+            : nameAr // ignore: cast_nullable_to_non_nullable
+                  as String,
+        nameEn: null == nameEn
+            ? _value.nameEn
+            : nameEn // ignore: cast_nullable_to_non_nullable
+                  as String,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$DocumentTypeImpl implements _DocumentType {
+  const _$DocumentTypeImpl({
+    required this.id,
+    this.nameAr = '',
+    this.nameEn = '',
+    this.isActive = true,
+  });
+
+  factory _$DocumentTypeImpl.fromJson(Map<String, dynamic> json) =>
+      _$$DocumentTypeImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  @JsonKey()
+  final String nameAr;
+  @override
+  @JsonKey()
+  final String nameEn;
+  @override
+  @JsonKey()
+  final bool isActive;
+
+  @override
+  String toString() {
+    return 'DocumentType(id: $id, nameAr: $nameAr, nameEn: $nameEn, isActive: $isActive)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DocumentTypeImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.nameAr, nameAr) || other.nameAr == nameAr) &&
+            (identical(other.nameEn, nameEn) || other.nameEn == nameEn) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, nameAr, nameEn, isActive);
+
+  /// Create a copy of DocumentType
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DocumentTypeImplCopyWith<_$DocumentTypeImpl> get copyWith =>
+      __$$DocumentTypeImplCopyWithImpl<_$DocumentTypeImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$DocumentTypeImplToJson(this);
+  }
+}
+
+abstract class _DocumentType implements DocumentType {
+  const factory _DocumentType({
+    required final int id,
+    final String nameAr,
+    final String nameEn,
+    final bool isActive,
+  }) = _$DocumentTypeImpl;
+
+  factory _DocumentType.fromJson(Map<String, dynamic> json) =
+      _$DocumentTypeImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  String get nameAr;
+  @override
+  String get nameEn;
+  @override
+  bool get isActive;
+
+  /// Create a copy of DocumentType
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DocumentTypeImplCopyWith<_$DocumentTypeImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 DamageNature _$DamageNatureFromJson(Map<String, dynamic> json) {
   return _DamageNature.fromJson(json);
 }

@@ -46,6 +46,8 @@ mixin _$DamageReport {
   String get createdBy => throw _privateConstructorUsedError;
   String get rowVersion => throw _privateConstructorUsedError;
   List<DamageItem> get items => throw _privateConstructorUsedError;
+  List<DamageReportAttachment> get attachments =>
+      throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
   String? get lastSyncError => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
@@ -93,6 +95,7 @@ abstract class $DamageReportCopyWith<$Res> {
     String createdBy,
     String rowVersion,
     List<DamageItem> items,
+    List<DamageReportAttachment> attachments,
     String syncStatus,
     String? lastSyncError,
     DateTime? updatedAt,
@@ -139,6 +142,7 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? createdBy = null,
     Object? rowVersion = null,
     Object? items = null,
+    Object? attachments = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
     Object? updatedAt = freezed,
@@ -236,6 +240,10 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
                 ? _value.items
                 : items // ignore: cast_nullable_to_non_nullable
                       as List<DamageItem>,
+            attachments: null == attachments
+                ? _value.attachments
+                : attachments // ignore: cast_nullable_to_non_nullable
+                      as List<DamageReportAttachment>,
             syncStatus: null == syncStatus
                 ? _value.syncStatus
                 : syncStatus // ignore: cast_nullable_to_non_nullable
@@ -298,6 +306,7 @@ abstract class _$$DamageReportImplCopyWith<$Res>
     String createdBy,
     String rowVersion,
     List<DamageItem> items,
+    List<DamageReportAttachment> attachments,
     String syncStatus,
     String? lastSyncError,
     DateTime? updatedAt,
@@ -343,6 +352,7 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? createdBy = null,
     Object? rowVersion = null,
     Object? items = null,
+    Object? attachments = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
     Object? updatedAt = freezed,
@@ -440,6 +450,10 @@ class __$$DamageReportImplCopyWithImpl<$Res>
             ? _value._items
             : items // ignore: cast_nullable_to_non_nullable
                   as List<DamageItem>,
+        attachments: null == attachments
+            ? _value._attachments
+            : attachments // ignore: cast_nullable_to_non_nullable
+                  as List<DamageReportAttachment>,
         syncStatus: null == syncStatus
             ? _value.syncStatus
             : syncStatus // ignore: cast_nullable_to_non_nullable
@@ -495,13 +509,15 @@ class _$DamageReportImpl implements _DamageReport {
     this.createdBy = '',
     this.rowVersion = '',
     final List<DamageItem> items = const [],
+    final List<DamageReportAttachment> attachments = const [],
     this.syncStatus = 'completed',
     this.lastSyncError,
     this.updatedAt,
     this.isDeleted,
     this.deletedAt,
     this.deletedBy,
-  }) : _items = items;
+  }) : _items = items,
+       _attachments = attachments;
 
   factory _$DamageReportImpl.fromJson(Map<String, dynamic> json) =>
       _$$DamageReportImplFromJson(json);
@@ -577,6 +593,15 @@ class _$DamageReportImpl implements _DamageReport {
     return EqualUnmodifiableListView(_items);
   }
 
+  final List<DamageReportAttachment> _attachments;
+  @override
+  @JsonKey()
+  List<DamageReportAttachment> get attachments {
+    if (_attachments is EqualUnmodifiableListView) return _attachments;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_attachments);
+  }
+
   @override
   @JsonKey()
   final String syncStatus;
@@ -593,7 +618,7 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   String toString() {
-    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, totalDamage: $totalDamage, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, syncStatus: $syncStatus, lastSyncError: $lastSyncError, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
+    return 'DamageReport(id: $id, serverId: $serverId, reportNumber: $reportNumber, permanentFormNumber: $permanentFormNumber, temporaryFormNumber: $temporaryFormNumber, damageYear: $damageYear, farmId: $farmId, farmerId: $farmerId, damageDate: $damageDate, documentationDate: $documentationDate, agriculturalSectorId: $agriculturalSectorId, damageCauseCategoryId: $damageCauseCategoryId, damageCauseId: $damageCauseId, governorateId: $governorateId, directorateId: $directorateId, localityId: $localityId, statusId: $statusId, totalDamage: $totalDamage, notes: $notes, createdBy: $createdBy, rowVersion: $rowVersion, items: $items, attachments: $attachments, syncStatus: $syncStatus, lastSyncError: $lastSyncError, updatedAt: $updatedAt, isDeleted: $isDeleted, deletedAt: $deletedAt, deletedBy: $deletedBy)';
   }
 
   @override
@@ -641,6 +666,10 @@ class _$DamageReportImpl implements _DamageReport {
             (identical(other.rowVersion, rowVersion) ||
                 other.rowVersion == rowVersion) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
+            const DeepCollectionEquality().equals(
+              other._attachments,
+              _attachments,
+            ) &&
             (identical(other.syncStatus, syncStatus) ||
                 other.syncStatus == syncStatus) &&
             (identical(other.lastSyncError, lastSyncError) ||
@@ -681,6 +710,7 @@ class _$DamageReportImpl implements _DamageReport {
     createdBy,
     rowVersion,
     const DeepCollectionEquality().hash(_items),
+    const DeepCollectionEquality().hash(_attachments),
     syncStatus,
     lastSyncError,
     updatedAt,
@@ -727,6 +757,7 @@ abstract class _DamageReport implements DamageReport {
     final String createdBy,
     final String rowVersion,
     final List<DamageItem> items,
+    final List<DamageReportAttachment> attachments,
     final String syncStatus,
     final String? lastSyncError,
     final DateTime? updatedAt,
@@ -785,6 +816,8 @@ abstract class _DamageReport implements DamageReport {
   String get rowVersion;
   @override
   List<DamageItem> get items;
+  @override
+  List<DamageReportAttachment> get attachments;
   @override
   String get syncStatus;
   @override

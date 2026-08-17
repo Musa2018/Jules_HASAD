@@ -582,7 +582,7 @@ class BackgroundSyncService {
         _db.damageReportAttachments,
       )..where((t) => t.id.equals(item.localId))).write(
         DamageReportAttachmentsCompanion(
-          serverId: Value(result.serverId ?? result.id), // For attachments, sometimes id is used
+          serverId: Value(result.serverId ?? result.id), 
           damageReportId: Value(attachment.damageReportId),
           remotePath: Value(result.remotePath),
           uploadStatus: const Value('completed'),
@@ -590,9 +590,6 @@ class BackgroundSyncService {
           lastSyncError: const Value(null),
         ),
       );
-    } else if (item.operation == 'delete') {
-      await _remoteAttachmentRepository.deleteAttachment(item.localId);
-      await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
 

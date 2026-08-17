@@ -14358,6 +14358,299 @@ class DamageWorkflowHistoriesCompanion
   }
 }
 
+class $DocumentTypesTable extends DocumentTypes
+    with TableInfo<$DocumentTypesTable, DocumentType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DocumentTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameArMeta = const VerificationMeta('nameAr');
+  @override
+  late final GeneratedColumn<String> nameAr = GeneratedColumn<String>(
+    'name_ar',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  @override
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, nameAr, nameEn, isActive];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'document_types';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DocumentType> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name_ar')) {
+      context.handle(
+        _nameArMeta,
+        nameAr.isAcceptableOrUnknown(data['name_ar']!, _nameArMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameArMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DocumentType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DocumentType(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      nameAr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ar'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+    );
+  }
+
+  @override
+  $DocumentTypesTable createAlias(String alias) {
+    return $DocumentTypesTable(attachedDatabase, alias);
+  }
+}
+
+class DocumentType extends DataClass implements Insertable<DocumentType> {
+  final int id;
+  final String nameAr;
+  final String nameEn;
+  final bool isActive;
+  const DocumentType({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+    required this.isActive,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name_ar'] = Variable<String>(nameAr);
+    map['name_en'] = Variable<String>(nameEn);
+    map['is_active'] = Variable<bool>(isActive);
+    return map;
+  }
+
+  DocumentTypesCompanion toCompanion(bool nullToAbsent) {
+    return DocumentTypesCompanion(
+      id: Value(id),
+      nameAr: Value(nameAr),
+      nameEn: Value(nameEn),
+      isActive: Value(isActive),
+    );
+  }
+
+  factory DocumentType.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DocumentType(
+      id: serializer.fromJson<int>(json['id']),
+      nameAr: serializer.fromJson<String>(json['nameAr']),
+      nameEn: serializer.fromJson<String>(json['nameEn']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'nameAr': serializer.toJson<String>(nameAr),
+      'nameEn': serializer.toJson<String>(nameEn),
+      'isActive': serializer.toJson<bool>(isActive),
+    };
+  }
+
+  DocumentType copyWith({
+    int? id,
+    String? nameAr,
+    String? nameEn,
+    bool? isActive,
+  }) => DocumentType(
+    id: id ?? this.id,
+    nameAr: nameAr ?? this.nameAr,
+    nameEn: nameEn ?? this.nameEn,
+    isActive: isActive ?? this.isActive,
+  );
+  DocumentType copyWithCompanion(DocumentTypesCompanion data) {
+    return DocumentType(
+      id: data.id.present ? data.id.value : this.id,
+      nameAr: data.nameAr.present ? data.nameAr.value : this.nameAr,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentType(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('isActive: $isActive')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, nameAr, nameEn, isActive);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DocumentType &&
+          other.id == this.id &&
+          other.nameAr == this.nameAr &&
+          other.nameEn == this.nameEn &&
+          other.isActive == this.isActive);
+}
+
+class DocumentTypesCompanion extends UpdateCompanion<DocumentType> {
+  final Value<int> id;
+  final Value<String> nameAr;
+  final Value<String> nameEn;
+  final Value<bool> isActive;
+  const DocumentTypesCompanion({
+    this.id = const Value.absent(),
+    this.nameAr = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.isActive = const Value.absent(),
+  });
+  DocumentTypesCompanion.insert({
+    this.id = const Value.absent(),
+    required String nameAr,
+    required String nameEn,
+    this.isActive = const Value.absent(),
+  }) : nameAr = Value(nameAr),
+       nameEn = Value(nameEn);
+  static Insertable<DocumentType> custom({
+    Expression<int>? id,
+    Expression<String>? nameAr,
+    Expression<String>? nameEn,
+    Expression<bool>? isActive,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nameAr != null) 'name_ar': nameAr,
+      if (nameEn != null) 'name_en': nameEn,
+      if (isActive != null) 'is_active': isActive,
+    });
+  }
+
+  DocumentTypesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? nameAr,
+    Value<String>? nameEn,
+    Value<bool>? isActive,
+  }) {
+    return DocumentTypesCompanion(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+      isActive: isActive ?? this.isActive,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (nameAr.present) {
+      map['name_ar'] = Variable<String>(nameAr.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentTypesCompanion(')
+          ..write('id: $id, ')
+          ..write('nameAr: $nameAr, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('isActive: $isActive')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncMetadataTable extends SyncMetadata
     with TableInfo<$SyncMetadataTable, SyncMetadataLocal> {
   @override
@@ -14740,6 +15033,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CostingSheetsTable costingSheets = $CostingSheetsTable(this);
   late final $DamageWorkflowHistoriesTable damageWorkflowHistories =
       $DamageWorkflowHistoriesTable(this);
+  late final $DocumentTypesTable documentTypes = $DocumentTypesTable(this);
   late final $SyncMetadataTable syncMetadata = $SyncMetadataTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -14773,6 +15067,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     costingSheetItems,
     costingSheets,
     damageWorkflowHistories,
+    documentTypes,
     syncMetadata,
   ];
 }
@@ -22212,6 +22507,181 @@ typedef $$DamageWorkflowHistoriesTableProcessedTableManager =
       DamageWorkflowHistoryLocal,
       PrefetchHooks Function()
     >;
+typedef $$DocumentTypesTableCreateCompanionBuilder =
+    DocumentTypesCompanion Function({
+      Value<int> id,
+      required String nameAr,
+      required String nameEn,
+      Value<bool> isActive,
+    });
+typedef $$DocumentTypesTableUpdateCompanionBuilder =
+    DocumentTypesCompanion Function({
+      Value<int> id,
+      Value<String> nameAr,
+      Value<String> nameEn,
+      Value<bool> isActive,
+    });
+
+class $$DocumentTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $DocumentTypesTable> {
+  $$DocumentTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DocumentTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DocumentTypesTable> {
+  $$DocumentTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameAr => $composableBuilder(
+    column: $table.nameAr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DocumentTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DocumentTypesTable> {
+  $$DocumentTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get nameAr =>
+      $composableBuilder(column: $table.nameAr, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+}
+
+class $$DocumentTypesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DocumentTypesTable,
+          DocumentType,
+          $$DocumentTypesTableFilterComposer,
+          $$DocumentTypesTableOrderingComposer,
+          $$DocumentTypesTableAnnotationComposer,
+          $$DocumentTypesTableCreateCompanionBuilder,
+          $$DocumentTypesTableUpdateCompanionBuilder,
+          (
+            DocumentType,
+            BaseReferences<_$AppDatabase, $DocumentTypesTable, DocumentType>,
+          ),
+          DocumentType,
+          PrefetchHooks Function()
+        > {
+  $$DocumentTypesTableTableManager(_$AppDatabase db, $DocumentTypesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DocumentTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DocumentTypesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DocumentTypesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> nameAr = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+              }) => DocumentTypesCompanion(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                isActive: isActive,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String nameAr,
+                required String nameEn,
+                Value<bool> isActive = const Value.absent(),
+              }) => DocumentTypesCompanion.insert(
+                id: id,
+                nameAr: nameAr,
+                nameEn: nameEn,
+                isActive: isActive,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DocumentTypesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DocumentTypesTable,
+      DocumentType,
+      $$DocumentTypesTableFilterComposer,
+      $$DocumentTypesTableOrderingComposer,
+      $$DocumentTypesTableAnnotationComposer,
+      $$DocumentTypesTableCreateCompanionBuilder,
+      $$DocumentTypesTableUpdateCompanionBuilder,
+      (
+        DocumentType,
+        BaseReferences<_$AppDatabase, $DocumentTypesTable, DocumentType>,
+      ),
+      DocumentType,
+      PrefetchHooks Function()
+    >;
 typedef $$SyncMetadataTableCreateCompanionBuilder =
     SyncMetadataCompanion Function({
       required String entity,
@@ -22470,6 +22940,8 @@ class $AppDatabaseManager {
         _db,
         _db.damageWorkflowHistories,
       );
+  $$DocumentTypesTableTableManager get documentTypes =>
+      $$DocumentTypesTableTableManager(_db, _db.documentTypes);
   $$SyncMetadataTableTableManager get syncMetadata =>
       $$SyncMetadataTableTableManager(_db, _db.syncMetadata);
 }

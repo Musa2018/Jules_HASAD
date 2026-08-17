@@ -205,6 +205,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
     final areaUnits = await _db.select(_db.areaUnits).get(); // Legacy
     final measurementUnits = await _db.select(_db.measurementUnits).get();
     final relationships = await _db.select(_db.relationshipToOwners).get();
+    final documentTypes = await _db.select(_db.documentTypes).get();
 
     // Damage Hierarchy
     final natures = await _db.select(_db.damageNatures).get();
@@ -245,6 +246,9 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
           .toList(),
       relationshipToOwners: relationships
           .map((e) => domain.RelationshipToOwner(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
+          .toList(),
+      documentTypes: documentTypes
+          .map((e) => domain.DocumentType(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn, isActive: e.isActive))
           .toList(),
       damageNatures: natures
           .map((e) => domain.DamageNature(id: e.id, nameAr: e.nameAr, nameEn: e.nameEn))
@@ -312,6 +316,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         data.politicalClassifications.isNotEmpty &&
         data.measurementUnits.isNotEmpty &&
         data.relationshipToOwners.isNotEmpty &&
+        data.documentTypes.isNotEmpty &&
         data.damageNatures.isNotEmpty &&
         data.costingSheetItems.isNotEmpty;
   }
@@ -325,6 +330,7 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
       batch.deleteWhere(_db.areaUnits, (t) => const Constant(true));
       batch.deleteWhere(_db.measurementUnits, (t) => const Constant(true));
       batch.deleteWhere(_db.relationshipToOwners, (t) => const Constant(true));
+      batch.deleteWhere(_db.documentTypes, (t) => const Constant(true));
       batch.deleteWhere(_db.damageNatures, (t) => const Constant(true));
       batch.deleteWhere(_db.damageActions, (t) => const Constant(true));
       batch.deleteWhere(_db.damageCategories, (t) => const Constant(true));
@@ -373,6 +379,13 @@ class OfflineFirstReferenceDataRepository implements ReferenceDataRepository {
         id: Value(e.id),
         nameAr: e.nameAr,
         nameEn: e.nameEn,
+      )), mode: InsertMode.insertOrReplace);
+
+      batch.insertAll(_db.documentTypes, data.documentTypes.map((e) => DocumentTypesCompanion.insert(
+        id: Value(e.id),
+        nameAr: e.nameAr,
+        nameEn: e.nameEn,
+        isActive: Value(e.isActive),
       )), mode: InsertMode.insertOrReplace);
 
       batch.insertAll(_db.damageNatures, data.damageNatures.map((e) => DamageNaturesCompanion.insert(

@@ -21,6 +21,7 @@ void main() {
     areaUnits: [const domain.AreaUnit(id: 1, nameAr: 'دونم', nameEn: 'Dunum')],
     measurementUnits: [const domain.MeasurementUnit(id: 1, nameAr: 'دونم', nameEn: 'Dunum', category: 'Area')],
     relationshipToOwners: [const domain.RelationshipToOwner(id: 1, nameAr: 'المالك نفسه', nameEn: 'Owner Himself')],
+    documentTypes: [const domain.DocumentType(id: 1, nameAr: 'صورة', nameEn: 'Photo')],
     damageNatures: [const domain.DamageNature(id: 1, nameAr: 'نباتي', nameEn: 'Plant')],
     damageActions: [],
     damageCategories: [const domain.DamageCategory(id: 1, parentId: 1, nameAr: 'أشجار', nameEn: 'Trees')],

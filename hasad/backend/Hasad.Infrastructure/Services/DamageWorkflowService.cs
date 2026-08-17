@@ -100,7 +100,7 @@ public class DamageWorkflowService : IDamageWorkflowService
         if (report.StatusId == DamageReportStatus.ArchiveDir && targetStatus == DamageReportStatus.DirManager)
         {
             var hasSitePhoto = await _context.DamageReportAttachments
-                .AnyAsync(a => a.DamageReportId == report.Id && a.DocumentTypeId == (int)Hasad.Domain.Enums.DocumentType.SitePhoto && !a.IsDeleted);
+                .AnyAsync(a => a.DamageReportId == report.Id && a.DocumentTypeId == (int)Hasad.Domain.Enums.DocumentTypeEnum.SitePhoto && !a.IsDeleted);
 
             if (!hasSitePhoto) return false;
         }

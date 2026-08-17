@@ -161,11 +161,11 @@ final damageReportHistoryProvider = StreamProvider.autoDispose.family<List<Damag
   return stream;
 });
 
-final attachmentsByReportProvider = FutureProvider.autoDispose
-    .family<List<DamageReportAttachment>, String>((ref, reportId) async {
+final attachmentsByReportProvider = StreamProvider.autoDispose
+    .family<List<DamageReportAttachment>, String>((ref, reportId) {
   return ref
       .watch(attachmentRepositoryProvider)
-      .getAttachmentsByReport(reportId);
+      .watchAttachmentsByReport(reportId);
 });
 
 class DamageReportFormState {
@@ -184,8 +184,9 @@ class DamageReportFormState {
 
 class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
   final DamageReportRepository _repository;
+  final Ref _ref;
 
-  DamageReportFormNotifier(this._repository)
+  DamageReportFormNotifier(this._repository, this._ref)
       : super(const DamageReportFormState());
 
   Future<void> createDamageReport(DamageReport report) async {
@@ -318,6 +319,16 @@ class DamageReportFormNotifier extends StateNotifier<DamageReportFormState> {
     }
   }
 
+  Future<void> deleteAttachment(String id) async {
+    state = const DamageReportFormState(isLoading: true);
+    try {
+      await _ref.read(attachmentRepositoryProvider).deleteAttachment(id);
+      if (mounted) state = const DamageReportFormState(success: true);
+    } catch (e) {
+      if (mounted) state = DamageReportFormState(errors: [e.toString()]);
+    }
+  }
+
   Future<bool> retryReportSync(String id) async {
     state = const DamageReportFormState(isLoading: true);
     try {
@@ -366,6 +377,7 @@ StateNotifierProvider.autoDispose<
 >((ref) {
   return DamageReportFormNotifier(
     ref.watch(damageReportRepositoryProvider),
+    ref,
   );
 });
 @riverpod

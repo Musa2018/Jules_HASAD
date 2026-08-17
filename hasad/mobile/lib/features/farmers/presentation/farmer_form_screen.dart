@@ -7,7 +7,6 @@ import 'package:mobile/core/utils/validators.dart';
 import 'package:mobile/features/farmers/domain/farmer.dart';
 import 'package:mobile/features/farmers/domain/gender.dart';
 import 'package:mobile/features/farmers/presentation/farmers_providers.dart';
-import 'package:mobile/features/location/domain/directorate.dart';
 import 'package:mobile/features/location/domain/governorate.dart';
 import 'package:mobile/features/location/domain/locality.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';

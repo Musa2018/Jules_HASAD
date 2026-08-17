@@ -41,6 +41,13 @@ _$DamageReportImpl _$$DamageReportImplFromJson(
           ?.map((e) => DamageItem.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  attachments:
+      (json['attachments'] as List<dynamic>?)
+          ?.map(
+            (e) => DamageReportAttachment.fromJson(e as Map<String, dynamic>),
+          )
+          .toList() ??
+      const [],
   syncStatus: json['syncStatus'] as String? ?? 'completed',
   lastSyncError: json['lastSyncError'] as String?,
   updatedAt: json['updatedAt'] == null
@@ -77,6 +84,7 @@ Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
       'createdBy': instance.createdBy,
       'rowVersion': instance.rowVersion,
       'items': instance.items,
+      'attachments': instance.attachments,
       'syncStatus': instance.syncStatus,
       'lastSyncError': instance.lastSyncError,
       'updatedAt': instance.updatedAt?.toIso8601String(),

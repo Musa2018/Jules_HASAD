@@ -89,6 +89,7 @@ void main() {
             areaUnits: [],
             measurementUnits: [],
             relationshipToOwners: [],
+            documentTypes: [],
             damageNatures: [],
             damageActions: [],
             damageCategories: [],

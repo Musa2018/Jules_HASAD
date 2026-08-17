@@ -79,7 +79,7 @@ class OfflineFirstDamageReportAttachmentRepository
   ) async {
     final items = await (_db.select(
       _db.damageReportAttachments,
-    )..where((t) => t.damageReportId.equals(reportId) & t.isPendingDelete.equals(false))).get();
+    )..where((t) => t.damageReportId.lower().equals(reportId.toLowerCase()) & t.isPendingDelete.equals(false))).get();
 
     return items
         .map(
@@ -98,6 +98,28 @@ class OfflineFirstDamageReportAttachmentRepository
           ),
         )
         .toList();
+  }
+
+  @override
+  Stream<List<domain.DamageReportAttachment>> watchAttachmentsByReport(String reportId) {
+    return (_db.select(_db.damageReportAttachments)
+          ..where((t) => t.damageReportId.lower().equals(reportId.toLowerCase()) & t.isPendingDelete.equals(false)))
+        .watch()
+        .map((items) => items
+            .map((e) => domain.DamageReportAttachment(
+                  id: e.id,
+                  serverId: e.serverId,
+                  damageReportId: e.damageReportId,
+                  documentName: e.documentName,
+                  documentDate: e.documentDate,
+                  documentTypeId: e.documentTypeId,
+                  localPath: e.localPath,
+                  remotePath: e.remotePath,
+                  uploadStatus: e.uploadStatus,
+                  syncStatus: e.syncStatus,
+                  lastSyncError: e.lastSyncError,
+                ))
+            .toList());
   }
 
   DamageReportAttachmentsCompanion _mapToCompanion(domain.DamageReportAttachment attachment) {

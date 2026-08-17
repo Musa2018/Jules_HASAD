@@ -23,4 +23,5 @@ public class DamageReportDto
     public string Notes { get; set; } = string.Empty;
     public string RowVersion { get; set; } = string.Empty;
     public List<DamageItemDto> Items { get; set; } = new();
+    public List<AttachmentDto> Attachments { get; set; } = new();
 }

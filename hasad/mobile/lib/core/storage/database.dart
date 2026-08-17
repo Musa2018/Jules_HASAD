@@ -133,6 +133,15 @@ class PoliticalClassifications extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class DocumentTypes extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class AreaUnits extends Table {
   IntColumn get id => integer()();
   TextColumn get nameAr => text()();
@@ -478,6 +487,7 @@ class SyncMetadata extends Table {
     CostingSheetItems,
     CostingSheets,
     DamageWorkflowHistories,
+    DocumentTypes,
     SyncMetadata,
   ],
 )
@@ -486,7 +496,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 35;
+  int get schemaVersion => 36;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -771,6 +781,10 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(damageReportAttachments, damageReportAttachments.documentName);
         await m.addColumn(damageReportAttachments, damageReportAttachments.documentDate);
         await m.addColumn(damageReportAttachments, damageReportAttachments.documentTypeId);
+      }
+      if (from < 36) {
+        // Version 36: DocumentTypes Table
+        await m.createTable(documentTypes);
       }
     },
     beforeOpen: (details) async {

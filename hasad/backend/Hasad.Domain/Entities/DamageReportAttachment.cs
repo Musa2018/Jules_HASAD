@@ -12,6 +12,7 @@ public class DamageReportAttachment : ISoftDelete
     public string DocumentName { get; set; } = string.Empty;
     public DateTime DocumentDate { get; set; }
     public int DocumentTypeId { get; set; }
+    public DocumentType? DocumentType { get; set; }
 
     public string FileName { get; set; } = string.Empty;
     public string OriginalFileName { get; set; } = string.Empty;

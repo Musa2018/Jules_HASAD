@@ -90,11 +90,11 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         // 3. Post-Transition Automation (PDF Generation)
         if (request.ToStatus == DamageReportStatus.ArchiveDir)
         {
-            await GenerateAndAttachPdfAsync(report, "استمارة حصر الأضرار", Hasad.Domain.Enums.DocumentType.DamageAssessmentForm, cancellationToken);
+            await GenerateAndAttachPdfAsync(report, "استمارة حصر الأضرار", Hasad.Domain.Enums.DocumentTypeEnum.DamageAssessmentForm, cancellationToken);
         }
         else if (request.ToStatus == DamageReportStatus.Completed)
         {
-            await GenerateAndAttachPdfAsync(report, $"شهادة ضرر - {report.ReportNumber}", Hasad.Domain.Enums.DocumentType.DamageCertificate, cancellationToken);
+            await GenerateAndAttachPdfAsync(report, $"شهادة ضرر - {report.ReportNumber}", Hasad.Domain.Enums.DocumentTypeEnum.DamageCertificate, cancellationToken);
         }
 
         // 4. Notifications
@@ -103,10 +103,10 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         return Result<Guid>.Success(report.Id);
     }
 
-    private async Task GenerateAndAttachPdfAsync(DamageReport report, string docName, Hasad.Domain.Enums.DocumentType docType, CancellationToken cancellationToken)
+    private async Task GenerateAndAttachPdfAsync(DamageReport report, string docName, Hasad.Domain.Enums.DocumentTypeEnum docType, CancellationToken cancellationToken)
     {
         byte[] pdfBytes;
-        if (docType == Hasad.Domain.Enums.DocumentType.DamageAssessmentForm)
+        if (docType == Hasad.Domain.Enums.DocumentTypeEnum.DamageAssessmentForm)
         {
             pdfBytes = await _pdfService.GenerateDamageAssessmentFormAsync(report);
         }

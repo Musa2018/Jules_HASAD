@@ -118,6 +118,7 @@ class DamageReportDetailsScreen extends ConsumerWidget {
       // 2. Invalidate providers to force UI rebuild from local DB
       ref.invalidate(damageReportStreamProvider(report.id));
       ref.invalidate(damageReportHistoryProvider(report.id));
+      ref.invalidate(attachmentsByReportProvider(report.id));
       ref.invalidate(damageReportsListProvider);
 
       if (context.mounted) {
@@ -440,42 +441,62 @@ class _AttachmentsSection extends ConsumerWidget {
         attachmentsAsync.when(
           data: (list) => list.isEmpty
               ? const Text("لا توجد مرفقات.")
-              : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    final item = list[index];
-                    return Card(
-                      child: ListTile(
-                        leading: _getDocIcon(item.documentTypeId),
-                        title: Text(item.documentName),
-                        subtitle: Text("${_getDocTypeName(item.documentTypeId)} - ${item.documentDate != null ? DateFormat('yyyy-MM-dd').format(item.documentDate!) : ''}"),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                             if (item.syncStatus != 'completed') const Icon(Icons.cloud_upload_outlined, color: Colors.orange, size: 16),
-                             IconButton(
-                               icon: const Icon(Icons.visibility),
-                               onPressed: () {
-                                 // Logic to view file
-                               },
-                             ),
-                             if (canAdd) // Archive officer or creator can delete
-                               IconButton(
-                                 icon: const Icon(Icons.delete, color: Colors.red),
-                                 onPressed: () => ref.read(damageReportFormProvider.notifier).deleteDamageItem(item.id), // Reusing delete logic
-                               ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              : _buildAttachmentsList(context, ref, list, canAdd),
           loading: () => const LinearProgressIndicator(),
           error: (e, _) => Text("خطأ: $e"),
         ),
       ],
+    );
+  }
+
+  Widget _buildAttachmentsList(BuildContext context, WidgetRef ref, List<DamageReportAttachment> list, bool canAdd) {
+    final typesAsync = ref.watch(documentTypesProvider);
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final item = list[index];
+        final docType = typesAsync.value?.where((t) => t.id == item.documentTypeId).firstOrNull;
+        final typeName = docType != null 
+            ? (isAr ? docType.nameAr : docType.nameEn)
+            : _getDocTypeName(item.documentTypeId);
+
+        return Card(
+          child: ListTile(
+            leading: _getDocIcon(item.documentTypeId),
+            title: Text(item.documentName),
+            subtitle: Text("$typeName - ${item.documentDate != null ? DateFormat('yyyy-MM-dd').format(item.documentDate!) : ''}"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  item.syncStatus == 'completed' ? Icons.cloud_done : Icons.cloud_upload_outlined,
+                  color: item.syncStatus == 'completed' ? Colors.green : Colors.orange,
+                  size: 18
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.visibility),
+                  onPressed: () {
+                    // Logic to view file
+                  },
+                ),
+                if (canAdd)
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      await ref.read(damageReportFormProvider.notifier).deleteAttachment(item.id);
+                      ref.invalidate(attachmentsByReportProvider(report.id));
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -840,6 +861,7 @@ class _WorkflowActionBar extends ConsumerWidget {
     if (context.mounted) {
       ref.invalidate(damageReportStreamProvider(report.id));
       ref.invalidate(damageReportHistoryProvider(report.id));
+      ref.invalidate(attachmentsByReportProvider(report.id));
       ref.invalidate(damageReportsListProvider);
 
       if (success) {

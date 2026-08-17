@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 
 part 'damage_report.freezed.dart';
@@ -31,6 +32,7 @@ class DamageReport with _$DamageReport {
     @Default('') String createdBy,
     @Default('') String rowVersion,
     @Default([]) List<DamageItem> items,
+    @Default([]) List<DamageReportAttachment> attachments,
     @Default('completed') String syncStatus,
     String? lastSyncError,
     DateTime? updatedAt,

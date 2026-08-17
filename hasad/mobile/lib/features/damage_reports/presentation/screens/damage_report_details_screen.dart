@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -120,7 +121,8 @@ class DamageReportDetailsScreen extends ConsumerWidget {
       // 2. Invalidate providers to force UI rebuild from local DB
       ref.invalidate(damageReportStreamProvider(report.id));
       ref.invalidate(damageReportHistoryProvider(report.id));
-      ref.invalidate(attachmentsByReportProvider(report.id));
+      // [LEGACY_MANUAL_REFRESH]
+      // ref.invalidate(attachmentsByReportProvider(report.id));
       ref.invalidate(damageReportsListProvider);
 
       if (context.mounted) {
@@ -417,7 +419,9 @@ class _AttachmentsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentsAsync = ref.watch(attachmentsByReportProvider(report.id));
+    // [LEGACY_MANUAL_REFRESH]
+    // final attachmentsAsync = ref.watch(attachmentsByReportProvider(report.id));
+    final attachments = report.attachments;
     final auth = ref.watch(authProvider);
 
     // Visibility rule: show add button only if has items (for field staff) OR is Archive stage
@@ -440,13 +444,17 @@ class _AttachmentsSection extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 8),
-        attachmentsAsync.when(
-          data: (list) => list.isEmpty
-              ? const Text("لا توجد مرفقات.")
-              : _buildAttachmentsList(context, ref, list, canAdd),
-          loading: () => const LinearProgressIndicator(),
-          error: (e, _) => Text("خطأ: $e"),
-        ),
+        // [LEGACY_MANUAL_REFRESH]
+        // attachmentsAsync.when(
+        //   data: (list) => list.isEmpty
+        //       ? const Text("لا توجد مرفقات.")
+        //       : _buildAttachmentsList(context, ref, list, canAdd),
+        //   loading: () => const LinearProgressIndicator(),
+        //   error: (e, _) => Text("خطأ: $e"),
+        // ),
+        attachments.isEmpty
+            ? const Text("لا توجد مرفقات.")
+            : _buildAttachmentsList(context, ref, attachments, canAdd),
       ],
     );
   }
@@ -482,14 +490,15 @@ class _AttachmentsSection extends ConsumerWidget {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.visibility),
-                  onPressed: () => _viewAttachment(context, item),
+                  onPressed: () => _viewAttachment(context, ref, item),
                 ),
                 if (canAdd)
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () async {
                       await ref.read(damageReportFormProvider.notifier).deleteAttachment(item.id);
-                      ref.invalidate(attachmentsByReportProvider(report.id));
+                      // [LEGACY_MANUAL_REFRESH]
+                      // ref.invalidate(attachmentsByReportProvider(report.id));
                     },
                   ),
               ],
@@ -500,7 +509,7 @@ class _AttachmentsSection extends ConsumerWidget {
     );
   }
 
-  void _viewAttachment(BuildContext context, DamageReportAttachment item) {
+  void _viewAttachment(BuildContext context, WidgetRef ref, DamageReportAttachment item) {
     final bool isImage = item.localPath.toLowerCase().endsWith('.png') || 
                          item.localPath.toLowerCase().endsWith('.jpg') || 
                          item.localPath.toLowerCase().endsWith('.jpeg') ||
@@ -521,7 +530,7 @@ class _AttachmentsSection extends ConsumerWidget {
               ),
             ),
             body: Center(
-              child: _buildImagePreview(item),
+              child: _buildImagePreview(context, ref, item),
             ),
           ),
         ),
@@ -534,7 +543,7 @@ class _AttachmentsSection extends ConsumerWidget {
     }
   }
 
-  Widget _buildImagePreview(DamageReportAttachment item) {
+  Widget _buildImagePreview(BuildContext context, WidgetRef ref, DamageReportAttachment item) {
     // 1. Try local file first
     if (item.localPath.isNotEmpty && File(item.localPath).existsSync()) {
       return InteractiveViewer(
@@ -558,26 +567,33 @@ class _AttachmentsSection extends ConsumerWidget {
           ? remotePath 
           : "$serverRoot$remotePath";
 
+      final auth = ref.watch(authProvider);
+      final token = auth.session?.token;
+
       return InteractiveViewer(
         child: Image.network(
           fullUrl,
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return const Center(child: CircularProgressIndicator());
           },
-          errorBuilder: (context, error, stackTrace) => const Column(
+          errorBuilder: (context, error, stackTrace) => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.broken_image, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
-              Text("تعذر تحميل الصورة من السيرفر"),
+              const Icon(Icons.broken_image, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(AppLocalizations.of(context)?.localeName == 'ar' 
+                  ? "تعذر تحميل الصورة من السيرفر"
+                  : "Could not load image from server"),
+              if (kDebugMode) Text("URL: $fullUrl", style: const TextStyle(fontSize: 10)),
             ],
           ),
         ),
       );
     }
 
-    return const Text("لا يوجد مسار للملف");
+    return Text(AppLocalizations.of(context)?.localeName == 'ar' ? "لا يوجد مسار للملف" : "No file path available");
   }
 
   void _addAttachment(BuildContext context, WidgetRef ref) async {
@@ -589,7 +605,8 @@ class _AttachmentsSection extends ConsumerWidget {
 
     if (result != null) {
       await ref.read(attachmentRepositoryProvider).uploadAttachment(result);
-      ref.invalidate(attachmentsByReportProvider(report.id));
+      // [LEGACY_MANUAL_REFRESH]
+      // ref.invalidate(attachmentsByReportProvider(report.id));
     }
   }
 
@@ -941,7 +958,8 @@ class _WorkflowActionBar extends ConsumerWidget {
     if (context.mounted) {
       ref.invalidate(damageReportStreamProvider(report.id));
       ref.invalidate(damageReportHistoryProvider(report.id));
-      ref.invalidate(attachmentsByReportProvider(report.id));
+      // [LEGACY_MANUAL_REFRESH]
+      // ref.invalidate(attachmentsByReportProvider(report.id));
       ref.invalidate(damageReportsListProvider);
 
       if (success) {

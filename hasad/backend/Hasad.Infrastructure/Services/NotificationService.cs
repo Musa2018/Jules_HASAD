@@ -58,8 +58,16 @@ public class NotificationService : INotificationService
             {
                 if (!string.IsNullOrEmpty(user.Email))
                 {
-                    await _emailService.SendEmailAsync(user.Email, "تنبيه: معاملة بانتظار المراجعة",
-                        $"المزارع: {report.FarmerId}\nرقم التقرير: {report.ReportNumber}\nالحالة الحالية: {toStatus}\nالرجاء مراجعة النظام.");
+                    try
+                    {
+                        await _emailService.SendEmailAsync(user.Email, "تنبيه: معاملة بانتظار المراجعة",
+                            $"المزارع: {report.FarmerId}\nرقم التقرير: {report.ReportNumber}\nالحالة الحالية: {toStatus}\nالرجاء مراجعة النظام.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Failed to send email notification to {Email} for report {ReportNumber}", user.Email, report.ReportNumber);
+                        // Notifications are secondary; we don't want to break the whole workflow if email fails.
+                    }
                 }
             }
         }

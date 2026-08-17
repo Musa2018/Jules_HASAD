@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:drift/drift.dart';
@@ -78,21 +79,41 @@ final attachmentRepositoryProvider = Provider<DamageReportAttachmentRepository>(
 final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageReport?, String>((ref, id) {
   final db = ref.watch(databaseProvider);
 
-  // Use a join to watch both tables. This ensures the stream emits whenever 
-  // the report header OR any of its items change.
+  // Use a join to watch all related tables. We also explicitly watch the child tables
+  // to ensure any change in items or attachments triggers a rebuild of the full report.
+  // Use a join to watch all related tables. We use explicit case-insensitive matching in the join
+  // to ensure Drift's watcher correctly tracks dependencies across tables.
   final query = db.select(db.damageReports).join([
-    leftOuterJoin(db.damageItems, db.damageItems.damageReportId.equalsExp(db.damageReports.id)),
-  ])..where(db.damageReports.id.equals(id));
+    leftOuterJoin(db.damageItems, db.damageItems.damageReportId.lower().equalsExp(db.damageReports.id.lower())),
+    leftOuterJoin(db.damageReportAttachments, db.damageReportAttachments.damageReportId.lower().equalsExp(db.damageReports.id.lower())),
+  ])..where(db.damageReports.id.lower().equals(id.toLowerCase()));
 
   return query.watch().asyncMap((rows) async {
+    if (kDebugMode) {
+      debugPrint('[damageReportStreamProvider] Triggered update for ID: $id. Join rows: ${rows.length}');
+    }
+
     if (rows.isEmpty) return null;
 
     final reportRow = rows.first.readTable(db.damageReports);
+    final reportId = reportRow.id;
 
-    // Fetch items separately to ensure we get the full list correctly (Drift join returns one row per item)
+    // Fetch items and attachments separately using case-insensitive ID matching and robust deletion filtering
     final items = await (db.select(db.damageItems)
-      ..where((t) => t.damageReportId.equals(id) & t.isPendingDelete.equals(false)))
+      ..where((t) => t.damageReportId.lower().equals(id.toLowerCase()) | 
+                     t.damageReportId.lower().equals(reportRow.serverId?.toLowerCase() ?? ''))
+      ..where((t) => t.isPendingDelete.equals(false) | t.isPendingDelete.isNull()))
         .get();
+    
+    final attachments = await (db.select(db.damageReportAttachments)
+      ..where((t) => t.damageReportId.lower().equals(id.toLowerCase()) | 
+                     t.damageReportId.lower().equals(reportRow.serverId?.toLowerCase() ?? ''))
+      ..where((t) => t.isPendingDelete.equals(false) | t.isPendingDelete.isNull()))
+        .get();
+
+    if (kDebugMode) {
+      debugPrint('[damageReportStreamProvider] Report: $reportId, Items: ${items.length}, Attachments: ${attachments.length}');
+    }
 
     return DamageReport(
       id: reportRow.id,
@@ -138,6 +159,19 @@ final damageReportStreamProvider = StreamProvider.autoDispose.family<DamageRepor
         lastSyncError: i.lastSyncError,
         updatedAt: i.updatedAt,
       )).toList(),
+      attachments: attachments.map((a) => DamageReportAttachment(
+        id: a.id,
+        serverId: a.serverId,
+        damageReportId: a.damageReportId,
+        documentName: a.documentName,
+        documentDate: a.documentDate,
+        documentTypeId: a.documentTypeId,
+        localPath: a.localPath,
+        remotePath: a.remotePath,
+        uploadStatus: a.uploadStatus,
+        syncStatus: a.syncStatus,
+        lastSyncError: a.lastSyncError,
+      )).toList(),
     );
   });
 });
@@ -161,12 +195,13 @@ final damageReportHistoryProvider = StreamProvider.autoDispose.family<List<Damag
   return stream;
 });
 
-final attachmentsByReportProvider = StreamProvider.autoDispose
-    .family<List<DamageReportAttachment>, String>((ref, reportId) {
-  return ref
-      .watch(attachmentRepositoryProvider)
-      .watchAttachmentsByReport(reportId);
-});
+// [LEGACY_MANUAL_REFRESH]
+// final attachmentsByReportProvider = StreamProvider.autoDispose
+//     .family<List<DamageReportAttachment>, String>((ref, reportId) {
+//   return ref
+//       .watch(attachmentRepositoryProvider)
+//       .watchAttachmentsByReport(reportId);
+// });
 
 class DamageReportFormState {
   final bool isLoading;

@@ -590,6 +590,18 @@ class BackgroundSyncService {
           lastSyncError: const Value(null),
         ),
       );
+    } else if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        try {
+          await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        } on SyncNotFoundException {
+           DebugLogger.log('DELETE 404 handled: Attachment $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
 
@@ -644,6 +656,18 @@ class BackgroundSyncService {
           lastSyncError: const Value(null),
         ),
       );
+    } else if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        try {
+          await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        } on SyncNotFoundException {
+           DebugLogger.log('DELETE 404 handled: Attachment $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
 
@@ -716,6 +740,18 @@ class BackgroundSyncService {
           lastSyncError: const Value(null),
         ),
       );
+    } else if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        try {
+          await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        } on SyncNotFoundException {
+           DebugLogger.log('DELETE 404 handled: Attachment $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
 

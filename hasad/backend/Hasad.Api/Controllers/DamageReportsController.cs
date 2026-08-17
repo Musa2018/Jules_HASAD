@@ -177,6 +177,17 @@ public class DamageReportsController : ControllerBase
         return result.Succeeded ? Ok(result) : BadRequest(result);
     }
 
+    [HttpDelete("attachments/{attachmentId}")]
+    [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ArchiveOfficer")]
+    public async Task<IActionResult> DeleteAttachment(Guid attachmentId)
+    {
+        // Reusing the general pattern: we need a command for this.
+        // For speed, we can use a temporary mediator call if defined,
+        // but I will ensure the infrastructure is there.
+        var result = await _mediator.Send(new Hasad.Application.Features.DamageReports.Commands.DeleteAttachment.DeleteAttachmentCommand(attachmentId));
+        return result.Succeeded ? Ok(result) : BadRequest(result);
+    }
+
     [HttpPost("{id}/attachments")]
     [Authorize(Roles = "SuperAdmin,Administrator,AgriculturalEngineer,FieldSurveyor,ArchiveOfficer")]
     public async Task<IActionResult> UploadAttachment(
@@ -185,7 +196,8 @@ public class DamageReportsController : ControllerBase
         [FromForm] Guid clientId,
         [FromForm] string documentName,
         [FromForm] DateTime documentDate,
-        [FromForm] int documentTypeId)
+        [FromForm] int documentTypeId,
+        [FromForm] string localPath)
     {
         if (file == null || file.Length == 0) return BadRequest("No file uploaded.");
 
@@ -198,6 +210,7 @@ public class DamageReportsController : ControllerBase
             documentName,
             documentDate,
             documentTypeId,
+            localPath,
             file.ContentType,
             file.Length,
             null,

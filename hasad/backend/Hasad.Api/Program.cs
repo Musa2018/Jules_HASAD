@@ -245,6 +245,20 @@ using (var scope = app.Services.CreateScope())
 // Middleware
 app.UseMiddleware<ExceptionMiddleware>();
 
+app.UseStaticFiles(); // Serve files from wwwroot if exists
+
+var uploadsPath = Path.Combine(app.Environment.WebRootPath ?? app.Environment.ContentRootPath, "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

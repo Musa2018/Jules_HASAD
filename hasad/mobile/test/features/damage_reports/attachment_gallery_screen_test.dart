@@ -22,7 +22,7 @@ void main() {
         overrides: [
           attachmentsByReportProvider(
             'report-1',
-          ).overrideWith((ref) => attachments),
+          ).overrideWith((ref) => Stream.value(attachments)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

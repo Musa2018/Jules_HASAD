@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
@@ -480,9 +482,7 @@ class _AttachmentsSection extends ConsumerWidget {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.visibility),
-                  onPressed: () {
-                    // Logic to view file
-                  },
+                  onPressed: () => _viewAttachment(context, item),
                 ),
                 if (canAdd)
                   IconButton(
@@ -498,6 +498,86 @@ class _AttachmentsSection extends ConsumerWidget {
         );
       },
     );
+  }
+
+  void _viewAttachment(BuildContext context, DamageReportAttachment item) {
+    final bool isImage = item.localPath.toLowerCase().endsWith('.png') || 
+                         item.localPath.toLowerCase().endsWith('.jpg') || 
+                         item.localPath.toLowerCase().endsWith('.jpeg') ||
+                         (item.remotePath?.toLowerCase().endsWith('.png') ?? false) ||
+                         (item.remotePath?.toLowerCase().endsWith('.jpg') ?? false) ||
+                         (item.remotePath?.toLowerCase().endsWith('.jpeg') ?? false);
+
+    if (isImage) {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog.fullscreen(
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(item.documentName),
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            body: Center(
+              child: _buildImagePreview(item),
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Fallback for non-image files (like PDFs)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("هذا النوع من الملفات يحتاج لمشاهد خارجي. الرابط: ${item.remotePath}")),
+      );
+    }
+  }
+
+  Widget _buildImagePreview(DamageReportAttachment item) {
+    // 1. Try local file first
+    if (item.localPath.isNotEmpty && File(item.localPath).existsSync()) {
+      return InteractiveViewer(
+        child: Image.file(File(item.localPath)),
+      );
+    }
+
+    // 2. Try remote URL
+    if (item.remotePath != null && item.remotePath!.isNotEmpty) {
+      final String baseUrl = EnvironmentConfig.config.apiBaseUrl;
+      final String serverRoot = baseUrl.endsWith('/api') 
+          ? baseUrl.substring(0, baseUrl.length - 4) 
+          : baseUrl;
+      
+      String remotePath = item.remotePath!;
+      if (!remotePath.startsWith('/') && !remotePath.startsWith('http')) {
+        remotePath = '/$remotePath';
+      }
+
+      final String fullUrl = remotePath.startsWith('http') 
+          ? remotePath 
+          : "$serverRoot$remotePath";
+
+      return InteractiveViewer(
+        child: Image.network(
+          fullUrl,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const Center(child: CircularProgressIndicator());
+          },
+          errorBuilder: (context, error, stackTrace) => const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.broken_image, size: 64, color: Colors.grey),
+              SizedBox(height: 16),
+              Text("تعذر تحميل الصورة من السيرفر"),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return const Text("لا يوجد مسار للملف");
   }
 
   void _addAttachment(BuildContext context, WidgetRef ref) async {

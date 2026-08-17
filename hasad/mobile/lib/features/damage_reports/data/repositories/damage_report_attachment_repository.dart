@@ -33,6 +33,7 @@ class RemoteDamageReportAttachmentRepository
       'documentName': attachment.documentName,
       'documentDate': attachment.documentDate?.toIso8601String(),
       'documentTypeId': attachment.documentTypeId,
+      'localPath': attachment.localPath,
     });
 
     try {
@@ -68,7 +69,7 @@ class RemoteDamageReportAttachmentRepository
   @override
   Future<void> deleteAttachment(String id) async {
     try {
-      await _dio.delete('/v1/attachments/$id');
+      await _dio.delete('/v1/damage-reports/attachments/$id');
     } on DioException catch (e) {
       throw SyncException(['Delete failed: $e']);
     }

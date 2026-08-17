@@ -84,6 +84,9 @@ void main() {
       await db.into(db.damageCauseCategories).insert(DamageCauseCategoriesCompanion.insert(id: const drift.Value(1), nameAr: 'سياسي', nameEn: 'Political'));
       await db.into(db.damageCauses).insert(DamageCausesCompanion.insert(id: const drift.Value(1), parentId: 1, nameAr: 'جيش', nameEn: 'Army'));
       
+      // Critical: Add missing documentTypes to satisfy _isDataComplete
+      await db.into(db.documentTypes).insert(DocumentTypesCompanion.insert(id: const drift.Value(1), nameAr: 'صورة', nameEn: 'Photo', isActive: const drift.Value(true)));
+
       final legacyVersionId = 'LEGACY-VERSION-SERVER';
       await db.into(db.costingSheetVersions).insert(CostingSheetVersionsCompanion.insert(
         id: legacyVersionId,

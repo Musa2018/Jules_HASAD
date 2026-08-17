@@ -91,6 +91,16 @@ void main() {
           'damageDate': DateTime.now().toIso8601String(),
           'documentationDate': DateTime.now().toIso8601String(),
           'notes': 'Notes',
+          'items': [
+            {
+              'clientId': itemId,
+              'damageReportId': reportId,
+              'affectedArea': 10,
+              'damagePercentage': 50,
+              'quantity': 100,
+              'estimatedLoss': 1000,
+            }
+          ],
         }),
         createdAt: Value(DateTime.now()),
       ));

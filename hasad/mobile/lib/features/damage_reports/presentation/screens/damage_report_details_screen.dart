@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/core/config/app_config.dart';
 import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
@@ -13,6 +16,9 @@ import 'package:mobile/features/farms/presentation/lookup_providers.dart';
 import 'package:mobile/features/location/presentation/location_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/l10n/app_localizations.dart';
+
+import 'package:mobile/features/damage_reports/presentation/widgets/attachment_form_sheet.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
 
 String _getStatusLabel(BuildContext context, String? status) {
   if (status == null || status.isEmpty) return '...';
@@ -90,6 +96,8 @@ class DamageReportDetailsScreen extends ConsumerWidget {
                   const Divider(height: 32),
                   _ItemsSection(report: liveReport),
                   const Divider(height: 32),
+                  _AttachmentsSection(report: liveReport),
+                  const Divider(height: 32),
                   _HistorySection(reportId: liveReport.id),
                 ],
               ),
@@ -113,6 +121,8 @@ class DamageReportDetailsScreen extends ConsumerWidget {
       // 2. Invalidate providers to force UI rebuild from local DB
       ref.invalidate(damageReportStreamProvider(report.id));
       ref.invalidate(damageReportHistoryProvider(report.id));
+      // [LEGACY_MANUAL_REFRESH]
+      // ref.invalidate(attachmentsByReportProvider(report.id));
       ref.invalidate(damageReportsListProvider);
 
       if (context.mounted) {
@@ -403,18 +413,253 @@ class _ItemsSection extends ConsumerWidget {
   }
 }
 
+class _AttachmentsSection extends ConsumerWidget {
+  final DamageReport report;
+  const _AttachmentsSection({required this.report});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // [LEGACY_MANUAL_REFRESH]
+    // final attachmentsAsync = ref.watch(attachmentsByReportProvider(report.id));
+    final attachments = report.attachments;
+    final auth = ref.watch(authProvider);
+
+    // Visibility rule: show add button only if has items (for field staff) OR is Archive stage
+    final bool canAdd = (report.items.isNotEmpty && (auth.hasRole('AgriculturalEngineer') || auth.hasRole('FieldSurveyor')) && (report.statusId == 'Draft' || report.statusId == 'PendingTechnicalVerification')) ||
+                        (auth.hasRole('ArchiveOfficer') && report.statusId == 'ArchiveDir') ||
+                        (auth.hasRole('ChiefArchiveOfficer') && report.statusId == 'MinArchive');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("المرفقات والوثائق", style: Theme.of(context).textTheme.titleLarge),
+            if (canAdd)
+              IconButton(
+                icon: const Icon(Icons.add_a_photo, color: Colors.green),
+                onPressed: () => _addAttachment(context, ref),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        // [LEGACY_MANUAL_REFRESH]
+        // attachmentsAsync.when(
+        //   data: (list) => list.isEmpty
+        //       ? const Text("لا توجد مرفقات.")
+        //       : _buildAttachmentsList(context, ref, list, canAdd),
+        //   loading: () => const LinearProgressIndicator(),
+        //   error: (e, _) => Text("خطأ: $e"),
+        // ),
+        attachments.isEmpty
+            ? const Text("لا توجد مرفقات.")
+            : _buildAttachmentsList(context, ref, attachments, canAdd),
+      ],
+    );
+  }
+
+  Widget _buildAttachmentsList(BuildContext context, WidgetRef ref, List<DamageReportAttachment> list, bool canAdd) {
+    final typesAsync = ref.watch(documentTypesProvider);
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final item = list[index];
+        final docType = typesAsync.value?.where((t) => t.id == item.documentTypeId).firstOrNull;
+        final typeName = docType != null 
+            ? (isAr ? docType.nameAr : docType.nameEn)
+            : _getDocTypeName(item.documentTypeId);
+
+        return Card(
+          child: ListTile(
+            leading: _getDocIcon(item.documentTypeId),
+            title: Text(item.documentName),
+            subtitle: Text("$typeName - ${item.documentDate != null ? DateFormat('yyyy-MM-dd').format(item.documentDate!) : ''}"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  item.syncStatus == 'completed' ? Icons.cloud_done : Icons.cloud_upload_outlined,
+                  color: item.syncStatus == 'completed' ? Colors.green : Colors.orange,
+                  size: 18
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.visibility),
+                  onPressed: () => _viewAttachment(context, ref, item),
+                ),
+                if (canAdd)
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      await ref.read(damageReportFormProvider.notifier).deleteAttachment(item.id);
+                      // [LEGACY_MANUAL_REFRESH]
+                      // ref.invalidate(attachmentsByReportProvider(report.id));
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _viewAttachment(BuildContext context, WidgetRef ref, DamageReportAttachment item) {
+    final bool isImage = item.localPath.toLowerCase().endsWith('.png') || 
+                         item.localPath.toLowerCase().endsWith('.jpg') || 
+                         item.localPath.toLowerCase().endsWith('.jpeg') ||
+                         (item.remotePath?.toLowerCase().endsWith('.png') ?? false) ||
+                         (item.remotePath?.toLowerCase().endsWith('.jpg') ?? false) ||
+                         (item.remotePath?.toLowerCase().endsWith('.jpeg') ?? false);
+
+    if (isImage) {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog.fullscreen(
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(item.documentName),
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            body: Center(
+              child: _buildImagePreview(context, ref, item),
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Fallback for non-image files (like PDFs)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("هذا النوع من الملفات يحتاج لمشاهد خارجي. الرابط: ${item.remotePath}")),
+      );
+    }
+  }
+
+  Widget _buildImagePreview(BuildContext context, WidgetRef ref, DamageReportAttachment item) {
+    // 1. Try local file first
+    if (item.localPath.isNotEmpty && File(item.localPath).existsSync()) {
+      return InteractiveViewer(
+        child: Image.file(File(item.localPath)),
+      );
+    }
+
+    // 2. Try remote URL
+    if (item.remotePath != null && item.remotePath!.isNotEmpty) {
+      final String baseUrl = EnvironmentConfig.config.apiBaseUrl;
+      final String serverRoot = baseUrl.endsWith('/api') 
+          ? baseUrl.substring(0, baseUrl.length - 4) 
+          : baseUrl;
+      
+      String remotePath = item.remotePath!;
+      if (!remotePath.startsWith('/') && !remotePath.startsWith('http')) {
+        remotePath = '/$remotePath';
+      }
+
+      final String fullUrl = remotePath.startsWith('http') 
+          ? remotePath 
+          : "$serverRoot$remotePath";
+
+      final auth = ref.watch(authProvider);
+      final token = auth.session?.token;
+
+      return InteractiveViewer(
+        child: Image.network(
+          fullUrl,
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const Center(child: CircularProgressIndicator());
+          },
+          errorBuilder: (context, error, stackTrace) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.broken_image, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              Text(AppLocalizations.of(context)?.localeName == 'ar' 
+                  ? "تعذر تحميل الصورة من السيرفر"
+                  : "Could not load image from server"),
+              if (kDebugMode) Text("URL: $fullUrl", style: const TextStyle(fontSize: 10)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Text(AppLocalizations.of(context)?.localeName == 'ar' ? "لا يوجد مسار للملف" : "No file path available");
+  }
+
+  void _addAttachment(BuildContext context, WidgetRef ref) async {
+    final result = await showModalBottomSheet<DamageReportAttachment>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => AttachmentFormSheet(reportId: report.id),
+    );
+
+    if (result != null) {
+      await ref.read(attachmentRepositoryProvider).uploadAttachment(result);
+      // [LEGACY_MANUAL_REFRESH]
+      // ref.invalidate(attachmentsByReportProvider(report.id));
+    }
+  }
+
+  Icon _getDocIcon(int typeId) {
+    switch (typeId) {
+      case 1: return const Icon(Icons.image);
+      case 2: return const Icon(Icons.badge);
+      case 3: return const Icon(Icons.description);
+      case 4: return const Icon(Icons.picture_as_pdf, color: Colors.red);
+      default: return const Icon(Icons.attach_file);
+    }
+  }
+
+  String _getDocTypeName(int typeId) {
+    switch (typeId) {
+      case 1: return "صورة الموقع";
+      case 2: return "صورة هوية";
+      case 3: return "أوراق ملكية";
+      case 4: return "استمارة ضرر";
+      case 8: return "شهادة ضرر";
+      default: return "أخرى";
+    }
+  }
+}
+
 class _HistorySection extends ConsumerWidget {
   final String reportId;
   const _HistorySection({required this.reportId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authProvider);
     final historyAsync = ref.watch(damageReportHistoryProvider(reportId));
+
+    final bool showIntegrated = auth.hasRole('SuperAdmin') || 
+                                auth.hasRole('GeneralManager') || 
+                                auth.hasRole('ProceduralReviewer');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("سجل الحركات (Workflow History)", style: Theme.of(context).textTheme.titleLarge),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("سجل الحركات", style: Theme.of(context).textTheme.titleLarge),
+            if (showIntegrated)
+              TextButton.icon(
+                icon: const Icon(Icons.analytics),
+                label: const Text("السجل المتكامل (Log)"),
+                onPressed: () => _showAuditLog(context, ref),
+              ),
+          ],
+        ),
         const SizedBox(height: 8),
         historyAsync.when(
           data: (history) => history.isEmpty
@@ -444,6 +689,59 @@ class _HistorySection extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  void _showAuditLog(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) {
+          final auditLogAsync = ref.watch(damageReportAuditLogProvider(reportId));
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Text("سجل العمليات المتكامل (Audit Log)", style: Theme.of(context).textTheme.headlineSmall),
+                const Divider(),
+                Expanded(
+                  child: auditLogAsync.when(
+                    data: (logs) => ListView.builder(
+                      controller: scrollController,
+                      itemCount: logs.length,
+                      itemBuilder: (context, index) {
+                        final log = logs[index];
+                        return ListTile(
+                          leading: _getLogIcon(log.eventType),
+                          title: Text(log.description),
+                          subtitle: Text("${log.performedBy} | ${DateFormat('yyyy-MM-dd HH:mm').format(log.eventDate)}"),
+                          trailing: log.metadata != null ? const Icon(Icons.comment) : null,
+                        );
+                      },
+                    ),
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(child: Text("خطأ: $e")),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Icon _getLogIcon(String type) {
+    switch (type) {
+      case 'Farmer': return const Icon(Icons.person, color: Colors.blue);
+      case 'Farm': return const Icon(Icons.landscape, color: Colors.green);
+      case 'Report': return const Icon(Icons.assignment, color: Colors.orange);
+      case 'Transition': return const Icon(Icons.swap_horiz, color: Colors.purple);
+      default: return const Icon(Icons.info_outline);
+    }
   }
 }
 
@@ -515,10 +813,10 @@ class _WorkflowActionBar extends ConsumerWidget {
           onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minTechReview),
         ));
         actions.add(_ActionButton(
-          label: "إرجاع للأرشفة",
+          label: "إرجاع (متعدد)",
           icon: Icons.assignment_return,
-          color: isBusy ? Colors.grey : Colors.orange,
-          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.archiveDir, needsComment: true),
+          color: isBusy ? Colors.grey : Colors.red,
+          onPressed: isBusy ? null : () => _handleMultiStepReturn(context, ref),
         ));
       }
     } else if (status == DamageReportStatus.minTechReview) {
@@ -539,25 +837,25 @@ class _WorkflowActionBar extends ConsumerWidget {
     } else if (status == DamageReportStatus.legalReview) {
       if (auth.hasRole("LegalReviewer")) {
         actions.add(_ActionButton(
-          label: "تحويل للإجرائية",
-          icon: Icons.next_plan,
+          label: "تحويل للأرشفة",
+          icon: Icons.archive,
           color: isBusy ? Colors.grey : Colors.green,
-          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.procReview),
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minArchive),
         ));
         actions.add(_ActionButton(
-          label: "إرجاع للوزارة",
+          label: "إرجاع للفنية",
           icon: Icons.assignment_return,
           color: isBusy ? Colors.grey : Colors.orange,
           onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minTechReview, needsComment: true),
         ));
       }
-    } else if (status == DamageReportStatus.procReview) {
-      if (auth.hasRole("ProceduralReviewer")) {
+    } else if (status == DamageReportStatus.minArchive) {
+      if (auth.hasRole("ChiefArchiveOfficer")) {
         actions.add(_ActionButton(
-          label: "تحويل للأرشيف",
-          icon: Icons.archive,
+          label: "تحويل للإجرائية",
+          icon: Icons.next_plan,
           color: isBusy ? Colors.grey : Colors.green,
-          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minArchive),
+          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.procReview),
         ));
         actions.add(_ActionButton(
           label: "إرجاع للقانونية",
@@ -566,20 +864,15 @@ class _WorkflowActionBar extends ConsumerWidget {
           onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.legalReview, needsComment: true),
         ));
       }
-    } else if (status == DamageReportStatus.minArchive) {
-      if (auth.hasRole("ChiefArchiveOfficer")) {
+    } else if (status == DamageReportStatus.procReview) {
+      if (auth.hasRole("ProceduralReviewer")) {
         actions.add(_ActionButton(
           label: "تحويل للمدير العام",
           icon: Icons.person_add,
           color: isBusy ? Colors.grey : Colors.green,
           onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.genManager),
         ));
-        actions.add(_ActionButton(
-          label: "إرجاع للإجرائية",
-          icon: Icons.assignment_return,
-          color: isBusy ? Colors.grey : Colors.orange,
-          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.procReview, needsComment: true),
-        ));
+        // ProceduralReviewer cannot return as per rules (Forward Only)
       }
     } else if (status == DamageReportStatus.genManager) {
       if (auth.hasRole("GeneralManager")) {
@@ -590,10 +883,10 @@ class _WorkflowActionBar extends ConsumerWidget {
           onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.completed),
         ));
         actions.add(_ActionButton(
-          label: "إرجاع للأرشيف",
+          label: "إرجاع (متعدد)",
           icon: Icons.assignment_return,
-          color: isBusy ? Colors.grey : Colors.orange,
-          onPressed: isBusy ? null : () => _handleTransition(context, ref, DamageReportStatus.minArchive, needsComment: true),
+          color: isBusy ? Colors.grey : Colors.red,
+          onPressed: isBusy ? null : () => _handleMultiStepReturn(context, ref),
         ));
       }
     }
@@ -665,6 +958,8 @@ class _WorkflowActionBar extends ConsumerWidget {
     if (context.mounted) {
       ref.invalidate(damageReportStreamProvider(report.id));
       ref.invalidate(damageReportHistoryProvider(report.id));
+      // [LEGACY_MANUAL_REFRESH]
+      // ref.invalidate(attachmentsByReportProvider(report.id));
       ref.invalidate(damageReportsListProvider);
 
       if (success) {
@@ -676,6 +971,42 @@ class _WorkflowActionBar extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("فشل تحديث الحالة: ${errors.join(', ')}")),
         );
+      }
+    }
+  }
+
+  void _handleMultiStepReturn(BuildContext context, WidgetRef ref) async {
+    final List<String> allStatuses = DamageReportStatus.all;
+    final int currentIndex = allStatuses.indexOf(report.statusId);
+    
+    if (currentIndex <= 0) return;
+
+    final List<String> previousStatuses = allStatuses.sublist(0, currentIndex);
+
+    final selectedStatus = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("اختيار مرحلة الإرجاع"),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: previousStatuses.length,
+            itemBuilder: (context, index) {
+              final s = previousStatuses[index];
+              return ListTile(
+                title: Text(_getStatusLabel(context, s)),
+                onTap: () => Navigator.pop(context, s),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    if (selectedStatus != null) {
+      if (context.mounted) {
+        _handleTransition(context, ref, selectedStatus, needsComment: true);
       }
     }
   }

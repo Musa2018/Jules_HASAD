@@ -12,8 +12,7 @@ part of 'user.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 User _$UserFromJson(Map<String, dynamic> json) {
   return _User.fromJson(json);
@@ -34,12 +33,8 @@ mixin _$User {
   bool get isActive => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
-  /// Serializes this User to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $UserCopyWith<User> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -48,20 +43,19 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call({
-    String id,
-    String fullName,
-    String userName,
-    String email,
-    String phoneNumber,
-    String role,
-    String? governorateId,
-    String? governorateName,
-    String? directorateId,
-    String? directorateName,
-    bool isActive,
-    DateTime createdAt,
-  });
+  $Res call(
+      {String id,
+      String fullName,
+      String userName,
+      String email,
+      String phoneNumber,
+      String role,
+      String? governorateId,
+      String? governorateName,
+      String? directorateId,
+      String? directorateName,
+      bool isActive,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -74,8 +68,6 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -92,84 +84,79 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? isActive = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            fullName: null == fullName
-                ? _value.fullName
-                : fullName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            userName: null == userName
-                ? _value.userName
-                : userName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            phoneNumber: null == phoneNumber
-                ? _value.phoneNumber
-                : phoneNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            role: null == role
-                ? _value.role
-                : role // ignore: cast_nullable_to_non_nullable
-                      as String,
-            governorateId: freezed == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            governorateName: freezed == governorateName
-                ? _value.governorateName
-                : governorateName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            directorateId: freezed == directorateId
-                ? _value.directorateId
-                : directorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            directorateName: freezed == directorateName
-                ? _value.directorateName
-                : directorateName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isActive: null == isActive
-                ? _value.isActive
-                : isActive // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      governorateName: freezed == governorateName
+          ? _value.governorateName
+          : governorateName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateId: freezed == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateName: freezed == directorateName
+          ? _value.directorateName
+          : directorateName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$$UserImplCopyWith(
-    _$UserImpl value,
-    $Res Function(_$UserImpl) then,
-  ) = __$$UserImplCopyWithImpl<$Res>;
+          _$UserImpl value, $Res Function(_$UserImpl) then) =
+      __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String fullName,
-    String userName,
-    String email,
-    String phoneNumber,
-    String role,
-    String? governorateId,
-    String? governorateName,
-    String? directorateId,
-    String? directorateName,
-    bool isActive,
-    DateTime createdAt,
-  });
+  $Res call(
+      {String id,
+      String fullName,
+      String userName,
+      String email,
+      String phoneNumber,
+      String role,
+      String? governorateId,
+      String? governorateName,
+      String? directorateId,
+      String? directorateName,
+      bool isActive,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -177,10 +164,8 @@ class __$$UserImplCopyWithImpl<$Res>
     extends _$UserCopyWithImpl<$Res, _$UserImpl>
     implements _$$UserImplCopyWith<$Res> {
   __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then)
-    : super(_value, _then);
+      : super(_value, _then);
 
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -197,78 +182,75 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? isActive = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _$UserImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        fullName: null == fullName
-            ? _value.fullName
-            : fullName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        userName: null == userName
-            ? _value.userName
-            : userName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        phoneNumber: null == phoneNumber
-            ? _value.phoneNumber
-            : phoneNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        role: null == role
-            ? _value.role
-            : role // ignore: cast_nullable_to_non_nullable
-                  as String,
-        governorateId: freezed == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        governorateName: freezed == governorateName
-            ? _value.governorateName
-            : governorateName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        directorateId: freezed == directorateId
-            ? _value.directorateId
-            : directorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        directorateName: freezed == directorateName
-            ? _value.directorateName
-            : directorateName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isActive: null == isActive
-            ? _value.isActive
-            : isActive // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$UserImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      userName: null == userName
+          ? _value.userName
+          : userName // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      role: null == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      governorateName: freezed == governorateName
+          ? _value.governorateName
+          : governorateName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateId: freezed == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateName: freezed == directorateName
+          ? _value.directorateName
+          : directorateName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserImpl implements _User {
-  const _$UserImpl({
-    required this.id,
-    required this.fullName,
-    required this.userName,
-    required this.email,
-    required this.phoneNumber,
-    required this.role,
-    this.governorateId,
-    this.governorateName,
-    this.directorateId,
-    this.directorateName,
-    required this.isActive,
-    required this.createdAt,
-  });
+  const _$UserImpl(
+      {required this.id,
+      required this.fullName,
+      required this.userName,
+      required this.email,
+      required this.phoneNumber,
+      required this.role,
+      this.governorateId,
+      this.governorateName,
+      this.directorateId,
+      this.directorateName,
+      required this.isActive,
+      required this.createdAt});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
@@ -331,27 +313,24 @@ class _$UserImpl implements _User {
                 other.createdAt == createdAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    fullName,
-    userName,
-    email,
-    phoneNumber,
-    role,
-    governorateId,
-    governorateName,
-    directorateId,
-    directorateName,
-    isActive,
-    createdAt,
-  );
+      runtimeType,
+      id,
+      fullName,
+      userName,
+      email,
+      phoneNumber,
+      role,
+      governorateId,
+      governorateName,
+      directorateId,
+      directorateName,
+      isActive,
+      createdAt);
 
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>
@@ -359,25 +338,26 @@ class _$UserImpl implements _User {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserImplToJson(this);
+    return _$$UserImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _User implements User {
-  const factory _User({
-    required final String id,
-    required final String fullName,
-    required final String userName,
-    required final String email,
-    required final String phoneNumber,
-    required final String role,
-    final String? governorateId,
-    final String? governorateName,
-    final String? directorateId,
-    final String? directorateName,
-    required final bool isActive,
-    required final DateTime createdAt,
-  }) = _$UserImpl;
+  const factory _User(
+      {required final String id,
+      required final String fullName,
+      required final String userName,
+      required final String email,
+      required final String phoneNumber,
+      required final String role,
+      final String? governorateId,
+      final String? governorateName,
+      final String? directorateId,
+      final String? directorateName,
+      required final bool isActive,
+      required final DateTime createdAt}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
@@ -405,11 +385,8 @@ abstract class _User implements User {
   bool get isActive;
   @override
   DateTime get createdAt;
-
-  /// Create a copy of User
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

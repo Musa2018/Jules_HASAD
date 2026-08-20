@@ -12,12 +12,10 @@ part of 'damage_report_attachment.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 DamageReportAttachment _$DamageReportAttachmentFromJson(
-  Map<String, dynamic> json,
-) {
+    Map<String, dynamic> json) {
   return _DamageReportAttachment.fromJson(json);
 }
 
@@ -28,46 +26,45 @@ mixin _$DamageReportAttachment {
   @JsonKey(name: 'id')
   String? get serverId => throw _privateConstructorUsedError;
   String get damageReportId => throw _privateConstructorUsedError;
+  String get documentName => throw _privateConstructorUsedError;
+  DateTime? get documentDate => throw _privateConstructorUsedError;
+  int get documentTypeId => throw _privateConstructorUsedError;
   String get localPath => throw _privateConstructorUsedError;
+  @JsonKey(name: 'remoteUrl')
   String? get remotePath => throw _privateConstructorUsedError;
   String get uploadStatus => throw _privateConstructorUsedError;
   String get syncStatus => throw _privateConstructorUsedError;
   String? get lastSyncError => throw _privateConstructorUsedError;
 
-  /// Serializes this DamageReportAttachment to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of DamageReportAttachment
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $DamageReportAttachmentCopyWith<DamageReportAttachment> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $DamageReportAttachmentCopyWith<$Res> {
-  factory $DamageReportAttachmentCopyWith(
-    DamageReportAttachment value,
-    $Res Function(DamageReportAttachment) then,
-  ) = _$DamageReportAttachmentCopyWithImpl<$Res, DamageReportAttachment>;
+  factory $DamageReportAttachmentCopyWith(DamageReportAttachment value,
+          $Res Function(DamageReportAttachment) then) =
+      _$DamageReportAttachmentCopyWithImpl<$Res, DamageReportAttachment>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String damageReportId,
-    String localPath,
-    String? remotePath,
-    String uploadStatus,
-    String syncStatus,
-    String? lastSyncError,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String damageReportId,
+      String documentName,
+      DateTime? documentDate,
+      int documentTypeId,
+      String localPath,
+      @JsonKey(name: 'remoteUrl') String? remotePath,
+      String uploadStatus,
+      String syncStatus,
+      String? lastSyncError});
 }
 
 /// @nodoc
-class _$DamageReportAttachmentCopyWithImpl<
-  $Res,
-  $Val extends DamageReportAttachment
->
+class _$DamageReportAttachmentCopyWithImpl<$Res,
+        $Val extends DamageReportAttachment>
     implements $DamageReportAttachmentCopyWith<$Res> {
   _$DamageReportAttachmentCopyWithImpl(this._value, this._then);
 
@@ -76,57 +73,67 @@ class _$DamageReportAttachmentCopyWithImpl<
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of DamageReportAttachment
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? serverId = freezed,
     Object? damageReportId = null,
+    Object? documentName = null,
+    Object? documentDate = freezed,
+    Object? documentTypeId = null,
     Object? localPath = null,
     Object? remotePath = freezed,
     Object? uploadStatus = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            serverId: freezed == serverId
-                ? _value.serverId
-                : serverId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            damageReportId: null == damageReportId
-                ? _value.damageReportId
-                : damageReportId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            localPath: null == localPath
-                ? _value.localPath
-                : localPath // ignore: cast_nullable_to_non_nullable
-                      as String,
-            remotePath: freezed == remotePath
-                ? _value.remotePath
-                : remotePath // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            uploadStatus: null == uploadStatus
-                ? _value.uploadStatus
-                : uploadStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            syncStatus: null == syncStatus
-                ? _value.syncStatus
-                : syncStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lastSyncError: freezed == lastSyncError
-                ? _value.lastSyncError
-                : lastSyncError // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      damageReportId: null == damageReportId
+          ? _value.damageReportId
+          : damageReportId // ignore: cast_nullable_to_non_nullable
+              as String,
+      documentName: null == documentName
+          ? _value.documentName
+          : documentName // ignore: cast_nullable_to_non_nullable
+              as String,
+      documentDate: freezed == documentDate
+          ? _value.documentDate
+          : documentDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      documentTypeId: null == documentTypeId
+          ? _value.documentTypeId
+          : documentTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
+      localPath: null == localPath
+          ? _value.localPath
+          : localPath // ignore: cast_nullable_to_non_nullable
+              as String,
+      remotePath: freezed == remotePath
+          ? _value.remotePath
+          : remotePath // ignore: cast_nullable_to_non_nullable
+              as String?,
+      uploadStatus: null == uploadStatus
+          ? _value.uploadStatus
+          : uploadStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -134,99 +141,114 @@ class _$DamageReportAttachmentCopyWithImpl<
 abstract class _$$DamageReportAttachmentImplCopyWith<$Res>
     implements $DamageReportAttachmentCopyWith<$Res> {
   factory _$$DamageReportAttachmentImplCopyWith(
-    _$DamageReportAttachmentImpl value,
-    $Res Function(_$DamageReportAttachmentImpl) then,
-  ) = __$$DamageReportAttachmentImplCopyWithImpl<$Res>;
+          _$DamageReportAttachmentImpl value,
+          $Res Function(_$DamageReportAttachmentImpl) then) =
+      __$$DamageReportAttachmentImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String damageReportId,
-    String localPath,
-    String? remotePath,
-    String uploadStatus,
-    String syncStatus,
-    String? lastSyncError,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String damageReportId,
+      String documentName,
+      DateTime? documentDate,
+      int documentTypeId,
+      String localPath,
+      @JsonKey(name: 'remoteUrl') String? remotePath,
+      String uploadStatus,
+      String syncStatus,
+      String? lastSyncError});
 }
 
 /// @nodoc
 class __$$DamageReportAttachmentImplCopyWithImpl<$Res>
-    extends
-        _$DamageReportAttachmentCopyWithImpl<$Res, _$DamageReportAttachmentImpl>
+    extends _$DamageReportAttachmentCopyWithImpl<$Res,
+        _$DamageReportAttachmentImpl>
     implements _$$DamageReportAttachmentImplCopyWith<$Res> {
   __$$DamageReportAttachmentImplCopyWithImpl(
-    _$DamageReportAttachmentImpl _value,
-    $Res Function(_$DamageReportAttachmentImpl) _then,
-  ) : super(_value, _then);
+      _$DamageReportAttachmentImpl _value,
+      $Res Function(_$DamageReportAttachmentImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of DamageReportAttachment
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? serverId = freezed,
     Object? damageReportId = null,
+    Object? documentName = null,
+    Object? documentDate = freezed,
+    Object? documentTypeId = null,
     Object? localPath = null,
     Object? remotePath = freezed,
     Object? uploadStatus = null,
     Object? syncStatus = null,
     Object? lastSyncError = freezed,
   }) {
-    return _then(
-      _$DamageReportAttachmentImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        serverId: freezed == serverId
-            ? _value.serverId
-            : serverId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        damageReportId: null == damageReportId
-            ? _value.damageReportId
-            : damageReportId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        localPath: null == localPath
-            ? _value.localPath
-            : localPath // ignore: cast_nullable_to_non_nullable
-                  as String,
-        remotePath: freezed == remotePath
-            ? _value.remotePath
-            : remotePath // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        uploadStatus: null == uploadStatus
-            ? _value.uploadStatus
-            : uploadStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        syncStatus: null == syncStatus
-            ? _value.syncStatus
-            : syncStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lastSyncError: freezed == lastSyncError
-            ? _value.lastSyncError
-            : lastSyncError // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$DamageReportAttachmentImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      damageReportId: null == damageReportId
+          ? _value.damageReportId
+          : damageReportId // ignore: cast_nullable_to_non_nullable
+              as String,
+      documentName: null == documentName
+          ? _value.documentName
+          : documentName // ignore: cast_nullable_to_non_nullable
+              as String,
+      documentDate: freezed == documentDate
+          ? _value.documentDate
+          : documentDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      documentTypeId: null == documentTypeId
+          ? _value.documentTypeId
+          : documentTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
+      localPath: null == localPath
+          ? _value.localPath
+          : localPath // ignore: cast_nullable_to_non_nullable
+              as String,
+      remotePath: freezed == remotePath
+          ? _value.remotePath
+          : remotePath // ignore: cast_nullable_to_non_nullable
+              as String?,
+      uploadStatus: null == uploadStatus
+          ? _value.uploadStatus
+          : uploadStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
-  const _$DamageReportAttachmentImpl({
-    @JsonKey(name: 'clientId') required this.id,
-    @JsonKey(name: 'id') this.serverId,
-    required this.damageReportId,
-    required this.localPath,
-    this.remotePath,
-    this.uploadStatus = 'pending',
-    this.syncStatus = 'pending',
-    this.lastSyncError,
-  });
+  const _$DamageReportAttachmentImpl(
+      {@JsonKey(name: 'clientId') this.id = '',
+      @JsonKey(name: 'id') this.serverId,
+      this.damageReportId = '',
+      this.documentName = '',
+      this.documentDate,
+      this.documentTypeId = 0,
+      this.localPath = '',
+      @JsonKey(name: 'remoteUrl') this.remotePath,
+      this.uploadStatus = 'pending',
+      this.syncStatus = 'pending',
+      this.lastSyncError});
 
   factory _$DamageReportAttachmentImpl.fromJson(Map<String, dynamic> json) =>
       _$$DamageReportAttachmentImplFromJson(json);
@@ -234,15 +256,26 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
   @override
   @JsonKey(name: 'clientId')
   final String id;
-  // ClientId
+// ClientId
   @override
   @JsonKey(name: 'id')
   final String? serverId;
   @override
+  @JsonKey()
   final String damageReportId;
   @override
+  @JsonKey()
+  final String documentName;
+  @override
+  final DateTime? documentDate;
+  @override
+  @JsonKey()
+  final int documentTypeId;
+  @override
+  @JsonKey()
   final String localPath;
   @override
+  @JsonKey(name: 'remoteUrl')
   final String? remotePath;
   @override
   @JsonKey()
@@ -255,7 +288,7 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
 
   @override
   String toString() {
-    return 'DamageReportAttachment(id: $id, serverId: $serverId, damageReportId: $damageReportId, localPath: $localPath, remotePath: $remotePath, uploadStatus: $uploadStatus, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
+    return 'DamageReportAttachment(id: $id, serverId: $serverId, damageReportId: $damageReportId, documentName: $documentName, documentDate: $documentDate, documentTypeId: $documentTypeId, localPath: $localPath, remotePath: $remotePath, uploadStatus: $uploadStatus, syncStatus: $syncStatus, lastSyncError: $lastSyncError)';
   }
 
   @override
@@ -268,6 +301,12 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
                 other.serverId == serverId) &&
             (identical(other.damageReportId, damageReportId) ||
                 other.damageReportId == damageReportId) &&
+            (identical(other.documentName, documentName) ||
+                other.documentName == documentName) &&
+            (identical(other.documentDate, documentDate) ||
+                other.documentDate == documentDate) &&
+            (identical(other.documentTypeId, documentTypeId) ||
+                other.documentTypeId == documentTypeId) &&
             (identical(other.localPath, localPath) ||
                 other.localPath == localPath) &&
             (identical(other.remotePath, remotePath) ||
@@ -280,64 +319,72 @@ class _$DamageReportAttachmentImpl implements _DamageReportAttachment {
                 other.lastSyncError == lastSyncError));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    serverId,
-    damageReportId,
-    localPath,
-    remotePath,
-    uploadStatus,
-    syncStatus,
-    lastSyncError,
-  );
+      runtimeType,
+      id,
+      serverId,
+      damageReportId,
+      documentName,
+      documentDate,
+      documentTypeId,
+      localPath,
+      remotePath,
+      uploadStatus,
+      syncStatus,
+      lastSyncError);
 
-  /// Create a copy of DamageReportAttachment
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DamageReportAttachmentImplCopyWith<_$DamageReportAttachmentImpl>
-  get copyWith =>
-      __$$DamageReportAttachmentImplCopyWithImpl<_$DamageReportAttachmentImpl>(
-        this,
-        _$identity,
-      );
+      get copyWith => __$$DamageReportAttachmentImplCopyWithImpl<
+          _$DamageReportAttachmentImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DamageReportAttachmentImplToJson(this);
+    return _$$DamageReportAttachmentImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _DamageReportAttachment implements DamageReportAttachment {
-  const factory _DamageReportAttachment({
-    @JsonKey(name: 'clientId') required final String id,
-    @JsonKey(name: 'id') final String? serverId,
-    required final String damageReportId,
-    required final String localPath,
-    final String? remotePath,
-    final String uploadStatus,
-    final String syncStatus,
-    final String? lastSyncError,
-  }) = _$DamageReportAttachmentImpl;
+  const factory _DamageReportAttachment(
+      {@JsonKey(name: 'clientId') final String id,
+      @JsonKey(name: 'id') final String? serverId,
+      final String damageReportId,
+      final String documentName,
+      final DateTime? documentDate,
+      final int documentTypeId,
+      final String localPath,
+      @JsonKey(name: 'remoteUrl') final String? remotePath,
+      final String uploadStatus,
+      final String syncStatus,
+      final String? lastSyncError}) = _$DamageReportAttachmentImpl;
 
   factory _DamageReportAttachment.fromJson(Map<String, dynamic> json) =
       _$DamageReportAttachmentImpl.fromJson;
 
   @override
   @JsonKey(name: 'clientId')
-  String get id; // ClientId
-  @override
+  String get id;
+  @override // ClientId
   @JsonKey(name: 'id')
   String? get serverId;
   @override
   String get damageReportId;
   @override
+  String get documentName;
+  @override
+  DateTime? get documentDate;
+  @override
+  int get documentTypeId;
+  @override
   String get localPath;
   @override
+  @JsonKey(name: 'remoteUrl')
   String? get remotePath;
   @override
   String get uploadStatus;
@@ -345,11 +392,8 @@ abstract class _DamageReportAttachment implements DamageReportAttachment {
   String get syncStatus;
   @override
   String? get lastSyncError;
-
-  /// Create a copy of DamageReportAttachment
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$DamageReportAttachmentImplCopyWith<_$DamageReportAttachmentImpl>
-  get copyWith => throw _privateConstructorUsedError;
+      get copyWith => throw _privateConstructorUsedError;
 }

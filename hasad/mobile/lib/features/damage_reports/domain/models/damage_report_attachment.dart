@@ -7,11 +7,14 @@ part 'damage_report_attachment.g.dart';
 @freezed
 class DamageReportAttachment with _$DamageReportAttachment {
   const factory DamageReportAttachment({
-    @JsonKey(name: 'clientId') required String id, // ClientId
+    @JsonKey(name: 'clientId') @Default('') String id, // ClientId
     @JsonKey(name: 'id') String? serverId,
-    required String damageReportId,
-    required String localPath,
-    String? remotePath,
+    @Default('') String damageReportId,
+    @Default('') String documentName,
+    DateTime? documentDate,
+    @Default(0) int documentTypeId,
+    @Default('') String localPath,
+    @JsonKey(name: 'remoteUrl') String? remotePath,
     @Default('pending') String uploadStatus,
     @Default('pending') String syncStatus,
     String? lastSyncError,

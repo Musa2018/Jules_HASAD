@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
+import 'package:mobile/features/auth/presentation/auth_providers.dart';
+import 'package:mobile/core/config/app_config.dart';
 
 class AttachmentGalleryScreen extends ConsumerWidget {
   final String reportId;
@@ -12,12 +14,15 @@ class AttachmentGalleryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentsAsync = ref.watch(attachmentsByReportProvider(reportId));
+    // [LEGACY_MANUAL_REFRESH]
+    // final attachmentsAsync = ref.watch(attachmentsByReportProvider(reportId));
+    final reportAsync = ref.watch(damageReportStreamProvider(reportId));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Evidence Attachments')),
-      body: attachmentsAsync.when(
-        data: (attachments) {
+      body: reportAsync.when(
+        data: (report) {
+          final attachments = report?.attachments ?? [];
           if (attachments.isEmpty) {
             return const Center(child: Text('No attachments yet.'));
           }
@@ -59,7 +64,8 @@ class AttachmentGalleryScreen extends ConsumerWidget {
         localPath: image.path,
       );
       await ref.read(attachmentRepositoryProvider).uploadAttachment(attachment);
-      ref.invalidate(attachmentsByReportProvider(reportId));
+      // [LEGACY_MANUAL_REFRESH]
+      // ref.invalidate(attachmentsByReportProvider(reportId));
     }
   }
 }
@@ -74,7 +80,7 @@ class _AttachmentTile extends ConsumerWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.file(File(attachment.localPath), fit: BoxFit.cover),
+          child: _buildPreview(ref),
         ),
         if (attachment.uploadStatus == 'pending')
           Container(
@@ -90,13 +96,56 @@ class _AttachmentTile extends ConsumerWidget {
               await ref
                   .read(attachmentRepositoryProvider)
                   .deleteAttachment(attachment.id);
-              ref.invalidate(
-                attachmentsByReportProvider(attachment.damageReportId),
-              );
+              // [LEGACY_MANUAL_REFRESH]
+              // ref.invalidate(
+              //   attachmentsByReportProvider(attachment.damageReportId),
+              // );
             },
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildPreview(WidgetRef ref) {
+    // 1. Try local file first
+    if (attachment.localPath.isNotEmpty && File(attachment.localPath).existsSync()) {
+      return Image.file(File(attachment.localPath), fit: BoxFit.cover);
+    }
+
+    // 2. Try remote URL
+    if (attachment.remotePath != null && attachment.remotePath!.isNotEmpty) {
+      final String baseUrl = EnvironmentConfig.config.apiBaseUrl;
+      final String serverRoot = baseUrl.endsWith('/api')
+          ? baseUrl.substring(0, baseUrl.length - 4)
+          : baseUrl;
+
+      String remotePath = attachment.remotePath!;
+      if (!remotePath.startsWith('/') && !remotePath.startsWith('http')) {
+        remotePath = '/$remotePath';
+      }
+
+      final String fullUrl = remotePath.startsWith('http')
+          ? remotePath
+          : "$serverRoot$remotePath";
+
+      final auth = ref.watch(authProvider);
+      final token = auth.session?.token;
+
+      return Image.network(
+        fullUrl,
+        fit: BoxFit.cover,
+        headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const Center(child: CircularProgressIndicator());
+        },
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Icon(Icons.broken_image, color: Colors.grey),
+        ),
+      );
+    }
+
+    return const Center(child: Icon(Icons.image_not_supported, color: Colors.grey));
   }
 }

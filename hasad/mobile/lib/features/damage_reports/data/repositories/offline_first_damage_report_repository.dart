@@ -13,8 +13,10 @@ import 'package:mobile/features/damage_reports/data/repositories/damage_report_r
 import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart' as item_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart' as report_domain;
+import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart' as attachment_domain;
 import 'package:mobile/features/damage_reports/domain/models/damage_report_status.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart' as domain_history;
+import 'package:mobile/features/damage_reports/domain/models/audit_log_entry.dart';
 import 'package:uuid/uuid.dart';
 
 class OfflineFirstDamageReportRepository implements DamageReportRepository {
@@ -48,9 +50,10 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     // Regional scoping based on session
     if (_session != null) {
       if (_session.directorateId != null && _session.directorateId!.isNotEmpty) {
-        query.where((t) => t.directorateId.equals(_session.directorateId!));
+        // Use lowercase comparison for GUID stability across platforms
+        query.where((t) => t.directorateId.lower().equals(_session.directorateId!.toLowerCase()));
       } else if (_session.governorateId != null && _session.governorateId!.isNotEmpty) {
-        query.where((t) => t.governorateId.equals(_session.governorateId!));
+        query.where((t) => t.governorateId.lower().equals(_session.governorateId!.toLowerCase()));
       }
     }
 
@@ -61,9 +64,12 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     List<report_domain.DamageReport> results = [];
     for (var r in reports) {
       final items = await (_db.select(_db.damageItems)
-        ..where((t) => t.damageReportId.equals(r.id)))
+        ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
           .get();
-      results.add(_mapToDomain(r, items));
+      final attachments = await (_db.select(_db.damageReportAttachments)
+        ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
+          .get();
+      results.add(_mapToDomain(r, items, attachments));
     }
     return results;
   }
@@ -76,9 +82,10 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     // Regional scoping based on session
     if (_session != null) {
       if (_session.directorateId != null && _session.directorateId!.isNotEmpty) {
-        query.where((t) => t.directorateId.equals(_session.directorateId!));
+        // Use lowercase comparison for GUID stability across platforms
+        query.where((t) => t.directorateId.lower().equals(_session.directorateId!.toLowerCase()));
       } else if (_session.governorateId != null && _session.governorateId!.isNotEmpty) {
-        query.where((t) => t.governorateId.equals(_session.governorateId!));
+        query.where((t) => t.governorateId.lower().equals(_session.governorateId!.toLowerCase()));
       }
     }
 
@@ -88,9 +95,12 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       List<report_domain.DamageReport> results = [];
       for (var r in reports) {
         final items = await (_db.select(_db.damageItems)
-          ..where((t) => t.damageReportId.equals(r.id)))
+          ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
             .get();
-        results.add(_mapToDomain(r, items));
+        final attachments = await (_db.select(_db.damageReportAttachments)
+          ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
+            .get();
+        results.add(_mapToDomain(r, items, attachments));
       }
       return results;
     });
@@ -100,19 +110,22 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   Future<List<report_domain.DamageReport>> getDamageReportsByFarm(
       String farmId,
       ) async {
-    final reports =
-    await (_db.select(_db.damageReports)
-      ..where((t) => t.farmId.equals(farmId) & t.isPendingDelete.equals(false))
-      ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]))
-        .get();
+    final query = _db.select(_db.damageReports)
+      ..where((t) => t.farmId.lower().equals(farmId.toLowerCase()) & t.isPendingDelete.equals(false))
+      ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]);
+    
+    final reports = await query.get();
 
     List<report_domain.DamageReport> results = [];
     for (var r in reports) {
       final items = await (_db.select(
         _db.damageItems,
-      )..where((t) => t.damageReportId.equals(r.id))).get();
+      )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
+      final attachments = await (_db.select(
+        _db.damageReportAttachments,
+      )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
 
-      results.add(_mapToDomain(r, items));
+      results.add(_mapToDomain(r, items, attachments));
     }
     return results;
   }
@@ -120,16 +133,19 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   @override
   Stream<List<report_domain.DamageReport>> watchDamageReportsByFarm(String farmId) {
     final query = _db.select(_db.damageReports)
-      ..where((t) => t.farmId.equals(farmId) & t.isPendingDelete.equals(false))
+      ..where((t) => t.farmId.lower().equals(farmId.toLowerCase()) & t.isPendingDelete.equals(false))
       ..orderBy([(t) => OrderingTerm.desc(t.damageDate)]);
 
     return query.watch().asyncMap((reports) async {
       List<report_domain.DamageReport> results = [];
       for (var r in reports) {
         final items = await (_db.select(_db.damageItems)
-          ..where((t) => t.damageReportId.equals(r.id)))
+          ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
             .get();
-        results.add(_mapToDomain(r, items));
+        final attachments = await (_db.select(_db.damageReportAttachments)
+          ..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase())))
+            .get();
+        results.add(_mapToDomain(r, items, attachments));
       }
       return results;
     });
@@ -139,15 +155,18 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
   Future<report_domain.DamageReport> getDamageReport(String id) async {
     final r = await (_db.select(
       _db.damageReports,
-    )..where((t) => t.id.equals(id))).getSingle();
+    )..where((t) => t.id.lower().equals(id.toLowerCase()))).getSingle();
     final items = await (_db.select(
       _db.damageItems,
-    )..where((t) => t.damageReportId.equals(r.id))).get();
+    )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
+    final attachments = await (_db.select(
+      _db.damageReportAttachments,
+    )..where((t) => t.damageReportId.lower().equals(r.id.toLowerCase()))).get();
 
-    return _mapToDomain(r, items);
+    return _mapToDomain(r, items, attachments);
   }
 
-  report_domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items) {
+  report_domain.DamageReport _mapToDomain(DamageReportLocal r, List<DamageItemLocal> items, List<DamageReportAttachmentLocal> attachments) {
     return report_domain.DamageReport(
       id: r.id,
       serverId: r.serverId ?? '',
@@ -197,6 +216,19 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         ),
       )
           .toList(),
+      attachments: attachments.map((a) => attachment_domain.DamageReportAttachment(
+        id: a.id,
+        serverId: a.serverId,
+        damageReportId: a.damageReportId,
+        documentName: a.documentName,
+        documentDate: a.documentDate,
+        documentTypeId: a.documentTypeId,
+        localPath: a.localPath,
+        remotePath: a.remotePath,
+        uploadStatus: a.uploadStatus,
+        syncStatus: a.syncStatus,
+        lastSyncError: a.lastSyncError,
+      )).toList(),
     );
   }
 
@@ -245,6 +277,22 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
       estimatedLoss: item.estimatedLoss,
       rowVersion: Value(item.rowVersion),
       lastSyncError: Value(item.lastSyncError),
+    );
+  }
+
+  DamageReportAttachmentsCompanion _mapAttachmentToCompanion(attachment_domain.DamageReportAttachment attachment) {
+    return DamageReportAttachmentsCompanion.insert(
+      id: attachment.id,
+      serverId: Value(attachment.serverId),
+      damageReportId: attachment.damageReportId,
+      documentName: Value(attachment.documentName),
+      documentDate: Value(attachment.documentDate),
+      documentTypeId: Value(attachment.documentTypeId),
+      localPath: attachment.localPath,
+      remotePath: Value(attachment.remotePath),
+      uploadStatus: Value(attachment.uploadStatus),
+      syncStatus: Value(attachment.syncStatus),
+      lastSyncError: Value(attachment.lastSyncError),
     );
   }
 
@@ -734,7 +782,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
           // PROTECTION: Skip if local record has unsynced changes
           // We search by serverId to find matching local records
           final local = await (_db.select(_db.damageReports)
-            ..where((t) => t.serverId.equals(remote.serverId ?? ''))).getSingleOrNull();
+            ..where((t) => t.serverId.lower().equals(remote.serverId?.toLowerCase() ?? ''))).getSingleOrNull();
 
           if (local != null && local.syncStatus != 'completed') {
             continue; // Skip records with pending/failed local changes
@@ -754,7 +802,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
           );
 
           // 2. Full Sync Items: Clear and replace
-          await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(localId))).go();
+          await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.lower().equals(localId.toLowerCase()))).go();
           for (var item in remote.items) {
             await _db.into(_db.damageItems).insert(
               _mapItemToCompanion(item).copyWith(
@@ -762,6 +810,20 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
                 syncStatus: const Value('completed'),
                 lastSyncError: const Value(null),
                 updatedAt: Value(DateTime.now()),
+              ),
+              mode: InsertMode.insertOrReplace,
+            );
+          }
+
+          // 3. Full Sync Attachments: Clear and replace
+          await (_db.delete(_db.damageReportAttachments)..where((t) => t.damageReportId.lower().equals(localId.toLowerCase()))).go();
+          for (var attachment in remote.attachments) {
+            await _db.into(_db.damageReportAttachments).insert(
+              _mapAttachmentToCompanion(attachment).copyWith(
+                id: Value(attachment.id), // Use server provided GUID if available or generate new one
+                damageReportId: Value(localId),
+                syncStatus: const Value('completed'),
+                uploadStatus: const Value('completed'),
               ),
               mode: InsertMode.insertOrReplace,
             );
@@ -802,7 +864,7 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
         );
 
         // Update items: delete local and insert remote for full sync
-        await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.equals(id))).go();
+        await (_db.delete(_db.damageItems)..where((t) => t.damageReportId.lower().equals(id.toLowerCase()))).go();
         for (var item in remote.items) {
           await _db.into(_db.damageItems).insert(
             _mapItemToCompanion(item).copyWith(
@@ -810,6 +872,20 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
               syncStatus: const Value('completed'),
               lastSyncError: const Value(null),
               updatedAt: Value(DateTime.now()),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        }
+
+        // Update attachments: delete local and insert remote for full sync
+        await (_db.delete(_db.damageReportAttachments)..where((t) => t.damageReportId.lower().equals(id.toLowerCase()))).go();
+        for (var attachment in remote.attachments) {
+          await _db.into(_db.damageReportAttachments).insert(
+            _mapAttachmentToCompanion(attachment).copyWith(
+              id: Value(attachment.id),
+              damageReportId: Value(id),
+              syncStatus: const Value('completed'),
+              uploadStatus: const Value('completed'),
             ),
             mode: InsertMode.insertOrReplace,
           );
@@ -822,6 +898,37 @@ class OfflineFirstDamageReportRepository implements DamageReportRepository {
     } catch (e) {
       DebugLogger.log('Error refreshing report $id: $e');
       rethrow;
+    }
+  }
+
+  @override
+  Future<List<AuditLogEntry>> getIntegratedAuditLog(String id) async {
+    final local = await (_db.select(_db.damageReports)..where((t) => t.id.equals(id))).getSingleOrNull();
+    if (local == null) return [];
+
+    final serverId = local.serverId;
+    if (serverId == null || serverId.isEmpty) {
+      return [
+        AuditLogEntry(
+          eventType: 'Report',
+          description: 'تم إنشاء التقرير محلياً (قيد المزامنة)',
+          performedBy: local.createdBy,
+          eventDate: local.damageDate,
+        )
+      ];
+    }
+
+    try {
+      return await _remoteRepository.getIntegratedAuditLog(serverId);
+    } catch (_) {
+      return [
+        AuditLogEntry(
+          eventType: 'Offline',
+          description: 'تعذر جلب سجل العمليات المتكامل من السيرفر',
+          performedBy: 'System',
+          eventDate: DateTime.now(),
+        )
+      ];
     }
   }
 }

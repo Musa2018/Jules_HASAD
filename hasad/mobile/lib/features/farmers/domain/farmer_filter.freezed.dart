@@ -12,8 +12,7 @@ part of 'farmer_filter.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$FarmerFilter {
@@ -24,9 +23,7 @@ mixin _$FarmerFilter {
   String? get localityId => throw _privateConstructorUsedError;
   bool get isOperational => throw _privateConstructorUsedError;
 
-  /// Create a copy of FarmerFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $FarmerFilterCopyWith<FarmerFilter> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -34,18 +31,16 @@ mixin _$FarmerFilter {
 /// @nodoc
 abstract class $FarmerFilterCopyWith<$Res> {
   factory $FarmerFilterCopyWith(
-    FarmerFilter value,
-    $Res Function(FarmerFilter) then,
-  ) = _$FarmerFilterCopyWithImpl<$Res, FarmerFilter>;
+          FarmerFilter value, $Res Function(FarmerFilter) then) =
+      _$FarmerFilterCopyWithImpl<$Res, FarmerFilter>;
   @useResult
-  $Res call({
-    String searchText,
-    Gender? gender,
-    String? syncStatus,
-    String? governorateId,
-    String? localityId,
-    bool isOperational,
-  });
+  $Res call(
+      {String searchText,
+      Gender? gender,
+      String? syncStatus,
+      String? governorateId,
+      String? localityId,
+      bool isOperational});
 }
 
 /// @nodoc
@@ -58,8 +53,6 @@ class _$FarmerFilterCopyWithImpl<$Res, $Val extends FarmerFilter>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of FarmerFilter
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -70,35 +63,32 @@ class _$FarmerFilterCopyWithImpl<$Res, $Val extends FarmerFilter>
     Object? localityId = freezed,
     Object? isOperational = null,
   }) {
-    return _then(
-      _value.copyWith(
-            searchText: null == searchText
-                ? _value.searchText
-                : searchText // ignore: cast_nullable_to_non_nullable
-                      as String,
-            gender: freezed == gender
-                ? _value.gender
-                : gender // ignore: cast_nullable_to_non_nullable
-                      as Gender?,
-            syncStatus: freezed == syncStatus
-                ? _value.syncStatus
-                : syncStatus // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            governorateId: freezed == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            localityId: freezed == localityId
-                ? _value.localityId
-                : localityId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isOperational: null == isOperational
-                ? _value.isOperational
-                : isOperational // ignore: cast_nullable_to_non_nullable
-                      as bool,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      searchText: null == searchText
+          ? _value.searchText
+          : searchText // ignore: cast_nullable_to_non_nullable
+              as String,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender?,
+      syncStatus: freezed == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      localityId: freezed == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOperational: null == isOperational
+          ? _value.isOperational
+          : isOperational // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
   }
 }
 
@@ -106,19 +96,17 @@ class _$FarmerFilterCopyWithImpl<$Res, $Val extends FarmerFilter>
 abstract class _$$FarmerFilterImplCopyWith<$Res>
     implements $FarmerFilterCopyWith<$Res> {
   factory _$$FarmerFilterImplCopyWith(
-    _$FarmerFilterImpl value,
-    $Res Function(_$FarmerFilterImpl) then,
-  ) = __$$FarmerFilterImplCopyWithImpl<$Res>;
+          _$FarmerFilterImpl value, $Res Function(_$FarmerFilterImpl) then) =
+      __$$FarmerFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String searchText,
-    Gender? gender,
-    String? syncStatus,
-    String? governorateId,
-    String? localityId,
-    bool isOperational,
-  });
+  $Res call(
+      {String searchText,
+      Gender? gender,
+      String? syncStatus,
+      String? governorateId,
+      String? localityId,
+      bool isOperational});
 }
 
 /// @nodoc
@@ -126,12 +114,9 @@ class __$$FarmerFilterImplCopyWithImpl<$Res>
     extends _$FarmerFilterCopyWithImpl<$Res, _$FarmerFilterImpl>
     implements _$$FarmerFilterImplCopyWith<$Res> {
   __$$FarmerFilterImplCopyWithImpl(
-    _$FarmerFilterImpl _value,
-    $Res Function(_$FarmerFilterImpl) _then,
-  ) : super(_value, _then);
+      _$FarmerFilterImpl _value, $Res Function(_$FarmerFilterImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of FarmerFilter
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -142,48 +127,45 @@ class __$$FarmerFilterImplCopyWithImpl<$Res>
     Object? localityId = freezed,
     Object? isOperational = null,
   }) {
-    return _then(
-      _$FarmerFilterImpl(
-        searchText: null == searchText
-            ? _value.searchText
-            : searchText // ignore: cast_nullable_to_non_nullable
-                  as String,
-        gender: freezed == gender
-            ? _value.gender
-            : gender // ignore: cast_nullable_to_non_nullable
-                  as Gender?,
-        syncStatus: freezed == syncStatus
-            ? _value.syncStatus
-            : syncStatus // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        governorateId: freezed == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        localityId: freezed == localityId
-            ? _value.localityId
-            : localityId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isOperational: null == isOperational
-            ? _value.isOperational
-            : isOperational // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
+    return _then(_$FarmerFilterImpl(
+      searchText: null == searchText
+          ? _value.searchText
+          : searchText // ignore: cast_nullable_to_non_nullable
+              as String,
+      gender: freezed == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender?,
+      syncStatus: freezed == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      localityId: freezed == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOperational: null == isOperational
+          ? _value.isOperational
+          : isOperational // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
   }
 }
 
 /// @nodoc
 
 class _$FarmerFilterImpl implements _FarmerFilter {
-  const _$FarmerFilterImpl({
-    this.searchText = '',
-    this.gender,
-    this.syncStatus,
-    this.governorateId,
-    this.localityId,
-    this.isOperational = false,
-  });
+  const _$FarmerFilterImpl(
+      {this.searchText = '',
+      this.gender,
+      this.syncStatus,
+      this.governorateId,
+      this.localityId,
+      this.isOperational = false});
 
   @override
   @JsonKey()
@@ -224,19 +206,10 @@ class _$FarmerFilterImpl implements _FarmerFilter {
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    searchText,
-    gender,
-    syncStatus,
-    governorateId,
-    localityId,
-    isOperational,
-  );
+  int get hashCode => Object.hash(runtimeType, searchText, gender, syncStatus,
+      governorateId, localityId, isOperational);
 
-  /// Create a copy of FarmerFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$FarmerFilterImplCopyWith<_$FarmerFilterImpl> get copyWith =>
@@ -244,14 +217,13 @@ class _$FarmerFilterImpl implements _FarmerFilter {
 }
 
 abstract class _FarmerFilter implements FarmerFilter {
-  const factory _FarmerFilter({
-    final String searchText,
-    final Gender? gender,
-    final String? syncStatus,
-    final String? governorateId,
-    final String? localityId,
-    final bool isOperational,
-  }) = _$FarmerFilterImpl;
+  const factory _FarmerFilter(
+      {final String searchText,
+      final Gender? gender,
+      final String? syncStatus,
+      final String? governorateId,
+      final String? localityId,
+      final bool isOperational}) = _$FarmerFilterImpl;
 
   @override
   String get searchText;
@@ -265,11 +237,8 @@ abstract class _FarmerFilter implements FarmerFilter {
   String? get localityId;
   @override
   bool get isOperational;
-
-  /// Create a copy of FarmerFilter
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$FarmerFilterImplCopyWith<_$FarmerFilterImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

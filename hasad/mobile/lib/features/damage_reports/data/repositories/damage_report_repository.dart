@@ -1,6 +1,7 @@
 import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_item.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_workflow_history.dart';
+import 'package:mobile/features/damage_reports/domain/models/audit_log_entry.dart';
 
 abstract class DamageReportRepository {
   Future<List<DamageReport>> getDamageReports({
@@ -32,4 +33,5 @@ abstract class DamageReportRepository {
   Future<void> retryAllFailedSyncs();
   Future<void> synchronize({DateTime? updatedSince});
   Future<void> refreshReport(String id);
+  Future<List<AuditLogEntry>> getIntegratedAuditLog(String id);
 }

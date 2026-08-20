@@ -6,6 +6,7 @@ using Hasad.Application.Common.Options;
 using Hasad.Domain.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hasad.Infrastructure.Services;
 
@@ -23,7 +24,7 @@ public class TokenService : ITokenService
     }
 
     /// <inheritdoc />
-    public string CreateAccessToken(ApplicationUser user, IEnumerable<string> roles)
+    public string CreateAccessToken(ApplicationUser user, IEnumerable<string> roles, IEnumerable<Claim>? additionalClaims = null)
     {
         var key = Encoding.UTF8.GetBytes(_options.Key);
 
@@ -45,7 +46,28 @@ public class TokenService : ITokenService
             claims.Add(new Claim("directorate_id", user.DirectorateId.Value.ToString()));
         }
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        if (additionalClaims != null)
+        {
+            claims.AddRange(additionalClaims);
+        }
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim("role", role)); // Add lowercase 'role' for some client libraries
+
+            if (role == "SuperAdmin")
+            {
+                // Explicitly ensure SuperAdminScope is present in the token regardless of DB state
+                if (claims.All(c => c.Type != "SuperAdminScope"))
+                {
+                    claims.Add(new Claim("SuperAdminScope", "GlobalAccess"));
+                }
+
+                // Add an explicit 'is_superadmin' boolean claim for easier JS/Blazor checks
+                claims.Add(new Claim("is_superadmin", "true"));
+            }
+        }
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

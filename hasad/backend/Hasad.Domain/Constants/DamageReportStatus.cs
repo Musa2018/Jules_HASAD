@@ -17,6 +17,6 @@ public static class DamageReportStatus
     public static string[] All() => new[]
     {
         Draft, PendingTechnicalVerification, TechReview, ArchiveDir, DirManager, MinTechReview,
-        LegalReview, ProcReview, MinArchive, GenManager, Completed
+        LegalReview, MinArchive, ProcReview, GenManager, Completed
     };
 }

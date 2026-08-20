@@ -48,7 +48,6 @@ void main() {
         phoneNumber: '',
         familySize: 1,
         governorateId: '',
-        directorateId: '',
         localityId: '',
         address: '',
       ),
@@ -132,7 +131,6 @@ void main() {
       phoneNumber: '0599123456',
       familySize: 5,
       governorateId: 'g1',
-      directorateId: 'd1',
       localityId: 'l1',
       address: 'Street 1',
     );
@@ -191,13 +189,6 @@ void main() {
     await tester.tap(govField);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Gov 1').last);
-    await tester.pumpAndSettle();
-
-    final dirField = find.byType(SearchableLookupField<Directorate>).first;
-    await tester.ensureVisible(dirField);
-    await tester.tap(dirField);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Dir 1').last);
     await tester.pumpAndSettle();
 
     final locField = find.byType(SearchableLookupField<Locality>).first;

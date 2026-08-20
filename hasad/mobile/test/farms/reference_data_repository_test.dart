@@ -21,6 +21,7 @@ void main() {
     areaUnits: [const domain.AreaUnit(id: 1, nameAr: 'دونم', nameEn: 'Dunum')],
     measurementUnits: [const domain.MeasurementUnit(id: 1, nameAr: 'دونم', nameEn: 'Dunum', category: 'Area')],
     relationshipToOwners: [const domain.RelationshipToOwner(id: 1, nameAr: 'المالك نفسه', nameEn: 'Owner Himself')],
+    documentTypes: [const domain.DocumentType(id: 1, nameAr: 'صورة', nameEn: 'Photo')],
     damageNatures: [const domain.DamageNature(id: 1, nameAr: 'نباتي', nameEn: 'Plant')],
     damageActions: [],
     damageCategories: [const domain.DamageCategory(id: 1, parentId: 1, nameAr: 'أشجار', nameEn: 'Trees')],
@@ -83,6 +84,9 @@ void main() {
       await db.into(db.damageCauseCategories).insert(DamageCauseCategoriesCompanion.insert(id: const drift.Value(1), nameAr: 'سياسي', nameEn: 'Political'));
       await db.into(db.damageCauses).insert(DamageCausesCompanion.insert(id: const drift.Value(1), parentId: 1, nameAr: 'جيش', nameEn: 'Army'));
       
+      // Critical: Add missing documentTypes to satisfy _isDataComplete
+      await db.into(db.documentTypes).insert(DocumentTypesCompanion.insert(id: const drift.Value(1), nameAr: 'صورة', nameEn: 'Photo', isActive: const drift.Value(true)));
+
       final legacyVersionId = 'LEGACY-VERSION-SERVER';
       await db.into(db.costingSheetVersions).insert(CostingSheetVersionsCompanion.insert(
         id: legacyVersionId,

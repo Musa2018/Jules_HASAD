@@ -14,6 +14,7 @@ class ReferenceData with _$ReferenceData {
     required List<AreaUnit> areaUnits,
     required List<MeasurementUnit> measurementUnits,
     required List<RelationshipToOwner> relationshipToOwners,
+    required List<DocumentType> documentTypes,
 
     // Damage Hierarchy
     required List<DamageNature> damageNatures,

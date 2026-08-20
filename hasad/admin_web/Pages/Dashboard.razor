@@ -1,0 +1,181 @@
+@page "/"
+@inject Hasad.AdminWeb.Services.AdminApiClient ApiClient
+@inject Hasad.AdminWeb.Services.DashboardHubClient DashboardHub
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@using Hasad.Application.Features.Reporting.Models
+
+<PageTitle>Dashboard - HASAD Admin</PageTitle>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h1>Executive Dashboard</h1>
+            <div>
+                <button class="btn btn-outline-secondary me-2" @onclick="LoadOverview" disabled="@isLoading">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <button class="btn btn-primary" @onclick="() => showBroadcastModal = true">
+                    <i class="bi bi-megaphone"></i> Broadcast Announcement
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading && overview == null)
+    {
+        <div class="text-center p-5">
+            <div class="spinner-border" role="status"></div>
+            <p class="mt-2">Loading system overview...</p>
+        </div>
+    }
+    else if (overview != null)
+    {
+        <!-- KPI Grid -->
+        <div class="row mb-4">
+            @foreach (var kpi in overview.Kpis)
+            {
+                <div class="col-md-3 mb-3">
+                    <div class="card kpi-card shadow-sm border-left-primary h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted text-uppercase small">@kpi.Title</h6>
+                            <h3 class="fw-bold">@kpi.CurrentValue @kpi.Unit</h3>
+                            <div class="trend @(GetTrendClass(kpi))">
+                                <i class="bi bi-@(GetTrendIcon(kpi))"></i>
+                                @CalculateTrend(kpi)% from last period
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row mb-4">
+            <!-- Device Visualizer -->
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-bold">Device Status</div>
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <div class="display-4 fw-bold text-success">@overview.DeviceStats.OnlineNow</div>
+                        <div class="text-muted">Users Online Now</div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-6 border-end">
+                                <div class="small text-muted mb-1">Android</div>
+                                <i class="bi bi-android text-success fs-4"></i>
+                                <div class="fw-bold">@overview.DeviceStats.AndroidDevices</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="small text-muted mb-1">iOS</div>
+                                <i class="bi bi-apple text-dark fs-4"></i>
+                                <div class="fw-bold">@overview.DeviceStats.IosDevices</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Audits -->
+            <div class="col-md-8 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-bold">Recent Administrative Actions</div>
+                    <div class="card-body p-0 overflow-auto">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Admin</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var audit in overview.RecentAudits)
+                                {
+                                    <tr>
+                                        <td>@audit.AdminUserId</td>
+                                        <td><span class="badge bg-info text-dark">@audit.Action</span></td>
+                                        <td>@audit.EntityName</td>
+                                        <td class="small">@audit.Timestamp.ToLocalTime().ToString("g")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Failed to load dashboard data. Please try again.
+        </div>
+    }
+</div>
+
+@if (showBroadcastModal)
+{
+    <BroadcastNotificationModal OnClose="HandleModalClose" />
+}
+
+@code {
+    private DashboardOverviewDto? overview;
+    private bool showBroadcastModal = false;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await LocalStorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            Navigation.NavigateTo("/login", forceLoad: false);
+            return;
+        }
+
+        await LoadOverview();
+        DashboardHub.OnMetricUpdated += HandleMetricUpdate;
+    }
+
+    private async Task LoadOverview()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await ApiClient.GetDashboardOverviewAsync();
+            if (result != null)
+            {
+                overview = result;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Dashboard Load Error: {ex.Message}");
+            // Optional: If 401, redirect to login
+            // Navigation.NavigateTo("/login");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void HandleMetricUpdate(dynamic metric)
+    {
+        // Update local overview kpi list logic here
+        StateHasChanged();
+    }
+
+    private async Task HandleModalClose()
+    {
+        showBroadcastModal = false;
+        await LoadOverview(); // Refresh after broadcast
+    }
+
+    private string GetTrendClass(KpiMetricDto kpi) => "trend-up text-success";
+    private string GetTrendIcon(KpiMetricDto kpi) => "arrow-up";
+    private string CalculateTrend(KpiMetricDto kpi) => "5.2";
+}

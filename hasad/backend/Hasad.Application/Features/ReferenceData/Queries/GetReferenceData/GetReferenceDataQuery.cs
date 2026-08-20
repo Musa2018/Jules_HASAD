@@ -85,6 +85,17 @@ public class GetReferenceDataQueryHandler : IRequestHandler<GetReferenceDataQuer
             })
             .ToListAsync(cancellationToken);
 
+        dto.DocumentTypes = await _context.DocumentTypes
+            .AsNoTracking()
+            .Where(x => x.IsActive)
+            .Select(x => new LookupDto
+            {
+                Id = x.Id,
+                NameAr = x.NameAr ?? string.Empty,
+                NameEn = x.NameEn ?? string.Empty
+            })
+            .ToListAsync(cancellationToken);
+
         dto.DamageNatures = await _context.DamageNatures
             .AsNoTracking()
             .Select(x => new LookupDto

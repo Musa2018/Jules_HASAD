@@ -17,11 +17,13 @@ public class GetDamageReportsListQueryHandler : IRequestHandler<GetDamageReports
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly IFileStorageService _fileStorage;
 
-    public GetDamageReportsListQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser)
+    public GetDamageReportsListQueryHandler(IApplicationDbContext context, ICurrentUserService currentUser, IFileStorageService fileStorage)
     {
         _context = context;
         _currentUser = currentUser;
+        _fileStorage = fileStorage;
     }
 
     public async Task<Result<PaginatedList<DamageReportDto>>> Handle(GetDamageReportsListQuery request, CancellationToken cancellationToken)
@@ -67,6 +69,7 @@ public class GetDamageReportsListQueryHandler : IRequestHandler<GetDamageReports
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .Include(r => r.Items)
+            .Include(r => r.Attachments)
             .ToListAsync(cancellationToken);
 
         var items = dbItems.Select(r => new DamageReportDto
@@ -106,6 +109,19 @@ public class GetDamageReportsListQueryHandler : IRequestHandler<GetDamageReports
                 Quantity = i.Quantity,
                 EstimatedLoss = i.EstimatedLoss,
                 RowVersion = Convert.ToBase64String(i.RowVersion)
+            }).ToList(),
+            Attachments = r.Attachments.Select(a => new AttachmentDto
+            {
+                Id = a.Id,
+                ClientId = a.ClientId,
+                DocumentName = a.DocumentName,
+                DocumentDate = a.DocumentDate,
+                DocumentTypeId = a.DocumentTypeId,
+                RemoteUrl = _fileStorage.GetUrl(a.RemotePath),
+                FileType = a.FileType,
+                FileSize = a.FileSize,
+                UploadStatus = a.UploadStatus,
+                RowVersion = Convert.ToBase64String(a.RowVersion)
             }).ToList()
         }).ToList();
 

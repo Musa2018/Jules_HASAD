@@ -1,0 +1,103 @@
+@page "/login"
+@layout Hasad.AdminWeb.Shared.EmptyLayout
+@inject Hasad.AdminWeb.Services.AdminApiClient ApiClient
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh">
+    <div class="card shadow" style="width: 400px">
+        <div class="card-body p-4">
+            <h3 class="card-title text-center mb-4">HASAD Admin Login</h3>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <InputText class="form-control" @bind-Value="loginModel.Email" />
+                    <ValidationMessage For="@(() => loginModel.Email)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <InputText type="password" class="form-control" @bind-Value="loginModel.Password" />
+                    <ValidationMessage For="@(() => loginModel.Password)" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span> @(" Logging in...")
+                    }
+                    else
+                    {
+                        @("Login")
+                    }
+                </button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new()
+    {
+        Email = "admin@hasad.ps",
+        Password = "Admin@Hasad2024!"
+    };
+    private bool isSubmitting = false;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.Uri;
+        var token = await LocalStorage.GetItemAsStringAsync("authToken");
+        if (!string.IsNullOrWhiteSpace(token) && uri.EndsWith("/login"))
+        {
+            Navigation.NavigateTo("/", forceLoad: false);
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            var result = await ApiClient.LoginAsync(loginModel.Email, loginModel.Password);
+            if (result != null)
+            {
+                await LocalStorage.SetItemAsync("authToken", result.Token);
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid login attempt.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    public class LoginModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+        public string Email { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Password { get; set; } = "";
+    }
+}

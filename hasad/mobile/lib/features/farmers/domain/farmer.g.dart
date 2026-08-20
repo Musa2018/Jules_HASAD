@@ -7,39 +7,38 @@ part of 'farmer.dart';
 // **************************************************************************
 
 _$FarmerImpl _$$FarmerImplFromJson(Map<String, dynamic> json) => _$FarmerImpl(
-  id: json['clientId'] as String,
-  serverId: json['id'] as String?,
-  idTypeId: (json['idTypeId'] as num).toInt(),
-  idNumber: json['idNumber'] as String,
-  firstNameAr: json['firstNameAr'] as String,
-  fatherNameAr: json['fatherNameAr'] as String,
-  grandfatherNameAr: json['grandfatherNameAr'] as String,
-  familyNameAr: json['familyNameAr'] as String,
-  firstNameEn: json['firstNameEn'] as String,
-  fatherNameEn: json['fatherNameEn'] as String,
-  grandfatherNameEn: json['grandfatherNameEn'] as String,
-  familyNameEn: json['familyNameEn'] as String,
-  birthDate: DateTime.parse(json['birthDate'] as String),
-  gender: $enumDecode(_$GenderEnumMap, json['gender']),
-  phoneNumber: json['phoneNumber'] as String,
-  familySize: (json['familySize'] as num).toInt(),
-  governorateId: json['governorateId'] as String?,
-  directorateId: json['directorateId'] as String?,
-  localityId: json['localityId'] as String?,
-  legacyGovernorateId: json['legacyGovernorateId'] as String? ?? '',
-  legacyLocalityId: json['legacyLocalityId'] as String? ?? '',
-  address: json['address'] as String,
-  rowVersion: json['rowVersion'] as String? ?? '',
-  syncStatus: json['syncStatus'] as String? ?? 'completed',
-  lastSyncError: json['lastSyncError'] as String?,
-  isPendingDelete: json['isPendingDelete'] as bool? ?? false,
-  createdAt: json['createdAt'] == null
-      ? null
-      : DateTime.parse(json['createdAt'] as String),
-  updatedAt: json['updatedAt'] == null
-      ? null
-      : DateTime.parse(json['updatedAt'] as String),
-);
+      id: json['clientId'] as String,
+      serverId: json['id'] as String?,
+      idTypeId: (json['idTypeId'] as num).toInt(),
+      idNumber: json['idNumber'] as String,
+      firstNameAr: json['firstNameAr'] as String,
+      fatherNameAr: json['fatherNameAr'] as String,
+      grandfatherNameAr: json['grandfatherNameAr'] as String,
+      familyNameAr: json['familyNameAr'] as String,
+      firstNameEn: json['firstNameEn'] as String,
+      fatherNameEn: json['fatherNameEn'] as String,
+      grandfatherNameEn: json['grandfatherNameEn'] as String,
+      familyNameEn: json['familyNameEn'] as String,
+      birthDate: DateTime.parse(json['birthDate'] as String),
+      gender: $enumDecode(_$GenderEnumMap, json['gender']),
+      phoneNumber: json['phoneNumber'] as String,
+      familySize: (json['familySize'] as num).toInt(),
+      governorateId: json['governorateId'] as String?,
+      localityId: json['localityId'] as String?,
+      legacyGovernorateId: json['legacyGovernorateId'] as String? ?? '',
+      legacyLocalityId: json['legacyLocalityId'] as String? ?? '',
+      address: json['address'] as String,
+      rowVersion: json['rowVersion'] as String? ?? '',
+      syncStatus: json['syncStatus'] as String? ?? 'completed',
+      lastSyncError: json['lastSyncError'] as String?,
+      isPendingDelete: json['isPendingDelete'] as bool? ?? false,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+    );
 
 Map<String, dynamic> _$$FarmerImplToJson(_$FarmerImpl instance) =>
     <String, dynamic>{
@@ -60,7 +59,6 @@ Map<String, dynamic> _$$FarmerImplToJson(_$FarmerImpl instance) =>
       'phoneNumber': instance.phoneNumber,
       'familySize': instance.familySize,
       'governorateId': instance.governorateId,
-      'directorateId': instance.directorateId,
       'localityId': instance.localityId,
       'legacyGovernorateId': instance.legacyGovernorateId,
       'legacyLocalityId': instance.legacyLocalityId,

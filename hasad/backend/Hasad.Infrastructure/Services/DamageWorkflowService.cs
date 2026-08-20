@@ -16,58 +16,55 @@ public class DamageWorkflowService : IDamageWorkflowService
         _currentUser = currentUser;
     }
 
-    public bool IsTransitionValid(string fromStatus, string toStatus, string userRole)
+    public async Task<bool> IsTransitionValidAsync(string fromStatus, string toStatus, string userRole)
     {
-        // Define the 10-stage state machine (Sprint 13.1)
-        return (fromStatus, toStatus, userRole) switch
+        // 1. Check if it's a "Forward" move defined in DB
+        bool isForwardAllowed = await _context.WorkflowTransitions
+            .AnyAsync(t => t.FromStatusId == fromStatus && t.ToStatusId == toStatus && t.AllowedRole == userRole && !t.IsReturn);
+
+        if (isForwardAllowed) return true;
+
+        // 2. Specialized "Return" logic (Backward moves)
+        if (IsReturnTransition(fromStatus, toStatus))
         {
-            (DamageReportStatus.Draft, DamageReportStatus.PendingTechnicalVerification, AppRoles.AgriculturalEngineer or AppRoles.FieldSurveyor) => true,
-            (DamageReportStatus.Draft, DamageReportStatus.TechReview, AppRoles.AgriculturalEngineer or AppRoles.FieldSurveyor) => true, // direct submit
-            (DamageReportStatus.PendingTechnicalVerification, DamageReportStatus.TechReview, AppRoles.AgriculturalEngineer or AppRoles.FieldSurveyor) => true,
+            // SuperAdmin & GeneralManager can return to ANY previous stage
+            if (userRole == AppRoles.SuperAdmin || userRole == AppRoles.GeneralManager) return true;
 
-            (DamageReportStatus.TechReview, DamageReportStatus.ArchiveDir, AppRoles.TechnicalReviewer) => true,
-            (DamageReportStatus.TechReview, DamageReportStatus.PendingTechnicalVerification, AppRoles.TechnicalReviewer) => true, // Return
+            // Directors & Directorate Managers can return to ANY stage within/before their scope
+            if (userRole == AppRoles.Director || userRole == AppRoles.DirectorateManager || userRole == AppRoles.Supervisor)
+            {
+                // Can return to any previous stage
+                return true;
+            }
 
-            (DamageReportStatus.ArchiveDir, DamageReportStatus.DirManager, AppRoles.ArchiveOfficer) => true,
-            (DamageReportStatus.ArchiveDir, DamageReportStatus.TechReview, AppRoles.ArchiveOfficer) => true, // Return
+            // Ministry Roles can return ONLY ONE STEP back
+            if (userRole == AppRoles.MinistryTechReviewer || userRole == AppRoles.LegalReviewer || userRole == AppRoles.ChiefArchiveOfficer)
+            {
+                return IsOneStepBack(fromStatus, toStatus);
+            }
 
-            (DamageReportStatus.DirManager, DamageReportStatus.MinTechReview, AppRoles.DirectorateManager or AppRoles.Director or AppRoles.Supervisor) => true,
-            (DamageReportStatus.DirManager, DamageReportStatus.ArchiveDir, AppRoles.DirectorateManager or AppRoles.Director or AppRoles.Supervisor) => true, // Return
+            // Procedural Reviewer CANNOT return (Forward only to GM)
+            if (userRole == AppRoles.ProceduralReviewer) return false;
 
-            (DamageReportStatus.MinTechReview, DamageReportStatus.LegalReview, AppRoles.MinistryTechReviewer) => true,
-            (DamageReportStatus.MinTechReview, DamageReportStatus.DirManager, AppRoles.MinistryTechReviewer) => true, // Return
+            // Other roles (TechnicalReviewer, ArchiveOfficer) usually return 1 step back as defined in DB or logic
+            return await _context.WorkflowTransitions
+                .AnyAsync(t => t.FromStatusId == fromStatus && t.ToStatusId == toStatus && t.AllowedRole == userRole && t.IsReturn);
+        }
 
-            (DamageReportStatus.LegalReview, DamageReportStatus.ProcReview, AppRoles.LegalReviewer) => true,
-            (DamageReportStatus.LegalReview, DamageReportStatus.MinTechReview, AppRoles.LegalReviewer) => true, // Return
-
-            (DamageReportStatus.ProcReview, DamageReportStatus.MinArchive, AppRoles.ProceduralReviewer) => true,
-            (DamageReportStatus.ProcReview, DamageReportStatus.LegalReview, AppRoles.ProceduralReviewer) => true, // Return
-
-            (DamageReportStatus.MinArchive, DamageReportStatus.GenManager, AppRoles.ChiefArchiveOfficer) => true,
-            (DamageReportStatus.MinArchive, DamageReportStatus.ProcReview, AppRoles.ChiefArchiveOfficer) => true, // Return
-
-            (DamageReportStatus.GenManager, DamageReportStatus.Completed, AppRoles.GeneralManager) => true,
-            (DamageReportStatus.GenManager, DamageReportStatus.MinArchive, AppRoles.GeneralManager) => true, // Return
-
-            // General Manager / SuperAdmin Override
-            (_, _, AppRoles.GeneralManager or AppRoles.SuperAdmin) => true,
-
-            _ => false
-        };
+        return false;
     }
 
-    public bool CanTransition(DamageReport report, string targetStatus, string? comment)
+    public async Task<bool> CanTransitionAsync(DamageReport report, string targetStatus, string? comment)
     {
-        // 1. Current User check
         if (_currentUser.UserId == null) return false;
 
-        // 2. State Machine check
+        // 1. Role-based State Machine check
         bool isValid = false;
         foreach (var role in AppRoles.All())
         {
             if (_currentUser.IsInRole(role))
             {
-                if (IsTransitionValid(report.StatusId, targetStatus, role))
+                if (await IsTransitionValidAsync(report.StatusId, targetStatus, role))
                 {
                     isValid = true;
                     break;
@@ -77,21 +74,38 @@ public class DamageWorkflowService : IDamageWorkflowService
 
         if (!isValid) return false;
 
-        // 3. Geographic Scope check (inherited from ADR 0013 logic)
+        // 2. Geographic Scope check
         if (!_currentUser.IsInRole(AppRoles.SuperAdmin) && !_currentUser.IsInRole(AppRoles.GeneralManager))
         {
+            // For Directorate/Governorate roles, check if report belongs to their scope
             if (_currentUser.DirectorateId.HasValue && report.DirectorateId != _currentUser.DirectorateId.Value)
             {
-                return false;
+                // If it's a global ministry role, skip this check
+                if (!IsMinistryRole(_currentUser))
+                {
+                    return false;
+                }
             }
 
             if (_currentUser.GovernorateId.HasValue && report.GovernorateId != _currentUser.GovernorateId.Value)
             {
-                return false;
+                 if (!IsMinistryRole(_currentUser))
+                {
+                    return false;
+                }
             }
         }
 
-        // 4. Comment Rules (Mandatory for returns/backward)
+        // 3. Attachment Rules
+        if (report.StatusId == DamageReportStatus.ArchiveDir && targetStatus == DamageReportStatus.DirManager)
+        {
+            var hasSitePhoto = await _context.DamageReportAttachments
+                .AnyAsync(a => a.DamageReportId == report.Id && a.DocumentTypeId == (int)Hasad.Domain.Enums.DocumentTypeEnum.SitePhoto && !a.IsDeleted);
+
+            if (!hasSitePhoto) return false;
+        }
+
+        // 4. Comment Rules (Mandatory for returns)
         if (IsReturnTransition(report.StatusId, targetStatus) && string.IsNullOrWhiteSpace(comment))
         {
             return false;
@@ -100,25 +114,41 @@ public class DamageWorkflowService : IDamageWorkflowService
         return true;
     }
 
+    private bool IsMinistryRole(ICurrentUserService user)
+    {
+        return user.IsInRole(AppRoles.MinistryTechReviewer) ||
+               user.IsInRole(AppRoles.LegalReviewer) ||
+               user.IsInRole(AppRoles.ProceduralReviewer) ||
+               user.IsInRole(AppRoles.ChiefArchiveOfficer) ||
+               user.IsInRole(AppRoles.GeneralManager);
+    }
+
     private bool IsReturnTransition(string from, string to)
     {
-        // Returns are backward moves in the 10-stage chain
         var statuses = DamageReportStatus.All().ToList();
         int fromIndex = statuses.IndexOf(from);
         int toIndex = statuses.IndexOf(to);
 
+        if (fromIndex == -1 || toIndex == -1) return false;
         return toIndex < fromIndex;
+    }
+
+    private bool IsOneStepBack(string from, string to)
+    {
+        var statuses = DamageReportStatus.All().ToList();
+        int fromIndex = statuses.IndexOf(from);
+        int toIndex = statuses.IndexOf(to);
+
+        return fromIndex - toIndex == 1;
     }
 
     public Task TransitionAsync(DamageReport report, string toStatus, string? comment = null, bool isOverride = false)
     {
         var fromStatus = report.StatusId;
 
-        // Update report status
         report.StatusId = toStatus;
         report.UpdatedAt = DateTime.UtcNow;
 
-        // Create history record
         var history = new DamageWorkflowHistory
         {
             Id = Guid.NewGuid(),
@@ -132,8 +162,6 @@ public class DamageWorkflowService : IDamageWorkflowService
         };
 
         _context.DamageWorkflowHistories.Add(history);
-
-        // We don't call SaveChanges here, the command handler will do it.
         return Task.CompletedTask;
     }
 }

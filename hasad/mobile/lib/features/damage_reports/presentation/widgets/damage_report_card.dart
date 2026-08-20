@@ -211,16 +211,19 @@ class DamageReportCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     if (report.isDeleted != true) ...[
-                      if (_canAddItems(report))
+                      if (_canEditAssessment(report, authService))
                         TextButton.icon(
-                          onPressed: () => context.push(AppRoutes.editDamageReport, extra: report.id),
+                          onPressed: () {
+                            debugPrint("[DamageReportCard] Navigating to Edit Assessment for ${report.id}");
+                            context.push(AppRoutes.editDamageReport, extra: report.id);
+                          },
                           icon: Icon(
                             report.hasItems ? Icons.edit_note : Icons.add_circle_outline,
                             size: 18,
                           ),
                           label: Text(report.hasItems ? l10n.editAssessment : l10n.addAssessmentItem),
                         )
-                      else if (!report.isHeaderSynced)
+                      else if (!report.isHeaderSynced && authService.canCreateDamageReport())
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
@@ -289,18 +292,39 @@ class DamageReportCard extends ConsumerWidget {
     return Colors.grey[700]!;
   }
 
-  bool _canAddItems(DamageReport report) {
-    // Phase 2 requirement: Header must be synchronized (have serverId and official report number)
+  bool _canEditAssessment(DamageReport report, AuthorizationService auth) {
+    // 1. Role must be allowed to create/edit reports. TechnicalReviewer is explicitly forbidden.
+    if (auth.hasRole('TechnicalReviewer')) return false;
+    if (!auth.canCreateDamageReport()) return false;
+
+    // 2. Only allow editing if it belongs to the user's directorate (for Engineers/Surveyors)
+    if (auth.hasRole('AgriculturalEngineer') || auth.hasRole('FieldSurveyor')) {
+      if (auth.directorateId != null && report.directorateId.toLowerCase() != auth.directorateId!.toLowerCase()) {
+        return false;
+      }
+    }
+
+    // 3. Phase 2 requirement: Header must be synchronized
     return report.isHeaderSynced && 
            (report.statusId == DamageReportStatus.draft || 
             report.statusId == DamageReportStatus.pendingTechnicalVerification);
   }
 
   bool _canDelete(DamageReport report, AuthorizationService auth) {
-    // Only allow deletion of drafts or pending reports by authorized users
-    return (report.statusId == DamageReportStatus.draft || 
-            report.statusId == DamageReportStatus.pendingTechnicalVerification) &&
-           auth.canManageFarmers(); // Reusing farmer management permission for now as a proxy for survey management
+    // Only allow deletion of drafts or pending reports by admins or the creator's role in the same directorate
+    final bool isDraft = report.statusId == DamageReportStatus.draft || 
+                         report.statusId == DamageReportStatus.pendingTechnicalVerification;
+    
+    if (!isDraft) return false;
+
+    if (auth.hasRole('SuperAdmin') || auth.hasRole('Administrator')) return true;
+
+    if (auth.hasRole('AgriculturalEngineer')) {
+       // Must be same directorate
+       return auth.directorateId != null && report.directorateId.toLowerCase() == auth.directorateId!.toLowerCase();
+    }
+
+    return false;
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref) {

@@ -29,7 +29,7 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
     {
         var query = _context.Farmers.AsNoTracking();
 
-        // 1. Authorization Scoping (Only applied for Operational View)
+        // 1. Authorization Scoping
         if (request.IsOperational && (_currentUser.IsInRole("AgriculturalEngineer") || _currentUser.IsInRole("FieldSurveyor")))
         {
             if (_currentUser.DirectorateId.HasValue)
@@ -37,6 +37,47 @@ public class GetFarmersListQueryHandler : IRequestHandler<GetFarmersListQuery, R
                 var dirId = _currentUser.DirectorateId.Value;
                 query = query.Where(f => _context.Farms.Any(farm => farm.FarmerId == f.Id && farm.DirectorateId == dirId));
             }
+        }
+        else if (string.IsNullOrWhiteSpace(request.Name) && string.IsNullOrWhiteSpace(request.IdNumber))
+        {
+            // If not operational and no search criteria, limit to last 10 for dashboard
+            query = query.OrderByDescending(f => f.CreatedAt).Take(10);
+
+            // Short-circuit: we don't need pagination for the fixed last 10 list
+            var dashboardItems = await query.ToListAsync(cancellationToken);
+            var mappedItems = dashboardItems.Select(f => new FarmerDto
+            {
+                Id = f.Id,
+                ClientId = f.ClientId,
+                IdTypeId = f.IdTypeId,
+                IdNumber = f.IdNumber,
+                PhoneNumber = f.PhoneNumber,
+                Address = f.Address,
+                GovernorateId = f.GovernorateId,
+                LocalityId = f.LocalityId,
+                BirthDate = f.BirthDate,
+                Gender = f.Gender,
+                FamilySize = f.FamilySize,
+                FirstNameAr = f.FirstNameAr,
+                FatherNameAr = f.FatherNameAr,
+                GrandfatherNameAr = f.GrandfatherNameAr,
+                FamilyNameAr = f.FamilyNameAr,
+                FirstNameEn = f.FirstNameEn,
+                FatherNameEn = f.FatherNameEn,
+                GrandfatherNameEn = f.GrandfatherNameEn,
+                FamilyNameEn = f.FamilyNameEn,
+                RowVersion = f.RowVersion != null ? Convert.ToBase64String(f.RowVersion) : string.Empty,
+                CreatedAt = f.CreatedAt,
+                UpdatedAt = f.UpdatedAt
+            }).ToList();
+
+            return Result<PaginatedList<FarmerDto>>.Success(new PaginatedList<FarmerDto>
+            {
+                Items = mappedItems,
+                TotalCount = mappedItems.Count,
+                PageNumber = 1,
+                TotalPages = 1
+            });
         }
 
         // 2. Incremental Sync (Pull Watermark)

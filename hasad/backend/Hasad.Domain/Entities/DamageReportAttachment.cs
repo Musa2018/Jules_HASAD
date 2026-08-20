@@ -1,11 +1,18 @@
+using Hasad.Domain.Common;
+
 namespace Hasad.Domain.Entities;
 
-public class DamageReportAttachment
+public class DamageReportAttachment : ISoftDelete
 {
     public Guid Id { get; set; }
     public Guid ClientId { get; set; }
     public Guid DamageReportId { get; set; }
     public DamageReport? DamageReport { get; set; }
+
+    public string DocumentName { get; set; } = string.Empty;
+    public DateTime DocumentDate { get; set; }
+    public int DocumentTypeId { get; set; }
+    public DocumentType? DocumentType { get; set; }
 
     public string FileName { get; set; } = string.Empty;
     public string OriginalFileName { get; set; } = string.Empty;
@@ -24,6 +31,10 @@ public class DamageReportAttachment
 
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
 
     public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 }

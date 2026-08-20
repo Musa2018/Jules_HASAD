@@ -15,17 +15,20 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
     private readonly IDamageWorkflowService _workflowService;
     private readonly ICurrentUserService _currentUser;
     private readonly ILogger<SubmitDamageReportCommandHandler> _logger;
+    private readonly INotificationService _notificationService;
 
     public SubmitDamageReportCommandHandler(
         IApplicationDbContext context,
         IDamageWorkflowService workflowService,
         ICurrentUserService currentUser,
-        ILogger<SubmitDamageReportCommandHandler> logger)
+        ILogger<SubmitDamageReportCommandHandler> logger,
+        INotificationService notificationService)
     {
         _context = context;
         _workflowService = workflowService;
         _currentUser = currentUser;
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     public async Task<Result<Guid>> Handle(SubmitDamageReportCommand request, CancellationToken cancellationToken)
@@ -102,7 +105,7 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
         }
 
         // Check workflow permission
-        if (!_workflowService.CanTransition(report, DamageReportStatus.TechReview, "Report submitted for review."))
+        if (!await _workflowService.CanTransitionAsync(report, DamageReportStatus.TechReview, "Report submitted for review."))
         {
             _logger.LogWarning("SubmitDamageReport: Workflow transition from {From} to {To} REJECTED by service.",
                 report.StatusId, DamageReportStatus.TechReview);
@@ -113,6 +116,9 @@ public class SubmitDamageReportCommandHandler : IRequestHandler<SubmitDamageRepo
         await _workflowService.TransitionAsync(report, DamageReportStatus.TechReview, "Report submitted for review.");
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Notify
+        await _notificationService.NotifyStageTransitionAsync(report, report.StatusId, DamageReportStatus.TechReview, "Report submitted for review.");
 
         return Result<Guid>.Success(report.Id);
     }

@@ -8,7 +8,13 @@ class AuthorizationService {
 
   AuthorizationService(this._session);
 
+  String? get userId => _session?.userId;
+  String? get directorateId => _session?.directorateId;
+  String? get governorateId => _session?.governorateId;
+
   List<String> get _roles => _session?.roles ?? [];
+
+  bool hasRole(String role) => _roles.contains(role);
 
   /// --- Farmer Permissions ---
   

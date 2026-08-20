@@ -10,6 +10,7 @@ public class ReferenceDataDto
     public List<LookupDto> AreaUnits { get; set; } = new();
     public List<LookupDto> MeasurementUnits { get; set; } = new();
     public List<LookupDto> RelationshipToOwners { get; set; } = new();
+    public List<LookupDto> DocumentTypes { get; set; } = new();
 
     // Damage Classification Hierarchy
     public List<LookupDto> DamageNatures { get; set; } = new();

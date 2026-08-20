@@ -59,6 +59,28 @@ void main() {
     await db.close();
   });
 
+  final testFarmer = Farmer(
+    id: 'f-local',
+    idTypeId: 1,
+    idNumber: '123',
+    firstNameAr: 'Ar',
+    fatherNameAr: '',
+    grandfatherNameAr: '',
+    familyNameAr: '',
+    firstNameEn: 'En',
+    fatherNameEn: '',
+    grandfatherNameEn: '',
+    familyNameEn: '',
+    birthDate: DateTime(1990),
+    gender: Gender.male,
+    phoneNumber: '555',
+    familySize: 4,
+    governorateId: 'gov-1',
+    localityId: 'loc-1',
+    address: 'Addr',
+    rowVersion: '',
+  );
+
   test('Sync handles late-binding server IDs in dependent records', () async {
     // 1. Setup offline data: Farmer and Farm (both pending)
     const localFarmerId = 'f-local';
@@ -82,12 +104,13 @@ void main() {
     ));
 
     await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+      id: 'q1',
       localId: localFarmerId,
       entityType: 'farmer',
       operation: 'create',
-      data: '{}',
-      status: 'pending',
-      createdAt: DateTime.now(),
+      data: jsonEncode(testFarmer.toJson()),
+      status: const drift.Value('pending'),
+      createdAt: drift.Value(DateTime.now()),
     ));
 
     await db.into(db.farms).insert(FarmsCompanion.insert(
@@ -104,12 +127,27 @@ void main() {
     ));
 
     await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+      id: 'q2',
       localId: localFarmId,
       entityType: 'farm',
       operation: 'create',
-      data: jsonEncode({'farmerId': localFarmerId}),
-      status: 'pending',
-      createdAt: DateTime.now().add(const Duration(seconds: 1)),
+      data: jsonEncode(Farm(
+        id: localFarmId,
+        farmerId: localFarmerId,
+        localFarmName: 'Farm',
+        ownershipTypeId: 1,
+        governorateId: 'gov',
+        directorateId: 'dir',
+        localityId: 'loc',
+        basin: 'b',
+        parcel: 'p',
+        area: 10.0,
+        areaUnitId: 1,
+        agriculturalSectorId: 1,
+        politicalClassificationId: 1,
+      ).toJson()),
+      status: const drift.Value('pending'),
+      createdAt: drift.Value(DateTime.now().add(const Duration(seconds: 1))),
     ));
 
     // 2. Mock responses
@@ -172,12 +210,27 @@ void main() {
     ));
 
     await db.into(db.syncQueue).insert(SyncQueueCompanion.insert(
+      id: 'q3',
       localId: localFarmId,
       entityType: 'farm',
       operation: 'create',
-      data: jsonEncode({'farmerId': serverFarmerId}),
-      status: 'pending',
-      createdAt: DateTime.now(),
+      data: jsonEncode(Farm(
+        id: localFarmId,
+        farmerId: serverFarmerId,
+        localFarmName: 'Farm',
+        ownershipTypeId: 1,
+        governorateId: 'gov',
+        directorateId: 'dir',
+        localityId: 'loc',
+        basin: 'b',
+        parcel: 'p',
+        area: 10.0,
+        areaUnitId: 1,
+        agriculturalSectorId: 1,
+        politicalClassificationId: 1,
+      ).toJson()),
+      status: const drift.Value('pending'),
+      createdAt: drift.Value(DateTime.now()),
     ));
 
     when(() => farmRepo.createFarm(any())).thenAnswer((inv) async => (inv.positionalArguments[0] as Farm).copyWith(serverId: 'sfarm1'));

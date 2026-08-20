@@ -66,7 +66,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthResp
         await _userManager.ResetAccessFailedCountAsync(user);
 
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _tokenService.CreateAccessToken(user, roles);
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        var accessToken = _tokenService.CreateAccessToken(user, roles, userClaims);
+
         var refreshToken = await _refreshTokenStore.IssueAsync(user.Id, cancellationToken);
 
         return Result<AuthResponse>.Success(new AuthResponse

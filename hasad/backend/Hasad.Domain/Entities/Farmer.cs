@@ -38,7 +38,6 @@ namespace Hasad.Domain.Entities
 
         // Geographic Alignment (Sprint 15.0 Hardening)
         public Guid? GovernorateId { get; set; }
-        public Guid? DirectorateId { get; set; }
         public Guid? LocalityId { get; set; }
 
         // Legacy Geographic Fields (Auditing Only)

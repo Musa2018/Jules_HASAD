@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Text;
 using System.Threading.RateLimiting;
 using Asp.Versioning;
@@ -10,6 +11,8 @@ using Hasad.Domain.Identity;
 using Hasad.Infrastructure.Persistence;
 using Hasad.Infrastructure.Persistence.Seed;
 using Hasad.Infrastructure.Services;
+using Hasad.Application.Features.Reporting.Services;
+using Hasad.Infrastructure.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
@@ -96,7 +99,23 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtOptions.Audience,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.FromMinutes(1)
+        ClockSkew = TimeSpan.FromMinutes(1),
+        NameClaimType = System.Security.Claims.ClaimTypes.Name,
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -113,6 +132,29 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("SuperAdminOnly", policy =>
+        policy.RequireRole("SuperAdmin")
+              .RequireClaim("SuperAdminScope", "GlobalAccess"));
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAdminClient", policy =>
+    {
+        policy.WithOrigins(
+                  "http://localhost:5000",
+                  "http://localhost:5080",
+                  "https://localhost:5001",
+                  "https://localhost:7001"
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
 // Add API Versioning
@@ -135,12 +177,27 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IAssistanceService, AssistanceService>();
 builder.Services.AddScoped<ICostingService, CostingService>();
+builder.Services.AddScoped<IPDFService, PDFService>();
 builder.Services.AddScoped<IDamageReportNumberService, DamageReportNumberService>();
 builder.Services.AddScoped<IDamageWorkflowService, DamageWorkflowService>();
+builder.Services.AddSingleton<IReportMetadataService, ReportMetadataService>();
+builder.Services.AddScoped<IDynamicQueryEngine, DynamicQueryEngine>();
+builder.Services.AddScoped<IReportExportService, ReportExportService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
+
+// Notifications
+builder.Services.Configure<PushNotificationOptions>(builder.Configuration.GetSection(PushNotificationOptions.SectionName));
+builder.Services.AddHttpClient<IFcmHttpV1Client, FcmHttpV1Client>();
+builder.Services.AddHttpClient<IApnsService, ApnsService>(client => {
+    client.DefaultRequestVersion = new Version(2, 0);
+    client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;
+});
+builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -199,6 +256,7 @@ using (var scope = app.Services.CreateScope())
             await DbInitializer.SeedAssistanceRulesAsync(context);
         await DbInitializer.SeedGeographicsAsync(context);
         await DbInitializer.SeedDamageReferenceDataAsync(context);
+        await DbInitializer.SeedWorkflowDataAsync(context);
 
         var seedAdminEmail = app.Configuration["SeedAdmin:Email"];
         var seedAdminPassword = app.Configuration["SeedAdmin:Password"];
@@ -223,6 +281,22 @@ using (var scope = app.Services.CreateScope())
                 Log.Information("SuperAdmin account seeded successfully.");
             }
 
+            // Ensure AdminUser entity exists for auditing
+            var adminIdentity = await userManager.FindByEmailAsync(seedAdminEmail);
+            if (adminIdentity != null && !await context.AdminUsers.AnyAsync(a => a.UserId == adminIdentity.Id))
+            {
+                context.AdminUsers.Add(new Hasad.Domain.Entities.AdminUser
+                {
+                    AdminId = Guid.NewGuid().ToString(),
+                    UserId = adminIdentity.Id,
+                    Role = "SuperAdmin",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                });
+                await context.SaveChangesAsync();
+                Log.Information("AdminUser record created for SuperAdmin.");
+            }
+
             // Seed UAT Users
             await DbInitializer.SeedUatUsersAsync(userManager, context);
             Log.Information("UAT Users seeded successfully.");
@@ -242,6 +316,20 @@ using (var scope = app.Services.CreateScope())
 // Middleware
 app.UseMiddleware<ExceptionMiddleware>();
 
+app.UseStaticFiles(); // Serve files from wwwroot if exists
+
+var uploadsPath = Path.Combine(app.Environment.WebRootPath ?? app.Environment.ContentRootPath, "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -250,11 +338,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+// CORS must be after UseRouting and before UseAuthentication
+app.UseCors("AllowAdminClient");
+
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/health", () => Results.Ok(new { status = "Healthy", timestamp = DateTime.UtcNow }));
+app.MapHub<NotificationHub>("/hubs/notifications").RequireCors("AllowAdminClient");
+app.MapHub<AdminDashboardHub>("/hubs/admin-dashboard").RequireCors("AllowAdminClient");
 app.MapControllers();
 
 app.Run();

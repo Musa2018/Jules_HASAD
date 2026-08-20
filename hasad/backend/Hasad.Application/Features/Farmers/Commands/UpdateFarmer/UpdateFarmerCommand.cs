@@ -26,7 +26,6 @@ public record UpdateFarmerCommand(
     string PhoneNumber,
     int FamilySize,
     Guid? GovernorateId,
-    Guid? DirectorateId,
     Guid? LocalityId,
     string Address,
     string RowVersion) : IRequest<Result<FarmerDto>>;
@@ -83,7 +82,6 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
         farmer.PhoneNumber = request.PhoneNumber;
         farmer.FamilySize = request.FamilySize;
         farmer.GovernorateId = request.GovernorateId;
-        farmer.DirectorateId = request.DirectorateId;
         farmer.LocalityId = request.LocalityId;
         farmer.Address = request.Address;
 
@@ -110,7 +108,6 @@ public class UpdateFarmerCommandHandler : IRequestHandler<UpdateFarmerCommand, R
             Address = farmer.Address,
             RowVersion = Convert.ToBase64String(farmer.RowVersion),
             GovernorateId = farmer.GovernorateId,
-            DirectorateId = farmer.DirectorateId,
             LocalityId = farmer.LocalityId,
             LegacyGovernorateId = farmer.LegacyGovernorateId,
             LegacyLocalityId = farmer.LegacyLocalityId,

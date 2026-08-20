@@ -97,6 +97,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     /// <summary>Workflow history for damage reports.</summary>
     public DbSet<DamageWorkflowHistory> DamageWorkflowHistories => Set<DamageWorkflowHistory>();
 
+    public DbSet<DocumentType> DocumentTypes => Set<DocumentType>();
+    public DbSet<WorkflowStatus> WorkflowStatuses => Set<WorkflowStatus>();
+    public DbSet<WorkflowTransition> WorkflowTransitions => Set<WorkflowTransition>();
+
     public DbSet<DamageReportSequence> DamageReportSequences => Set<DamageReportSequence>();
 
     public DbSet<DamageNature> DamageNatures => Set<DamageNature>();
@@ -110,6 +114,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<DamageCauseCategory> DamageCauseCategories => Set<DamageCauseCategory>();
     public DbSet<DamageCause> DamageCauses => Set<DamageCause>();
+
+    public DbSet<ReportDefinition> ReportDefinitions => Set<ReportDefinition>();
+    public DbSet<UserReportPreset> UserReportPresets => Set<UserReportPreset>();
+    public DbSet<ReportExecutionLog> ReportExecutionLogs => Set<ReportExecutionLog>();
+
+    public DbSet<UserDevice> UserDevices => Set<UserDevice>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<NotificationRecipient> NotificationRecipients => Set<NotificationRecipient>();
+
+    public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+    public DbSet<AdminAuditLog> AdminAuditLogs => Set<AdminAuditLog>();
+    public DbSet<DashboardKpiMetric> DashboardKpiMetrics => Set<DashboardKpiMetric>();
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
@@ -239,7 +255,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
                     // Geographic Alignment (Sprint 15.0 Hardening)
                     entity.Property(f => f.GovernorateId);
-                    entity.Property(f => f.DirectorateId);
                     entity.Property(f => f.LocalityId);
 
                     entity.Property(f => f.LegacyGovernorateId).HasMaxLength(50);
@@ -410,6 +425,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasIndex(e => e.DirectorateId);
             entity.HasIndex(e => new { e.FarmId, e.DamageDate }).IsUnique().HasFilter("[IsDeleted] = 0");
 
+            entity.Property(e => e.TotalDamage).HasPrecision(18, 2);
             entity.Property(e => e.CreatedBy).HasMaxLength(100);
 
             entity.HasOne(e => e.Farm)
@@ -430,6 +446,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             entity.HasOne(e => e.DamageCause)
                 .WithMany()
                 .HasForeignKey(e => e.DamageCauseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Status)
+                .WithMany()
+                .HasForeignKey(e => e.StatusId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -587,6 +608,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<DamageReportAttachment>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.FileName).IsRequired().HasMaxLength(250);
             entity.Property(e => e.OriginalFileName).IsRequired().HasMaxLength(250);
             entity.Property(e => e.FileType).IsRequired().HasMaxLength(100);
@@ -601,11 +624,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(r => r.Attachments)
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.DocumentType)
+                .WithMany()
+                .HasForeignKey(e => e.DocumentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageWorkflowHistory>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.FromStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ToStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ChangedByUserId).IsRequired().HasMaxLength(100);
@@ -615,6 +645,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany()
                 .HasForeignKey(e => e.DamageReportId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.FromWorkflowStatus)
+                .WithMany()
+                .HasForeignKey(e => e.FromStatus)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.ToWorkflowStatus)
+                .WithMany()
+                .HasForeignKey(e => e.ToStatus)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<DamageReportSequence>(entity =>
@@ -631,6 +671,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<Assistance>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.CalculatedAmount).HasPrecision(18, 2);
             entity.Property(e => e.ApprovedAmount).HasPrecision(18, 2);
             entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
@@ -660,6 +702,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<AssistanceAuditLog>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
             entity.Property(e => e.PreviousStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.NewStatus).IsRequired().HasMaxLength(50);
             entity.Property(e => e.ChangedBy).IsRequired().HasMaxLength(100);
@@ -668,6 +712,123 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(c => c.AuditLogs)
                 .HasForeignKey(e => e.AssistanceId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DocumentType>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+
+            entity.HasData(
+                new DocumentType { Id = 1, NameAr = "صورة الموقع", NameEn = "Site Photo" },
+                new DocumentType { Id = 2, NameAr = "صورة الهوية", NameEn = "ID Photo" },
+                new DocumentType { Id = 3, NameAr = "وثيقة ملكية", NameEn = "Ownership Document" },
+                new DocumentType { Id = 4, NameAr = "استمارة حصر الأضرار", NameEn = "Damage Assessment Form" },
+                new DocumentType { Id = 5, NameAr = "قرار وزاري", NameEn = "Ministerial Decision" },
+                new DocumentType { Id = 6, NameAr = "قرار مدير عام", NameEn = "Director General Decision" },
+                new DocumentType { Id = 7, NameAr = "قرار داخلي", NameEn = "Internal Decision" },
+                new DocumentType { Id = 8, NameAr = "شهادة ضرر", NameEn = "Damage Certificate" },
+                new DocumentType { Id = 9, NameAr = "أخرى", NameEn = "Other" }
+            );
+        });
+
+        builder.Entity<WorkflowStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasMaxLength(50);
+            entity.Property(e => e.NameAr).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.NameEn).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<WorkflowTransition>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(e => e.FromStatus)
+                .WithMany()
+                .HasForeignKey(e => e.FromStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.ToStatus)
+                .WithMany()
+                .HasForeignKey(e => e.ToStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(e => e.AllowedRole).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<ReportDefinition>(entity =>
+        {
+            entity.HasKey(e => e.ReportId);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        builder.Entity<UserReportPreset>(entity =>
+        {
+            entity.HasKey(e => e.PresetId);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(e => new { e.UserId, e.ReportId });
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.ReportDefinition)
+                .WithMany(r => r.Presets)
+                .HasForeignKey(e => e.ReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ReportExecutionLog>(entity =>
+        {
+            entity.HasKey(e => e.LogId);
+            entity.Property(e => e.ExecutedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(e => e.ExecutedAt);
+        });
+
+        builder.Entity<UserDevice>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.DeviceToken).IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.IsOnline });
+        });
+
+        builder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        builder.Entity<NotificationRecipient>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.IsRead });
+
+            entity.HasOne(e => e.Notification)
+                .WithMany(n => n.Recipients)
+                .HasForeignKey(e => e.NotificationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<AdminUser>(entity =>
+        {
+            entity.HasKey(e => e.AdminId);
+            entity.HasIndex(e => e.UserId).IsUnique();
+        });
+
+        builder.Entity<AdminAuditLog>(entity =>
+        {
+            entity.HasKey(e => e.AuditId);
+            entity.HasIndex(e => new { e.AdminUserId, e.Timestamp });
+            entity.HasIndex(e => new { e.EntityName, e.EntityId });
+        });
+
+        builder.Entity<DashboardKpiMetric>(entity =>
+        {
+            entity.HasKey(e => e.MetricKey);
+            entity.Property(e => e.CurrentValue).HasPrecision(18, 2);
+            entity.Property(e => e.PreviousValue).HasPrecision(18, 2);
         });
     }
 }

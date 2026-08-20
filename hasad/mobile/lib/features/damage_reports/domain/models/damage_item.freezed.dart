@@ -12,8 +12,7 @@ part of 'damage_item.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 DamageItem _$DamageItemFromJson(Map<String, dynamic> json) {
   return _DamageItem.fromJson(json);
@@ -46,12 +45,8 @@ mixin _$DamageItem {
   DateTime? get deletedAt => throw _privateConstructorUsedError;
   String? get deletedBy => throw _privateConstructorUsedError;
 
-  /// Serializes this DamageItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of DamageItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $DamageItemCopyWith<DamageItem> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -59,34 +54,33 @@ mixin _$DamageItem {
 /// @nodoc
 abstract class $DamageItemCopyWith<$Res> {
   factory $DamageItemCopyWith(
-    DamageItem value,
-    $Res Function(DamageItem) then,
-  ) = _$DamageItemCopyWithImpl<$Res, DamageItem>;
+          DamageItem value, $Res Function(DamageItem) then) =
+      _$DamageItemCopyWithImpl<$Res, DamageItem>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String damageReportId,
-    int damageNatureId,
-    int damageActionId,
-    int classificationId,
-    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
-    String costingSheetId,
-    String? costingSheetItemId,
-    double calculatedUnitPrice,
-    String measurementUnitSnapshot,
-    double affectedArea,
-    double damagePercentage,
-    double quantity,
-    double estimatedLoss,
-    String rowVersion,
-    String syncStatus,
-    String? lastSyncError,
-    DateTime? updatedAt,
-    bool? isDeleted,
-    DateTime? deletedAt,
-    String? deletedBy,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String damageReportId,
+      int damageNatureId,
+      int damageActionId,
+      int classificationId,
+      @Deprecated(
+          'Use costingSheetItemId. Kept for backend sync compatibility.')
+      String costingSheetId,
+      String? costingSheetItemId,
+      double calculatedUnitPrice,
+      String measurementUnitSnapshot,
+      double affectedArea,
+      double damagePercentage,
+      double quantity,
+      double estimatedLoss,
+      String rowVersion,
+      String syncStatus,
+      String? lastSyncError,
+      DateTime? updatedAt,
+      bool? isDeleted,
+      DateTime? deletedAt,
+      String? deletedBy});
 }
 
 /// @nodoc
@@ -99,8 +93,6 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of DamageItem
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -126,95 +118,92 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            serverId: freezed == serverId
-                ? _value.serverId
-                : serverId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            damageReportId: null == damageReportId
-                ? _value.damageReportId
-                : damageReportId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            damageNatureId: null == damageNatureId
-                ? _value.damageNatureId
-                : damageNatureId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            damageActionId: null == damageActionId
-                ? _value.damageActionId
-                : damageActionId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            classificationId: null == classificationId
-                ? _value.classificationId
-                : classificationId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            costingSheetId: null == costingSheetId
-                ? _value.costingSheetId
-                : costingSheetId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            costingSheetItemId: freezed == costingSheetItemId
-                ? _value.costingSheetItemId
-                : costingSheetItemId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            calculatedUnitPrice: null == calculatedUnitPrice
-                ? _value.calculatedUnitPrice
-                : calculatedUnitPrice // ignore: cast_nullable_to_non_nullable
-                      as double,
-            measurementUnitSnapshot: null == measurementUnitSnapshot
-                ? _value.measurementUnitSnapshot
-                : measurementUnitSnapshot // ignore: cast_nullable_to_non_nullable
-                      as String,
-            affectedArea: null == affectedArea
-                ? _value.affectedArea
-                : affectedArea // ignore: cast_nullable_to_non_nullable
-                      as double,
-            damagePercentage: null == damagePercentage
-                ? _value.damagePercentage
-                : damagePercentage // ignore: cast_nullable_to_non_nullable
-                      as double,
-            quantity: null == quantity
-                ? _value.quantity
-                : quantity // ignore: cast_nullable_to_non_nullable
-                      as double,
-            estimatedLoss: null == estimatedLoss
-                ? _value.estimatedLoss
-                : estimatedLoss // ignore: cast_nullable_to_non_nullable
-                      as double,
-            rowVersion: null == rowVersion
-                ? _value.rowVersion
-                : rowVersion // ignore: cast_nullable_to_non_nullable
-                      as String,
-            syncStatus: null == syncStatus
-                ? _value.syncStatus
-                : syncStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lastSyncError: freezed == lastSyncError
-                ? _value.lastSyncError
-                : lastSyncError // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            updatedAt: freezed == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            isDeleted: freezed == isDeleted
-                ? _value.isDeleted
-                : isDeleted // ignore: cast_nullable_to_non_nullable
-                      as bool?,
-            deletedAt: freezed == deletedAt
-                ? _value.deletedAt
-                : deletedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            deletedBy: freezed == deletedBy
-                ? _value.deletedBy
-                : deletedBy // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      damageReportId: null == damageReportId
+          ? _value.damageReportId
+          : damageReportId // ignore: cast_nullable_to_non_nullable
+              as String,
+      damageNatureId: null == damageNatureId
+          ? _value.damageNatureId
+          : damageNatureId // ignore: cast_nullable_to_non_nullable
+              as int,
+      damageActionId: null == damageActionId
+          ? _value.damageActionId
+          : damageActionId // ignore: cast_nullable_to_non_nullable
+              as int,
+      classificationId: null == classificationId
+          ? _value.classificationId
+          : classificationId // ignore: cast_nullable_to_non_nullable
+              as int,
+      costingSheetId: null == costingSheetId
+          ? _value.costingSheetId
+          : costingSheetId // ignore: cast_nullable_to_non_nullable
+              as String,
+      costingSheetItemId: freezed == costingSheetItemId
+          ? _value.costingSheetItemId
+          : costingSheetItemId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      calculatedUnitPrice: null == calculatedUnitPrice
+          ? _value.calculatedUnitPrice
+          : calculatedUnitPrice // ignore: cast_nullable_to_non_nullable
+              as double,
+      measurementUnitSnapshot: null == measurementUnitSnapshot
+          ? _value.measurementUnitSnapshot
+          : measurementUnitSnapshot // ignore: cast_nullable_to_non_nullable
+              as String,
+      affectedArea: null == affectedArea
+          ? _value.affectedArea
+          : affectedArea // ignore: cast_nullable_to_non_nullable
+              as double,
+      damagePercentage: null == damagePercentage
+          ? _value.damagePercentage
+          : damagePercentage // ignore: cast_nullable_to_non_nullable
+              as double,
+      quantity: null == quantity
+          ? _value.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as double,
+      estimatedLoss: null == estimatedLoss
+          ? _value.estimatedLoss
+          : estimatedLoss // ignore: cast_nullable_to_non_nullable
+              as double,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      isDeleted: freezed == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      deletedBy: freezed == deletedBy
+          ? _value.deletedBy
+          : deletedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -222,35 +211,34 @@ class _$DamageItemCopyWithImpl<$Res, $Val extends DamageItem>
 abstract class _$$DamageItemImplCopyWith<$Res>
     implements $DamageItemCopyWith<$Res> {
   factory _$$DamageItemImplCopyWith(
-    _$DamageItemImpl value,
-    $Res Function(_$DamageItemImpl) then,
-  ) = __$$DamageItemImplCopyWithImpl<$Res>;
+          _$DamageItemImpl value, $Res Function(_$DamageItemImpl) then) =
+      __$$DamageItemImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String damageReportId,
-    int damageNatureId,
-    int damageActionId,
-    int classificationId,
-    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
-    String costingSheetId,
-    String? costingSheetItemId,
-    double calculatedUnitPrice,
-    String measurementUnitSnapshot,
-    double affectedArea,
-    double damagePercentage,
-    double quantity,
-    double estimatedLoss,
-    String rowVersion,
-    String syncStatus,
-    String? lastSyncError,
-    DateTime? updatedAt,
-    bool? isDeleted,
-    DateTime? deletedAt,
-    String? deletedBy,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String damageReportId,
+      int damageNatureId,
+      int damageActionId,
+      int classificationId,
+      @Deprecated(
+          'Use costingSheetItemId. Kept for backend sync compatibility.')
+      String costingSheetId,
+      String? costingSheetItemId,
+      double calculatedUnitPrice,
+      String measurementUnitSnapshot,
+      double affectedArea,
+      double damagePercentage,
+      double quantity,
+      double estimatedLoss,
+      String rowVersion,
+      String syncStatus,
+      String? lastSyncError,
+      DateTime? updatedAt,
+      bool? isDeleted,
+      DateTime? deletedAt,
+      String? deletedBy});
 }
 
 /// @nodoc
@@ -258,12 +246,9 @@ class __$$DamageItemImplCopyWithImpl<$Res>
     extends _$DamageItemCopyWithImpl<$Res, _$DamageItemImpl>
     implements _$$DamageItemImplCopyWith<$Res> {
   __$$DamageItemImplCopyWithImpl(
-    _$DamageItemImpl _value,
-    $Res Function(_$DamageItemImpl) _then,
-  ) : super(_value, _then);
+      _$DamageItemImpl _value, $Res Function(_$DamageItemImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of DamageItem
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -289,124 +274,122 @@ class __$$DamageItemImplCopyWithImpl<$Res>
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
   }) {
-    return _then(
-      _$DamageItemImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        serverId: freezed == serverId
-            ? _value.serverId
-            : serverId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        damageReportId: null == damageReportId
-            ? _value.damageReportId
-            : damageReportId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        damageNatureId: null == damageNatureId
-            ? _value.damageNatureId
-            : damageNatureId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        damageActionId: null == damageActionId
-            ? _value.damageActionId
-            : damageActionId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        classificationId: null == classificationId
-            ? _value.classificationId
-            : classificationId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        costingSheetId: null == costingSheetId
-            ? _value.costingSheetId
-            : costingSheetId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        costingSheetItemId: freezed == costingSheetItemId
-            ? _value.costingSheetItemId
-            : costingSheetItemId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        calculatedUnitPrice: null == calculatedUnitPrice
-            ? _value.calculatedUnitPrice
-            : calculatedUnitPrice // ignore: cast_nullable_to_non_nullable
-                  as double,
-        measurementUnitSnapshot: null == measurementUnitSnapshot
-            ? _value.measurementUnitSnapshot
-            : measurementUnitSnapshot // ignore: cast_nullable_to_non_nullable
-                  as String,
-        affectedArea: null == affectedArea
-            ? _value.affectedArea
-            : affectedArea // ignore: cast_nullable_to_non_nullable
-                  as double,
-        damagePercentage: null == damagePercentage
-            ? _value.damagePercentage
-            : damagePercentage // ignore: cast_nullable_to_non_nullable
-                  as double,
-        quantity: null == quantity
-            ? _value.quantity
-            : quantity // ignore: cast_nullable_to_non_nullable
-                  as double,
-        estimatedLoss: null == estimatedLoss
-            ? _value.estimatedLoss
-            : estimatedLoss // ignore: cast_nullable_to_non_nullable
-                  as double,
-        rowVersion: null == rowVersion
-            ? _value.rowVersion
-            : rowVersion // ignore: cast_nullable_to_non_nullable
-                  as String,
-        syncStatus: null == syncStatus
-            ? _value.syncStatus
-            : syncStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lastSyncError: freezed == lastSyncError
-            ? _value.lastSyncError
-            : lastSyncError // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        updatedAt: freezed == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        isDeleted: freezed == isDeleted
-            ? _value.isDeleted
-            : isDeleted // ignore: cast_nullable_to_non_nullable
-                  as bool?,
-        deletedAt: freezed == deletedAt
-            ? _value.deletedAt
-            : deletedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        deletedBy: freezed == deletedBy
-            ? _value.deletedBy
-            : deletedBy // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$DamageItemImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      damageReportId: null == damageReportId
+          ? _value.damageReportId
+          : damageReportId // ignore: cast_nullable_to_non_nullable
+              as String,
+      damageNatureId: null == damageNatureId
+          ? _value.damageNatureId
+          : damageNatureId // ignore: cast_nullable_to_non_nullable
+              as int,
+      damageActionId: null == damageActionId
+          ? _value.damageActionId
+          : damageActionId // ignore: cast_nullable_to_non_nullable
+              as int,
+      classificationId: null == classificationId
+          ? _value.classificationId
+          : classificationId // ignore: cast_nullable_to_non_nullable
+              as int,
+      costingSheetId: null == costingSheetId
+          ? _value.costingSheetId
+          : costingSheetId // ignore: cast_nullable_to_non_nullable
+              as String,
+      costingSheetItemId: freezed == costingSheetItemId
+          ? _value.costingSheetItemId
+          : costingSheetItemId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      calculatedUnitPrice: null == calculatedUnitPrice
+          ? _value.calculatedUnitPrice
+          : calculatedUnitPrice // ignore: cast_nullable_to_non_nullable
+              as double,
+      measurementUnitSnapshot: null == measurementUnitSnapshot
+          ? _value.measurementUnitSnapshot
+          : measurementUnitSnapshot // ignore: cast_nullable_to_non_nullable
+              as String,
+      affectedArea: null == affectedArea
+          ? _value.affectedArea
+          : affectedArea // ignore: cast_nullable_to_non_nullable
+              as double,
+      damagePercentage: null == damagePercentage
+          ? _value.damagePercentage
+          : damagePercentage // ignore: cast_nullable_to_non_nullable
+              as double,
+      quantity: null == quantity
+          ? _value.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as double,
+      estimatedLoss: null == estimatedLoss
+          ? _value.estimatedLoss
+          : estimatedLoss // ignore: cast_nullable_to_non_nullable
+              as double,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      isDeleted: freezed == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      deletedBy: freezed == deletedBy
+          ? _value.deletedBy
+          : deletedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DamageItemImpl implements _DamageItem {
-  const _$DamageItemImpl({
-    @JsonKey(name: 'clientId') this.id = '',
-    @JsonKey(name: 'id') this.serverId,
-    this.damageReportId = '',
-    this.damageNatureId = 0,
-    this.damageActionId = 0,
-    this.classificationId = 0,
-    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
-    this.costingSheetId = '',
-    this.costingSheetItemId,
-    this.calculatedUnitPrice = 0.0,
-    this.measurementUnitSnapshot = '',
-    this.affectedArea = 0.0,
-    this.damagePercentage = 0.0,
-    this.quantity = 0.0,
-    this.estimatedLoss = 0.0,
-    this.rowVersion = '',
-    this.syncStatus = 'completed',
-    this.lastSyncError,
-    this.updatedAt,
-    this.isDeleted,
-    this.deletedAt,
-    this.deletedBy,
-  });
+  const _$DamageItemImpl(
+      {@JsonKey(name: 'clientId') this.id = '',
+      @JsonKey(name: 'id') this.serverId,
+      this.damageReportId = '',
+      this.damageNatureId = 0,
+      this.damageActionId = 0,
+      this.classificationId = 0,
+      @Deprecated(
+          'Use costingSheetItemId. Kept for backend sync compatibility.')
+      this.costingSheetId = '',
+      this.costingSheetItemId,
+      this.calculatedUnitPrice = 0.0,
+      this.measurementUnitSnapshot = '',
+      this.affectedArea = 0.0,
+      this.damagePercentage = 0.0,
+      this.quantity = 0.0,
+      this.estimatedLoss = 0.0,
+      this.rowVersion = '',
+      this.syncStatus = 'completed',
+      this.lastSyncError,
+      this.updatedAt,
+      this.isDeleted,
+      this.deletedAt,
+      this.deletedBy});
 
   factory _$DamageItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$DamageItemImplFromJson(json);
@@ -414,7 +397,7 @@ class _$DamageItemImpl implements _DamageItem {
   @override
   @JsonKey(name: 'clientId')
   final String id;
-  // ClientId
+// ClientId
   @override
   @JsonKey(name: 'id')
   final String? serverId;
@@ -499,9 +482,7 @@ class _$DamageItemImpl implements _DamageItem {
             (identical(other.calculatedUnitPrice, calculatedUnitPrice) ||
                 other.calculatedUnitPrice == calculatedUnitPrice) &&
             (identical(
-                  other.measurementUnitSnapshot,
-                  measurementUnitSnapshot,
-                ) ||
+                    other.measurementUnitSnapshot, measurementUnitSnapshot) ||
                 other.measurementUnitSnapshot == measurementUnitSnapshot) &&
             (identical(other.affectedArea, affectedArea) ||
                 other.affectedArea == affectedArea) &&
@@ -527,36 +508,34 @@ class _$DamageItemImpl implements _DamageItem {
                 other.deletedBy == deletedBy));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
-    runtimeType,
-    id,
-    serverId,
-    damageReportId,
-    damageNatureId,
-    damageActionId,
-    classificationId,
-    costingSheetId,
-    costingSheetItemId,
-    calculatedUnitPrice,
-    measurementUnitSnapshot,
-    affectedArea,
-    damagePercentage,
-    quantity,
-    estimatedLoss,
-    rowVersion,
-    syncStatus,
-    lastSyncError,
-    updatedAt,
-    isDeleted,
-    deletedAt,
-    deletedBy,
-  ]);
+        runtimeType,
+        id,
+        serverId,
+        damageReportId,
+        damageNatureId,
+        damageActionId,
+        classificationId,
+        costingSheetId,
+        costingSheetItemId,
+        calculatedUnitPrice,
+        measurementUnitSnapshot,
+        affectedArea,
+        damagePercentage,
+        quantity,
+        estimatedLoss,
+        rowVersion,
+        syncStatus,
+        lastSyncError,
+        updatedAt,
+        isDeleted,
+        deletedAt,
+        deletedBy
+      ]);
 
-  /// Create a copy of DamageItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DamageItemImplCopyWith<_$DamageItemImpl> get copyWith =>
@@ -564,43 +543,45 @@ class _$DamageItemImpl implements _DamageItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DamageItemImplToJson(this);
+    return _$$DamageItemImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _DamageItem implements DamageItem {
-  const factory _DamageItem({
-    @JsonKey(name: 'clientId') final String id,
-    @JsonKey(name: 'id') final String? serverId,
-    final String damageReportId,
-    final int damageNatureId,
-    final int damageActionId,
-    final int classificationId,
-    @Deprecated('Use costingSheetItemId. Kept for backend sync compatibility.')
-    final String costingSheetId,
-    final String? costingSheetItemId,
-    final double calculatedUnitPrice,
-    final String measurementUnitSnapshot,
-    final double affectedArea,
-    final double damagePercentage,
-    final double quantity,
-    final double estimatedLoss,
-    final String rowVersion,
-    final String syncStatus,
-    final String? lastSyncError,
-    final DateTime? updatedAt,
-    final bool? isDeleted,
-    final DateTime? deletedAt,
-    final String? deletedBy,
-  }) = _$DamageItemImpl;
+  const factory _DamageItem(
+      {@JsonKey(name: 'clientId') final String id,
+      @JsonKey(name: 'id') final String? serverId,
+      final String damageReportId,
+      final int damageNatureId,
+      final int damageActionId,
+      final int classificationId,
+      @Deprecated(
+          'Use costingSheetItemId. Kept for backend sync compatibility.')
+      final String costingSheetId,
+      final String? costingSheetItemId,
+      final double calculatedUnitPrice,
+      final String measurementUnitSnapshot,
+      final double affectedArea,
+      final double damagePercentage,
+      final double quantity,
+      final double estimatedLoss,
+      final String rowVersion,
+      final String syncStatus,
+      final String? lastSyncError,
+      final DateTime? updatedAt,
+      final bool? isDeleted,
+      final DateTime? deletedAt,
+      final String? deletedBy}) = _$DamageItemImpl;
 
   factory _DamageItem.fromJson(Map<String, dynamic> json) =
       _$DamageItemImpl.fromJson;
 
   @override
   @JsonKey(name: 'clientId')
-  String get id; // ClientId
-  @override
+  String get id;
+  @override // ClientId
   @JsonKey(name: 'id')
   String? get serverId;
   @override
@@ -642,11 +623,8 @@ abstract class _DamageItem implements DamageItem {
   DateTime? get deletedAt;
   @override
   String? get deletedBy;
-
-  /// Create a copy of DamageItem
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$DamageItemImplCopyWith<_$DamageItemImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

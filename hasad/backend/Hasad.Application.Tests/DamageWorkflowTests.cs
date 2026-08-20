@@ -3,6 +3,7 @@ using Hasad.Application.Features.DamageReports.Commands.TransitionDamageReport;
 using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using Hasad.Infrastructure.Persistence;
+using Hasad.Infrastructure.Persistence.Seed;
 using Hasad.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -19,40 +20,43 @@ public class DamageWorkflowTests
         _currentUserMock = new Mock<ICurrentUserService>();
     }
 
-    private ApplicationDbContext CreateContext()
+    private async Task<ApplicationDbContext> CreateContextAsync()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
-        return new ApplicationDbContext(options, _currentUserMock.Object);
+        var context = new ApplicationDbContext(options, _currentUserMock.Object);
+        await DbInitializer.SeedWorkflowDataAsync(context);
+        return context;
     }
 
     [Fact]
-    public void IsTransitionValid_EngineerCanSubmitDraft()
+    public async Task IsTransitionValid_EngineerCanSubmitDraft()
     {
-        var context = CreateContext();
+        var context = await CreateContextAsync();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
-        var result = service.IsTransitionValid(DamageReportStatus.Draft, DamageReportStatus.PendingTechnicalVerification, AppRoles.AgriculturalEngineer);
+        var result = await service.IsTransitionValidAsync(DamageReportStatus.Draft, DamageReportStatus.TechReview, AppRoles.AgriculturalEngineer);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void IsTransitionValid_LegalReviewer_CanMoveToProcReview()
+    public async Task IsTransitionValid_LegalReviewer_CanMoveToMinArchive()
     {
-        var context = CreateContext();
+        var context = await CreateContextAsync();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
-        var result = service.IsTransitionValid(DamageReportStatus.LegalReview, DamageReportStatus.ProcReview, AppRoles.LegalReviewer);
+        // In new workflow: LegalReview -> MinArchive
+        var result = await service.IsTransitionValidAsync(DamageReportStatus.LegalReview, DamageReportStatus.MinArchive, AppRoles.LegalReviewer);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void CanTransition_Fails_WhenReturningWithoutComment()
+    public async Task CanTransition_Fails_WhenReturningWithoutComment()
     {
-        var context = CreateContext();
+        var context = await CreateContextAsync();
         var directorateId = Guid.NewGuid();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
@@ -66,16 +70,16 @@ public class DamageWorkflowTests
             DirectorateId = directorateId
         };
 
-        // Attempting to return TechReview -> PendingTechnicalVerification without comment
-        var result = service.CanTransition(report, DamageReportStatus.PendingTechnicalVerification, null);
+        // Attempting to return TechReview -> Draft without comment
+        var result = await service.CanTransitionAsync(report, DamageReportStatus.Draft, null);
 
         Assert.False(result);
     }
 
     [Fact]
-    public void CanTransition_Succeeds_WhenReturningWithComment()
+    public async Task CanTransition_Succeeds_WhenReturningWithComment()
     {
-        var context = CreateContext();
+        var context = await CreateContextAsync();
         var directorateId = Guid.NewGuid();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
@@ -89,15 +93,15 @@ public class DamageWorkflowTests
             DirectorateId = directorateId
         };
 
-        var result = service.CanTransition(report, DamageReportStatus.PendingTechnicalVerification, "Correction needed");
+        var result = await service.CanTransitionAsync(report, DamageReportStatus.Draft, "Correction needed");
 
         Assert.True(result);
     }
 
     [Fact]
-    public void CanTransition_Fails_WhenOutsideScope()
+    public async Task CanTransition_Fails_WhenOutsideScope()
     {
-        var context = CreateContext();
+        var context = await CreateContextAsync();
         var myDirectorateId = Guid.NewGuid();
         var otherDirectorateId = Guid.NewGuid();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
@@ -112,7 +116,8 @@ public class DamageWorkflowTests
             DirectorateId = otherDirectorateId
         };
 
-        var result = service.CanTransition(report, DamageReportStatus.ArchiveDir, null);
+        // Even with valid role, scope mismatch should fail
+        var result = await service.CanTransitionAsync(report, DamageReportStatus.ArchiveDir, null);
 
         Assert.False(result);
     }
@@ -120,44 +125,55 @@ public class DamageWorkflowTests
     [Fact]
     public async Task Handle_TransitionCommand_SucceedsWithoutFarmNavigation()
     {
-        // Scenario 2: DamageReport Farm navigation property not loaded.
-        var context = CreateContext();
+        var context = await CreateContextAsync();
         var directorateId = Guid.NewGuid();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
-        var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object);
+        var pdfMock = new Mock<IPDFService>();
+        var storageMock = new Mock<IFileStorageService>();
+        var notifyMock = new Mock<INotificationService>();
+
+        var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object, pdfMock.Object, storageMock.Object, notifyMock.Object);
 
         _currentUserMock.Setup(x => x.UserId).Returns("eng1");
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);
         _currentUserMock.Setup(x => x.DirectorateId).Returns(directorateId);
 
+        var farm = new Farm { Id = Guid.NewGuid(), LocalFarmName = "Test Farm", DirectorateId = directorateId };
+        context.Farms.Add(farm);
+
         var report = new DamageReport
         {
             Id = Guid.NewGuid(),
             StatusId = DamageReportStatus.Draft,
+            ReportNumber = "REP-001",
             DirectorateId = directorateId,
             GovernorateId = Guid.NewGuid(),
-            FarmId = Guid.NewGuid() // Link exists but Farm object not in context
+            FarmId = farm.Id,
+            Items = new List<DamageItem> { new DamageItem { Id = Guid.NewGuid(), EstimatedLoss = 100, Quantity = 1 } }
         };
         context.DamageReports.Add(report);
         await context.SaveChangesAsync();
 
-        // Clear tracker to ensure Farm is NOT loaded
         context.ChangeTracker.Clear();
 
-        var command = new TransitionDamageReportCommand(report.Id, DamageReportStatus.PendingTechnicalVerification);
+        var command = new TransitionDamageReportCommand(report.Id, DamageReportStatus.TechReview);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
+        if (!result.Succeeded)
+        {
+            throw new Exception("Transition failed: " + string.Join(", ", result.Errors));
+        }
+
         Assert.True(result.Succeeded);
         var updatedReport = await context.DamageReports.FindAsync(report.Id);
-        Assert.Equal(DamageReportStatus.PendingTechnicalVerification, updatedReport!.StatusId);
+        Assert.Equal(DamageReportStatus.TechReview, updatedReport!.StatusId);
     }
 
     [Fact]
-    public void CanTransition_Succeeds_WhenDirectorateMatches()
+    public async Task CanTransition_Succeeds_WhenDirectorateMatches()
     {
-        // Scenario 1: Transition with DamageReport.DirectorateId matching user scope.
-        var context = CreateContext();
+        var context = await CreateContextAsync();
         var directorateId = Guid.NewGuid();
         var service = new DamageWorkflowService(context, _currentUserMock.Object);
 
@@ -171,7 +187,7 @@ public class DamageWorkflowTests
             DirectorateId = directorateId
         };
 
-        var result = service.CanTransition(report, DamageReportStatus.ArchiveDir, null);
+        var result = await service.CanTransitionAsync(report, DamageReportStatus.ArchiveDir, null);
 
         Assert.True(result);
     }

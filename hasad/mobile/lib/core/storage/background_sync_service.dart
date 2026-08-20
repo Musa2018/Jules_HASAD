@@ -582,7 +582,8 @@ class BackgroundSyncService {
         _db.damageReportAttachments,
       )..where((t) => t.id.equals(item.localId))).write(
         DamageReportAttachmentsCompanion(
-          serverId: Value(result.serverId ?? result.id), // For attachments, sometimes id is used
+          serverId: Value(result.serverId ?? result.id), 
+          damageReportId: Value(attachment.damageReportId),
           remotePath: Value(result.remotePath),
           uploadStatus: const Value('completed'),
           syncStatus: const Value('completed'),
@@ -590,7 +591,16 @@ class BackgroundSyncService {
         ),
       );
     } else if (item.operation == 'delete') {
-      await _remoteAttachmentRepository.deleteAttachment(item.localId);
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        try {
+          await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        } on SyncNotFoundException {
+           DebugLogger.log('DELETE 404 handled: Attachment $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
+      }
       await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
@@ -646,6 +656,18 @@ class BackgroundSyncService {
           lastSyncError: const Value(null),
         ),
       );
+    } else if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        try {
+          await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        } on SyncNotFoundException {
+           DebugLogger.log('DELETE 404 handled: Attachment $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
 
@@ -700,6 +722,8 @@ class BackgroundSyncService {
       )..where((t) => t.id.equals(item.localId))).write(
         FarmsCompanion(
           serverId: Value(result.serverId),
+          farmerId: Value(farm.farmerId),
+          ownerFarmerId: Value(farm.ownerFarmerId),
           rowVersion: Value(result.rowVersion),
           syncStatus: const Value('completed'),
           lastSyncError: const Value(null),
@@ -716,6 +740,18 @@ class BackgroundSyncService {
           lastSyncError: const Value(null),
         ),
       );
+    } else if (item.operation == 'delete') {
+      final serverId = data['serverId'] ?? data['id'];
+      if (serverId != null) {
+        try {
+          await _remoteAttachmentRepository.deleteAttachment(serverId.toString());
+        } on SyncNotFoundException {
+           DebugLogger.log('DELETE 404 handled: Attachment $serverId already deleted on server.');
+        } catch (e) {
+          rethrow;
+        }
+      }
+      await _hardDeleteLocalEntity(item.entityType, item.localId);
     }
   }
 
@@ -799,6 +835,8 @@ class BackgroundSyncService {
         )..where((t) => t.id.equals(item.localId))).write(
           DamageReportsCompanion(
             serverId: Value(result.serverId),
+            farmId: Value(report.farmId),
+            farmerId: Value(report.farmerId),
             reportNumber: Value(result.reportNumber),
             permanentFormNumber: Value(result.permanentFormNumber),
             rowVersion: Value(result.rowVersion),
@@ -1251,7 +1289,7 @@ class BackgroundSyncService {
   // --- ID RESOLUTION HELPERS (Late Binding) ---
 
   Future<String?> _resolveFarmerId(String localId) async {
-    final farmer = await (_db.select(_db.farmers)..where((t) => t.id.equals(localId))).getSingleOrNull();
+    final farmer = await (_db.select(_db.farmers)..where((t) => t.id.lower().equals(localId.toLowerCase()))).getSingleOrNull();
     if (farmer == null) {
       // Not found in local DB. Assume it's already a server ID (e.g. from previously synced session)
       return localId;
@@ -1261,13 +1299,13 @@ class BackgroundSyncService {
   }
 
   Future<String?> _resolveFarmId(String localId) async {
-    final farm = await (_db.select(_db.farms)..where((t) => t.id.equals(localId))).getSingleOrNull();
+    final farm = await (_db.select(_db.farms)..where((t) => t.id.lower().equals(localId.toLowerCase()))).getSingleOrNull();
     if (farm == null) return localId;
     return farm.serverId;
   }
 
   Future<String?> _resolveDamageReportId(String localId) async {
-    final report = await (_db.select(_db.damageReports)..where((t) => t.id.equals(localId))).getSingleOrNull();
+    final report = await (_db.select(_db.damageReports)..where((t) => t.id.lower().equals(localId.toLowerCase()))).getSingleOrNull();
     if (report == null) return localId;
     return report.serverId;
   }

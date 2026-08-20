@@ -12,6 +12,7 @@ public interface ITokenService
     /// </summary>
     /// <param name="user">The authenticated user.</param>
     /// <param name="roles">Role names to embed as role claims.</param>
+    /// <param name="additionalClaims">Optional extra claims to embed.</param>
     /// <returns>The serialized JWT.</returns>
-    string CreateAccessToken(ApplicationUser user, IEnumerable<string> roles);
+    string CreateAccessToken(ApplicationUser user, IEnumerable<string> roles, IEnumerable<System.Security.Claims.Claim>? additionalClaims = null);
 }

@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/core/storage/database.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/features/auth/domain/auth_session.dart';
-import 'package:mobile/features/auth/domain/auth_session.dart';
 import 'package:mobile/features/farmers/domain/farmer_filter.dart';
 import 'package:drift/native.dart';
 import 'package:mocktail/mocktail.dart';

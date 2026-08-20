@@ -206,7 +206,7 @@ public class DamageReportSecurityTests
         await context.SaveChangesAsync();
 
         var handler = new UploadAttachmentCommandHandler(context, _storageServiceMock.Object, _currentUserMock.Object);
-        var command = new UploadAttachmentCommand(report.Id, Guid.NewGuid(), new MemoryStream(), "file.png", "image/png", 1024, null, null, null);
+        var command = new UploadAttachmentCommand(report.Id, Guid.NewGuid(), new MemoryStream(), "file.png", "Doc Name", DateTime.UtcNow, 1, "local/path", "image/png", 1024, null, null, null);
 
         var result = await handler.Handle(command, CancellationToken.None);
 

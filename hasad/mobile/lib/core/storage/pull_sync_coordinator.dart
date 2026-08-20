@@ -8,13 +8,14 @@ class PullSyncCoordinator {
 
   Future<void> synchronizeEntity(
     String entityName,
-    Future<void> Function({DateTime? updatedSince}) syncFunc,
-  ) async {
+    Future<void> Function({DateTime? updatedSince}) syncFunc, {
+    bool force = false,
+  }) async {
     final metadata = await (_db.select(_db.syncMetadata)
           ..where((t) => t.entity.equals(entityName)))
         .getSingleOrNull();
 
-    final lastSync = metadata?.lastSyncedAt;
+    final lastSync = force ? null : metadata?.lastSyncedAt;
     final now = DateTime.now();
 
     try {

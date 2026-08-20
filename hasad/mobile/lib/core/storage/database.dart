@@ -32,7 +32,6 @@ class Farmers extends Table {
 
   // Geographic Alignment (Sprint 15.0 Hardening)
   TextColumn get governorateId => text().nullable()(); // Guid
-  TextColumn get directorateId => text().nullable()(); // Guid
   TextColumn get localityId => text().nullable()(); // Guid
 
   // Legacy Geographic Fields (Auditing Only)
@@ -130,6 +129,15 @@ class PoliticalClassifications extends Table {
   IntColumn get id => integer()();
   TextColumn get nameAr => text()();
   TextColumn get nameEn => text()();
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+class DocumentTypes extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nameAr => text()();
+  TextColumn get nameEn => text()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -267,6 +275,10 @@ class DamageReportAttachments extends Table {
   TextColumn get id => text()(); // ClientId
   TextColumn get serverId => text().nullable()();
   TextColumn get damageReportId => text()();
+
+  TextColumn get documentName => text().withDefault(const Constant(''))();
+  DateTimeColumn get documentDate => dateTime().nullable()();
+  IntColumn get documentTypeId => integer().withDefault(const Constant(0))();
 
   TextColumn get localPath => text()();
   TextColumn get remotePath => text().nullable()();
@@ -475,6 +487,7 @@ class SyncMetadata extends Table {
     CostingSheetItems,
     CostingSheets,
     DamageWorkflowHistories,
+    DocumentTypes,
     SyncMetadata,
   ],
 )
@@ -483,7 +496,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.e);
 
   @override
-  int get schemaVersion => 33;
+  int get schemaVersion => 36;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -543,7 +556,7 @@ class AppDatabase extends _$AppDatabase {
         // 3. Enforce NOT NULL by recreating the table via Drift's alterTable
         // This handles the SQLite limitation of not being able to ADD NOT NULL columns to existing data
         // and ensures future integrity without fake defaults.
-        // ignore: deprecated_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 16) {
@@ -621,19 +634,19 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 18) {
         // Sprint 14.2.2: DamageReport Entity Principle - Removing redundant fields
-        // ignore: deprecated_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 19) {
         // Sprint 14.2.3: Damage Assessment Reference Data Foundation
         // Refactor DamageCategories to be sector-based
-        // ignore: deprecated_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageCategories));
       }
       if (from < 20) {
         // Sprint 14.2.3 Correction: Add Damage Action
         await m.createTable(damageActions);
-        // ignore: deprecated_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageItems));
       }
       if (from < 21) {
@@ -672,7 +685,7 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 24) {
         // Phase 2 Cleanup: Remove Settlement and Company names
-        // ignore: deprecated_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 25) {
@@ -686,12 +699,12 @@ class AppDatabase extends _$AppDatabase {
         } catch (_) {}
         
         // Attempt to clean DamageReports
-        // ignore: deprecated_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 26) {
         // FINAL CLEANUP: Force recreate DamageReports without coordinates
-        // ignore: deprecated_member_use
+        // ignore: experimental_member_use
         await m.alterTable(TableMigration(damageReports));
       }
       if (from < 28) {
@@ -707,7 +720,7 @@ class AppDatabase extends _$AppDatabase {
 
           // 2. Add new Guid columns
           await m.addColumn(farmers, farmers.governorateId);
-          await m.addColumn(farmers, farmers.directorateId);
+          await customStatement('ALTER TABLE farmers ADD COLUMN directorate_id TEXT;');
           await m.addColumn(farmers, farmers.localityId);
 
           // 3. Backfill from local geographic tables if available
@@ -756,6 +769,22 @@ class AppDatabase extends _$AppDatabase {
       if (from < 33) {
         // Version 33: Add totalDamage to DamageReports
         await m.addColumn(damageReports, damageReports.totalDamage);
+      }
+      if (from < 34) {
+        // Version 34: Global Farmer Redesign (Remove directorateId from Farmers)
+        // Note: Drift's TableMigration handles the complex SQLite alter table process
+        // ignore: experimental_member_use
+        await m.alterTable(TableMigration(farmers));
+      }
+      if (from < 35) {
+        // Version 35: Attachment Metadata
+        await m.addColumn(damageReportAttachments, damageReportAttachments.documentName);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.documentDate);
+        await m.addColumn(damageReportAttachments, damageReportAttachments.documentTypeId);
+      }
+      if (from < 36) {
+        // Version 36: DocumentTypes Table
+        await m.createTable(documentTypes);
       }
     },
     beforeOpen: (details) async {

@@ -10,6 +10,7 @@ abstract class DamageReportAttachmentRepository {
   );
   Future<void> deleteAttachment(String id);
   Future<List<DamageReportAttachment>> getAttachmentsByReport(String reportId);
+  Stream<List<DamageReportAttachment>> watchAttachmentsByReport(String reportId);
 }
 
 class RemoteDamageReportAttachmentRepository
@@ -29,6 +30,10 @@ class RemoteDamageReportAttachmentRepository
         filename: p_path.basename(file.path),
       ),
       'clientId': attachment.id,
+      'documentName': attachment.documentName,
+      'documentDate': attachment.documentDate?.toIso8601String(),
+      'documentTypeId': attachment.documentTypeId,
+      'localPath': attachment.localPath,
     });
 
     try {
@@ -64,7 +69,7 @@ class RemoteDamageReportAttachmentRepository
   @override
   Future<void> deleteAttachment(String id) async {
     try {
-      await _dio.delete('/v1/attachments/$id');
+      await _dio.delete('/v1/damage-reports/attachments/$id');
     } on DioException catch (e) {
       throw SyncException(['Delete failed: $e']);
     }
@@ -75,6 +80,11 @@ class RemoteDamageReportAttachmentRepository
     String reportId,
   ) async {
     return [];
+  }
+
+  @override
+  Stream<List<DamageReportAttachment>> watchAttachmentsByReport(String reportId) {
+    return Stream.fromFuture(getAttachmentsByReport(reportId));
   }
 
   List<String> _errorsFromEnvelope(Map<String, dynamic>? envelope) {

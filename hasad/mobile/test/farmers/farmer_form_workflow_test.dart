@@ -31,7 +31,7 @@ void main() {
         grandfatherNameAr: '', familyNameAr: '', firstNameEn: '', fatherNameEn: '',
         grandfatherNameEn: '', familyNameEn: '', birthDate: DateTime(1900),
         gender: Gender.male, phoneNumber: '', familySize: 1, governorateId: '',
-        directorateId: '', localityId: '', address: '',
+        localityId: '', address: '',
       ),
     );
   });
@@ -63,7 +63,6 @@ void main() {
       phoneNumber: '0599000000',
       familySize: 4,
       governorateId: 'gov-1',
-      directorateId: 'dir-1',
       localityId: 'loc-1',
       address: 'Test',
     );
@@ -165,12 +164,6 @@ void main() {
     await tester.tap(find.byType(SearchableLookupField<Governorate>));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Jenin').last);
-    await tester.pumpAndSettle();
-
-    await tester.ensureVisible(find.byType(SearchableLookupField<Directorate>));
-    await tester.tap(find.byType(SearchableLookupField<Directorate>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Jenin Directorate').last);
     await tester.pumpAndSettle();
 
     await tester.ensureVisible(find.byType(SearchableLookupField<Locality>));

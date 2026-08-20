@@ -12,8 +12,7 @@ part of 'locality.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Locality _$LocalityFromJson(Map<String, dynamic> json) {
   return _Locality.fromJson(json);
@@ -27,12 +26,8 @@ mixin _$Locality {
   String get governorateId => throw _privateConstructorUsedError;
   String get directorateId => throw _privateConstructorUsedError;
 
-  /// Serializes this Locality to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Locality
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $LocalityCopyWith<Locality> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -42,13 +37,12 @@ abstract class $LocalityCopyWith<$Res> {
   factory $LocalityCopyWith(Locality value, $Res Function(Locality) then) =
       _$LocalityCopyWithImpl<$Res, Locality>;
   @useResult
-  $Res call({
-    String id,
-    String nameAr,
-    String nameEn,
-    String governorateId,
-    String directorateId,
-  });
+  $Res call(
+      {String id,
+      String nameAr,
+      String nameEn,
+      String governorateId,
+      String directorateId});
 }
 
 /// @nodoc
@@ -61,8 +55,6 @@ class _$LocalityCopyWithImpl<$Res, $Val extends Locality>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Locality
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -72,31 +64,28 @@ class _$LocalityCopyWithImpl<$Res, $Val extends Locality>
     Object? governorateId = null,
     Object? directorateId = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            nameAr: null == nameAr
-                ? _value.nameAr
-                : nameAr // ignore: cast_nullable_to_non_nullable
-                      as String,
-            nameEn: null == nameEn
-                ? _value.nameEn
-                : nameEn // ignore: cast_nullable_to_non_nullable
-                      as String,
-            governorateId: null == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            directorateId: null == directorateId
-                ? _value.directorateId
-                : directorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameAr: null == nameAr
+          ? _value.nameAr
+          : nameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameEn: null == nameEn
+          ? _value.nameEn
+          : nameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      directorateId: null == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -104,18 +93,16 @@ class _$LocalityCopyWithImpl<$Res, $Val extends Locality>
 abstract class _$$LocalityImplCopyWith<$Res>
     implements $LocalityCopyWith<$Res> {
   factory _$$LocalityImplCopyWith(
-    _$LocalityImpl value,
-    $Res Function(_$LocalityImpl) then,
-  ) = __$$LocalityImplCopyWithImpl<$Res>;
+          _$LocalityImpl value, $Res Function(_$LocalityImpl) then) =
+      __$$LocalityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String id,
-    String nameAr,
-    String nameEn,
-    String governorateId,
-    String directorateId,
-  });
+  $Res call(
+      {String id,
+      String nameAr,
+      String nameEn,
+      String governorateId,
+      String directorateId});
 }
 
 /// @nodoc
@@ -123,12 +110,9 @@ class __$$LocalityImplCopyWithImpl<$Res>
     extends _$LocalityCopyWithImpl<$Res, _$LocalityImpl>
     implements _$$LocalityImplCopyWith<$Res> {
   __$$LocalityImplCopyWithImpl(
-    _$LocalityImpl _value,
-    $Res Function(_$LocalityImpl) _then,
-  ) : super(_value, _then);
+      _$LocalityImpl _value, $Res Function(_$LocalityImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of Locality
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -138,43 +122,40 @@ class __$$LocalityImplCopyWithImpl<$Res>
     Object? governorateId = null,
     Object? directorateId = null,
   }) {
-    return _then(
-      _$LocalityImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        nameAr: null == nameAr
-            ? _value.nameAr
-            : nameAr // ignore: cast_nullable_to_non_nullable
-                  as String,
-        nameEn: null == nameEn
-            ? _value.nameEn
-            : nameEn // ignore: cast_nullable_to_non_nullable
-                  as String,
-        governorateId: null == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        directorateId: null == directorateId
-            ? _value.directorateId
-            : directorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
+    return _then(_$LocalityImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameAr: null == nameAr
+          ? _value.nameAr
+          : nameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameEn: null == nameEn
+          ? _value.nameEn
+          : nameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      directorateId: null == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$LocalityImpl implements _Locality {
-  const _$LocalityImpl({
-    required this.id,
-    required this.nameAr,
-    required this.nameEn,
-    required this.governorateId,
-    required this.directorateId,
-  });
+  const _$LocalityImpl(
+      {required this.id,
+      required this.nameAr,
+      required this.nameEn,
+      required this.governorateId,
+      required this.directorateId});
 
   factory _$LocalityImpl.fromJson(Map<String, dynamic> json) =>
       _$$LocalityImplFromJson(json);
@@ -209,20 +190,12 @@ class _$LocalityImpl implements _Locality {
                 other.directorateId == directorateId));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    nameAr,
-    nameEn,
-    governorateId,
-    directorateId,
-  );
+      runtimeType, id, nameAr, nameEn, governorateId, directorateId);
 
-  /// Create a copy of Locality
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$LocalityImplCopyWith<_$LocalityImpl> get copyWith =>
@@ -230,18 +203,19 @@ class _$LocalityImpl implements _Locality {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$LocalityImplToJson(this);
+    return _$$LocalityImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Locality implements Locality {
-  const factory _Locality({
-    required final String id,
-    required final String nameAr,
-    required final String nameEn,
-    required final String governorateId,
-    required final String directorateId,
-  }) = _$LocalityImpl;
+  const factory _Locality(
+      {required final String id,
+      required final String nameAr,
+      required final String nameEn,
+      required final String governorateId,
+      required final String directorateId}) = _$LocalityImpl;
 
   factory _Locality.fromJson(Map<String, dynamic> json) =
       _$LocalityImpl.fromJson;
@@ -256,11 +230,8 @@ abstract class _Locality implements Locality {
   String get governorateId;
   @override
   String get directorateId;
-
-  /// Create a copy of Locality
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$LocalityImplCopyWith<_$LocalityImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

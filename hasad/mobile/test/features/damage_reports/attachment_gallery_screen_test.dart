@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile/features/damage_reports/domain/models/damage_report.dart';
 import 'package:mobile/features/damage_reports/domain/models/damage_report_attachment.dart';
 import 'package:mobile/features/damage_reports/presentation/screens/attachment_gallery_screen.dart';
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
@@ -17,12 +18,19 @@ void main() {
       ),
     ];
 
+    final report = DamageReport(
+      id: 'report-1',
+      attachments: attachments,
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          attachmentsByReportProvider(
-            'report-1',
-          ).overrideWith((ref) => attachments),
+          // [LEGACY_MANUAL_REFRESH]
+          // attachmentsByReportProvider(
+          //   'report-1',
+          // ).overrideWith((ref) => Stream.value(attachments)),
+          damageReportStreamProvider('report-1').overrideWith((ref) => Stream.value(report)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

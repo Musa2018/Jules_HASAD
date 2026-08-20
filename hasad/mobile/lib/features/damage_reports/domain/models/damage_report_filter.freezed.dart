@@ -12,8 +12,7 @@ part of 'damage_report_filter.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$DamageReportFilter {
@@ -24,9 +23,7 @@ mixin _$DamageReportFilter {
   String? get directorateId => throw _privateConstructorUsedError;
   String? get localityId => throw _privateConstructorUsedError;
 
-  /// Create a copy of DamageReportFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $DamageReportFilterCopyWith<DamageReportFilter> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -34,18 +31,16 @@ mixin _$DamageReportFilter {
 /// @nodoc
 abstract class $DamageReportFilterCopyWith<$Res> {
   factory $DamageReportFilterCopyWith(
-    DamageReportFilter value,
-    $Res Function(DamageReportFilter) then,
-  ) = _$DamageReportFilterCopyWithImpl<$Res, DamageReportFilter>;
+          DamageReportFilter value, $Res Function(DamageReportFilter) then) =
+      _$DamageReportFilterCopyWithImpl<$Res, DamageReportFilter>;
   @useResult
-  $Res call({
-    String searchText,
-    String? statusId,
-    String? syncStatus,
-    String? governorateId,
-    String? directorateId,
-    String? localityId,
-  });
+  $Res call(
+      {String searchText,
+      String? statusId,
+      String? syncStatus,
+      String? governorateId,
+      String? directorateId,
+      String? localityId});
 }
 
 /// @nodoc
@@ -58,8 +53,6 @@ class _$DamageReportFilterCopyWithImpl<$Res, $Val extends DamageReportFilter>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of DamageReportFilter
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -70,68 +63,60 @@ class _$DamageReportFilterCopyWithImpl<$Res, $Val extends DamageReportFilter>
     Object? directorateId = freezed,
     Object? localityId = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            searchText: null == searchText
-                ? _value.searchText
-                : searchText // ignore: cast_nullable_to_non_nullable
-                      as String,
-            statusId: freezed == statusId
-                ? _value.statusId
-                : statusId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            syncStatus: freezed == syncStatus
-                ? _value.syncStatus
-                : syncStatus // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            governorateId: freezed == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            directorateId: freezed == directorateId
-                ? _value.directorateId
-                : directorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            localityId: freezed == localityId
-                ? _value.localityId
-                : localityId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      searchText: null == searchText
+          ? _value.searchText
+          : searchText // ignore: cast_nullable_to_non_nullable
+              as String,
+      statusId: freezed == statusId
+          ? _value.statusId
+          : statusId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      syncStatus: freezed == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateId: freezed == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      localityId: freezed == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$DamageReportFilterImplCopyWith<$Res>
     implements $DamageReportFilterCopyWith<$Res> {
-  factory _$$DamageReportFilterImplCopyWith(
-    _$DamageReportFilterImpl value,
-    $Res Function(_$DamageReportFilterImpl) then,
-  ) = __$$DamageReportFilterImplCopyWithImpl<$Res>;
+  factory _$$DamageReportFilterImplCopyWith(_$DamageReportFilterImpl value,
+          $Res Function(_$DamageReportFilterImpl) then) =
+      __$$DamageReportFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String searchText,
-    String? statusId,
-    String? syncStatus,
-    String? governorateId,
-    String? directorateId,
-    String? localityId,
-  });
+  $Res call(
+      {String searchText,
+      String? statusId,
+      String? syncStatus,
+      String? governorateId,
+      String? directorateId,
+      String? localityId});
 }
 
 /// @nodoc
 class __$$DamageReportFilterImplCopyWithImpl<$Res>
     extends _$DamageReportFilterCopyWithImpl<$Res, _$DamageReportFilterImpl>
     implements _$$DamageReportFilterImplCopyWith<$Res> {
-  __$$DamageReportFilterImplCopyWithImpl(
-    _$DamageReportFilterImpl _value,
-    $Res Function(_$DamageReportFilterImpl) _then,
-  ) : super(_value, _then);
+  __$$DamageReportFilterImplCopyWithImpl(_$DamageReportFilterImpl _value,
+      $Res Function(_$DamageReportFilterImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of DamageReportFilter
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -142,48 +127,45 @@ class __$$DamageReportFilterImplCopyWithImpl<$Res>
     Object? directorateId = freezed,
     Object? localityId = freezed,
   }) {
-    return _then(
-      _$DamageReportFilterImpl(
-        searchText: null == searchText
-            ? _value.searchText
-            : searchText // ignore: cast_nullable_to_non_nullable
-                  as String,
-        statusId: freezed == statusId
-            ? _value.statusId
-            : statusId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        syncStatus: freezed == syncStatus
-            ? _value.syncStatus
-            : syncStatus // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        governorateId: freezed == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        directorateId: freezed == directorateId
-            ? _value.directorateId
-            : directorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        localityId: freezed == localityId
-            ? _value.localityId
-            : localityId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$DamageReportFilterImpl(
+      searchText: null == searchText
+          ? _value.searchText
+          : searchText // ignore: cast_nullable_to_non_nullable
+              as String,
+      statusId: freezed == statusId
+          ? _value.statusId
+          : statusId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      syncStatus: freezed == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateId: freezed == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      localityId: freezed == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 
 class _$DamageReportFilterImpl implements _DamageReportFilter {
-  const _$DamageReportFilterImpl({
-    this.searchText = '',
-    this.statusId,
-    this.syncStatus,
-    this.governorateId,
-    this.directorateId,
-    this.localityId,
-  });
+  const _$DamageReportFilterImpl(
+      {this.searchText = '',
+      this.statusId,
+      this.syncStatus,
+      this.governorateId,
+      this.directorateId,
+      this.localityId});
 
   @override
   @JsonKey()
@@ -224,37 +206,25 @@ class _$DamageReportFilterImpl implements _DamageReportFilter {
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    searchText,
-    statusId,
-    syncStatus,
-    governorateId,
-    directorateId,
-    localityId,
-  );
+  int get hashCode => Object.hash(runtimeType, searchText, statusId, syncStatus,
+      governorateId, directorateId, localityId);
 
-  /// Create a copy of DamageReportFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DamageReportFilterImplCopyWith<_$DamageReportFilterImpl> get copyWith =>
       __$$DamageReportFilterImplCopyWithImpl<_$DamageReportFilterImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 }
 
 abstract class _DamageReportFilter implements DamageReportFilter {
-  const factory _DamageReportFilter({
-    final String searchText,
-    final String? statusId,
-    final String? syncStatus,
-    final String? governorateId,
-    final String? directorateId,
-    final String? localityId,
-  }) = _$DamageReportFilterImpl;
+  const factory _DamageReportFilter(
+      {final String searchText,
+      final String? statusId,
+      final String? syncStatus,
+      final String? governorateId,
+      final String? directorateId,
+      final String? localityId}) = _$DamageReportFilterImpl;
 
   @override
   String get searchText;
@@ -268,11 +238,8 @@ abstract class _DamageReportFilter implements DamageReportFilter {
   String? get directorateId;
   @override
   String? get localityId;
-
-  /// Create a copy of DamageReportFilter
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$DamageReportFilterImplCopyWith<_$DamageReportFilterImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

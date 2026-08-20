@@ -1,0 +1,72 @@
+@inject Hasad.AdminWeb.Services.AdminApiClient ApiClient
+
+<div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5)">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Broadcast System Announcement</h5>
+                <button type="button" class="btn-close" @onclick="OnClose"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-control" @bind="request.Title" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Message Body</label>
+                    <textarea class="form-control" rows="3" @bind="request.Body"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" @bind="request.Category">
+                        <option value="SystemAnnouncement">System Announcement</option>
+                        <option value="Maintenance">Maintenance Window</option>
+                        <option value="PolicyUpdate">Policy Update</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @if (isSending)
+                {
+                    <button class="btn btn-primary" disabled>
+                        <span class="spinner-border spinner-border-sm"></span> Sending...
+                    </button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="Send">Broadcast Now</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private BroadcastRequest request = new();
+    private bool isSending = false;
+
+    private async Task Send()
+    {
+        if (string.IsNullOrEmpty(request.Title) || string.IsNullOrEmpty(request.Body)) return;
+
+        isSending = true;
+        var success = await ApiClient.BroadcastNotificationAsync(request);
+        isSending = false;
+
+        if (success)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+
+    public class BroadcastRequest
+    {
+        public string Title { get; set; } = "";
+        public string Body { get; set; } = "";
+        public string Category { get; set; } = "SystemAnnouncement";
+        public string? PayloadJson { get; set; }
+    }
+}

@@ -12,8 +12,7 @@ part of 'role.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Role _$RoleFromJson(Map<String, dynamic> json) {
   return _Role.fromJson(json);
@@ -25,12 +24,8 @@ mixin _$Role {
   String get name => throw _privateConstructorUsedError;
   String get scopeType => throw _privateConstructorUsedError;
 
-  /// Serializes this Role to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Role
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $RoleCopyWith<Role> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -52,8 +47,6 @@ class _$RoleCopyWithImpl<$Res, $Val extends Role>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Role
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -61,32 +54,28 @@ class _$RoleCopyWithImpl<$Res, $Val extends Role>
     Object? name = null,
     Object? scopeType = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            scopeType: null == scopeType
-                ? _value.scopeType
-                : scopeType // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      scopeType: null == scopeType
+          ? _value.scopeType
+          : scopeType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$RoleImplCopyWith<$Res> implements $RoleCopyWith<$Res> {
   factory _$$RoleImplCopyWith(
-    _$RoleImpl value,
-    $Res Function(_$RoleImpl) then,
-  ) = __$$RoleImplCopyWithImpl<$Res>;
+          _$RoleImpl value, $Res Function(_$RoleImpl) then) =
+      __$$RoleImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, String name, String scopeType});
@@ -97,10 +86,8 @@ class __$$RoleImplCopyWithImpl<$Res>
     extends _$RoleCopyWithImpl<$Res, _$RoleImpl>
     implements _$$RoleImplCopyWith<$Res> {
   __$$RoleImplCopyWithImpl(_$RoleImpl _value, $Res Function(_$RoleImpl) _then)
-    : super(_value, _then);
+      : super(_value, _then);
 
-  /// Create a copy of Role
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -108,33 +95,28 @@ class __$$RoleImplCopyWithImpl<$Res>
     Object? name = null,
     Object? scopeType = null,
   }) {
-    return _then(
-      _$RoleImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        scopeType: null == scopeType
-            ? _value.scopeType
-            : scopeType // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
+    return _then(_$RoleImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      scopeType: null == scopeType
+          ? _value.scopeType
+          : scopeType // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$RoleImpl implements _Role {
-  const _$RoleImpl({
-    required this.id,
-    required this.name,
-    required this.scopeType,
-  });
+  const _$RoleImpl(
+      {required this.id, required this.name, required this.scopeType});
 
   factory _$RoleImpl.fromJson(Map<String, dynamic> json) =>
       _$$RoleImplFromJson(json);
@@ -162,13 +144,11 @@ class _$RoleImpl implements _Role {
                 other.scopeType == scopeType));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, name, scopeType);
 
-  /// Create a copy of Role
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$RoleImplCopyWith<_$RoleImpl> get copyWith =>
@@ -176,16 +156,17 @@ class _$RoleImpl implements _Role {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RoleImplToJson(this);
+    return _$$RoleImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Role implements Role {
-  const factory _Role({
-    required final String id,
-    required final String name,
-    required final String scopeType,
-  }) = _$RoleImpl;
+  const factory _Role(
+      {required final String id,
+      required final String name,
+      required final String scopeType}) = _$RoleImpl;
 
   factory _Role.fromJson(Map<String, dynamic> json) = _$RoleImpl.fromJson;
 
@@ -195,11 +176,8 @@ abstract class _Role implements Role {
   String get name;
   @override
   String get scopeType;
-
-  /// Create a copy of Role
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$RoleImplCopyWith<_$RoleImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -1,0 +1,52 @@
+@inherits LayoutComponentBase
+@inject Hasad.AdminWeb.Services.DashboardHubClient DashboardHub
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4 d-flex justify-content-between align-items-center">
+            <div class="status-badge">
+                @if (DashboardHub.IsConnected)
+                {
+                    <span class="badge bg-success">Live: Connected</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Offline</span>
+                }
+            </div>
+            <a href="https://hasad.gov.ps" target="_blank">System Help</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await LocalStorage.GetItemAsync<string>("authToken");
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            Navigation.NavigateTo("/login", forceLoad: false);
+            return;
+        }
+
+        try
+        {
+            await DashboardHub.StartAsync();
+        }
+        catch
+        {
+            await LocalStorage.RemoveItemAsync("authToken");
+            Navigation.NavigateTo("/login", forceLoad: false);
+        }
+    }
+}

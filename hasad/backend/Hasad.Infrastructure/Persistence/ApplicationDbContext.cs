@@ -115,6 +115,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<DamageCauseCategory> DamageCauseCategories => Set<DamageCauseCategory>();
     public DbSet<DamageCause> DamageCauses => Set<DamageCause>();
 
+    public DbSet<ReportDefinition> ReportDefinitions => Set<ReportDefinition>();
+    public DbSet<UserReportPreset> UserReportPresets => Set<UserReportPreset>();
+    public DbSet<ReportExecutionLog> ReportExecutionLogs => Set<ReportExecutionLog>();
+
+    public DbSet<UserDevice> UserDevices => Set<UserDevice>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<NotificationRecipient> NotificationRecipients => Set<NotificationRecipient>();
+
+    public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+    public DbSet<AdminAuditLog> AdminAuditLogs => Set<AdminAuditLog>();
+    public DbSet<DashboardKpiMetric> DashboardKpiMetrics => Set<DashboardKpiMetric>();
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -743,6 +755,80 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.Property(e => e.AllowedRole).IsRequired().HasMaxLength(100);
+        });
+
+        builder.Entity<ReportDefinition>(entity =>
+        {
+            entity.HasKey(e => e.ReportId);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        builder.Entity<UserReportPreset>(entity =>
+        {
+            entity.HasKey(e => e.PresetId);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(e => new { e.UserId, e.ReportId });
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.ReportDefinition)
+                .WithMany(r => r.Presets)
+                .HasForeignKey(e => e.ReportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ReportExecutionLog>(entity =>
+        {
+            entity.HasKey(e => e.LogId);
+            entity.Property(e => e.ExecutedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(e => e.ExecutedAt);
+        });
+
+        builder.Entity<UserDevice>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.DeviceToken).IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.IsOnline });
+        });
+
+        builder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
+
+        builder.Entity<NotificationRecipient>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.IsRead });
+
+            entity.HasOne(e => e.Notification)
+                .WithMany(n => n.Recipients)
+                .HasForeignKey(e => e.NotificationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<AdminUser>(entity =>
+        {
+            entity.HasKey(e => e.AdminId);
+            entity.HasIndex(e => e.UserId).IsUnique();
+        });
+
+        builder.Entity<AdminAuditLog>(entity =>
+        {
+            entity.HasKey(e => e.AuditId);
+            entity.HasIndex(e => new { e.AdminUserId, e.Timestamp });
+            entity.HasIndex(e => new { e.EntityName, e.EntityId });
+        });
+
+        builder.Entity<DashboardKpiMetric>(entity =>
+        {
+            entity.HasKey(e => e.MetricKey);
+            entity.Property(e => e.CurrentValue).HasPrecision(18, 2);
+            entity.Property(e => e.PreviousValue).HasPrecision(18, 2);
         });
     }
 }

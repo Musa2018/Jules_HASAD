@@ -12,12 +12,10 @@ part of 'damage_workflow_history.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 DamageWorkflowHistory _$DamageWorkflowHistoryFromJson(
-  Map<String, dynamic> json,
-) {
+    Map<String, dynamic> json) {
   return _DamageWorkflowHistory.fromJson(json);
 }
 
@@ -26,7 +24,8 @@ mixin _$DamageWorkflowHistory {
   @JsonKey(name: 'id')
   String get id => throw _privateConstructorUsedError; // Local Drift ID
   @JsonKey(name: 'serverId')
-  String? get serverId => throw _privateConstructorUsedError; // Authority ID from server
+  String? get serverId =>
+      throw _privateConstructorUsedError; // Authority ID from server
   String get damageReportId => throw _privateConstructorUsedError;
   String get fromStatus => throw _privateConstructorUsedError;
   String get toStatus => throw _privateConstructorUsedError;
@@ -36,42 +35,34 @@ mixin _$DamageWorkflowHistory {
   String? get comment => throw _privateConstructorUsedError;
   bool get isOverride => throw _privateConstructorUsedError;
 
-  /// Serializes this DamageWorkflowHistory to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of DamageWorkflowHistory
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $DamageWorkflowHistoryCopyWith<DamageWorkflowHistory> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $DamageWorkflowHistoryCopyWith<$Res> {
-  factory $DamageWorkflowHistoryCopyWith(
-    DamageWorkflowHistory value,
-    $Res Function(DamageWorkflowHistory) then,
-  ) = _$DamageWorkflowHistoryCopyWithImpl<$Res, DamageWorkflowHistory>;
+  factory $DamageWorkflowHistoryCopyWith(DamageWorkflowHistory value,
+          $Res Function(DamageWorkflowHistory) then) =
+      _$DamageWorkflowHistoryCopyWithImpl<$Res, DamageWorkflowHistory>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'id') String id,
-    @JsonKey(name: 'serverId') String? serverId,
-    String damageReportId,
-    String fromStatus,
-    String toStatus,
-    String changedByUserId,
-    String changedByUserName,
-    DateTime? changedAt,
-    String? comment,
-    bool isOverride,
-  });
+  $Res call(
+      {@JsonKey(name: 'id') String id,
+      @JsonKey(name: 'serverId') String? serverId,
+      String damageReportId,
+      String fromStatus,
+      String toStatus,
+      String changedByUserId,
+      String changedByUserName,
+      DateTime? changedAt,
+      String? comment,
+      bool isOverride});
 }
 
 /// @nodoc
-class _$DamageWorkflowHistoryCopyWithImpl<
-  $Res,
-  $Val extends DamageWorkflowHistory
->
+class _$DamageWorkflowHistoryCopyWithImpl<$Res,
+        $Val extends DamageWorkflowHistory>
     implements $DamageWorkflowHistoryCopyWith<$Res> {
   _$DamageWorkflowHistoryCopyWithImpl(this._value, this._then);
 
@@ -80,8 +71,6 @@ class _$DamageWorkflowHistoryCopyWithImpl<
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of DamageWorkflowHistory
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -96,51 +85,48 @@ class _$DamageWorkflowHistoryCopyWithImpl<
     Object? comment = freezed,
     Object? isOverride = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            serverId: freezed == serverId
-                ? _value.serverId
-                : serverId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            damageReportId: null == damageReportId
-                ? _value.damageReportId
-                : damageReportId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            fromStatus: null == fromStatus
-                ? _value.fromStatus
-                : fromStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            toStatus: null == toStatus
-                ? _value.toStatus
-                : toStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            changedByUserId: null == changedByUserId
-                ? _value.changedByUserId
-                : changedByUserId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            changedByUserName: null == changedByUserName
-                ? _value.changedByUserName
-                : changedByUserName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            changedAt: freezed == changedAt
-                ? _value.changedAt
-                : changedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            comment: freezed == comment
-                ? _value.comment
-                : comment // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isOverride: null == isOverride
-                ? _value.isOverride
-                : isOverride // ignore: cast_nullable_to_non_nullable
-                      as bool,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      damageReportId: null == damageReportId
+          ? _value.damageReportId
+          : damageReportId // ignore: cast_nullable_to_non_nullable
+              as String,
+      fromStatus: null == fromStatus
+          ? _value.fromStatus
+          : fromStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      toStatus: null == toStatus
+          ? _value.toStatus
+          : toStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      changedByUserId: null == changedByUserId
+          ? _value.changedByUserId
+          : changedByUserId // ignore: cast_nullable_to_non_nullable
+              as String,
+      changedByUserName: null == changedByUserName
+          ? _value.changedByUserName
+          : changedByUserName // ignore: cast_nullable_to_non_nullable
+              as String,
+      changedAt: freezed == changedAt
+          ? _value.changedAt
+          : changedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      comment: freezed == comment
+          ? _value.comment
+          : comment // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOverride: null == isOverride
+          ? _value.isOverride
+          : isOverride // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
   }
 }
 
@@ -148,37 +134,33 @@ class _$DamageWorkflowHistoryCopyWithImpl<
 abstract class _$$DamageWorkflowHistoryImplCopyWith<$Res>
     implements $DamageWorkflowHistoryCopyWith<$Res> {
   factory _$$DamageWorkflowHistoryImplCopyWith(
-    _$DamageWorkflowHistoryImpl value,
-    $Res Function(_$DamageWorkflowHistoryImpl) then,
-  ) = __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>;
+          _$DamageWorkflowHistoryImpl value,
+          $Res Function(_$DamageWorkflowHistoryImpl) then) =
+      __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'id') String id,
-    @JsonKey(name: 'serverId') String? serverId,
-    String damageReportId,
-    String fromStatus,
-    String toStatus,
-    String changedByUserId,
-    String changedByUserName,
-    DateTime? changedAt,
-    String? comment,
-    bool isOverride,
-  });
+  $Res call(
+      {@JsonKey(name: 'id') String id,
+      @JsonKey(name: 'serverId') String? serverId,
+      String damageReportId,
+      String fromStatus,
+      String toStatus,
+      String changedByUserId,
+      String changedByUserName,
+      DateTime? changedAt,
+      String? comment,
+      bool isOverride});
 }
 
 /// @nodoc
 class __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>
-    extends
-        _$DamageWorkflowHistoryCopyWithImpl<$Res, _$DamageWorkflowHistoryImpl>
+    extends _$DamageWorkflowHistoryCopyWithImpl<$Res,
+        _$DamageWorkflowHistoryImpl>
     implements _$$DamageWorkflowHistoryImplCopyWith<$Res> {
-  __$$DamageWorkflowHistoryImplCopyWithImpl(
-    _$DamageWorkflowHistoryImpl _value,
-    $Res Function(_$DamageWorkflowHistoryImpl) _then,
-  ) : super(_value, _then);
+  __$$DamageWorkflowHistoryImplCopyWithImpl(_$DamageWorkflowHistoryImpl _value,
+      $Res Function(_$DamageWorkflowHistoryImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of DamageWorkflowHistory
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -193,68 +175,65 @@ class __$$DamageWorkflowHistoryImplCopyWithImpl<$Res>
     Object? comment = freezed,
     Object? isOverride = null,
   }) {
-    return _then(
-      _$DamageWorkflowHistoryImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        serverId: freezed == serverId
-            ? _value.serverId
-            : serverId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        damageReportId: null == damageReportId
-            ? _value.damageReportId
-            : damageReportId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        fromStatus: null == fromStatus
-            ? _value.fromStatus
-            : fromStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        toStatus: null == toStatus
-            ? _value.toStatus
-            : toStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        changedByUserId: null == changedByUserId
-            ? _value.changedByUserId
-            : changedByUserId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        changedByUserName: null == changedByUserName
-            ? _value.changedByUserName
-            : changedByUserName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        changedAt: freezed == changedAt
-            ? _value.changedAt
-            : changedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        comment: freezed == comment
-            ? _value.comment
-            : comment // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isOverride: null == isOverride
-            ? _value.isOverride
-            : isOverride // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
+    return _then(_$DamageWorkflowHistoryImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      damageReportId: null == damageReportId
+          ? _value.damageReportId
+          : damageReportId // ignore: cast_nullable_to_non_nullable
+              as String,
+      fromStatus: null == fromStatus
+          ? _value.fromStatus
+          : fromStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      toStatus: null == toStatus
+          ? _value.toStatus
+          : toStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      changedByUserId: null == changedByUserId
+          ? _value.changedByUserId
+          : changedByUserId // ignore: cast_nullable_to_non_nullable
+              as String,
+      changedByUserName: null == changedByUserName
+          ? _value.changedByUserName
+          : changedByUserName // ignore: cast_nullable_to_non_nullable
+              as String,
+      changedAt: freezed == changedAt
+          ? _value.changedAt
+          : changedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      comment: freezed == comment
+          ? _value.comment
+          : comment // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isOverride: null == isOverride
+          ? _value.isOverride
+          : isOverride // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
-  const _$DamageWorkflowHistoryImpl({
-    @JsonKey(name: 'id') this.id = '',
-    @JsonKey(name: 'serverId') this.serverId,
-    this.damageReportId = '',
-    this.fromStatus = '',
-    this.toStatus = '',
-    this.changedByUserId = '',
-    this.changedByUserName = '',
-    this.changedAt,
-    this.comment,
-    this.isOverride = false,
-  });
+  const _$DamageWorkflowHistoryImpl(
+      {@JsonKey(name: 'id') this.id = '',
+      @JsonKey(name: 'serverId') this.serverId,
+      this.damageReportId = '',
+      this.fromStatus = '',
+      this.toStatus = '',
+      this.changedByUserId = '',
+      this.changedByUserName = '',
+      this.changedAt,
+      this.comment,
+      this.isOverride = false});
 
   factory _$DamageWorkflowHistoryImpl.fromJson(Map<String, dynamic> json) =>
       _$$DamageWorkflowHistoryImplFromJson(json);
@@ -262,11 +241,11 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
   @override
   @JsonKey(name: 'id')
   final String id;
-  // Local Drift ID
+// Local Drift ID
   @override
   @JsonKey(name: 'serverId')
   final String? serverId;
-  // Authority ID from server
+// Authority ID from server
   @override
   @JsonKey()
   final String damageReportId;
@@ -320,64 +299,59 @@ class _$DamageWorkflowHistoryImpl implements _DamageWorkflowHistory {
                 other.isOverride == isOverride));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    serverId,
-    damageReportId,
-    fromStatus,
-    toStatus,
-    changedByUserId,
-    changedByUserName,
-    changedAt,
-    comment,
-    isOverride,
-  );
+      runtimeType,
+      id,
+      serverId,
+      damageReportId,
+      fromStatus,
+      toStatus,
+      changedByUserId,
+      changedByUserName,
+      changedAt,
+      comment,
+      isOverride);
 
-  /// Create a copy of DamageWorkflowHistory
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DamageWorkflowHistoryImplCopyWith<_$DamageWorkflowHistoryImpl>
-  get copyWith =>
-      __$$DamageWorkflowHistoryImplCopyWithImpl<_$DamageWorkflowHistoryImpl>(
-        this,
-        _$identity,
-      );
+      get copyWith => __$$DamageWorkflowHistoryImplCopyWithImpl<
+          _$DamageWorkflowHistoryImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DamageWorkflowHistoryImplToJson(this);
+    return _$$DamageWorkflowHistoryImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
-  const factory _DamageWorkflowHistory({
-    @JsonKey(name: 'id') final String id,
-    @JsonKey(name: 'serverId') final String? serverId,
-    final String damageReportId,
-    final String fromStatus,
-    final String toStatus,
-    final String changedByUserId,
-    final String changedByUserName,
-    final DateTime? changedAt,
-    final String? comment,
-    final bool isOverride,
-  }) = _$DamageWorkflowHistoryImpl;
+  const factory _DamageWorkflowHistory(
+      {@JsonKey(name: 'id') final String id,
+      @JsonKey(name: 'serverId') final String? serverId,
+      final String damageReportId,
+      final String fromStatus,
+      final String toStatus,
+      final String changedByUserId,
+      final String changedByUserName,
+      final DateTime? changedAt,
+      final String? comment,
+      final bool isOverride}) = _$DamageWorkflowHistoryImpl;
 
   factory _DamageWorkflowHistory.fromJson(Map<String, dynamic> json) =
       _$DamageWorkflowHistoryImpl.fromJson;
 
   @override
   @JsonKey(name: 'id')
-  String get id; // Local Drift ID
-  @override
+  String get id;
+  @override // Local Drift ID
   @JsonKey(name: 'serverId')
-  String? get serverId; // Authority ID from server
-  @override
+  String? get serverId;
+  @override // Authority ID from server
   String get damageReportId;
   @override
   String get fromStatus;
@@ -393,11 +367,8 @@ abstract class _DamageWorkflowHistory implements DamageWorkflowHistory {
   String? get comment;
   @override
   bool get isOverride;
-
-  /// Create a copy of DamageWorkflowHistory
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$DamageWorkflowHistoryImplCopyWith<_$DamageWorkflowHistoryImpl>
-  get copyWith => throw _privateConstructorUsedError;
+      get copyWith => throw _privateConstructorUsedError;
 }

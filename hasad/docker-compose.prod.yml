@@ -1,0 +1,58 @@
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: hasad-sql-server
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrongPassword123!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+    networks:
+      - hasad-network
+
+  hasad-api:
+    build:
+      context: ./backend
+      dockerfile: Hasad.Api/Dockerfile
+    container_name: hasad-api
+    depends_on:
+      - sql-server
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sql-server;Database=HasadDb;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;
+      - JwtSettings__Key=YourSuperSecretProductionKeyWithAtLeast32Chars!
+      - JwtSettings__Issuer=https://hasad-api.gov.ps
+      - JwtSettings__Audience=hasad-clients
+      - AdminPortalUrl=http://localhost:5080
+      - PushNotifications__Fcm__ProjectId=hasad-prod
+      - PushNotifications__Fcm__ServiceAccountJson={"type":"service_account",...}
+    ports:
+      - "5000:8080"
+    volumes:
+      - hasad-uploads:/app/wwwroot/uploads
+    networks:
+      - hasad-network
+
+  hasad-admin-web:
+    build:
+      context: ./admin_web
+      dockerfile: Dockerfile
+    container_name: hasad-admin-web
+    depends_on:
+      - hasad-api
+    environment:
+      - ApiBaseUrl=http://localhost:5000/
+    ports:
+      - "5080:80"
+    networks:
+      - hasad-network
+
+networks:
+  hasad-network:
+    driver: bridge
+
+volumes:
+  mssql-data:
+  hasad-uploads:

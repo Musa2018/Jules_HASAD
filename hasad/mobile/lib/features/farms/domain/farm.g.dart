@@ -7,42 +7,43 @@ part of 'farm.dart';
 // **************************************************************************
 
 _$FarmImpl _$$FarmImplFromJson(Map<String, dynamic> json) => _$FarmImpl(
-  id: json['clientId'] as String,
-  serverId: json['id'] as String?,
-  farmerId: json['farmerId'] as String,
-  localFarmName: json['localFarmName'] as String,
-  ownershipTypeId: (json['ownershipTypeId'] as num).toInt(),
-  ownerFarmerId: json['ownerFarmerId'] as String?,
-  relationshipToOwnerId: (json['relationshipToOwnerId'] as num?)?.toInt(),
-  governorateId: json['governorateId'] as String,
-  directorateId: json['directorateId'] as String,
-  localityId: json['localityId'] as String,
-  basin: json['basin'] as String,
-  parcel: json['parcel'] as String,
-  area: (json['area'] as num).toDouble(),
-  areaUnitId: (json['areaUnitId'] as num).toInt(),
-  measurementUnitId: (json['measurementUnitId'] as num?)?.toInt(),
-  agriculturalSectorId: (json['agriculturalSectorId'] as num).toInt(),
-  politicalClassificationId: (json['politicalClassificationId'] as num).toInt(),
-  latitude: (json['latitude'] as num?)?.toDouble(),
-  longitude: (json['longitude'] as num?)?.toDouble(),
-  notes: json['notes'] as String?,
-  rowVersion: json['rowVersion'] as String? ?? '',
-  syncStatus: json['syncStatus'] as String? ?? 'completed',
-  lastSyncError: json['lastSyncError'] as String?,
-  isPendingDelete: json['isPendingDelete'] as bool? ?? false,
-  createdAt: json['createdAt'] == null
-      ? null
-      : DateTime.parse(json['createdAt'] as String),
-  updatedAt: json['updatedAt'] == null
-      ? null
-      : DateTime.parse(json['updatedAt'] as String),
-  isDeleted: json['isDeleted'] as bool? ?? false,
-  deletedAt: json['deletedAt'] == null
-      ? null
-      : DateTime.parse(json['deletedAt'] as String),
-  deletedBy: json['deletedBy'] as String?,
-);
+      id: json['clientId'] as String,
+      serverId: json['id'] as String?,
+      farmerId: json['farmerId'] as String,
+      localFarmName: json['localFarmName'] as String,
+      ownershipTypeId: (json['ownershipTypeId'] as num).toInt(),
+      ownerFarmerId: json['ownerFarmerId'] as String?,
+      relationshipToOwnerId: (json['relationshipToOwnerId'] as num?)?.toInt(),
+      governorateId: json['governorateId'] as String,
+      directorateId: json['directorateId'] as String,
+      localityId: json['localityId'] as String,
+      basin: json['basin'] as String,
+      parcel: json['parcel'] as String,
+      area: (json['area'] as num).toDouble(),
+      areaUnitId: (json['areaUnitId'] as num).toInt(),
+      measurementUnitId: (json['measurementUnitId'] as num?)?.toInt(),
+      agriculturalSectorId: (json['agriculturalSectorId'] as num).toInt(),
+      politicalClassificationId:
+          (json['politicalClassificationId'] as num).toInt(),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      notes: json['notes'] as String?,
+      rowVersion: json['rowVersion'] as String? ?? '',
+      syncStatus: json['syncStatus'] as String? ?? 'completed',
+      lastSyncError: json['lastSyncError'] as String?,
+      isPendingDelete: json['isPendingDelete'] as bool? ?? false,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      isDeleted: json['isDeleted'] as bool? ?? false,
+      deletedAt: json['deletedAt'] == null
+          ? null
+          : DateTime.parse(json['deletedAt'] as String),
+      deletedBy: json['deletedBy'] as String?,
+    );
 
 Map<String, dynamic> _$$FarmImplToJson(_$FarmImpl instance) =>
     <String, dynamic>{

@@ -12,8 +12,7 @@ part of 'directorate.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Directorate _$DirectorateFromJson(Map<String, dynamic> json) {
   return _Directorate.fromJson(json);
@@ -26,12 +25,8 @@ mixin _$Directorate {
   String get nameEn => throw _privateConstructorUsedError;
   String get governorateId => throw _privateConstructorUsedError;
 
-  /// Serializes this Directorate to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Directorate
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $DirectorateCopyWith<Directorate> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -39,9 +34,8 @@ mixin _$Directorate {
 /// @nodoc
 abstract class $DirectorateCopyWith<$Res> {
   factory $DirectorateCopyWith(
-    Directorate value,
-    $Res Function(Directorate) then,
-  ) = _$DirectorateCopyWithImpl<$Res, Directorate>;
+          Directorate value, $Res Function(Directorate) then) =
+      _$DirectorateCopyWithImpl<$Res, Directorate>;
   @useResult
   $Res call({String id, String nameAr, String nameEn, String governorateId});
 }
@@ -56,8 +50,6 @@ class _$DirectorateCopyWithImpl<$Res, $Val extends Directorate>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Directorate
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -66,27 +58,24 @@ class _$DirectorateCopyWithImpl<$Res, $Val extends Directorate>
     Object? nameEn = null,
     Object? governorateId = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            nameAr: null == nameAr
-                ? _value.nameAr
-                : nameAr // ignore: cast_nullable_to_non_nullable
-                      as String,
-            nameEn: null == nameEn
-                ? _value.nameEn
-                : nameEn // ignore: cast_nullable_to_non_nullable
-                      as String,
-            governorateId: null == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameAr: null == nameAr
+          ? _value.nameAr
+          : nameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameEn: null == nameEn
+          ? _value.nameEn
+          : nameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -94,9 +83,8 @@ class _$DirectorateCopyWithImpl<$Res, $Val extends Directorate>
 abstract class _$$DirectorateImplCopyWith<$Res>
     implements $DirectorateCopyWith<$Res> {
   factory _$$DirectorateImplCopyWith(
-    _$DirectorateImpl value,
-    $Res Function(_$DirectorateImpl) then,
-  ) = __$$DirectorateImplCopyWithImpl<$Res>;
+          _$DirectorateImpl value, $Res Function(_$DirectorateImpl) then) =
+      __$$DirectorateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String id, String nameAr, String nameEn, String governorateId});
@@ -107,12 +95,9 @@ class __$$DirectorateImplCopyWithImpl<$Res>
     extends _$DirectorateCopyWithImpl<$Res, _$DirectorateImpl>
     implements _$$DirectorateImplCopyWith<$Res> {
   __$$DirectorateImplCopyWithImpl(
-    _$DirectorateImpl _value,
-    $Res Function(_$DirectorateImpl) _then,
-  ) : super(_value, _then);
+      _$DirectorateImpl _value, $Res Function(_$DirectorateImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of Directorate
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -121,38 +106,35 @@ class __$$DirectorateImplCopyWithImpl<$Res>
     Object? nameEn = null,
     Object? governorateId = null,
   }) {
-    return _then(
-      _$DirectorateImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        nameAr: null == nameAr
-            ? _value.nameAr
-            : nameAr // ignore: cast_nullable_to_non_nullable
-                  as String,
-        nameEn: null == nameEn
-            ? _value.nameEn
-            : nameEn // ignore: cast_nullable_to_non_nullable
-                  as String,
-        governorateId: null == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
+    return _then(_$DirectorateImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameAr: null == nameAr
+          ? _value.nameAr
+          : nameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      nameEn: null == nameEn
+          ? _value.nameEn
+          : nameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DirectorateImpl implements _Directorate {
-  const _$DirectorateImpl({
-    required this.id,
-    required this.nameAr,
-    required this.nameEn,
-    required this.governorateId,
-  });
+  const _$DirectorateImpl(
+      {required this.id,
+      required this.nameAr,
+      required this.nameEn,
+      required this.governorateId});
 
   factory _$DirectorateImpl.fromJson(Map<String, dynamic> json) =>
       _$$DirectorateImplFromJson(json);
@@ -183,14 +165,12 @@ class _$DirectorateImpl implements _Directorate {
                 other.governorateId == governorateId));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode =>
       Object.hash(runtimeType, id, nameAr, nameEn, governorateId);
 
-  /// Create a copy of Directorate
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DirectorateImplCopyWith<_$DirectorateImpl> get copyWith =>
@@ -198,17 +178,18 @@ class _$DirectorateImpl implements _Directorate {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DirectorateImplToJson(this);
+    return _$$DirectorateImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Directorate implements Directorate {
-  const factory _Directorate({
-    required final String id,
-    required final String nameAr,
-    required final String nameEn,
-    required final String governorateId,
-  }) = _$DirectorateImpl;
+  const factory _Directorate(
+      {required final String id,
+      required final String nameAr,
+      required final String nameEn,
+      required final String governorateId}) = _$DirectorateImpl;
 
   factory _Directorate.fromJson(Map<String, dynamic> json) =
       _$DirectorateImpl.fromJson;
@@ -221,11 +202,8 @@ abstract class _Directorate implements Directorate {
   String get nameEn;
   @override
   String get governorateId;
-
-  /// Create a copy of Directorate
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$DirectorateImplCopyWith<_$DirectorateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

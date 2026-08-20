@@ -12,8 +12,7 @@ part of 'audit_log_entry.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 AuditLogEntry _$AuditLogEntryFromJson(Map<String, dynamic> json) {
   return _AuditLogEntry.fromJson(json);
@@ -27,12 +26,8 @@ mixin _$AuditLogEntry {
   DateTime get eventDate => throw _privateConstructorUsedError;
   String? get metadata => throw _privateConstructorUsedError;
 
-  /// Serializes this AuditLogEntry to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of AuditLogEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $AuditLogEntryCopyWith<AuditLogEntry> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -40,17 +35,15 @@ mixin _$AuditLogEntry {
 /// @nodoc
 abstract class $AuditLogEntryCopyWith<$Res> {
   factory $AuditLogEntryCopyWith(
-    AuditLogEntry value,
-    $Res Function(AuditLogEntry) then,
-  ) = _$AuditLogEntryCopyWithImpl<$Res, AuditLogEntry>;
+          AuditLogEntry value, $Res Function(AuditLogEntry) then) =
+      _$AuditLogEntryCopyWithImpl<$Res, AuditLogEntry>;
   @useResult
-  $Res call({
-    String eventType,
-    String description,
-    String performedBy,
-    DateTime eventDate,
-    String? metadata,
-  });
+  $Res call(
+      {String eventType,
+      String description,
+      String performedBy,
+      DateTime eventDate,
+      String? metadata});
 }
 
 /// @nodoc
@@ -63,8 +56,6 @@ class _$AuditLogEntryCopyWithImpl<$Res, $Val extends AuditLogEntry>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AuditLogEntry
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -74,31 +65,28 @@ class _$AuditLogEntryCopyWithImpl<$Res, $Val extends AuditLogEntry>
     Object? eventDate = null,
     Object? metadata = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            eventType: null == eventType
-                ? _value.eventType
-                : eventType // ignore: cast_nullable_to_non_nullable
-                      as String,
-            description: null == description
-                ? _value.description
-                : description // ignore: cast_nullable_to_non_nullable
-                      as String,
-            performedBy: null == performedBy
-                ? _value.performedBy
-                : performedBy // ignore: cast_nullable_to_non_nullable
-                      as String,
-            eventDate: null == eventDate
-                ? _value.eventDate
-                : eventDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            metadata: freezed == metadata
-                ? _value.metadata
-                : metadata // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      eventType: null == eventType
+          ? _value.eventType
+          : eventType // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      performedBy: null == performedBy
+          ? _value.performedBy
+          : performedBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      eventDate: null == eventDate
+          ? _value.eventDate
+          : eventDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      metadata: freezed == metadata
+          ? _value.metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -106,18 +94,16 @@ class _$AuditLogEntryCopyWithImpl<$Res, $Val extends AuditLogEntry>
 abstract class _$$AuditLogEntryImplCopyWith<$Res>
     implements $AuditLogEntryCopyWith<$Res> {
   factory _$$AuditLogEntryImplCopyWith(
-    _$AuditLogEntryImpl value,
-    $Res Function(_$AuditLogEntryImpl) then,
-  ) = __$$AuditLogEntryImplCopyWithImpl<$Res>;
+          _$AuditLogEntryImpl value, $Res Function(_$AuditLogEntryImpl) then) =
+      __$$AuditLogEntryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String eventType,
-    String description,
-    String performedBy,
-    DateTime eventDate,
-    String? metadata,
-  });
+  $Res call(
+      {String eventType,
+      String description,
+      String performedBy,
+      DateTime eventDate,
+      String? metadata});
 }
 
 /// @nodoc
@@ -125,12 +111,9 @@ class __$$AuditLogEntryImplCopyWithImpl<$Res>
     extends _$AuditLogEntryCopyWithImpl<$Res, _$AuditLogEntryImpl>
     implements _$$AuditLogEntryImplCopyWith<$Res> {
   __$$AuditLogEntryImplCopyWithImpl(
-    _$AuditLogEntryImpl _value,
-    $Res Function(_$AuditLogEntryImpl) _then,
-  ) : super(_value, _then);
+      _$AuditLogEntryImpl _value, $Res Function(_$AuditLogEntryImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of AuditLogEntry
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -140,43 +123,40 @@ class __$$AuditLogEntryImplCopyWithImpl<$Res>
     Object? eventDate = null,
     Object? metadata = freezed,
   }) {
-    return _then(
-      _$AuditLogEntryImpl(
-        eventType: null == eventType
-            ? _value.eventType
-            : eventType // ignore: cast_nullable_to_non_nullable
-                  as String,
-        description: null == description
-            ? _value.description
-            : description // ignore: cast_nullable_to_non_nullable
-                  as String,
-        performedBy: null == performedBy
-            ? _value.performedBy
-            : performedBy // ignore: cast_nullable_to_non_nullable
-                  as String,
-        eventDate: null == eventDate
-            ? _value.eventDate
-            : eventDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        metadata: freezed == metadata
-            ? _value.metadata
-            : metadata // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$AuditLogEntryImpl(
+      eventType: null == eventType
+          ? _value.eventType
+          : eventType // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      performedBy: null == performedBy
+          ? _value.performedBy
+          : performedBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      eventDate: null == eventDate
+          ? _value.eventDate
+          : eventDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      metadata: freezed == metadata
+          ? _value.metadata
+          : metadata // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$AuditLogEntryImpl implements _AuditLogEntry {
-  const _$AuditLogEntryImpl({
-    required this.eventType,
-    required this.description,
-    required this.performedBy,
-    required this.eventDate,
-    this.metadata,
-  });
+  const _$AuditLogEntryImpl(
+      {required this.eventType,
+      required this.description,
+      required this.performedBy,
+      required this.eventDate,
+      this.metadata});
 
   factory _$AuditLogEntryImpl.fromJson(Map<String, dynamic> json) =>
       _$$AuditLogEntryImplFromJson(json);
@@ -214,20 +194,12 @@ class _$AuditLogEntryImpl implements _AuditLogEntry {
                 other.metadata == metadata));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    eventType,
-    description,
-    performedBy,
-    eventDate,
-    metadata,
-  );
+      runtimeType, eventType, description, performedBy, eventDate, metadata);
 
-  /// Create a copy of AuditLogEntry
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$AuditLogEntryImplCopyWith<_$AuditLogEntryImpl> get copyWith =>
@@ -235,18 +207,19 @@ class _$AuditLogEntryImpl implements _AuditLogEntry {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AuditLogEntryImplToJson(this);
+    return _$$AuditLogEntryImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _AuditLogEntry implements AuditLogEntry {
-  const factory _AuditLogEntry({
-    required final String eventType,
-    required final String description,
-    required final String performedBy,
-    required final DateTime eventDate,
-    final String? metadata,
-  }) = _$AuditLogEntryImpl;
+  const factory _AuditLogEntry(
+      {required final String eventType,
+      required final String description,
+      required final String performedBy,
+      required final DateTime eventDate,
+      final String? metadata}) = _$AuditLogEntryImpl;
 
   factory _AuditLogEntry.fromJson(Map<String, dynamic> json) =
       _$AuditLogEntryImpl.fromJson;
@@ -261,11 +234,8 @@ abstract class _AuditLogEntry implements AuditLogEntry {
   DateTime get eventDate;
   @override
   String? get metadata;
-
-  /// Create a copy of AuditLogEntry
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$AuditLogEntryImplCopyWith<_$AuditLogEntryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

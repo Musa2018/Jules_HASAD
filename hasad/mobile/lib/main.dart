@@ -7,6 +7,7 @@ import 'package:mobile/core/router/app_router.dart';
 import 'package:mobile/core/storage/pull_sync_service.dart';
 import 'package:mobile/core/storage/storage_providers.dart';
 import 'package:mobile/core/theme/app_theme.dart';
+import 'package:mobile/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
 void main() {
@@ -27,6 +28,11 @@ class HasadApp extends ConsumerWidget {
     
     // Initialize services
     ref.watch(syncServiceProvider);
+    
+    // Notification services (SignalR & Sync)
+    // These providers are initialized lazily, but we want them active for real-time delivery
+    ref.watch(notificationClientServiceProvider);
+    ref.watch(notificationSyncServiceProvider);
     
     // Trigger initial pull sync
     WidgetsBinding.instance.addPostFrameCallback((_) {

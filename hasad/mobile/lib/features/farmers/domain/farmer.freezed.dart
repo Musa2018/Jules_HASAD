@@ -12,8 +12,7 @@ part of 'farmer.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Farmer _$FarmerFromJson(Map<String, dynamic> json) {
   return _Farmer.fromJson(json);
@@ -51,12 +50,8 @@ mixin _$Farmer {
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
-  /// Serializes this Farmer to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Farmer
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $FarmerCopyWith<Farmer> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -65,35 +60,34 @@ abstract class $FarmerCopyWith<$Res> {
   factory $FarmerCopyWith(Farmer value, $Res Function(Farmer) then) =
       _$FarmerCopyWithImpl<$Res, Farmer>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    int idTypeId,
-    String idNumber,
-    String firstNameAr,
-    String fatherNameAr,
-    String grandfatherNameAr,
-    String familyNameAr,
-    String firstNameEn,
-    String fatherNameEn,
-    String grandfatherNameEn,
-    String familyNameEn,
-    DateTime birthDate,
-    Gender gender,
-    String phoneNumber,
-    int familySize,
-    String? governorateId,
-    String? localityId,
-    String legacyGovernorateId,
-    String legacyLocalityId,
-    String address,
-    String rowVersion,
-    String syncStatus,
-    String? lastSyncError,
-    bool isPendingDelete,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      int idTypeId,
+      String idNumber,
+      String firstNameAr,
+      String fatherNameAr,
+      String grandfatherNameAr,
+      String familyNameAr,
+      String firstNameEn,
+      String fatherNameEn,
+      String grandfatherNameEn,
+      String familyNameEn,
+      DateTime birthDate,
+      Gender gender,
+      String phoneNumber,
+      int familySize,
+      String? governorateId,
+      String? localityId,
+      String legacyGovernorateId,
+      String legacyLocalityId,
+      String address,
+      String rowVersion,
+      String syncStatus,
+      String? lastSyncError,
+      bool isPendingDelete,
+      DateTime? createdAt,
+      DateTime? updatedAt});
 }
 
 /// @nodoc
@@ -106,8 +100,6 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Farmer
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -139,159 +131,154 @@ class _$FarmerCopyWithImpl<$Res, $Val extends Farmer>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            serverId: freezed == serverId
-                ? _value.serverId
-                : serverId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            idTypeId: null == idTypeId
-                ? _value.idTypeId
-                : idTypeId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            idNumber: null == idNumber
-                ? _value.idNumber
-                : idNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            firstNameAr: null == firstNameAr
-                ? _value.firstNameAr
-                : firstNameAr // ignore: cast_nullable_to_non_nullable
-                      as String,
-            fatherNameAr: null == fatherNameAr
-                ? _value.fatherNameAr
-                : fatherNameAr // ignore: cast_nullable_to_non_nullable
-                      as String,
-            grandfatherNameAr: null == grandfatherNameAr
-                ? _value.grandfatherNameAr
-                : grandfatherNameAr // ignore: cast_nullable_to_non_nullable
-                      as String,
-            familyNameAr: null == familyNameAr
-                ? _value.familyNameAr
-                : familyNameAr // ignore: cast_nullable_to_non_nullable
-                      as String,
-            firstNameEn: null == firstNameEn
-                ? _value.firstNameEn
-                : firstNameEn // ignore: cast_nullable_to_non_nullable
-                      as String,
-            fatherNameEn: null == fatherNameEn
-                ? _value.fatherNameEn
-                : fatherNameEn // ignore: cast_nullable_to_non_nullable
-                      as String,
-            grandfatherNameEn: null == grandfatherNameEn
-                ? _value.grandfatherNameEn
-                : grandfatherNameEn // ignore: cast_nullable_to_non_nullable
-                      as String,
-            familyNameEn: null == familyNameEn
-                ? _value.familyNameEn
-                : familyNameEn // ignore: cast_nullable_to_non_nullable
-                      as String,
-            birthDate: null == birthDate
-                ? _value.birthDate
-                : birthDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            gender: null == gender
-                ? _value.gender
-                : gender // ignore: cast_nullable_to_non_nullable
-                      as Gender,
-            phoneNumber: null == phoneNumber
-                ? _value.phoneNumber
-                : phoneNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            familySize: null == familySize
-                ? _value.familySize
-                : familySize // ignore: cast_nullable_to_non_nullable
-                      as int,
-            governorateId: freezed == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            localityId: freezed == localityId
-                ? _value.localityId
-                : localityId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            legacyGovernorateId: null == legacyGovernorateId
-                ? _value.legacyGovernorateId
-                : legacyGovernorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            legacyLocalityId: null == legacyLocalityId
-                ? _value.legacyLocalityId
-                : legacyLocalityId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            address: null == address
-                ? _value.address
-                : address // ignore: cast_nullable_to_non_nullable
-                      as String,
-            rowVersion: null == rowVersion
-                ? _value.rowVersion
-                : rowVersion // ignore: cast_nullable_to_non_nullable
-                      as String,
-            syncStatus: null == syncStatus
-                ? _value.syncStatus
-                : syncStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lastSyncError: freezed == lastSyncError
-                ? _value.lastSyncError
-                : lastSyncError // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isPendingDelete: null == isPendingDelete
-                ? _value.isPendingDelete
-                : isPendingDelete // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            createdAt: freezed == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            updatedAt: freezed == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      idTypeId: null == idTypeId
+          ? _value.idTypeId
+          : idTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
+      idNumber: null == idNumber
+          ? _value.idNumber
+          : idNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      firstNameAr: null == firstNameAr
+          ? _value.firstNameAr
+          : firstNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      fatherNameAr: null == fatherNameAr
+          ? _value.fatherNameAr
+          : fatherNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandfatherNameAr: null == grandfatherNameAr
+          ? _value.grandfatherNameAr
+          : grandfatherNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyNameAr: null == familyNameAr
+          ? _value.familyNameAr
+          : familyNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      firstNameEn: null == firstNameEn
+          ? _value.firstNameEn
+          : firstNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      fatherNameEn: null == fatherNameEn
+          ? _value.fatherNameEn
+          : fatherNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandfatherNameEn: null == grandfatherNameEn
+          ? _value.grandfatherNameEn
+          : grandfatherNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyNameEn: null == familyNameEn
+          ? _value.familyNameEn
+          : familyNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      birthDate: null == birthDate
+          ? _value.birthDate
+          : birthDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      gender: null == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      familySize: null == familySize
+          ? _value.familySize
+          : familySize // ignore: cast_nullable_to_non_nullable
+              as int,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      localityId: freezed == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      legacyGovernorateId: null == legacyGovernorateId
+          ? _value.legacyGovernorateId
+          : legacyGovernorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      legacyLocalityId: null == legacyLocalityId
+          ? _value.legacyLocalityId
+          : legacyLocalityId // ignore: cast_nullable_to_non_nullable
+              as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isPendingDelete: null == isPendingDelete
+          ? _value.isPendingDelete
+          : isPendingDelete // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$FarmerImplCopyWith<$Res> implements $FarmerCopyWith<$Res> {
   factory _$$FarmerImplCopyWith(
-    _$FarmerImpl value,
-    $Res Function(_$FarmerImpl) then,
-  ) = __$$FarmerImplCopyWithImpl<$Res>;
+          _$FarmerImpl value, $Res Function(_$FarmerImpl) then) =
+      __$$FarmerImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    int idTypeId,
-    String idNumber,
-    String firstNameAr,
-    String fatherNameAr,
-    String grandfatherNameAr,
-    String familyNameAr,
-    String firstNameEn,
-    String fatherNameEn,
-    String grandfatherNameEn,
-    String familyNameEn,
-    DateTime birthDate,
-    Gender gender,
-    String phoneNumber,
-    int familySize,
-    String? governorateId,
-    String? localityId,
-    String legacyGovernorateId,
-    String legacyLocalityId,
-    String address,
-    String rowVersion,
-    String syncStatus,
-    String? lastSyncError,
-    bool isPendingDelete,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      int idTypeId,
+      String idNumber,
+      String firstNameAr,
+      String fatherNameAr,
+      String grandfatherNameAr,
+      String familyNameAr,
+      String firstNameEn,
+      String fatherNameEn,
+      String grandfatherNameEn,
+      String familyNameEn,
+      DateTime birthDate,
+      Gender gender,
+      String phoneNumber,
+      int familySize,
+      String? governorateId,
+      String? localityId,
+      String legacyGovernorateId,
+      String legacyLocalityId,
+      String address,
+      String rowVersion,
+      String syncStatus,
+      String? lastSyncError,
+      bool isPendingDelete,
+      DateTime? createdAt,
+      DateTime? updatedAt});
 }
 
 /// @nodoc
@@ -299,12 +286,9 @@ class __$$FarmerImplCopyWithImpl<$Res>
     extends _$FarmerCopyWithImpl<$Res, _$FarmerImpl>
     implements _$$FarmerImplCopyWith<$Res> {
   __$$FarmerImplCopyWithImpl(
-    _$FarmerImpl _value,
-    $Res Function(_$FarmerImpl) _then,
-  ) : super(_value, _then);
+      _$FarmerImpl _value, $Res Function(_$FarmerImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of Farmer
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -336,153 +320,151 @@ class __$$FarmerImplCopyWithImpl<$Res>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(
-      _$FarmerImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        serverId: freezed == serverId
-            ? _value.serverId
-            : serverId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        idTypeId: null == idTypeId
-            ? _value.idTypeId
-            : idTypeId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        idNumber: null == idNumber
-            ? _value.idNumber
-            : idNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        firstNameAr: null == firstNameAr
-            ? _value.firstNameAr
-            : firstNameAr // ignore: cast_nullable_to_non_nullable
-                  as String,
-        fatherNameAr: null == fatherNameAr
-            ? _value.fatherNameAr
-            : fatherNameAr // ignore: cast_nullable_to_non_nullable
-                  as String,
-        grandfatherNameAr: null == grandfatherNameAr
-            ? _value.grandfatherNameAr
-            : grandfatherNameAr // ignore: cast_nullable_to_non_nullable
-                  as String,
-        familyNameAr: null == familyNameAr
-            ? _value.familyNameAr
-            : familyNameAr // ignore: cast_nullable_to_non_nullable
-                  as String,
-        firstNameEn: null == firstNameEn
-            ? _value.firstNameEn
-            : firstNameEn // ignore: cast_nullable_to_non_nullable
-                  as String,
-        fatherNameEn: null == fatherNameEn
-            ? _value.fatherNameEn
-            : fatherNameEn // ignore: cast_nullable_to_non_nullable
-                  as String,
-        grandfatherNameEn: null == grandfatherNameEn
-            ? _value.grandfatherNameEn
-            : grandfatherNameEn // ignore: cast_nullable_to_non_nullable
-                  as String,
-        familyNameEn: null == familyNameEn
-            ? _value.familyNameEn
-            : familyNameEn // ignore: cast_nullable_to_non_nullable
-                  as String,
-        birthDate: null == birthDate
-            ? _value.birthDate
-            : birthDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        gender: null == gender
-            ? _value.gender
-            : gender // ignore: cast_nullable_to_non_nullable
-                  as Gender,
-        phoneNumber: null == phoneNumber
-            ? _value.phoneNumber
-            : phoneNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        familySize: null == familySize
-            ? _value.familySize
-            : familySize // ignore: cast_nullable_to_non_nullable
-                  as int,
-        governorateId: freezed == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        localityId: freezed == localityId
-            ? _value.localityId
-            : localityId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        legacyGovernorateId: null == legacyGovernorateId
-            ? _value.legacyGovernorateId
-            : legacyGovernorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        legacyLocalityId: null == legacyLocalityId
-            ? _value.legacyLocalityId
-            : legacyLocalityId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        address: null == address
-            ? _value.address
-            : address // ignore: cast_nullable_to_non_nullable
-                  as String,
-        rowVersion: null == rowVersion
-            ? _value.rowVersion
-            : rowVersion // ignore: cast_nullable_to_non_nullable
-                  as String,
-        syncStatus: null == syncStatus
-            ? _value.syncStatus
-            : syncStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lastSyncError: freezed == lastSyncError
-            ? _value.lastSyncError
-            : lastSyncError // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isPendingDelete: null == isPendingDelete
-            ? _value.isPendingDelete
-            : isPendingDelete // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        createdAt: freezed == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        updatedAt: freezed == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-      ),
-    );
+    return _then(_$FarmerImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      idTypeId: null == idTypeId
+          ? _value.idTypeId
+          : idTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
+      idNumber: null == idNumber
+          ? _value.idNumber
+          : idNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      firstNameAr: null == firstNameAr
+          ? _value.firstNameAr
+          : firstNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      fatherNameAr: null == fatherNameAr
+          ? _value.fatherNameAr
+          : fatherNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandfatherNameAr: null == grandfatherNameAr
+          ? _value.grandfatherNameAr
+          : grandfatherNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyNameAr: null == familyNameAr
+          ? _value.familyNameAr
+          : familyNameAr // ignore: cast_nullable_to_non_nullable
+              as String,
+      firstNameEn: null == firstNameEn
+          ? _value.firstNameEn
+          : firstNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      fatherNameEn: null == fatherNameEn
+          ? _value.fatherNameEn
+          : fatherNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      grandfatherNameEn: null == grandfatherNameEn
+          ? _value.grandfatherNameEn
+          : grandfatherNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      familyNameEn: null == familyNameEn
+          ? _value.familyNameEn
+          : familyNameEn // ignore: cast_nullable_to_non_nullable
+              as String,
+      birthDate: null == birthDate
+          ? _value.birthDate
+          : birthDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      gender: null == gender
+          ? _value.gender
+          : gender // ignore: cast_nullable_to_non_nullable
+              as Gender,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      familySize: null == familySize
+          ? _value.familySize
+          : familySize // ignore: cast_nullable_to_non_nullable
+              as int,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      localityId: freezed == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      legacyGovernorateId: null == legacyGovernorateId
+          ? _value.legacyGovernorateId
+          : legacyGovernorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      legacyLocalityId: null == legacyLocalityId
+          ? _value.legacyLocalityId
+          : legacyLocalityId // ignore: cast_nullable_to_non_nullable
+              as String,
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
+              as String,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isPendingDelete: null == isPendingDelete
+          ? _value.isPendingDelete
+          : isPendingDelete // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FarmerImpl extends _Farmer {
-  const _$FarmerImpl({
-    @JsonKey(name: 'clientId') required this.id,
-    @JsonKey(name: 'id') this.serverId,
-    required this.idTypeId,
-    required this.idNumber,
-    required this.firstNameAr,
-    required this.fatherNameAr,
-    required this.grandfatherNameAr,
-    required this.familyNameAr,
-    required this.firstNameEn,
-    required this.fatherNameEn,
-    required this.grandfatherNameEn,
-    required this.familyNameEn,
-    required this.birthDate,
-    required this.gender,
-    required this.phoneNumber,
-    required this.familySize,
-    this.governorateId,
-    this.localityId,
-    this.legacyGovernorateId = '',
-    this.legacyLocalityId = '',
-    required this.address,
-    this.rowVersion = '',
-    this.syncStatus = 'completed',
-    this.lastSyncError,
-    this.isPendingDelete = false,
-    this.createdAt,
-    this.updatedAt,
-  }) : super._();
+  const _$FarmerImpl(
+      {@JsonKey(name: 'clientId') required this.id,
+      @JsonKey(name: 'id') this.serverId,
+      required this.idTypeId,
+      required this.idNumber,
+      required this.firstNameAr,
+      required this.fatherNameAr,
+      required this.grandfatherNameAr,
+      required this.familyNameAr,
+      required this.firstNameEn,
+      required this.fatherNameEn,
+      required this.grandfatherNameEn,
+      required this.familyNameEn,
+      required this.birthDate,
+      required this.gender,
+      required this.phoneNumber,
+      required this.familySize,
+      this.governorateId,
+      this.localityId,
+      this.legacyGovernorateId = '',
+      this.legacyLocalityId = '',
+      required this.address,
+      this.rowVersion = '',
+      this.syncStatus = 'completed',
+      this.lastSyncError,
+      this.isPendingDelete = false,
+      this.createdAt,
+      this.updatedAt})
+      : super._();
 
   factory _$FarmerImpl.fromJson(Map<String, dynamic> json) =>
       _$$FarmerImplFromJson(json);
@@ -490,7 +472,7 @@ class _$FarmerImpl extends _Farmer {
   @override
   @JsonKey(name: 'clientId')
   final String id;
-  // Local ClientId
+// Local ClientId
   @override
   @JsonKey(name: 'id')
   final String? serverId;
@@ -613,42 +595,40 @@ class _$FarmerImpl extends _Farmer {
                 other.updatedAt == updatedAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
-    runtimeType,
-    id,
-    serverId,
-    idTypeId,
-    idNumber,
-    firstNameAr,
-    fatherNameAr,
-    grandfatherNameAr,
-    familyNameAr,
-    firstNameEn,
-    fatherNameEn,
-    grandfatherNameEn,
-    familyNameEn,
-    birthDate,
-    gender,
-    phoneNumber,
-    familySize,
-    governorateId,
-    localityId,
-    legacyGovernorateId,
-    legacyLocalityId,
-    address,
-    rowVersion,
-    syncStatus,
-    lastSyncError,
-    isPendingDelete,
-    createdAt,
-    updatedAt,
-  ]);
+        runtimeType,
+        id,
+        serverId,
+        idTypeId,
+        idNumber,
+        firstNameAr,
+        fatherNameAr,
+        grandfatherNameAr,
+        familyNameAr,
+        firstNameEn,
+        fatherNameEn,
+        grandfatherNameEn,
+        familyNameEn,
+        birthDate,
+        gender,
+        phoneNumber,
+        familySize,
+        governorateId,
+        localityId,
+        legacyGovernorateId,
+        legacyLocalityId,
+        address,
+        rowVersion,
+        syncStatus,
+        lastSyncError,
+        isPendingDelete,
+        createdAt,
+        updatedAt
+      ]);
 
-  /// Create a copy of Farmer
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$FarmerImplCopyWith<_$FarmerImpl> get copyWith =>
@@ -656,48 +636,49 @@ class _$FarmerImpl extends _Farmer {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FarmerImplToJson(this);
+    return _$$FarmerImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Farmer extends Farmer {
-  const factory _Farmer({
-    @JsonKey(name: 'clientId') required final String id,
-    @JsonKey(name: 'id') final String? serverId,
-    required final int idTypeId,
-    required final String idNumber,
-    required final String firstNameAr,
-    required final String fatherNameAr,
-    required final String grandfatherNameAr,
-    required final String familyNameAr,
-    required final String firstNameEn,
-    required final String fatherNameEn,
-    required final String grandfatherNameEn,
-    required final String familyNameEn,
-    required final DateTime birthDate,
-    required final Gender gender,
-    required final String phoneNumber,
-    required final int familySize,
-    final String? governorateId,
-    final String? localityId,
-    final String legacyGovernorateId,
-    final String legacyLocalityId,
-    required final String address,
-    final String rowVersion,
-    final String syncStatus,
-    final String? lastSyncError,
-    final bool isPendingDelete,
-    final DateTime? createdAt,
-    final DateTime? updatedAt,
-  }) = _$FarmerImpl;
+  const factory _Farmer(
+      {@JsonKey(name: 'clientId') required final String id,
+      @JsonKey(name: 'id') final String? serverId,
+      required final int idTypeId,
+      required final String idNumber,
+      required final String firstNameAr,
+      required final String fatherNameAr,
+      required final String grandfatherNameAr,
+      required final String familyNameAr,
+      required final String firstNameEn,
+      required final String fatherNameEn,
+      required final String grandfatherNameEn,
+      required final String familyNameEn,
+      required final DateTime birthDate,
+      required final Gender gender,
+      required final String phoneNumber,
+      required final int familySize,
+      final String? governorateId,
+      final String? localityId,
+      final String legacyGovernorateId,
+      final String legacyLocalityId,
+      required final String address,
+      final String rowVersion,
+      final String syncStatus,
+      final String? lastSyncError,
+      final bool isPendingDelete,
+      final DateTime? createdAt,
+      final DateTime? updatedAt}) = _$FarmerImpl;
   const _Farmer._() : super._();
 
   factory _Farmer.fromJson(Map<String, dynamic> json) = _$FarmerImpl.fromJson;
 
   @override
   @JsonKey(name: 'clientId')
-  String get id; // Local ClientId
-  @override
+  String get id;
+  @override // Local ClientId
   @JsonKey(name: 'id')
   String? get serverId;
   @override
@@ -750,11 +731,8 @@ abstract class _Farmer extends Farmer {
   DateTime? get createdAt;
   @override
   DateTime? get updatedAt;
-
-  /// Create a copy of Farmer
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$FarmerImplCopyWith<_$FarmerImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

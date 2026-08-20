@@ -41,15 +41,21 @@ class DamageReportAuditLogFamily
   const DamageReportAuditLogFamily();
 
   /// See also [damageReportAuditLog].
-  DamageReportAuditLogProvider call(String reportId) {
-    return DamageReportAuditLogProvider(reportId);
+  DamageReportAuditLogProvider call(
+    String reportId,
+  ) {
+    return DamageReportAuditLogProvider(
+      reportId,
+    );
   }
 
   @override
   DamageReportAuditLogProvider getProviderOverride(
     covariant DamageReportAuditLogProvider provider,
   ) {
-    return call(provider.reportId);
+    return call(
+      provider.reportId,
+    );
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -71,19 +77,24 @@ class DamageReportAuditLogFamily
 class DamageReportAuditLogProvider
     extends AutoDisposeFutureProvider<List<AuditLogEntry>> {
   /// See also [damageReportAuditLog].
-  DamageReportAuditLogProvider(String reportId)
-    : this._internal(
-        (ref) => damageReportAuditLog(ref as DamageReportAuditLogRef, reportId),
-        from: damageReportAuditLogProvider,
-        name: r'damageReportAuditLogProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$damageReportAuditLogHash,
-        dependencies: DamageReportAuditLogFamily._dependencies,
-        allTransitiveDependencies:
-            DamageReportAuditLogFamily._allTransitiveDependencies,
-        reportId: reportId,
-      );
+  DamageReportAuditLogProvider(
+    String reportId,
+  ) : this._internal(
+          (ref) => damageReportAuditLog(
+            ref as DamageReportAuditLogRef,
+            reportId,
+          ),
+          from: damageReportAuditLogProvider,
+          name: r'damageReportAuditLogProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$damageReportAuditLogHash,
+          dependencies: DamageReportAuditLogFamily._dependencies,
+          allTransitiveDependencies:
+              DamageReportAuditLogFamily._allTransitiveDependencies,
+          reportId: reportId,
+        );
 
   DamageReportAuditLogProvider._internal(
     super._createNotifier, {
@@ -100,7 +111,7 @@ class DamageReportAuditLogProvider
   @override
   Override overrideWith(
     FutureOr<List<AuditLogEntry>> Function(DamageReportAuditLogRef provider)
-    create,
+        create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -135,8 +146,6 @@ class DamageReportAuditLogProvider
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
 mixin DamageReportAuditLogRef
     on AutoDisposeFutureProviderRef<List<AuditLogEntry>> {
   /// The parameter `reportId` of this provider.
@@ -151,6 +160,5 @@ class _DamageReportAuditLogProviderElement
   @override
   String get reportId => (origin as DamageReportAuditLogProvider).reportId;
 }
-
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

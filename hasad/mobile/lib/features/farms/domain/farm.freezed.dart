@@ -12,8 +12,7 @@ part of 'farm.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Farm _$FarmFromJson(Map<String, dynamic> json) {
   return _Farm.fromJson(json);
@@ -58,12 +57,8 @@ mixin _$Farm {
   DateTime? get deletedAt => throw _privateConstructorUsedError;
   String? get deletedBy => throw _privateConstructorUsedError;
 
-  /// Serializes this Farm to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Farm
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $FarmCopyWith<Farm> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -72,38 +67,37 @@ abstract class $FarmCopyWith<$Res> {
   factory $FarmCopyWith(Farm value, $Res Function(Farm) then) =
       _$FarmCopyWithImpl<$Res, Farm>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String farmerId,
-    String localFarmName,
-    int ownershipTypeId,
-    String? ownerFarmerId,
-    int? relationshipToOwnerId,
-    String governorateId,
-    String directorateId,
-    String localityId,
-    String basin,
-    String parcel,
-    double area,
-    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
-    int areaUnitId,
-    int? measurementUnitId,
-    int agriculturalSectorId,
-    int politicalClassificationId,
-    double? latitude,
-    double? longitude,
-    String? notes,
-    String rowVersion,
-    String syncStatus,
-    String? lastSyncError,
-    bool isPendingDelete,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    bool isDeleted,
-    DateTime? deletedAt,
-    String? deletedBy,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String farmerId,
+      String localFarmName,
+      int ownershipTypeId,
+      String? ownerFarmerId,
+      int? relationshipToOwnerId,
+      String governorateId,
+      String directorateId,
+      String localityId,
+      String basin,
+      String parcel,
+      double area,
+      @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
+      int areaUnitId,
+      int? measurementUnitId,
+      int agriculturalSectorId,
+      int politicalClassificationId,
+      double? latitude,
+      double? longitude,
+      String? notes,
+      String rowVersion,
+      String syncStatus,
+      String? lastSyncError,
+      bool isPendingDelete,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      bool isDeleted,
+      DateTime? deletedAt,
+      String? deletedBy});
 }
 
 /// @nodoc
@@ -116,8 +110,6 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Farm
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -151,170 +143,165 @@ class _$FarmCopyWithImpl<$Res, $Val extends Farm>
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            serverId: freezed == serverId
-                ? _value.serverId
-                : serverId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            farmerId: null == farmerId
-                ? _value.farmerId
-                : farmerId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            localFarmName: null == localFarmName
-                ? _value.localFarmName
-                : localFarmName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            ownershipTypeId: null == ownershipTypeId
-                ? _value.ownershipTypeId
-                : ownershipTypeId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            ownerFarmerId: freezed == ownerFarmerId
-                ? _value.ownerFarmerId
-                : ownerFarmerId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            relationshipToOwnerId: freezed == relationshipToOwnerId
-                ? _value.relationshipToOwnerId
-                : relationshipToOwnerId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            governorateId: null == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            directorateId: null == directorateId
-                ? _value.directorateId
-                : directorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            localityId: null == localityId
-                ? _value.localityId
-                : localityId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            basin: null == basin
-                ? _value.basin
-                : basin // ignore: cast_nullable_to_non_nullable
-                      as String,
-            parcel: null == parcel
-                ? _value.parcel
-                : parcel // ignore: cast_nullable_to_non_nullable
-                      as String,
-            area: null == area
-                ? _value.area
-                : area // ignore: cast_nullable_to_non_nullable
-                      as double,
-            areaUnitId: null == areaUnitId
-                ? _value.areaUnitId
-                : areaUnitId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            measurementUnitId: freezed == measurementUnitId
-                ? _value.measurementUnitId
-                : measurementUnitId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            agriculturalSectorId: null == agriculturalSectorId
-                ? _value.agriculturalSectorId
-                : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            politicalClassificationId: null == politicalClassificationId
-                ? _value.politicalClassificationId
-                : politicalClassificationId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            latitude: freezed == latitude
-                ? _value.latitude
-                : latitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            longitude: freezed == longitude
-                ? _value.longitude
-                : longitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            notes: freezed == notes
-                ? _value.notes
-                : notes // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            rowVersion: null == rowVersion
-                ? _value.rowVersion
-                : rowVersion // ignore: cast_nullable_to_non_nullable
-                      as String,
-            syncStatus: null == syncStatus
-                ? _value.syncStatus
-                : syncStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lastSyncError: freezed == lastSyncError
-                ? _value.lastSyncError
-                : lastSyncError // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isPendingDelete: null == isPendingDelete
-                ? _value.isPendingDelete
-                : isPendingDelete // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            createdAt: freezed == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            updatedAt: freezed == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            isDeleted: null == isDeleted
-                ? _value.isDeleted
-                : isDeleted // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            deletedAt: freezed == deletedAt
-                ? _value.deletedAt
-                : deletedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            deletedBy: freezed == deletedBy
-                ? _value.deletedBy
-                : deletedBy // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      farmerId: null == farmerId
+          ? _value.farmerId
+          : farmerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      localFarmName: null == localFarmName
+          ? _value.localFarmName
+          : localFarmName // ignore: cast_nullable_to_non_nullable
+              as String,
+      ownershipTypeId: null == ownershipTypeId
+          ? _value.ownershipTypeId
+          : ownershipTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
+      ownerFarmerId: freezed == ownerFarmerId
+          ? _value.ownerFarmerId
+          : ownerFarmerId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      relationshipToOwnerId: freezed == relationshipToOwnerId
+          ? _value.relationshipToOwnerId
+          : relationshipToOwnerId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      directorateId: null == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      localityId: null == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String,
+      basin: null == basin
+          ? _value.basin
+          : basin // ignore: cast_nullable_to_non_nullable
+              as String,
+      parcel: null == parcel
+          ? _value.parcel
+          : parcel // ignore: cast_nullable_to_non_nullable
+              as String,
+      area: null == area
+          ? _value.area
+          : area // ignore: cast_nullable_to_non_nullable
+              as double,
+      areaUnitId: null == areaUnitId
+          ? _value.areaUnitId
+          : areaUnitId // ignore: cast_nullable_to_non_nullable
+              as int,
+      measurementUnitId: freezed == measurementUnitId
+          ? _value.measurementUnitId
+          : measurementUnitId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      agriculturalSectorId: null == agriculturalSectorId
+          ? _value.agriculturalSectorId
+          : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
+              as int,
+      politicalClassificationId: null == politicalClassificationId
+          ? _value.politicalClassificationId
+          : politicalClassificationId // ignore: cast_nullable_to_non_nullable
+              as int,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isPendingDelete: null == isPendingDelete
+          ? _value.isPendingDelete
+          : isPendingDelete // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      deletedBy: freezed == deletedBy
+          ? _value.deletedBy
+          : deletedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$FarmImplCopyWith<$Res> implements $FarmCopyWith<$Res> {
   factory _$$FarmImplCopyWith(
-    _$FarmImpl value,
-    $Res Function(_$FarmImpl) then,
-  ) = __$$FarmImplCopyWithImpl<$Res>;
+          _$FarmImpl value, $Res Function(_$FarmImpl) then) =
+      __$$FarmImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String farmerId,
-    String localFarmName,
-    int ownershipTypeId,
-    String? ownerFarmerId,
-    int? relationshipToOwnerId,
-    String governorateId,
-    String directorateId,
-    String localityId,
-    String basin,
-    String parcel,
-    double area,
-    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
-    int areaUnitId,
-    int? measurementUnitId,
-    int agriculturalSectorId,
-    int politicalClassificationId,
-    double? latitude,
-    double? longitude,
-    String? notes,
-    String rowVersion,
-    String syncStatus,
-    String? lastSyncError,
-    bool isPendingDelete,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    bool isDeleted,
-    DateTime? deletedAt,
-    String? deletedBy,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String farmerId,
+      String localFarmName,
+      int ownershipTypeId,
+      String? ownerFarmerId,
+      int? relationshipToOwnerId,
+      String governorateId,
+      String directorateId,
+      String localityId,
+      String basin,
+      String parcel,
+      double area,
+      @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
+      int areaUnitId,
+      int? measurementUnitId,
+      int agriculturalSectorId,
+      int politicalClassificationId,
+      double? latitude,
+      double? longitude,
+      String? notes,
+      String rowVersion,
+      String syncStatus,
+      String? lastSyncError,
+      bool isPendingDelete,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      bool isDeleted,
+      DateTime? deletedAt,
+      String? deletedBy});
 }
 
 /// @nodoc
@@ -322,10 +309,8 @@ class __$$FarmImplCopyWithImpl<$Res>
     extends _$FarmCopyWithImpl<$Res, _$FarmImpl>
     implements _$$FarmImplCopyWith<$Res> {
   __$$FarmImplCopyWithImpl(_$FarmImpl _value, $Res Function(_$FarmImpl) _then)
-    : super(_value, _then);
+      : super(_value, _then);
 
-  /// Create a copy of Farm
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -359,164 +344,161 @@ class __$$FarmImplCopyWithImpl<$Res>
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
   }) {
-    return _then(
-      _$FarmImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        serverId: freezed == serverId
-            ? _value.serverId
-            : serverId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        farmerId: null == farmerId
-            ? _value.farmerId
-            : farmerId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        localFarmName: null == localFarmName
-            ? _value.localFarmName
-            : localFarmName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        ownershipTypeId: null == ownershipTypeId
-            ? _value.ownershipTypeId
-            : ownershipTypeId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        ownerFarmerId: freezed == ownerFarmerId
-            ? _value.ownerFarmerId
-            : ownerFarmerId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        relationshipToOwnerId: freezed == relationshipToOwnerId
-            ? _value.relationshipToOwnerId
-            : relationshipToOwnerId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        governorateId: null == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        directorateId: null == directorateId
-            ? _value.directorateId
-            : directorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        localityId: null == localityId
-            ? _value.localityId
-            : localityId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        basin: null == basin
-            ? _value.basin
-            : basin // ignore: cast_nullable_to_non_nullable
-                  as String,
-        parcel: null == parcel
-            ? _value.parcel
-            : parcel // ignore: cast_nullable_to_non_nullable
-                  as String,
-        area: null == area
-            ? _value.area
-            : area // ignore: cast_nullable_to_non_nullable
-                  as double,
-        areaUnitId: null == areaUnitId
-            ? _value.areaUnitId
-            : areaUnitId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        measurementUnitId: freezed == measurementUnitId
-            ? _value.measurementUnitId
-            : measurementUnitId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        agriculturalSectorId: null == agriculturalSectorId
-            ? _value.agriculturalSectorId
-            : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        politicalClassificationId: null == politicalClassificationId
-            ? _value.politicalClassificationId
-            : politicalClassificationId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        latitude: freezed == latitude
-            ? _value.latitude
-            : latitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        longitude: freezed == longitude
-            ? _value.longitude
-            : longitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        notes: freezed == notes
-            ? _value.notes
-            : notes // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        rowVersion: null == rowVersion
-            ? _value.rowVersion
-            : rowVersion // ignore: cast_nullable_to_non_nullable
-                  as String,
-        syncStatus: null == syncStatus
-            ? _value.syncStatus
-            : syncStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lastSyncError: freezed == lastSyncError
-            ? _value.lastSyncError
-            : lastSyncError // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isPendingDelete: null == isPendingDelete
-            ? _value.isPendingDelete
-            : isPendingDelete // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        createdAt: freezed == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        updatedAt: freezed == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        isDeleted: null == isDeleted
-            ? _value.isDeleted
-            : isDeleted // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        deletedAt: freezed == deletedAt
-            ? _value.deletedAt
-            : deletedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        deletedBy: freezed == deletedBy
-            ? _value.deletedBy
-            : deletedBy // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$FarmImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      farmerId: null == farmerId
+          ? _value.farmerId
+          : farmerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      localFarmName: null == localFarmName
+          ? _value.localFarmName
+          : localFarmName // ignore: cast_nullable_to_non_nullable
+              as String,
+      ownershipTypeId: null == ownershipTypeId
+          ? _value.ownershipTypeId
+          : ownershipTypeId // ignore: cast_nullable_to_non_nullable
+              as int,
+      ownerFarmerId: freezed == ownerFarmerId
+          ? _value.ownerFarmerId
+          : ownerFarmerId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      relationshipToOwnerId: freezed == relationshipToOwnerId
+          ? _value.relationshipToOwnerId
+          : relationshipToOwnerId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      directorateId: null == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      localityId: null == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String,
+      basin: null == basin
+          ? _value.basin
+          : basin // ignore: cast_nullable_to_non_nullable
+              as String,
+      parcel: null == parcel
+          ? _value.parcel
+          : parcel // ignore: cast_nullable_to_non_nullable
+              as String,
+      area: null == area
+          ? _value.area
+          : area // ignore: cast_nullable_to_non_nullable
+              as double,
+      areaUnitId: null == areaUnitId
+          ? _value.areaUnitId
+          : areaUnitId // ignore: cast_nullable_to_non_nullable
+              as int,
+      measurementUnitId: freezed == measurementUnitId
+          ? _value.measurementUnitId
+          : measurementUnitId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      agriculturalSectorId: null == agriculturalSectorId
+          ? _value.agriculturalSectorId
+          : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
+              as int,
+      politicalClassificationId: null == politicalClassificationId
+          ? _value.politicalClassificationId
+          : politicalClassificationId // ignore: cast_nullable_to_non_nullable
+              as int,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isPendingDelete: null == isPendingDelete
+          ? _value.isPendingDelete
+          : isPendingDelete // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      deletedBy: freezed == deletedBy
+          ? _value.deletedBy
+          : deletedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$FarmImpl implements _Farm {
-  const _$FarmImpl({
-    @JsonKey(name: 'clientId') required this.id,
-    @JsonKey(name: 'id') this.serverId,
-    required this.farmerId,
-    required this.localFarmName,
-    required this.ownershipTypeId,
-    this.ownerFarmerId,
-    this.relationshipToOwnerId,
-    required this.governorateId,
-    required this.directorateId,
-    required this.localityId,
-    required this.basin,
-    required this.parcel,
-    required this.area,
-    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
-    required this.areaUnitId,
-    this.measurementUnitId,
-    required this.agriculturalSectorId,
-    required this.politicalClassificationId,
-    this.latitude,
-    this.longitude,
-    this.notes,
-    this.rowVersion = '',
-    this.syncStatus = 'completed',
-    this.lastSyncError,
-    this.isPendingDelete = false,
-    this.createdAt,
-    this.updatedAt,
-    this.isDeleted = false,
-    this.deletedAt,
-    this.deletedBy,
-  });
+  const _$FarmImpl(
+      {@JsonKey(name: 'clientId') required this.id,
+      @JsonKey(name: 'id') this.serverId,
+      required this.farmerId,
+      required this.localFarmName,
+      required this.ownershipTypeId,
+      this.ownerFarmerId,
+      this.relationshipToOwnerId,
+      required this.governorateId,
+      required this.directorateId,
+      required this.localityId,
+      required this.basin,
+      required this.parcel,
+      required this.area,
+      @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
+      required this.areaUnitId,
+      this.measurementUnitId,
+      required this.agriculturalSectorId,
+      required this.politicalClassificationId,
+      this.latitude,
+      this.longitude,
+      this.notes,
+      this.rowVersion = '',
+      this.syncStatus = 'completed',
+      this.lastSyncError,
+      this.isPendingDelete = false,
+      this.createdAt,
+      this.updatedAt,
+      this.isDeleted = false,
+      this.deletedAt,
+      this.deletedBy});
 
   factory _$FarmImpl.fromJson(Map<String, dynamic> json) =>
       _$$FarmImplFromJson(json);
@@ -524,7 +506,7 @@ class _$FarmImpl implements _Farm {
   @override
   @JsonKey(name: 'clientId')
   final String id;
-  // ClientId
+// ClientId
   @override
   @JsonKey(name: 'id')
   final String? serverId;
@@ -538,7 +520,7 @@ class _$FarmImpl implements _Farm {
   final String? ownerFarmerId;
   @override
   final int? relationshipToOwnerId;
-  // Geography
+// Geography
   @override
   final String governorateId;
   @override
@@ -549,7 +531,7 @@ class _$FarmImpl implements _Farm {
   final String basin;
   @override
   final String parcel;
-  // Area
+// Area
   @override
   final double area;
   @override
@@ -557,19 +539,19 @@ class _$FarmImpl implements _Farm {
   final int areaUnitId;
   @override
   final int? measurementUnitId;
-  // Agriculture
+// Agriculture
   @override
   final int agriculturalSectorId;
   @override
   final int politicalClassificationId;
-  // Location
+// Location
   @override
   final double? latitude;
   @override
   final double? longitude;
   @override
   final String? notes;
-  // Sync & Metadata
+// Sync & Metadata
   @override
   @JsonKey()
   final String rowVersion;
@@ -585,7 +567,7 @@ class _$FarmImpl implements _Farm {
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
-  // Soft Delete from backend
+// Soft Delete from backend
   @override
   @JsonKey()
   final bool isDeleted;
@@ -632,10 +614,8 @@ class _$FarmImpl implements _Farm {
                 other.measurementUnitId == measurementUnitId) &&
             (identical(other.agriculturalSectorId, agriculturalSectorId) ||
                 other.agriculturalSectorId == agriculturalSectorId) &&
-            (identical(
-                  other.politicalClassificationId,
-                  politicalClassificationId,
-                ) ||
+            (identical(other.politicalClassificationId,
+                    politicalClassificationId) ||
                 other.politicalClassificationId == politicalClassificationId) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
@@ -662,44 +642,42 @@ class _$FarmImpl implements _Farm {
                 other.deletedBy == deletedBy));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
-    runtimeType,
-    id,
-    serverId,
-    farmerId,
-    localFarmName,
-    ownershipTypeId,
-    ownerFarmerId,
-    relationshipToOwnerId,
-    governorateId,
-    directorateId,
-    localityId,
-    basin,
-    parcel,
-    area,
-    areaUnitId,
-    measurementUnitId,
-    agriculturalSectorId,
-    politicalClassificationId,
-    latitude,
-    longitude,
-    notes,
-    rowVersion,
-    syncStatus,
-    lastSyncError,
-    isPendingDelete,
-    createdAt,
-    updatedAt,
-    isDeleted,
-    deletedAt,
-    deletedBy,
-  ]);
+        runtimeType,
+        id,
+        serverId,
+        farmerId,
+        localFarmName,
+        ownershipTypeId,
+        ownerFarmerId,
+        relationshipToOwnerId,
+        governorateId,
+        directorateId,
+        localityId,
+        basin,
+        parcel,
+        area,
+        areaUnitId,
+        measurementUnitId,
+        agriculturalSectorId,
+        politicalClassificationId,
+        latitude,
+        longitude,
+        notes,
+        rowVersion,
+        syncStatus,
+        lastSyncError,
+        isPendingDelete,
+        createdAt,
+        updatedAt,
+        isDeleted,
+        deletedAt,
+        deletedBy
+      ]);
 
-  /// Create a copy of Farm
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$FarmImplCopyWith<_$FarmImpl> get copyWith =>
@@ -707,50 +685,51 @@ class _$FarmImpl implements _Farm {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FarmImplToJson(this);
+    return _$$FarmImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _Farm implements Farm {
-  const factory _Farm({
-    @JsonKey(name: 'clientId') required final String id,
-    @JsonKey(name: 'id') final String? serverId,
-    required final String farmerId,
-    required final String localFarmName,
-    required final int ownershipTypeId,
-    final String? ownerFarmerId,
-    final int? relationshipToOwnerId,
-    required final String governorateId,
-    required final String directorateId,
-    required final String localityId,
-    required final String basin,
-    required final String parcel,
-    required final double area,
-    @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
-    required final int areaUnitId,
-    final int? measurementUnitId,
-    required final int agriculturalSectorId,
-    required final int politicalClassificationId,
-    final double? latitude,
-    final double? longitude,
-    final String? notes,
-    final String rowVersion,
-    final String syncStatus,
-    final String? lastSyncError,
-    final bool isPendingDelete,
-    final DateTime? createdAt,
-    final DateTime? updatedAt,
-    final bool isDeleted,
-    final DateTime? deletedAt,
-    final String? deletedBy,
-  }) = _$FarmImpl;
+  const factory _Farm(
+      {@JsonKey(name: 'clientId') required final String id,
+      @JsonKey(name: 'id') final String? serverId,
+      required final String farmerId,
+      required final String localFarmName,
+      required final int ownershipTypeId,
+      final String? ownerFarmerId,
+      final int? relationshipToOwnerId,
+      required final String governorateId,
+      required final String directorateId,
+      required final String localityId,
+      required final String basin,
+      required final String parcel,
+      required final double area,
+      @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
+      required final int areaUnitId,
+      final int? measurementUnitId,
+      required final int agriculturalSectorId,
+      required final int politicalClassificationId,
+      final double? latitude,
+      final double? longitude,
+      final String? notes,
+      final String rowVersion,
+      final String syncStatus,
+      final String? lastSyncError,
+      final bool isPendingDelete,
+      final DateTime? createdAt,
+      final DateTime? updatedAt,
+      final bool isDeleted,
+      final DateTime? deletedAt,
+      final String? deletedBy}) = _$FarmImpl;
 
   factory _Farm.fromJson(Map<String, dynamic> json) = _$FarmImpl.fromJson;
 
   @override
   @JsonKey(name: 'clientId')
-  String get id; // ClientId
-  @override
+  String get id;
+  @override // ClientId
   @JsonKey(name: 'id')
   String? get serverId;
   @override
@@ -762,8 +741,8 @@ abstract class _Farm implements Farm {
   @override
   String? get ownerFarmerId;
   @override
-  int? get relationshipToOwnerId; // Geography
-  @override
+  int? get relationshipToOwnerId;
+  @override // Geography
   String get governorateId;
   @override
   String get directorateId;
@@ -772,25 +751,25 @@ abstract class _Farm implements Farm {
   @override
   String get basin;
   @override
-  String get parcel; // Area
-  @override
+  String get parcel;
+  @override // Area
   double get area;
   @override
   @Deprecated('Use measurementUnitId. Kept for backend sync compatibility.')
   int get areaUnitId;
   @override
-  int? get measurementUnitId; // Agriculture
-  @override
+  int? get measurementUnitId;
+  @override // Agriculture
   int get agriculturalSectorId;
   @override
-  int get politicalClassificationId; // Location
-  @override
+  int get politicalClassificationId;
+  @override // Location
   double? get latitude;
   @override
   double? get longitude;
   @override
-  String? get notes; // Sync & Metadata
-  @override
+  String? get notes;
+  @override // Sync & Metadata
   String get rowVersion;
   @override
   String get syncStatus;
@@ -801,18 +780,15 @@ abstract class _Farm implements Farm {
   @override
   DateTime? get createdAt;
   @override
-  DateTime? get updatedAt; // Soft Delete from backend
-  @override
+  DateTime? get updatedAt;
+  @override // Soft Delete from backend
   bool get isDeleted;
   @override
   DateTime? get deletedAt;
   @override
   String? get deletedBy;
-
-  /// Create a copy of Farm
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$FarmImplCopyWith<_$FarmImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

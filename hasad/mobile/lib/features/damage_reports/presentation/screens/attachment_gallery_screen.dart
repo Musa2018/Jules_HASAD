@@ -6,7 +6,6 @@ import 'package:mobile/features/damage_reports/domain/models/damage_report_attac
 import 'package:mobile/features/damage_reports/presentation/providers/damage_reports_providers.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/core/config/app_config.dart';
-import 'package:mobile/core/storage/storage_providers.dart';
 
 class AttachmentGalleryScreen extends ConsumerWidget {
   final String reportId;

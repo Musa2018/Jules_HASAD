@@ -59,7 +59,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _tokenService.CreateAccessToken(user, roles);
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        var accessToken = _tokenService.CreateAccessToken(user, roles, userClaims);
 
         return Result<AuthResponse>.Success(new AuthResponse
         {

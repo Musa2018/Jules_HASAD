@@ -145,6 +145,20 @@ public static class DbInitializer
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(user, "SuperAdmin");
+            await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("SuperAdminScope", "GlobalAccess"));
+        }
+        else
+        {
+             // Ensure existing SuperAdmin has the required claim
+             var roles = await userManager.GetRolesAsync(user);
+             if (roles.Contains("SuperAdmin"))
+             {
+                 var claims = await userManager.GetClaimsAsync(user);
+                 if (!claims.Any(c => c.Type == "SuperAdminScope"))
+                 {
+                     await userManager.AddClaimAsync(user, new System.Security.Claims.Claim("SuperAdminScope", "GlobalAccess"));
+                 }
+             }
         }
 
         return result;

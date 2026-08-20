@@ -12,8 +12,7 @@ part of 'auth_session.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 AuthSession _$AuthSessionFromJson(Map<String, dynamic> json) {
   return _AuthSession.fromJson(json);
@@ -30,12 +29,8 @@ mixin _$AuthSession {
   String? get directorateId => throw _privateConstructorUsedError;
   List<String> get roles => throw _privateConstructorUsedError;
 
-  /// Serializes this AuthSession to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of AuthSession
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $AuthSessionCopyWith<AuthSession> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -43,20 +38,18 @@ mixin _$AuthSession {
 /// @nodoc
 abstract class $AuthSessionCopyWith<$Res> {
   factory $AuthSessionCopyWith(
-    AuthSession value,
-    $Res Function(AuthSession) then,
-  ) = _$AuthSessionCopyWithImpl<$Res, AuthSession>;
+          AuthSession value, $Res Function(AuthSession) then) =
+      _$AuthSessionCopyWithImpl<$Res, AuthSession>;
   @useResult
-  $Res call({
-    String token,
-    String refreshToken,
-    String userId,
-    String email,
-    String fullName,
-    String? governorateId,
-    String? directorateId,
-    List<String> roles,
-  });
+  $Res call(
+      {String token,
+      String refreshToken,
+      String userId,
+      String email,
+      String fullName,
+      String? governorateId,
+      String? directorateId,
+      List<String> roles});
 }
 
 /// @nodoc
@@ -69,8 +62,6 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of AuthSession
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -83,43 +74,40 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
     Object? directorateId = freezed,
     Object? roles = null,
   }) {
-    return _then(
-      _value.copyWith(
-            token: null == token
-                ? _value.token
-                : token // ignore: cast_nullable_to_non_nullable
-                      as String,
-            refreshToken: null == refreshToken
-                ? _value.refreshToken
-                : refreshToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            userId: null == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            fullName: null == fullName
-                ? _value.fullName
-                : fullName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            governorateId: freezed == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            directorateId: freezed == directorateId
-                ? _value.directorateId
-                : directorateId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            roles: null == roles
-                ? _value.roles
-                : roles // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      token: null == token
+          ? _value.token
+          : token // ignore: cast_nullable_to_non_nullable
+              as String,
+      refreshToken: null == refreshToken
+          ? _value.refreshToken
+          : refreshToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateId: freezed == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      roles: null == roles
+          ? _value.roles
+          : roles // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
   }
 }
 
@@ -127,21 +115,19 @@ class _$AuthSessionCopyWithImpl<$Res, $Val extends AuthSession>
 abstract class _$$AuthSessionImplCopyWith<$Res>
     implements $AuthSessionCopyWith<$Res> {
   factory _$$AuthSessionImplCopyWith(
-    _$AuthSessionImpl value,
-    $Res Function(_$AuthSessionImpl) then,
-  ) = __$$AuthSessionImplCopyWithImpl<$Res>;
+          _$AuthSessionImpl value, $Res Function(_$AuthSessionImpl) then) =
+      __$$AuthSessionImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    String token,
-    String refreshToken,
-    String userId,
-    String email,
-    String fullName,
-    String? governorateId,
-    String? directorateId,
-    List<String> roles,
-  });
+  $Res call(
+      {String token,
+      String refreshToken,
+      String userId,
+      String email,
+      String fullName,
+      String? governorateId,
+      String? directorateId,
+      List<String> roles});
 }
 
 /// @nodoc
@@ -149,12 +135,9 @@ class __$$AuthSessionImplCopyWithImpl<$Res>
     extends _$AuthSessionCopyWithImpl<$Res, _$AuthSessionImpl>
     implements _$$AuthSessionImplCopyWith<$Res> {
   __$$AuthSessionImplCopyWithImpl(
-    _$AuthSessionImpl _value,
-    $Res Function(_$AuthSessionImpl) _then,
-  ) : super(_value, _then);
+      _$AuthSessionImpl _value, $Res Function(_$AuthSessionImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of AuthSession
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -167,58 +150,56 @@ class __$$AuthSessionImplCopyWithImpl<$Res>
     Object? directorateId = freezed,
     Object? roles = null,
   }) {
-    return _then(
-      _$AuthSessionImpl(
-        token: null == token
-            ? _value.token
-            : token // ignore: cast_nullable_to_non_nullable
-                  as String,
-        refreshToken: null == refreshToken
-            ? _value.refreshToken
-            : refreshToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        userId: null == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        fullName: null == fullName
-            ? _value.fullName
-            : fullName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        governorateId: freezed == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        directorateId: freezed == directorateId
-            ? _value.directorateId
-            : directorateId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        roles: null == roles
-            ? _value._roles
-            : roles // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-      ),
-    );
+    return _then(_$AuthSessionImpl(
+      token: null == token
+          ? _value.token
+          : token // ignore: cast_nullable_to_non_nullable
+              as String,
+      refreshToken: null == refreshToken
+          ? _value.refreshToken
+          : refreshToken // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      governorateId: freezed == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      directorateId: freezed == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      roles: null == roles
+          ? _value._roles
+          : roles // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$AuthSessionImpl implements _AuthSession {
-  const _$AuthSessionImpl({
-    required this.token,
-    required this.refreshToken,
-    required this.userId,
-    required this.email,
-    required this.fullName,
-    this.governorateId,
-    this.directorateId,
-    final List<String> roles = const [],
-  }) : _roles = roles;
+  const _$AuthSessionImpl(
+      {required this.token,
+      required this.refreshToken,
+      required this.userId,
+      required this.email,
+      required this.fullName,
+      this.governorateId,
+      this.directorateId,
+      final List<String> roles = const []})
+      : _roles = roles;
 
   factory _$AuthSessionImpl.fromJson(Map<String, dynamic> json) =>
       _$$AuthSessionImplFromJson(json);
@@ -270,23 +251,20 @@ class _$AuthSessionImpl implements _AuthSession {
             const DeepCollectionEquality().equals(other._roles, _roles));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    token,
-    refreshToken,
-    userId,
-    email,
-    fullName,
-    governorateId,
-    directorateId,
-    const DeepCollectionEquality().hash(_roles),
-  );
+      runtimeType,
+      token,
+      refreshToken,
+      userId,
+      email,
+      fullName,
+      governorateId,
+      directorateId,
+      const DeepCollectionEquality().hash(_roles));
 
-  /// Create a copy of AuthSession
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$AuthSessionImplCopyWith<_$AuthSessionImpl> get copyWith =>
@@ -294,21 +272,22 @@ class _$AuthSessionImpl implements _AuthSession {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AuthSessionImplToJson(this);
+    return _$$AuthSessionImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _AuthSession implements AuthSession {
-  const factory _AuthSession({
-    required final String token,
-    required final String refreshToken,
-    required final String userId,
-    required final String email,
-    required final String fullName,
-    final String? governorateId,
-    final String? directorateId,
-    final List<String> roles,
-  }) = _$AuthSessionImpl;
+  const factory _AuthSession(
+      {required final String token,
+      required final String refreshToken,
+      required final String userId,
+      required final String email,
+      required final String fullName,
+      final String? governorateId,
+      final String? directorateId,
+      final List<String> roles}) = _$AuthSessionImpl;
 
   factory _AuthSession.fromJson(Map<String, dynamic> json) =
       _$AuthSessionImpl.fromJson;
@@ -329,11 +308,8 @@ abstract class _AuthSession implements AuthSession {
   String? get directorateId;
   @override
   List<String> get roles;
-
-  /// Create a copy of AuthSession
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$AuthSessionImplCopyWith<_$AuthSessionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

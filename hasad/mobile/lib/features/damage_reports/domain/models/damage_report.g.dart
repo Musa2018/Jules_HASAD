@@ -6,59 +6,56 @@ part of 'damage_report.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$DamageReportImpl _$$DamageReportImplFromJson(
-  Map<String, dynamic> json,
-) => _$DamageReportImpl(
-  id: json['clientId'] as String? ?? '',
-  serverId: json['id'] as String?,
-  reportNumber: json['reportNumber'] as String? ?? '',
-  permanentFormNumber: json['permanentFormNumber'] as String? ?? '',
-  temporaryFormNumber: json['temporaryFormNumber'] as String? ?? '',
-  damageYear: (json['damageYear'] as num?)?.toInt() ?? 0,
-  farmId: json['farmId'] as String? ?? '',
-  farmerId: json['farmerId'] as String? ?? '',
-  damageDate: json['damageDate'] == null
-      ? null
-      : DateTime.parse(json['damageDate'] as String),
-  documentationDate: json['documentationDate'] == null
-      ? null
-      : DateTime.parse(json['documentationDate'] as String),
-  agriculturalSectorId: (json['agriculturalSectorId'] as num?)?.toInt() ?? 0,
-  damageCauseCategoryId: (json['damageCauseCategoryId'] as num?)?.toInt() ?? 0,
-  damageCauseId: (json['damageCauseId'] as num?)?.toInt() ?? 0,
-  governorateId: json['governorateId'] as String? ?? '',
-  directorateId: json['directorateId'] as String? ?? '',
-  localityId: json['localityId'] as String? ?? '',
-  statusId:
-      json['statusId'] as String? ??
-      DamageReportStatus.pendingTechnicalVerification,
-  totalDamage: (json['totalDamage'] as num?)?.toDouble() ?? 0.0,
-  notes: json['notes'] as String? ?? '',
-  createdBy: json['createdBy'] as String? ?? '',
-  rowVersion: json['rowVersion'] as String? ?? '',
-  items:
-      (json['items'] as List<dynamic>?)
-          ?.map((e) => DamageItem.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const [],
-  attachments:
-      (json['attachments'] as List<dynamic>?)
-          ?.map(
-            (e) => DamageReportAttachment.fromJson(e as Map<String, dynamic>),
-          )
-          .toList() ??
-      const [],
-  syncStatus: json['syncStatus'] as String? ?? 'completed',
-  lastSyncError: json['lastSyncError'] as String?,
-  updatedAt: json['updatedAt'] == null
-      ? null
-      : DateTime.parse(json['updatedAt'] as String),
-  isDeleted: json['isDeleted'] as bool?,
-  deletedAt: json['deletedAt'] == null
-      ? null
-      : DateTime.parse(json['deletedAt'] as String),
-  deletedBy: json['deletedBy'] as String?,
-);
+_$DamageReportImpl _$$DamageReportImplFromJson(Map<String, dynamic> json) =>
+    _$DamageReportImpl(
+      id: json['clientId'] as String? ?? '',
+      serverId: json['id'] as String?,
+      reportNumber: json['reportNumber'] as String? ?? '',
+      permanentFormNumber: json['permanentFormNumber'] as String? ?? '',
+      temporaryFormNumber: json['temporaryFormNumber'] as String? ?? '',
+      damageYear: (json['damageYear'] as num?)?.toInt() ?? 0,
+      farmId: json['farmId'] as String? ?? '',
+      farmerId: json['farmerId'] as String? ?? '',
+      damageDate: json['damageDate'] == null
+          ? null
+          : DateTime.parse(json['damageDate'] as String),
+      documentationDate: json['documentationDate'] == null
+          ? null
+          : DateTime.parse(json['documentationDate'] as String),
+      agriculturalSectorId:
+          (json['agriculturalSectorId'] as num?)?.toInt() ?? 0,
+      damageCauseCategoryId:
+          (json['damageCauseCategoryId'] as num?)?.toInt() ?? 0,
+      damageCauseId: (json['damageCauseId'] as num?)?.toInt() ?? 0,
+      governorateId: json['governorateId'] as String? ?? '',
+      directorateId: json['directorateId'] as String? ?? '',
+      localityId: json['localityId'] as String? ?? '',
+      statusId: json['statusId'] as String? ??
+          DamageReportStatus.pendingTechnicalVerification,
+      totalDamage: (json['totalDamage'] as num?)?.toDouble() ?? 0.0,
+      notes: json['notes'] as String? ?? '',
+      createdBy: json['createdBy'] as String? ?? '',
+      rowVersion: json['rowVersion'] as String? ?? '',
+      items: (json['items'] as List<dynamic>?)
+              ?.map((e) => DamageItem.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      attachments: (json['attachments'] as List<dynamic>?)
+              ?.map((e) =>
+                  DamageReportAttachment.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      syncStatus: json['syncStatus'] as String? ?? 'completed',
+      lastSyncError: json['lastSyncError'] as String?,
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      isDeleted: json['isDeleted'] as bool?,
+      deletedAt: json['deletedAt'] == null
+          ? null
+          : DateTime.parse(json['deletedAt'] as String),
+      deletedBy: json['deletedBy'] as String?,
+    );
 
 Map<String, dynamic> _$$DamageReportImplToJson(_$DamageReportImpl instance) =>
     <String, dynamic>{

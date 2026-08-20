@@ -12,8 +12,7 @@ part of 'damage_report.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 DamageReport _$DamageReportFromJson(Map<String, dynamic> json) {
   return _DamageReport.fromJson(json);
@@ -55,12 +54,8 @@ mixin _$DamageReport {
   DateTime? get deletedAt => throw _privateConstructorUsedError;
   String? get deletedBy => throw _privateConstructorUsedError;
 
-  /// Serializes this DamageReport to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of DamageReport
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $DamageReportCopyWith<DamageReport> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -68,41 +63,39 @@ mixin _$DamageReport {
 /// @nodoc
 abstract class $DamageReportCopyWith<$Res> {
   factory $DamageReportCopyWith(
-    DamageReport value,
-    $Res Function(DamageReport) then,
-  ) = _$DamageReportCopyWithImpl<$Res, DamageReport>;
+          DamageReport value, $Res Function(DamageReport) then) =
+      _$DamageReportCopyWithImpl<$Res, DamageReport>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String reportNumber,
-    String permanentFormNumber,
-    String temporaryFormNumber,
-    int damageYear,
-    String farmId,
-    String farmerId,
-    DateTime? damageDate,
-    DateTime? documentationDate,
-    int agriculturalSectorId,
-    int damageCauseCategoryId,
-    int damageCauseId,
-    String governorateId,
-    String directorateId,
-    String localityId,
-    String statusId,
-    @JsonKey(name: 'totalDamage') double totalDamage,
-    String notes,
-    String createdBy,
-    String rowVersion,
-    List<DamageItem> items,
-    List<DamageReportAttachment> attachments,
-    String syncStatus,
-    String? lastSyncError,
-    DateTime? updatedAt,
-    bool? isDeleted,
-    DateTime? deletedAt,
-    String? deletedBy,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String reportNumber,
+      String permanentFormNumber,
+      String temporaryFormNumber,
+      int damageYear,
+      String farmId,
+      String farmerId,
+      DateTime? damageDate,
+      DateTime? documentationDate,
+      int agriculturalSectorId,
+      int damageCauseCategoryId,
+      int damageCauseId,
+      String governorateId,
+      String directorateId,
+      String localityId,
+      String statusId,
+      @JsonKey(name: 'totalDamage') double totalDamage,
+      String notes,
+      String createdBy,
+      String rowVersion,
+      List<DamageItem> items,
+      List<DamageReportAttachment> attachments,
+      String syncStatus,
+      String? lastSyncError,
+      DateTime? updatedAt,
+      bool? isDeleted,
+      DateTime? deletedAt,
+      String? deletedBy});
 }
 
 /// @nodoc
@@ -115,8 +108,6 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of DamageReport
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -150,127 +141,124 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            serverId: freezed == serverId
-                ? _value.serverId
-                : serverId // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            reportNumber: null == reportNumber
-                ? _value.reportNumber
-                : reportNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            permanentFormNumber: null == permanentFormNumber
-                ? _value.permanentFormNumber
-                : permanentFormNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            temporaryFormNumber: null == temporaryFormNumber
-                ? _value.temporaryFormNumber
-                : temporaryFormNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            damageYear: null == damageYear
-                ? _value.damageYear
-                : damageYear // ignore: cast_nullable_to_non_nullable
-                      as int,
-            farmId: null == farmId
-                ? _value.farmId
-                : farmId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            farmerId: null == farmerId
-                ? _value.farmerId
-                : farmerId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            damageDate: freezed == damageDate
-                ? _value.damageDate
-                : damageDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            documentationDate: freezed == documentationDate
-                ? _value.documentationDate
-                : documentationDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            agriculturalSectorId: null == agriculturalSectorId
-                ? _value.agriculturalSectorId
-                : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            damageCauseCategoryId: null == damageCauseCategoryId
-                ? _value.damageCauseCategoryId
-                : damageCauseCategoryId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            damageCauseId: null == damageCauseId
-                ? _value.damageCauseId
-                : damageCauseId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            governorateId: null == governorateId
-                ? _value.governorateId
-                : governorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            directorateId: null == directorateId
-                ? _value.directorateId
-                : directorateId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            localityId: null == localityId
-                ? _value.localityId
-                : localityId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            statusId: null == statusId
-                ? _value.statusId
-                : statusId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            totalDamage: null == totalDamage
-                ? _value.totalDamage
-                : totalDamage // ignore: cast_nullable_to_non_nullable
-                      as double,
-            notes: null == notes
-                ? _value.notes
-                : notes // ignore: cast_nullable_to_non_nullable
-                      as String,
-            createdBy: null == createdBy
-                ? _value.createdBy
-                : createdBy // ignore: cast_nullable_to_non_nullable
-                      as String,
-            rowVersion: null == rowVersion
-                ? _value.rowVersion
-                : rowVersion // ignore: cast_nullable_to_non_nullable
-                      as String,
-            items: null == items
-                ? _value.items
-                : items // ignore: cast_nullable_to_non_nullable
-                      as List<DamageItem>,
-            attachments: null == attachments
-                ? _value.attachments
-                : attachments // ignore: cast_nullable_to_non_nullable
-                      as List<DamageReportAttachment>,
-            syncStatus: null == syncStatus
-                ? _value.syncStatus
-                : syncStatus // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lastSyncError: freezed == lastSyncError
-                ? _value.lastSyncError
-                : lastSyncError // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            updatedAt: freezed == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            isDeleted: freezed == isDeleted
-                ? _value.isDeleted
-                : isDeleted // ignore: cast_nullable_to_non_nullable
-                      as bool?,
-            deletedAt: freezed == deletedAt
-                ? _value.deletedAt
-                : deletedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            deletedBy: freezed == deletedBy
-                ? _value.deletedBy
-                : deletedBy // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reportNumber: null == reportNumber
+          ? _value.reportNumber
+          : reportNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      permanentFormNumber: null == permanentFormNumber
+          ? _value.permanentFormNumber
+          : permanentFormNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      temporaryFormNumber: null == temporaryFormNumber
+          ? _value.temporaryFormNumber
+          : temporaryFormNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      damageYear: null == damageYear
+          ? _value.damageYear
+          : damageYear // ignore: cast_nullable_to_non_nullable
+              as int,
+      farmId: null == farmId
+          ? _value.farmId
+          : farmId // ignore: cast_nullable_to_non_nullable
+              as String,
+      farmerId: null == farmerId
+          ? _value.farmerId
+          : farmerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      damageDate: freezed == damageDate
+          ? _value.damageDate
+          : damageDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      documentationDate: freezed == documentationDate
+          ? _value.documentationDate
+          : documentationDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      agriculturalSectorId: null == agriculturalSectorId
+          ? _value.agriculturalSectorId
+          : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
+              as int,
+      damageCauseCategoryId: null == damageCauseCategoryId
+          ? _value.damageCauseCategoryId
+          : damageCauseCategoryId // ignore: cast_nullable_to_non_nullable
+              as int,
+      damageCauseId: null == damageCauseId
+          ? _value.damageCauseId
+          : damageCauseId // ignore: cast_nullable_to_non_nullable
+              as int,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      directorateId: null == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      localityId: null == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String,
+      statusId: null == statusId
+          ? _value.statusId
+          : statusId // ignore: cast_nullable_to_non_nullable
+              as String,
+      totalDamage: null == totalDamage
+          ? _value.totalDamage
+          : totalDamage // ignore: cast_nullable_to_non_nullable
+              as double,
+      notes: null == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdBy: null == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      items: null == items
+          ? _value.items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<DamageItem>,
+      attachments: null == attachments
+          ? _value.attachments
+          : attachments // ignore: cast_nullable_to_non_nullable
+              as List<DamageReportAttachment>,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      isDeleted: freezed == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      deletedBy: freezed == deletedBy
+          ? _value.deletedBy
+          : deletedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -278,42 +266,40 @@ class _$DamageReportCopyWithImpl<$Res, $Val extends DamageReport>
 abstract class _$$DamageReportImplCopyWith<$Res>
     implements $DamageReportCopyWith<$Res> {
   factory _$$DamageReportImplCopyWith(
-    _$DamageReportImpl value,
-    $Res Function(_$DamageReportImpl) then,
-  ) = __$$DamageReportImplCopyWithImpl<$Res>;
+          _$DamageReportImpl value, $Res Function(_$DamageReportImpl) then) =
+      __$$DamageReportImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'clientId') String id,
-    @JsonKey(name: 'id') String? serverId,
-    String reportNumber,
-    String permanentFormNumber,
-    String temporaryFormNumber,
-    int damageYear,
-    String farmId,
-    String farmerId,
-    DateTime? damageDate,
-    DateTime? documentationDate,
-    int agriculturalSectorId,
-    int damageCauseCategoryId,
-    int damageCauseId,
-    String governorateId,
-    String directorateId,
-    String localityId,
-    String statusId,
-    @JsonKey(name: 'totalDamage') double totalDamage,
-    String notes,
-    String createdBy,
-    String rowVersion,
-    List<DamageItem> items,
-    List<DamageReportAttachment> attachments,
-    String syncStatus,
-    String? lastSyncError,
-    DateTime? updatedAt,
-    bool? isDeleted,
-    DateTime? deletedAt,
-    String? deletedBy,
-  });
+  $Res call(
+      {@JsonKey(name: 'clientId') String id,
+      @JsonKey(name: 'id') String? serverId,
+      String reportNumber,
+      String permanentFormNumber,
+      String temporaryFormNumber,
+      int damageYear,
+      String farmId,
+      String farmerId,
+      DateTime? damageDate,
+      DateTime? documentationDate,
+      int agriculturalSectorId,
+      int damageCauseCategoryId,
+      int damageCauseId,
+      String governorateId,
+      String directorateId,
+      String localityId,
+      String statusId,
+      @JsonKey(name: 'totalDamage') double totalDamage,
+      String notes,
+      String createdBy,
+      String rowVersion,
+      List<DamageItem> items,
+      List<DamageReportAttachment> attachments,
+      String syncStatus,
+      String? lastSyncError,
+      DateTime? updatedAt,
+      bool? isDeleted,
+      DateTime? deletedAt,
+      String? deletedBy});
 }
 
 /// @nodoc
@@ -321,12 +307,9 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     extends _$DamageReportCopyWithImpl<$Res, _$DamageReportImpl>
     implements _$$DamageReportImplCopyWith<$Res> {
   __$$DamageReportImplCopyWithImpl(
-    _$DamageReportImpl _value,
-    $Res Function(_$DamageReportImpl) _then,
-  ) : super(_value, _then);
+      _$DamageReportImpl _value, $Res Function(_$DamageReportImpl) _then)
+      : super(_value, _then);
 
-  /// Create a copy of DamageReport
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -360,164 +343,162 @@ class __$$DamageReportImplCopyWithImpl<$Res>
     Object? deletedAt = freezed,
     Object? deletedBy = freezed,
   }) {
-    return _then(
-      _$DamageReportImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        serverId: freezed == serverId
-            ? _value.serverId
-            : serverId // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        reportNumber: null == reportNumber
-            ? _value.reportNumber
-            : reportNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        permanentFormNumber: null == permanentFormNumber
-            ? _value.permanentFormNumber
-            : permanentFormNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        temporaryFormNumber: null == temporaryFormNumber
-            ? _value.temporaryFormNumber
-            : temporaryFormNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        damageYear: null == damageYear
-            ? _value.damageYear
-            : damageYear // ignore: cast_nullable_to_non_nullable
-                  as int,
-        farmId: null == farmId
-            ? _value.farmId
-            : farmId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        farmerId: null == farmerId
-            ? _value.farmerId
-            : farmerId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        damageDate: freezed == damageDate
-            ? _value.damageDate
-            : damageDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        documentationDate: freezed == documentationDate
-            ? _value.documentationDate
-            : documentationDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        agriculturalSectorId: null == agriculturalSectorId
-            ? _value.agriculturalSectorId
-            : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        damageCauseCategoryId: null == damageCauseCategoryId
-            ? _value.damageCauseCategoryId
-            : damageCauseCategoryId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        damageCauseId: null == damageCauseId
-            ? _value.damageCauseId
-            : damageCauseId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        governorateId: null == governorateId
-            ? _value.governorateId
-            : governorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        directorateId: null == directorateId
-            ? _value.directorateId
-            : directorateId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        localityId: null == localityId
-            ? _value.localityId
-            : localityId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        statusId: null == statusId
-            ? _value.statusId
-            : statusId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        totalDamage: null == totalDamage
-            ? _value.totalDamage
-            : totalDamage // ignore: cast_nullable_to_non_nullable
-                  as double,
-        notes: null == notes
-            ? _value.notes
-            : notes // ignore: cast_nullable_to_non_nullable
-                  as String,
-        createdBy: null == createdBy
-            ? _value.createdBy
-            : createdBy // ignore: cast_nullable_to_non_nullable
-                  as String,
-        rowVersion: null == rowVersion
-            ? _value.rowVersion
-            : rowVersion // ignore: cast_nullable_to_non_nullable
-                  as String,
-        items: null == items
-            ? _value._items
-            : items // ignore: cast_nullable_to_non_nullable
-                  as List<DamageItem>,
-        attachments: null == attachments
-            ? _value._attachments
-            : attachments // ignore: cast_nullable_to_non_nullable
-                  as List<DamageReportAttachment>,
-        syncStatus: null == syncStatus
-            ? _value.syncStatus
-            : syncStatus // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lastSyncError: freezed == lastSyncError
-            ? _value.lastSyncError
-            : lastSyncError // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        updatedAt: freezed == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        isDeleted: freezed == isDeleted
-            ? _value.isDeleted
-            : isDeleted // ignore: cast_nullable_to_non_nullable
-                  as bool?,
-        deletedAt: freezed == deletedAt
-            ? _value.deletedAt
-            : deletedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        deletedBy: freezed == deletedBy
-            ? _value.deletedBy
-            : deletedBy // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$DamageReportImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      serverId: freezed == serverId
+          ? _value.serverId
+          : serverId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      reportNumber: null == reportNumber
+          ? _value.reportNumber
+          : reportNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      permanentFormNumber: null == permanentFormNumber
+          ? _value.permanentFormNumber
+          : permanentFormNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      temporaryFormNumber: null == temporaryFormNumber
+          ? _value.temporaryFormNumber
+          : temporaryFormNumber // ignore: cast_nullable_to_non_nullable
+              as String,
+      damageYear: null == damageYear
+          ? _value.damageYear
+          : damageYear // ignore: cast_nullable_to_non_nullable
+              as int,
+      farmId: null == farmId
+          ? _value.farmId
+          : farmId // ignore: cast_nullable_to_non_nullable
+              as String,
+      farmerId: null == farmerId
+          ? _value.farmerId
+          : farmerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      damageDate: freezed == damageDate
+          ? _value.damageDate
+          : damageDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      documentationDate: freezed == documentationDate
+          ? _value.documentationDate
+          : documentationDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      agriculturalSectorId: null == agriculturalSectorId
+          ? _value.agriculturalSectorId
+          : agriculturalSectorId // ignore: cast_nullable_to_non_nullable
+              as int,
+      damageCauseCategoryId: null == damageCauseCategoryId
+          ? _value.damageCauseCategoryId
+          : damageCauseCategoryId // ignore: cast_nullable_to_non_nullable
+              as int,
+      damageCauseId: null == damageCauseId
+          ? _value.damageCauseId
+          : damageCauseId // ignore: cast_nullable_to_non_nullable
+              as int,
+      governorateId: null == governorateId
+          ? _value.governorateId
+          : governorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      directorateId: null == directorateId
+          ? _value.directorateId
+          : directorateId // ignore: cast_nullable_to_non_nullable
+              as String,
+      localityId: null == localityId
+          ? _value.localityId
+          : localityId // ignore: cast_nullable_to_non_nullable
+              as String,
+      statusId: null == statusId
+          ? _value.statusId
+          : statusId // ignore: cast_nullable_to_non_nullable
+              as String,
+      totalDamage: null == totalDamage
+          ? _value.totalDamage
+          : totalDamage // ignore: cast_nullable_to_non_nullable
+              as double,
+      notes: null == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdBy: null == createdBy
+          ? _value.createdBy
+          : createdBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      rowVersion: null == rowVersion
+          ? _value.rowVersion
+          : rowVersion // ignore: cast_nullable_to_non_nullable
+              as String,
+      items: null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<DamageItem>,
+      attachments: null == attachments
+          ? _value._attachments
+          : attachments // ignore: cast_nullable_to_non_nullable
+              as List<DamageReportAttachment>,
+      syncStatus: null == syncStatus
+          ? _value.syncStatus
+          : syncStatus // ignore: cast_nullable_to_non_nullable
+              as String,
+      lastSyncError: freezed == lastSyncError
+          ? _value.lastSyncError
+          : lastSyncError // ignore: cast_nullable_to_non_nullable
+              as String?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      isDeleted: freezed == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      deletedAt: freezed == deletedAt
+          ? _value.deletedAt
+          : deletedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      deletedBy: freezed == deletedBy
+          ? _value.deletedBy
+          : deletedBy // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DamageReportImpl implements _DamageReport {
-  const _$DamageReportImpl({
-    @JsonKey(name: 'clientId') this.id = '',
-    @JsonKey(name: 'id') this.serverId,
-    this.reportNumber = '',
-    this.permanentFormNumber = '',
-    this.temporaryFormNumber = '',
-    this.damageYear = 0,
-    this.farmId = '',
-    this.farmerId = '',
-    this.damageDate,
-    this.documentationDate,
-    this.agriculturalSectorId = 0,
-    this.damageCauseCategoryId = 0,
-    this.damageCauseId = 0,
-    this.governorateId = '',
-    this.directorateId = '',
-    this.localityId = '',
-    this.statusId = DamageReportStatus.pendingTechnicalVerification,
-    @JsonKey(name: 'totalDamage') this.totalDamage = 0.0,
-    this.notes = '',
-    this.createdBy = '',
-    this.rowVersion = '',
-    final List<DamageItem> items = const [],
-    final List<DamageReportAttachment> attachments = const [],
-    this.syncStatus = 'completed',
-    this.lastSyncError,
-    this.updatedAt,
-    this.isDeleted,
-    this.deletedAt,
-    this.deletedBy,
-  }) : _items = items,
-       _attachments = attachments;
+  const _$DamageReportImpl(
+      {@JsonKey(name: 'clientId') this.id = '',
+      @JsonKey(name: 'id') this.serverId,
+      this.reportNumber = '',
+      this.permanentFormNumber = '',
+      this.temporaryFormNumber = '',
+      this.damageYear = 0,
+      this.farmId = '',
+      this.farmerId = '',
+      this.damageDate,
+      this.documentationDate,
+      this.agriculturalSectorId = 0,
+      this.damageCauseCategoryId = 0,
+      this.damageCauseId = 0,
+      this.governorateId = '',
+      this.directorateId = '',
+      this.localityId = '',
+      this.statusId = DamageReportStatus.pendingTechnicalVerification,
+      @JsonKey(name: 'totalDamage') this.totalDamage = 0.0,
+      this.notes = '',
+      this.createdBy = '',
+      this.rowVersion = '',
+      final List<DamageItem> items = const [],
+      final List<DamageReportAttachment> attachments = const [],
+      this.syncStatus = 'completed',
+      this.lastSyncError,
+      this.updatedAt,
+      this.isDeleted,
+      this.deletedAt,
+      this.deletedBy})
+      : _items = items,
+        _attachments = attachments;
 
   factory _$DamageReportImpl.fromJson(Map<String, dynamic> json) =>
       _$$DamageReportImplFromJson(json);
@@ -525,7 +506,7 @@ class _$DamageReportImpl implements _DamageReport {
   @override
   @JsonKey(name: 'clientId')
   final String id;
-  // ClientId
+// ClientId
   @override
   @JsonKey(name: 'id')
   final String? serverId;
@@ -666,10 +647,8 @@ class _$DamageReportImpl implements _DamageReport {
             (identical(other.rowVersion, rowVersion) ||
                 other.rowVersion == rowVersion) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
-            const DeepCollectionEquality().equals(
-              other._attachments,
-              _attachments,
-            ) &&
+            const DeepCollectionEquality()
+                .equals(other._attachments, _attachments) &&
             (identical(other.syncStatus, syncStatus) ||
                 other.syncStatus == syncStatus) &&
             (identical(other.lastSyncError, lastSyncError) ||
@@ -684,44 +663,42 @@ class _$DamageReportImpl implements _DamageReport {
                 other.deletedBy == deletedBy));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
-    runtimeType,
-    id,
-    serverId,
-    reportNumber,
-    permanentFormNumber,
-    temporaryFormNumber,
-    damageYear,
-    farmId,
-    farmerId,
-    damageDate,
-    documentationDate,
-    agriculturalSectorId,
-    damageCauseCategoryId,
-    damageCauseId,
-    governorateId,
-    directorateId,
-    localityId,
-    statusId,
-    totalDamage,
-    notes,
-    createdBy,
-    rowVersion,
-    const DeepCollectionEquality().hash(_items),
-    const DeepCollectionEquality().hash(_attachments),
-    syncStatus,
-    lastSyncError,
-    updatedAt,
-    isDeleted,
-    deletedAt,
-    deletedBy,
-  ]);
+        runtimeType,
+        id,
+        serverId,
+        reportNumber,
+        permanentFormNumber,
+        temporaryFormNumber,
+        damageYear,
+        farmId,
+        farmerId,
+        damageDate,
+        documentationDate,
+        agriculturalSectorId,
+        damageCauseCategoryId,
+        damageCauseId,
+        governorateId,
+        directorateId,
+        localityId,
+        statusId,
+        totalDamage,
+        notes,
+        createdBy,
+        rowVersion,
+        const DeepCollectionEquality().hash(_items),
+        const DeepCollectionEquality().hash(_attachments),
+        syncStatus,
+        lastSyncError,
+        updatedAt,
+        isDeleted,
+        deletedAt,
+        deletedBy
+      ]);
 
-  /// Create a copy of DamageReport
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DamageReportImplCopyWith<_$DamageReportImpl> get copyWith =>
@@ -729,50 +706,51 @@ class _$DamageReportImpl implements _DamageReport {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DamageReportImplToJson(this);
+    return _$$DamageReportImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _DamageReport implements DamageReport {
-  const factory _DamageReport({
-    @JsonKey(name: 'clientId') final String id,
-    @JsonKey(name: 'id') final String? serverId,
-    final String reportNumber,
-    final String permanentFormNumber,
-    final String temporaryFormNumber,
-    final int damageYear,
-    final String farmId,
-    final String farmerId,
-    final DateTime? damageDate,
-    final DateTime? documentationDate,
-    final int agriculturalSectorId,
-    final int damageCauseCategoryId,
-    final int damageCauseId,
-    final String governorateId,
-    final String directorateId,
-    final String localityId,
-    final String statusId,
-    @JsonKey(name: 'totalDamage') final double totalDamage,
-    final String notes,
-    final String createdBy,
-    final String rowVersion,
-    final List<DamageItem> items,
-    final List<DamageReportAttachment> attachments,
-    final String syncStatus,
-    final String? lastSyncError,
-    final DateTime? updatedAt,
-    final bool? isDeleted,
-    final DateTime? deletedAt,
-    final String? deletedBy,
-  }) = _$DamageReportImpl;
+  const factory _DamageReport(
+      {@JsonKey(name: 'clientId') final String id,
+      @JsonKey(name: 'id') final String? serverId,
+      final String reportNumber,
+      final String permanentFormNumber,
+      final String temporaryFormNumber,
+      final int damageYear,
+      final String farmId,
+      final String farmerId,
+      final DateTime? damageDate,
+      final DateTime? documentationDate,
+      final int agriculturalSectorId,
+      final int damageCauseCategoryId,
+      final int damageCauseId,
+      final String governorateId,
+      final String directorateId,
+      final String localityId,
+      final String statusId,
+      @JsonKey(name: 'totalDamage') final double totalDamage,
+      final String notes,
+      final String createdBy,
+      final String rowVersion,
+      final List<DamageItem> items,
+      final List<DamageReportAttachment> attachments,
+      final String syncStatus,
+      final String? lastSyncError,
+      final DateTime? updatedAt,
+      final bool? isDeleted,
+      final DateTime? deletedAt,
+      final String? deletedBy}) = _$DamageReportImpl;
 
   factory _DamageReport.fromJson(Map<String, dynamic> json) =
       _$DamageReportImpl.fromJson;
 
   @override
   @JsonKey(name: 'clientId')
-  String get id; // ClientId
-  @override
+  String get id;
+  @override // ClientId
   @JsonKey(name: 'id')
   String? get serverId;
   @override
@@ -830,11 +808,8 @@ abstract class _DamageReport implements DamageReport {
   DateTime? get deletedAt;
   @override
   String? get deletedBy;
-
-  /// Create a copy of DamageReport
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$DamageReportImplCopyWith<_$DamageReportImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

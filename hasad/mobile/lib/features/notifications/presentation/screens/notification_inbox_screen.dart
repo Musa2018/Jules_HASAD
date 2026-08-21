@@ -32,7 +32,7 @@ class NotificationInboxScreen extends ConsumerWidget {
           
           try {
             final serverResults = await apiClient.getMyNotifications();
-            final items = serverResults['Items'] ?? serverResults['items'] as List;
+            final items = (serverResults['Items'] ?? serverResults['items']) as List;
             for (var item in items) {
               await db.insertNotification({
                 'Id': (item['id'] ?? item['Id']).toString(),

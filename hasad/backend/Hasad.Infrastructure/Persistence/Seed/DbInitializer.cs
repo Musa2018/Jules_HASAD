@@ -46,15 +46,16 @@ public static class DbInitializer
         var statuses = new[]
         {
             new WorkflowStatus { Id = DamageReportStatus.Draft, NameAr = "مسودة", NameEn = "Draft", Order = 1 },
-            new WorkflowStatus { Id = DamageReportStatus.TechReview, NameAr = "مراجعة فنية (المديرية)", NameEn = "Technical Review (Directorate)", Order = 2 },
-            new WorkflowStatus { Id = DamageReportStatus.ArchiveDir, NameAr = "أرشفة المديرية", NameEn = "Directorate Archive", Order = 3 },
-            new WorkflowStatus { Id = DamageReportStatus.DirManager, NameAr = "مدير المديرية", NameEn = "Directorate Manager", Order = 4 },
-            new WorkflowStatus { Id = DamageReportStatus.MinTechReview, NameAr = "مراجعة فنية (الوزارة)", NameEn = "Technical Review (Ministry)", Order = 5 },
-            new WorkflowStatus { Id = DamageReportStatus.LegalReview, NameAr = "مراجعة قانونية", NameEn = "Legal Review", Order = 6 },
-            new WorkflowStatus { Id = DamageReportStatus.MinArchive, NameAr = "أرشفة الوزارة", NameEn = "Ministry Archive", Order = 7 },
-            new WorkflowStatus { Id = DamageReportStatus.ProcReview, NameAr = "مراجعة إجرائية", NameEn = "Procedural Review", Order = 8 },
-            new WorkflowStatus { Id = DamageReportStatus.GenManager, NameAr = "المدير العام", NameEn = "General Manager", Order = 9 },
-            new WorkflowStatus { Id = DamageReportStatus.Completed, NameAr = "مكتمل", NameEn = "Completed", Order = 10 }
+            new WorkflowStatus { Id = DamageReportStatus.PendingTechnicalVerification, NameAr = "بانتظار التحقق الفني", NameEn = "Pending Technical Verification", Order = 2 },
+            new WorkflowStatus { Id = DamageReportStatus.TechReview, NameAr = "مراجعة فنية (المديرية)", NameEn = "Technical Review (Directorate)", Order = 3 },
+            new WorkflowStatus { Id = DamageReportStatus.ArchiveDir, NameAr = "أرشفة المديرية", NameEn = "Directorate Archive", Order = 4 },
+            new WorkflowStatus { Id = DamageReportStatus.DirManager, NameAr = "مدير المديرية", NameEn = "Directorate Manager", Order = 5 },
+            new WorkflowStatus { Id = DamageReportStatus.MinTechReview, NameAr = "مراجعة فنية (الوزارة)", NameEn = "Technical Review (Ministry)", Order = 6 },
+            new WorkflowStatus { Id = DamageReportStatus.LegalReview, NameAr = "مراجعة قانونية", NameEn = "Legal Review", Order = 7 },
+            new WorkflowStatus { Id = DamageReportStatus.MinArchive, NameAr = "أرشفة الوزارة", NameEn = "Ministry Archive", Order = 8 },
+            new WorkflowStatus { Id = DamageReportStatus.ProcReview, NameAr = "مراجعة إجرائية", NameEn = "Procedural Review", Order = 9 },
+            new WorkflowStatus { Id = DamageReportStatus.GenManager, NameAr = "المدير العام", NameEn = "General Manager", Order = 10 },
+            new WorkflowStatus { Id = DamageReportStatus.Completed, NameAr = "مكتمل", NameEn = "Completed", Order = 11 }
         };
 
         foreach (var status in statuses)
@@ -71,8 +72,11 @@ public static class DbInitializer
         {
             // Directorate Level
             new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.Draft, ToStatusId = DamageReportStatus.TechReview, AllowedRole = AppRoles.AgriculturalEngineer },
+            new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.PendingTechnicalVerification, ToStatusId = DamageReportStatus.TechReview, AllowedRole = AppRoles.AgriculturalEngineer },
+            new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.PendingTechnicalVerification, ToStatusId = DamageReportStatus.TechReview, AllowedRole = AppRoles.FieldSurveyor },
             new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.TechReview, ToStatusId = DamageReportStatus.ArchiveDir, AllowedRole = AppRoles.TechnicalReviewer },
             new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.TechReview, ToStatusId = DamageReportStatus.Draft, AllowedRole = AppRoles.TechnicalReviewer, IsReturn = true },
+            new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.TechReview, ToStatusId = DamageReportStatus.PendingTechnicalVerification, AllowedRole = AppRoles.TechnicalReviewer, IsReturn = true },
             new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.ArchiveDir, ToStatusId = DamageReportStatus.DirManager, AllowedRole = AppRoles.ArchiveOfficer },
             new WorkflowTransition { Id = Guid.NewGuid(), FromStatusId = DamageReportStatus.ArchiveDir, ToStatusId = DamageReportStatus.TechReview, AllowedRole = AppRoles.ArchiveOfficer, IsReturn = true },
 

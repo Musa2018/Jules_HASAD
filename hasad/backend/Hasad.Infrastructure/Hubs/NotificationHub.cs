@@ -3,6 +3,7 @@ using Hasad.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Hasad.Infrastructure.Hubs;
 
@@ -22,6 +23,8 @@ public class NotificationHub : Hub
     {
         var userId = Context.UserIdentifier;
         var connectionId = Context.ConnectionId;
+
+        Log.Information("NotificationHub: User {UserId} connected with ConnectionId {ConnectionId}", userId, connectionId);
 
         // Get deviceId from query string to distinguish between multiple devices of the same user
         var deviceToken = Context.GetHttpContext()?.Request.Query["deviceToken"].ToString();

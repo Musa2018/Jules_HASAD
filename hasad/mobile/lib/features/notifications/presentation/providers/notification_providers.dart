@@ -18,9 +18,15 @@ final notificationClientServiceProvider = Provider((ref) {
   final db = ref.watch(notificationDbProvider);
   final authState = ref.watch(authProvider);
   
-  final service = NotificationClientService(db, onNotificationTapped: (id) {
-    ref.read(localNotificationsProvider.notifier).markAsRead(id);
-  });
+  final service = NotificationClientService(
+    db, 
+    onNotificationTapped: (id) {
+      ref.read(localNotificationsProvider.notifier).markAsRead(id);
+    },
+    onNotificationReceived: () {
+      ref.read(localNotificationsProvider.notifier).refresh();
+    }
+  );
   
   if (authState.isAuthenticated) {
     final baseUrl = EnvironmentConfig.config.apiBaseUrl;
@@ -48,7 +54,10 @@ final notificationSyncServiceProvider = Provider((ref) {
   
   final authState = ref.watch(authProvider);
   if (authState.isAuthenticated) {
-    service.startSync();
+    service.startSync().then((_) {
+      // Refresh the local notification list after the initial pull
+      ref.read(localNotificationsProvider.notifier).refresh();
+    });
   }
   
   ref.onDispose(() => service.stopSync());
@@ -70,7 +79,10 @@ class LocalNotificationsNotifier extends StateNotifier<List<Map<String, dynamic>
   }
 
   Future<void> refresh() async {
-    state = await _db.getAllNotifications();
+    print('LocalNotificationsNotifier: Refreshing UI list...');
+    final notifications = await _db.getAllNotifications();
+    print('LocalNotificationsNotifier: Found ${notifications.length} notifications in local DB');
+    state = notifications;
   }
 
   Future<void> markAsRead(String id) async {

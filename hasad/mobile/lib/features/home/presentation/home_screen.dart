@@ -36,6 +36,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: Text(l10n.dashboard),
         actions: [
+          ref.watch(unreadCountProvider).when(
+            data: (count) => IconButton(
+              icon: Badge.count(
+                count: count,
+                isLabelVisible: count > 0,
+                child: const Icon(Icons.notifications),
+              ),
+              onPressed: () => context.push(AppRoutes.notifications),
+            ),
+            loading: () => const IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: null,
+            ),
+            error: (_, __) => IconButton(
+              icon: const Icon(Icons.notifications),
+              onPressed: () => context.push(AppRoutes.notifications),
+            ),
+          ),
           IconButton(
             tooltip: l10n.syncStatus,
             icon: const Icon(Icons.sync),

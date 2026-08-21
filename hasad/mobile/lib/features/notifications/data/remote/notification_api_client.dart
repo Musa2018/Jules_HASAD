@@ -7,18 +7,18 @@ class NotificationApiClient {
 
   Future<Map<String, dynamic>> getMyNotifications({int pageIndex = 1, int pageSize = 20}) async {
     final response = await _dio.get(
-      '/api/notification/my-notifications',
+      '/notification/my-notifications',
       queryParameters: {'pageIndex': pageIndex, 'pageSize': pageSize},
     );
     return response.data;
   }
 
   Future<void> markAsRead(String id) async {
-    await _dio.put('/api/notification/$id/read');
+    await _dio.put('/notification/$id/read');
   }
 
   Future<void> registerDevice(String token, String platform) async {
-    await _dio.post('/api/device/register', data: {
+    await _dio.post('/device/register', data: {
       'deviceToken': token,
       'platform': platform,
     });

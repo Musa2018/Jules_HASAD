@@ -18,7 +18,9 @@ final notificationClientServiceProvider = Provider((ref) {
   final db = ref.watch(notificationDbProvider);
   final authState = ref.watch(authProvider);
   
-  final service = NotificationClientService(db);
+  final service = NotificationClientService(db, onNotificationTapped: (id) {
+    ref.read(localNotificationsProvider.notifier).markAsRead(id);
+  });
   
   if (authState.isAuthenticated) {
     final baseUrl = EnvironmentConfig.config.apiBaseUrl;
@@ -29,7 +31,10 @@ final notificationClientServiceProvider = Provider((ref) {
     
     // We should ideally get the device token from a service (FCM/APNS)
     // For now we initialize with what we have.
-    service.init(hubUrl, token);
+    service.connect(
+      url: hubUrl,
+      accessToken: token,
+    );
   }
   
   ref.onDispose(() => service.dispose());
@@ -51,13 +56,16 @@ final notificationSyncServiceProvider = Provider((ref) {
 });
 
 final localNotificationsProvider = StateNotifierProvider<LocalNotificationsNotifier, List<Map<String, dynamic>>>((ref) {
-  return LocalNotificationsNotifier(ref.watch(notificationDbProvider));
+  final db = ref.watch(notificationDbProvider);
+  final apiClient = ref.watch(notificationApiClientProvider);
+  return LocalNotificationsNotifier(db, apiClient);
 });
 
 class LocalNotificationsNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   final LocalNotificationDb _db;
+  final NotificationApiClient _apiClient;
 
-  LocalNotificationsNotifier(this._db) : super([]) {
+  LocalNotificationsNotifier(this._db, this._apiClient) : super([]) {
     refresh();
   }
 
@@ -66,8 +74,19 @@ class LocalNotificationsNotifier extends StateNotifier<List<Map<String, dynamic>
   }
 
   Future<void> markAsRead(String id) async {
+    // 1. Update local database immediately
     await _db.markAsRead(id);
     await refresh();
+
+    // 2. Attempt to update server immediately
+    try {
+      await _apiClient.markAsRead(id);
+      await _db.updateSyncStatus(id, 1);
+    } catch (e) {
+      // If server update fails, it remains as SyncStatus = 0
+      // and NotificationSyncService will retry it later.
+      print('Error marking notification as read on server: $e');
+    }
   }
 }
 

@@ -6,7 +6,7 @@ import 'package:mobile/features/auth/presentation/auth_providers.dart';
 
 import '../auth/fakes.dart';
 
-const _base = 'http://localhost:5271/api';
+const _base = 'http://10.0.2.2:5271/api';
 const _email = String.fromEnvironment('LIVE_E2E_EMAIL');
 const _password = String.fromEnvironment('LIVE_E2E_PASSWORD');
 

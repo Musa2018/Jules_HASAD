@@ -7,13 +7,13 @@ class ReportApiClient {
   ReportApiClient(this._dio);
 
   Future<ReportDefinitionMetadata> getMetadata(String reportId) async {
-    final response = await _dio.get('/api/report/$reportId/metadata');
+    final response = await _dio.get('/report/$reportId/metadata');
     return ReportDefinitionMetadata.fromJson(response.data);
   }
 
   Future<ReportResultDto> executeReport(ReportRequest request) async {
     final response = await _dio.post(
-      '/api/report/execute',
+      '/report/execute',
       data: request.toJson(),
     );
     return ReportResultDto.fromJson(response.data);
@@ -21,7 +21,7 @@ class ReportApiClient {
 
   Future<List<int>> downloadExcel(ReportRequest request) async {
     final response = await _dio.post(
-      '/api/report/export/excel',
+      '/report/export/excel',
       data: request.toJson(),
       options: Options(responseType: ResponseType.bytes),
     );
@@ -30,7 +30,7 @@ class ReportApiClient {
 
   Future<List<int>> downloadPdf(ReportRequest request) async {
     final response = await _dio.post(
-      '/api/report/export/pdf',
+      '/report/export/pdf',
       data: request.toJson(),
       options: Options(responseType: ResponseType.bytes),
     );

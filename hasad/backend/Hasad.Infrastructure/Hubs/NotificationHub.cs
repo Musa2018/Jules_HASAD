@@ -1,4 +1,5 @@
 using Hasad.Application.Common.Interfaces;
+using Hasad.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +10,12 @@ namespace Hasad.Infrastructure.Hubs;
 public class NotificationHub : Hub
 {
     private readonly IApplicationDbContext _context;
+    private readonly IHubContext<AdminDashboardHub> _adminHub;
 
-    public NotificationHub(IApplicationDbContext context)
+    public NotificationHub(IApplicationDbContext context, IHubContext<AdminDashboardHub> adminHub)
     {
         _context = context;
+        _adminHub = adminHub;
     }
 
     public override async Task OnConnectedAsync()
@@ -50,9 +53,33 @@ public class NotificationHub : Hub
                     latestDevice.SignalRConnectionId = connectionId;
                     latestDevice.IsOnline = true;
                     latestDevice.LastActiveAt = DateTime.UtcNow;
-                    await _context.SaveChangesAsync(CancellationToken.None);
                 }
+                else
+                {
+                    // Create a placeholder device for stats tracking if this is a first-time connection
+                    _context.UserDevices.Add(new UserDevice
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = userId,
+                        DeviceToken = "AUTO_SIGNALR_" + Guid.NewGuid().ToString("N").Substring(0, 8),
+                        Platform = "Android", // Defaulting to Android for Emulator testing
+                        SignalRConnectionId = connectionId,
+                        IsOnline = true,
+                        LastActiveAt = DateTime.UtcNow
+                    });
+                }
+                await _context.SaveChangesAsync(CancellationToken.None);
             }
+
+            // Broadcast presence update to Admin Dashboard
+            var onlineCount = await _context.UserDevices.CountAsync(d => d.IsOnline);
+            await _adminHub.Clients.Group("LiveSuperAdminStream").SendAsync("OnMetricUpdated", new
+            {
+                MetricKey = "ONLINE_DEVICES",
+                Title = "Users Online Now",
+                CurrentValue = onlineCount,
+                UpdatedAt = DateTime.UtcNow
+            });
         }
 
         await base.OnConnectedAsync();
@@ -68,6 +95,16 @@ public class NotificationHub : Hub
                 .SetProperty(b => b.IsOnline, false)
                 .SetProperty(b => b.SignalRConnectionId, (string?)null)
                 .SetProperty(b => b.LastActiveAt, DateTime.UtcNow));
+
+        // Broadcast presence update to Admin Dashboard
+        var onlineCount = await _context.UserDevices.CountAsync(d => d.IsOnline);
+        await _adminHub.Clients.Group("LiveSuperAdminStream").SendAsync("OnMetricUpdated", new
+        {
+            MetricKey = "ONLINE_DEVICES",
+            Title = "Users Online Now",
+            CurrentValue = onlineCount,
+            UpdatedAt = DateTime.UtcNow
+        });
 
         await base.OnDisconnectedAsync(exception);
     }

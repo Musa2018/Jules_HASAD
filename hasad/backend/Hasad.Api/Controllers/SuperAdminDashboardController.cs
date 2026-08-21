@@ -37,9 +37,51 @@ public class SuperAdminDashboardController : ControllerBase
         using var connection = _context.Database.GetDbConnection();
 
         var multi = await connection.QueryMultipleAsync(@"
-            -- 1. KPI Metrics
-            SELECT MetricKey, Title, CurrentValue, PreviousValue, Unit, Category
-            FROM DashboardKpiMetrics;
+            -- 1. KPI Metrics (Real-time Agricultural Domain)
+            SELECT
+                'TOTAL_FARMERS' AS MetricKey,
+                N'إجمالي المزارعين (Farmers)' AS Title,
+                CAST(COUNT(*) AS DECIMAL(18,2)) AS CurrentValue,
+                NULL AS PreviousValue,
+                N'مزارع' AS Unit,
+                'Agricultural' AS Category
+            FROM Farmers
+            WHERE IsDeleted = 0
+
+            UNION ALL
+
+            SELECT
+                'TOTAL_FARMS',
+                N'إجمالي المزارع (Farms)',
+                CAST(COUNT(*) AS DECIMAL(18,2)),
+                NULL,
+                N'مزرعة',
+                'Agricultural'
+            FROM Farms
+            WHERE IsDeleted = 0
+
+            UNION ALL
+
+            SELECT
+                'DAMAGE_REPORTS',
+                N'تقارير الأضرار (Damage Reports)',
+                CAST(COUNT(*) AS DECIMAL(18,2)),
+                CAST(SUM(CASE WHEN StatusId = 'PendingTechnicalVerification' THEN 1 ELSE 0 END) AS DECIMAL(18,2)),
+                N'تقرير',
+                'Damage'
+            FROM DamageReports
+            WHERE IsDeleted = 0
+
+            UNION ALL
+
+            SELECT
+                'SYSTEM_NOTIFICATIONS',
+                N'الإشعارات الصادرة (Notifications)',
+                CAST(COUNT(*) AS DECIMAL(18,2)),
+                NULL,
+                N'إشعار',
+                'System'
+            FROM Notifications;
 
             -- 2. Device Statistics
             SELECT

@@ -7,8 +7,9 @@ class NotificationClientService {
   HubConnection? _hubConnection;
   final LocalNotificationDb _db;
   final FlutterLocalNotificationsPlugin _localNotifier = FlutterLocalNotificationsPlugin();
+  final Function(String)? onNotificationTapped;
 
-  NotificationClientService(this._db) {
+  NotificationClientService(this._db, {this.onNotificationTapped}) {
     _initLocalNotifications();
   }
 
@@ -16,72 +17,140 @@ class NotificationClientService {
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
     const initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
-    await _localNotifier.initialize(initSettings);
+    await _localNotifier.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (details) {
+        print('Notification tapped: ${details.payload}');
+        if (details.payload != null && onNotificationTapped != null) {
+          onNotificationTapped!(details.payload!);
+        }
+      },
+    );
+
+    // Create high importance channel for Android 8.0+
+    final androidPlugin = _localNotifier.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin != null) {
+      await androidPlugin.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'high_importance_channel',
+          'High Importance Notifications',
+          description: 'This channel is used for important agricultural alerts.',
+          importance: Importance.max,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+      
+      // Request permission for Android 13+
+      await androidPlugin.requestNotificationsPermission();
+    }
   }
 
-  Future<void> init(String hubUrl, String authToken, {String? deviceToken}) async {
-    if (_hubConnection != null) return;
+  Future<void> connect({required String url, required String accessToken, String? deviceToken}) async {
+    if (_hubConnection != null && _hubConnection!.state == HubConnectionState.connected) {
+      print('SignalR: Already connected to $url');
+      return;
+    }
 
-    var url = hubUrl;
+    print('SignalR: Attempting connection to $url');
+    var hubUrl = url;
     if (deviceToken != null) {
-      url += (url.contains('?') ? '&' : '?') + 'deviceToken=$deviceToken';
+      hubUrl += (hubUrl.contains('?') ? '&' : '?') + 'deviceToken=$deviceToken';
     }
 
     _hubConnection = HubConnectionBuilder()
-        .withUrl(url, HttpConnectionOptions(
-          accessTokenFactory: () async => authToken,
+        .withUrl(hubUrl, HttpConnectionOptions(
+          accessTokenFactory: () async => accessToken,
           logging: (level, message) => print('SignalR [$level]: $message'),
         ))
+        .withAutomaticReconnect()
         .build();
 
-    _hubConnection!.on("ReceiveNotification", _handleIncomingNotification);
+    _hubConnection!.on("ReceiveNotification", (args) {
+      print('SignalR: Method "ReceiveNotification" invoked with args: $args');
+      _handleIncomingNotification(args);
+    });
+
+    _hubConnection!.onreconnecting((error) => print('SignalR: Reconnecting... $error'));
+    _hubConnection!.onreconnected((connectionId) => print('SignalR: Reconnected! $connectionId'));
+    _hubConnection!.onclose((error) => print('SignalR: Connection closed. $error'));
 
     try {
       await _hubConnection!.start();
+      print('SignalR: Connection Started successfully. State: ${_hubConnection!.state}');
     } catch (e) {
-      print('SignalR Connection Error: $e');
+      print('SignalR: Connection Error: $e');
     }
   }
 
   void _handleIncomingNotification(List<dynamic>? args) async {
-    if (args == null || args.isEmpty) return;
+    if (args == null || args.isEmpty) {
+      print('SignalR: Received empty notification payload');
+      return;
+    }
     
-    // Server sends: { Id, Title, Body, Category, Payload, CreatedAt }
-    final data = args[0] as Map<String, dynamic>;
+    try {
+      // Server sends: { id, title, body, category, payload, createdAt }
+      final data = args[0] as Map<String, dynamic>;
+      print('SignalR: Processing notification data: $data');
 
-    // 1. Persist to SQLite
-    await _db.insertNotification({
-      'Id': data['id'].toString(),
-      'Title': data['title'],
-      'Body': data['body'],
-      'Category': data['category'] ?? 'General',
-      'PayloadJson': data['payload'],
-      'IsRead': 0,
-      'ReceivedAt': DateTime.now().toIso8601String(),
-      'SyncStatus': 1,
-    });
+      final String id = (data['id'] ?? data['Id'] ?? DateTime.now().millisecondsSinceEpoch).toString();
+      final String title = (data['title'] ?? data['Title'] ?? 'No Title').toString();
+      final String body = (data['body'] ?? data['Body'] ?? '').toString();
+      final String category = (data['category'] ?? data['Category'] ?? 'General').toString();
+      final String? payload = data['payload'] ?? data['Payload'];
 
-    // 2. Show Local Notification
-    _showLocalNotification(data);
+      // 1. Persist to SQLite
+      await _db.insertNotification({
+        'Id': id,
+        'Title': title,
+        'Body': body,
+        'Category': category,
+        'PayloadJson': payload,
+        'IsRead': 0,
+        'ReceivedAt': DateTime.now().toIso8601String(),
+        'SyncStatus': 1,
+      });
+      print('SignalR: Notification persisted to local DB');
+
+      // 2. Show Local Notification
+      await _showLocalNotification({
+        'id': id,
+        'title': title,
+        'body': body,
+        'payload': payload,
+      });
+    } catch (e) {
+      print('SignalR: Error handling notification: $e');
+    }
   }
 
   Future<void> _showLocalNotification(Map<String, dynamic> data) async {
+    print('SignalR: Triggering local notification UI');
     const androidDetails = AndroidNotificationDetails(
       'high_importance_channel',
       'High Importance Notifications',
+      channelDescription: 'This channel is used for important agricultural alerts.',
       importance: Importance.max,
       priority: Priority.high,
+      showWhen: true,
     );
     const iosDetails = DarwinNotificationDetails();
     const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
-    await _localNotifier.show(
-      data['id'].hashCode,
-      data['title'],
-      data['body'],
-      details,
-      payload: data['payload'],
-    );
+    try {
+      await _localNotifier.show(
+        data['id'].hashCode,
+        data['title'],
+        data['body'],
+        details,
+        payload: data['id'], // Using notification ID as payload for "Mark as Read" flow
+      );
+      print('SignalR: Local notification displayed');
+    } catch (e) {
+      print('SignalR: Error showing local notification: $e');
+    }
   }
 
   void dispose() {

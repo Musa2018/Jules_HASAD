@@ -39,11 +39,20 @@
                     <div class="card kpi-card shadow-sm border-left-primary h-100">
                         <div class="card-body">
                             <h6 class="text-muted text-uppercase small">@kpi.Title</h6>
-                            <h3 class="fw-bold">@kpi.CurrentValue @kpi.Unit</h3>
-                            <div class="trend @(GetTrendClass(kpi))">
-                                <i class="bi bi-@(GetTrendIcon(kpi))"></i>
-                                @CalculateTrend(kpi)% from last period
-                            </div>
+                            <h3 class="fw-bold">@((int)kpi.CurrentValue) <span class="small fw-normal">@kpi.Unit</span></h3>
+
+                            @if (kpi.MetricKey == "DAMAGE_REPORTS" && kpi.PreviousValue.HasValue)
+                            {
+                                <div class="badge bg-warning text-dark">
+                                    <i class="bi bi-clock-history"></i> @((int)kpi.PreviousValue) Pending Verification
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="trend text-success small">
+                                    <i class="bi bi-graph-up"></i> Real-time Data
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

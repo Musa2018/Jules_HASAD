@@ -38,6 +38,8 @@ public class NotificationDispatcher : INotificationDispatcher
             .Where(d => d.UserId == targetUserId)
             .ToListAsync();
 
+        Log.Information("Found {DeviceCount} devices for user {UserId}", devices.Count, targetUserId);
+
         if (!devices.Any())
         {
             Log.Warning("No registered devices found for user {UserId}", targetUserId);
@@ -48,20 +50,23 @@ public class NotificationDispatcher : INotificationDispatcher
         {
             try
             {
+                Log.Information("Attempting dispatch to device {DeviceToken}. Online: {IsOnline}, SignalR: {ConnectionId}",
+                    device.DeviceToken, device.IsOnline, device.SignalRConnectionId);
+
                 if (device.IsOnline && !string.IsNullOrEmpty(device.SignalRConnectionId))
                 {
                     // High-speed In-App SignalR path
                     await _hubContext.Clients.Client(device.SignalRConnectionId).SendAsync("ReceiveNotification", new
                     {
-                        Id = notification.Id,
-                        Title = notification.Title,
-                        Body = notification.Body,
-                        Category = notification.Category,
-                        Payload = notification.PayloadJson,
-                        CreatedAt = notification.CreatedAt
+                        id = notification.Id, // Explicitly camelCase to match Flutter expectations
+                        title = notification.Title,
+                        body = notification.Body,
+                        category = notification.Category,
+                        payload = notification.PayloadJson,
+                        createdAt = notification.CreatedAt
                     });
 
-                    Log.Information("Notification {Id} sent via SignalR to user {UserId}", notificationId, targetUserId);
+                    Log.Information("Notification {Id} sent via SignalR to connection {ConnectionId}", notificationId, device.SignalRConnectionId);
                 }
                 else
                 {

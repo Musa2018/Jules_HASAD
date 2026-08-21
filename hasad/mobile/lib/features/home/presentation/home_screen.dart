@@ -6,13 +6,29 @@ import 'package:mobile/core/storage/pull_sync_service.dart';
 import 'package:mobile/features/auth/presentation/auth_providers.dart';
 import 'package:mobile/l10n/app_localizations.dart';
 
+import 'package:mobile/features/notifications/presentation/providers/notification_providers.dart';
+
 /// Landing screen shown after a successful login.
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   /// Creates the home screen.
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Ensure the notification client is connected when the home screen is loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(notificationClientServiceProvider);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final session = ref.watch(authProvider).session;
 

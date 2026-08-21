@@ -32,16 +32,16 @@ class NotificationInboxScreen extends ConsumerWidget {
           
           try {
             final serverResults = await apiClient.getMyNotifications();
-            final items = serverResults['Items'] as List;
+            final items = serverResults['Items'] ?? serverResults['items'] as List;
             for (var item in items) {
               await db.insertNotification({
-                'Id': item['Id'],
-                'Title': item['Title'],
-                'Body': item['Body'],
-                'Category': item['Category'],
-                'PayloadJson': item['PayloadJson'],
-                'IsRead': item['IsRead'] ? 1 : 0,
-                'ReceivedAt': item['CreatedAt'],
+                'Id': (item['id'] ?? item['Id']).toString(),
+                'Title': item['title'] ?? item['Title'] ?? '',
+                'Body': item['body'] ?? item['Body'] ?? '',
+                'Category': item['category'] ?? item['Category'] ?? 'General',
+                'PayloadJson': item['payloadJson'] ?? item['PayloadJson'],
+                'IsRead': (item['isRead'] ?? item['IsRead'] ?? false) ? 1 : 0,
+                'ReceivedAt': item['createdAt'] ?? item['CreatedAt'],
                 'SyncStatus': 1,
               });
             }

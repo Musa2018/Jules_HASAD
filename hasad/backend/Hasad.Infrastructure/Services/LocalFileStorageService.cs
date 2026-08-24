@@ -62,6 +62,8 @@ public class LocalFileStorageService : IFileStorageService
 
     public string GetUrl(string remotePath)
     {
-        return $"{_baseUrl}/{remotePath}";
+        if (string.IsNullOrEmpty(remotePath)) return string.Empty;
+        var cleanPath = remotePath.Replace("\\", "/").TrimStart('/');
+        return $"/uploads/{cleanPath}";
     }
 }

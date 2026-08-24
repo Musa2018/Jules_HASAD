@@ -7,7 +7,7 @@ public interface IPDFService
     /// <summary>
     /// Generates a PDF for the damage assessment form.
     /// </summary>
-    Task<byte[]> GenerateDamageAssessmentFormAsync(DamageReport report);
+    Task<byte[]> GenerateDamageAssessmentFormAsync(DamageReport report, List<DamageWorkflowHistory> histories);
 
     /// <summary>
     /// Generates a PDF for the official damage certificate.

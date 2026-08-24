@@ -4,6 +4,7 @@ using Hasad.Domain.Constants;
 using Hasad.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hasad.Application.Features.DamageReports.Commands.TransitionDamageReport;
 
@@ -21,6 +22,7 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
     private readonly IPDFService _pdfService;
     private readonly IFileStorageService _storageService;
     private readonly INotificationService _notificationService;
+    private readonly ILogger<TransitionDamageReportCommandHandler> _logger;
 
     public TransitionDamageReportCommandHandler(
         IApplicationDbContext context,
@@ -28,7 +30,8 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         ICurrentUserService currentUser,
         IPDFService pdfService,
         IFileStorageService storageService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        ILogger<TransitionDamageReportCommandHandler> logger)
     {
         _context = context;
         _workflowService = workflowService;
@@ -36,13 +39,12 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         _pdfService = pdfService;
         _storageService = storageService;
         _notificationService = notificationService;
+        _logger = logger;
     }
 
     public async Task<Result<Guid>> Handle(TransitionDamageReportCommand request, CancellationToken cancellationToken)
     {
         var report = await _context.DamageReports
-            .Include(r => r.Farm)
-            .Include(r => r.Items)
             .FirstOrDefaultAsync(r => r.Id == request.Id, cancellationToken);
 
         if (report == null)
@@ -52,13 +54,12 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
 
         if (report.StatusId == request.ToStatus)
         {
-            // Idempotency: Already in target status
             return Result<Guid>.Success(report.Id);
         }
 
         string fromStatus = report.StatusId;
 
-        // 1. Check for Override
+        // 1. Logic Transition
         if (request.IsOverride)
         {
             if (!_currentUser.IsInRole(AppRoles.GeneralManager) && !_currentUser.IsInRole(AppRoles.SuperAdmin))
@@ -75,26 +76,34 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         }
         else
         {
-            // 2. Standard Transition (using centralized CanTransition logic)
             if (!await _workflowService.CanTransitionAsync(report, request.ToStatus, request.Comment))
             {
-                // Detailed reasoning would be better for debugging
-                return Result<Guid>.Failure(new[] { $"Invalid transition from {report.StatusId} to {request.ToStatus}. Please check your role, geographic scope, and ensure comments are provided for returns." });
+                return Result<Guid>.Failure(new[] { $"Invalid transition from {report.StatusId} to {request.ToStatus}." });
             }
 
             await _workflowService.TransitionAsync(report, request.ToStatus, request.Comment);
         }
 
+        // 2. Save State Change
         await _context.SaveChangesAsync(cancellationToken);
 
-        // 3. Post-Transition Automation (PDF Generation)
-        if (request.ToStatus == DamageReportStatus.ArchiveDir)
+        // 3. SAFE Post-Action Hook (PDF Automation)
+        // We execute this strictly AFTER commit to ensure workflow integrity.
+        try
         {
-            await GenerateAndAttachPdfAsync(report, "استمارة حصر الأضرار", Hasad.Domain.Enums.DocumentTypeEnum.DamageAssessmentForm, cancellationToken);
+            if (request.ToStatus == DamageReportStatus.ArchiveDir)
+            {
+                await GenerateAndAttachPdfAsync(report.Id, "استمارة حصر الأضرار", Hasad.Domain.Enums.DocumentTypeEnum.DamageAssessmentForm, cancellationToken);
+            }
+            else if (request.ToStatus == DamageReportStatus.Completed)
+            {
+                await GenerateAndAttachPdfAsync(report.Id, $"شهادة ضرر - {report.ReportNumber}", Hasad.Domain.Enums.DocumentTypeEnum.DamageCertificate, cancellationToken);
+            }
         }
-        else if (request.ToStatus == DamageReportStatus.Completed)
+        catch (Exception ex)
         {
-            await GenerateAndAttachPdfAsync(report, $"شهادة ضرر - {report.ReportNumber}", Hasad.Domain.Enums.DocumentTypeEnum.DamageCertificate, cancellationToken);
+            _logger.LogError(ex, "Failed to generate automated PDF for report {ReportId} during transition to {Status}", report.Id, request.ToStatus);
+            // We do NOT rethrow here, satisfying the requirement that rendering issues never interrupt the workflow.
         }
 
         // 4. Notifications
@@ -103,12 +112,43 @@ public class TransitionDamageReportCommandHandler : IRequestHandler<TransitionDa
         return Result<Guid>.Success(report.Id);
     }
 
-    private async Task GenerateAndAttachPdfAsync(DamageReport report, string docName, Hasad.Domain.Enums.DocumentTypeEnum docType, CancellationToken cancellationToken)
+    private async Task GenerateAndAttachPdfAsync(Guid reportId, string docName, Hasad.Domain.Enums.DocumentTypeEnum docType, CancellationToken cancellationToken)
     {
+        // Fully load the report with all related entities needed for PDF
+        var report = await _context.DamageReports
+            .Include(r => r.Farm!)
+                .ThenInclude(f => f.Farmer!)
+            .Include(r => r.Farm!)
+                .ThenInclude(f => f.Governorate!)
+            .Include(r => r.Farm!)
+                .ThenInclude(f => f.Locality!)
+            .Include(r => r.Farm!)
+                .ThenInclude(f => f.MeasurementUnit!)
+            .Include(r => r.Farm!)
+                .ThenInclude(f => f.OwnershipType!)
+            .Include(r => r.Farm!)
+                .ThenInclude(f => f.PoliticalClassification!)
+            .Include(r => r.Items)
+                .ThenInclude(i => i.Classification!)
+                    .ThenInclude(c => c.SubCategory!)
+            .Include(r => r.Items)
+                .ThenInclude(i => i.DamageNature!)
+            .Include(r => r.DamageCause!)
+            .Include(r => r.DamageCauseCategory!)
+            .FirstOrDefaultAsync(r => r.Id == reportId, cancellationToken);
+
+        if (report == null) return;
+
         byte[] pdfBytes;
         if (docType == Hasad.Domain.Enums.DocumentTypeEnum.DamageAssessmentForm)
         {
-            pdfBytes = await _pdfService.GenerateDamageAssessmentFormAsync(report);
+            // Direct query for history as per specification
+            var histories = await _context.DamageWorkflowHistories
+                .Where(h => h.DamageReportId == reportId && !h.IsDeleted)
+                .OrderBy(h => h.ChangedAt)
+                .ToListAsync(cancellationToken);
+
+            pdfBytes = await _pdfService.GenerateDamageAssessmentFormAsync(report, histories);
         }
         else
         {

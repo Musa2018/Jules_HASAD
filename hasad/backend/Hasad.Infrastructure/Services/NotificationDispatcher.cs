@@ -26,51 +26,55 @@ public class NotificationDispatcher : INotificationDispatcher
         _apnsService = apnsService;
     }
 
-    public async Task SendNotificationAsync(Guid notificationId, string targetUserId)
+    public async Task SendBulkNotificationAsync(Guid notificationId, IEnumerable<string> targetUserIds)
     {
+        var targetIdList = targetUserIds.ToList();
+        if (!targetIdList.Any()) return;
+
         var notification = await _context.Notifications
             .AsNoTracking()
             .FirstOrDefaultAsync(n => n.Id == notificationId);
 
         if (notification == null) return;
 
+        Log.Information("Bulk dispatching notification {Id} to {Count} users: {UserIds}",
+            notificationId, targetIdList.Count, string.Join(", ", targetIdList));
+
+        // 1. High-speed SignalR Dispatch (Targeted to Users)
+        // This is strictly targeted to the connections of the specified users.
+        await _hubContext.Clients.Users(targetIdList).SendAsync("ReceiveNotification", new
+        {
+            id = notification.Id,
+            title = notification.Title,
+            body = notification.Body,
+            category = notification.Category,
+            payload = notification.PayloadJson,
+            createdAt = notification.CreatedAt
+        });
+
+        // 2. Background Push and DB Updates
+        // For each user, we still check if they have push devices or need status updates
+        foreach (var userId in targetIdList)
+        {
+            await ProcessBackgroundPushAndStatusAsync(notification, userId);
+        }
+    }
+
+    private async Task ProcessBackgroundPushAndStatusAsync(Notification notification, string targetUserId)
+    {
         var devices = await _context.UserDevices
             .Where(d => d.UserId == targetUserId)
             .ToListAsync();
 
-        Log.Information("Found {DeviceCount} devices for user {UserId}", devices.Count, targetUserId);
-
-        if (!devices.Any())
-        {
-            Log.Warning("No registered devices found for user {UserId}", targetUserId);
-            return;
-        }
+        bool deliveredViaSignalR = devices.Any(d => d.IsOnline && !string.IsNullOrEmpty(d.SignalRConnectionId));
 
         foreach (var device in devices)
         {
             try
             {
-                Log.Information("Attempting dispatch to device {DeviceToken}. Online: {IsOnline}, SignalR: {ConnectionId}",
-                    device.DeviceToken, device.IsOnline, device.SignalRConnectionId);
-
-                if (device.IsOnline && !string.IsNullOrEmpty(device.SignalRConnectionId))
+                if (!device.IsOnline || string.IsNullOrEmpty(device.SignalRConnectionId))
                 {
-                    // High-speed In-App SignalR path
-                    await _hubContext.Clients.Client(device.SignalRConnectionId).SendAsync("ReceiveNotification", new
-                    {
-                        id = notification.Id, // Explicitly camelCase to match Flutter expectations
-                        title = notification.Title,
-                        body = notification.Body,
-                        category = notification.Category,
-                        payload = notification.PayloadJson,
-                        createdAt = notification.CreatedAt
-                    });
-
-                    Log.Information("Notification {Id} sent via SignalR to connection {ConnectionId}", notificationId, device.SignalRConnectionId);
-                }
-                else
-                {
-                    // Background Push path
+                    // Background Push path for offline devices
                     if (device.Platform.Equals("iOS", StringComparison.OrdinalIgnoreCase))
                     {
                         await _apnsService.SendDirectPushAsync(device.DeviceToken, notification.Title, notification.Body, notification.PayloadJson);
@@ -79,32 +83,25 @@ public class NotificationDispatcher : INotificationDispatcher
                     {
                         await _fcmClient.SendRawPushV1Async(device.DeviceToken, notification.Title, notification.Body, notification.PayloadJson);
                     }
-
-                    Log.Information("Notification {Id} sent via {Platform} Push to user {UserId}", notificationId, device.Platform, targetUserId);
                 }
-
-                // Update Recipient Status
-                await _context.NotificationRecipients
-                    .Where(r => r.NotificationId == notificationId && r.UserId == targetUserId)
-                    .ExecuteUpdateAsync(s => s
-                        .SetProperty(b => b.IsDelivered, true)
-                        .SetProperty(b => b.DeliveredAt, DateTime.UtcNow));
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to dispatch notification {Id} to user {UserId} on device {DeviceToken}",
-                    notificationId, targetUserId, device.DeviceToken);
+                Log.Error(ex, "Failed to send background push for notification {Id} to user {UserId} on device {DeviceToken}",
+                    notification.Id, targetUserId, device.DeviceToken);
             }
         }
+
+        // Update Recipient Status
+        await _context.NotificationRecipients
+            .Where(r => r.NotificationId == notification.Id && r.UserId == targetUserId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(b => b.IsDelivered, true)
+                .SetProperty(b => b.DeliveredAt, DateTime.UtcNow));
     }
 
-    public async Task SendBulkNotificationAsync(Guid notificationId, IEnumerable<string> targetUserIds)
+    public async Task SendNotificationAsync(Guid notificationId, string targetUserId)
     {
-        foreach (var userId in targetUserIds)
-        {
-            // We can optimize this later with a bulk query if needed,
-            // but for now we follow the logic for each user.
-            await SendNotificationAsync(notificationId, userId);
-        }
+        await SendBulkNotificationAsync(notificationId, new[] { targetUserId });
     }
 }

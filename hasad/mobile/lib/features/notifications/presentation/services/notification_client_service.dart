@@ -2,14 +2,16 @@ import 'package:signalr_core/signalr_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile/features/notifications/data/local/local_notification_db.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 class NotificationClientService {
   HubConnection? _hubConnection;
   final LocalNotificationDb _db;
   final FlutterLocalNotificationsPlugin _localNotifier = FlutterLocalNotificationsPlugin();
   final Function(String)? onNotificationTapped;
+  final VoidCallback? onNotificationReceived;
 
-  NotificationClientService(this._db, {this.onNotificationTapped}) {
+  NotificationClientService(this._db, {this.onNotificationTapped, this.onNotificationReceived}) {
     _initLocalNotifications();
   }
 
@@ -121,6 +123,11 @@ class NotificationClientService {
         'body': body,
         'payload': payload,
       });
+
+      // 3. Notify UI listeners
+      if (onNotificationReceived != null) {
+        onNotificationReceived!();
+      }
     } catch (e) {
       print('SignalR: Error handling notification: $e');
     }

@@ -474,10 +474,25 @@ class _AttachmentsSection extends ConsumerWidget {
             ? (isAr ? docType.nameAr : docType.nameEn)
             : _getDocTypeName(item.documentTypeId);
 
+        final isOfficialForm = item.documentTypeId == 4;
+        final isCertificate = item.documentTypeId == 8;
+        final isOfficial = isOfficialForm || isCertificate;
+
         return Card(
+          elevation: isOfficial ? 4 : 1,
+          shape: isOfficial ? RoundedRectangleBorder(
+            side: BorderSide(
+              color: isCertificate ? Colors.amber : Colors.red.shade300,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ) : null,
           child: ListTile(
             leading: _getDocIcon(item.documentTypeId),
-            title: Text(item.documentName),
+            title: Text(
+              item.documentName,
+              style: TextStyle(fontWeight: isOfficial ? FontWeight.bold : FontWeight.normal),
+            ),
             subtitle: Text("$typeName - ${item.documentDate != null ? DateFormat('yyyy-MM-dd').format(item.documentDate!) : ''}"),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -536,9 +551,45 @@ class _AttachmentsSection extends ConsumerWidget {
         ),
       );
     } else {
-      // Fallback for non-image files (like PDFs)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("هذا النوع من الملفات يحتاج لمشاهد خارجي. الرابط: ${item.remotePath}")),
+      // Logic for non-image files (like PDFs)
+      final String baseUrl = EnvironmentConfig.config.apiBaseUrl;
+      final String serverRoot = baseUrl.endsWith('/api') 
+          ? baseUrl.substring(0, baseUrl.length - 4) 
+          : baseUrl;
+      
+      String remotePath = item.remotePath ?? "";
+      if (remotePath.isNotEmpty && !remotePath.startsWith('/') && !remotePath.startsWith('http')) {
+        remotePath = '/$remotePath';
+      }
+
+      final String fullUrl = remotePath.startsWith('http') 
+          ? remotePath 
+          : "$serverRoot$remotePath";
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(item.documentName),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.picture_as_pdf, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              const Text("لا يتوفر مستعرض PDF داخلي حالياً. يمكنك نسخ الرابط لفتحه في المتصفح:"),
+              const SizedBox(height: 8),
+              SelectableText(
+                fullUrl,
+                style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 12),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("إغلاق"),
+            ),
+          ],
+        ),
       );
     }
   }
@@ -559,9 +610,13 @@ class _AttachmentsSection extends ConsumerWidget {
           : baseUrl;
       
       String remotePath = item.remotePath!;
+      // Ensure we don't have double slashes and handles both relative and absolute paths
       if (!remotePath.startsWith('/') && !remotePath.startsWith('http')) {
         remotePath = '/$remotePath';
       }
+      
+      // Safety check for double slashes which might come from backend
+      remotePath = remotePath.replaceAll('//', '/');
 
       final String fullUrl = remotePath.startsWith('http') 
           ? remotePath 
@@ -616,6 +671,7 @@ class _AttachmentsSection extends ConsumerWidget {
       case 2: return const Icon(Icons.badge);
       case 3: return const Icon(Icons.description);
       case 4: return const Icon(Icons.picture_as_pdf, color: Colors.red);
+      case 8: return const Icon(Icons.verified, color: Colors.amber);
       default: return const Icon(Icons.attach_file);
     }
   }
@@ -953,16 +1009,19 @@ class _WorkflowActionBar extends ConsumerWidget {
     }
 
     final notifier = ref.read(damageReportFormProvider.notifier);
+    final repo = ref.read(damageReportRepositoryProvider);
     final success = await notifier.transitionReport(report.id, toStatus, comment: comment);
 
     if (context.mounted) {
-      ref.invalidate(damageReportStreamProvider(report.id));
-      ref.invalidate(damageReportHistoryProvider(report.id));
-      // [LEGACY_MANUAL_REFRESH]
-      // ref.invalidate(attachmentsByReportProvider(report.id));
-      ref.invalidate(damageReportsListProvider);
-
       if (success) {
+        // 1. Force refresh from server to get any automated attachments (PDFs)
+        await repo.refreshReport(report.id);
+        
+        // 2. Invalidate providers to show new data
+        ref.invalidate(damageReportStreamProvider(report.id));
+        ref.invalidate(damageReportHistoryProvider(report.id));
+        ref.invalidate(damageReportsListProvider);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("تم تحديث الحالة إلى ${_getStatusLabel(context, toStatus)}")),
         );

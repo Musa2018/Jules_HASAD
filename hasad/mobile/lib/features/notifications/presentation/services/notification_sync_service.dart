@@ -9,8 +9,36 @@ class NotificationSyncService {
 
   NotificationSyncService(this._db, this._apiClient);
 
-  void startSync() {
+  Future<void> startSync() async {
+    // 1. Immediate pull on start
+    await pullNotifications();
+    
+    // 2. Schedule periodic sync for read statuses
     _syncTimer = Timer.periodic(const Duration(minutes: 5), (_) => syncPendingReadStatuses());
+  }
+
+  Future<void> pullNotifications() async {
+    try {
+      print('NotificationSync: Pulling notifications from server...');
+      final results = await _apiClient.getMyNotifications(pageIndex: 1, pageSize: 50);
+      
+      final items = (results['Items'] ?? results['items']) as List;
+      for (var item in items) {
+        await _db.insertNotification({
+          'Id': (item['id'] ?? item['Id']).toString(),
+          'Title': item['title'] ?? item['Title'] ?? '',
+          'Body': item['body'] ?? item['Body'] ?? '',
+          'Category': item['category'] ?? item['Category'] ?? 'General',
+          'PayloadJson': item['payloadJson'] ?? item['PayloadJson'],
+          'IsRead': (item['isRead'] ?? item['IsRead'] ?? false) ? 1 : 0,
+          'ReceivedAt': item['createdAt'] ?? item['CreatedAt'],
+          'SyncStatus': 1,
+        });
+      }
+      print('NotificationSync: Pulled ${items.length} notifications.');
+    } catch (e) {
+      print('NotificationSync: Error pulling notifications: $e');
+    }
   }
 
   Future<void> syncPendingReadStatuses() async {

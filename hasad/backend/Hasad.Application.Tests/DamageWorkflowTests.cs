@@ -7,6 +7,7 @@ using Hasad.Infrastructure.Persistence.Seed;
 using Hasad.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Hasad.Application.Tests;
@@ -131,8 +132,9 @@ public class DamageWorkflowTests
         var pdfMock = new Mock<IPDFService>();
         var storageMock = new Mock<IFileStorageService>();
         var notifyMock = new Mock<INotificationService>();
+        var loggerMock = new Mock<ILogger<TransitionDamageReportCommandHandler>>();
 
-        var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object, pdfMock.Object, storageMock.Object, notifyMock.Object);
+        var handler = new TransitionDamageReportCommandHandler(context, service, _currentUserMock.Object, pdfMock.Object, storageMock.Object, notifyMock.Object, loggerMock.Object);
 
         _currentUserMock.Setup(x => x.UserId).Returns("eng1");
         _currentUserMock.Setup(x => x.IsInRole(AppRoles.AgriculturalEngineer)).Returns(true);

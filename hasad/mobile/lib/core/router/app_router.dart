@@ -27,6 +27,8 @@ import 'package:mobile/features/admin/domain/user.dart';
 import 'package:mobile/features/admin/presentation/users_screen.dart';
 import 'package:mobile/features/admin/presentation/create_user_screen.dart';
 
+import 'package:mobile/features/notifications/presentation/screens/notification_inbox_screen.dart';
+
 /// Route paths used across the application.
 abstract final class AppRoutes {
   /// Splash shown while the persisted session is being restored.
@@ -43,6 +45,9 @@ abstract final class AppRoutes {
 
   /// Authenticated home screen.
   static const home = '/home';
+
+  /// Notifications list.
+  static const notifications = '/notifications';
 
   /// Users list.
   static const users = '/users';
@@ -167,6 +172,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        builder: (context, state) => const NotificationInboxScreen(),
       ),
       GoRoute(
         path: AppRoutes.users,
